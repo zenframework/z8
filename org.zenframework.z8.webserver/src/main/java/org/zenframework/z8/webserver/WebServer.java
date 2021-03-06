@@ -4,12 +4,12 @@ import java.rmi.RemoteException;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlets.gzip.GzipHandler;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.RmiServer;
@@ -34,21 +34,27 @@ public class WebServer extends RmiServer implements IWebServer {
 	 * The method is an extension point to configure jetty server
 	 */
 	protected void configureServer() {
+		server = new Server();
+
+		ServerConnector connector = new ServerConnector(server);
+		connector.setPort(ServerConfig.webServerHttpPort());
+		server.addConnector(connector);
+
 		context = new ContextHandler("/");
 		context.setResourceBase(ServerConfig.webServerWebapp().getAbsolutePath());
 		context.getServletContext();
 
-		server = new Server(ServerConfig.webServerHttpPort());
 		server.setHandler(context);
 
 		// Specify the Session ID Manager
-		SessionIdManager idmanager = new HashSessionIdManager();
+		SessionIdManager idmanager = new DefaultSessionIdManager(server);
 		server.setSessionIdManager(idmanager);
 
 		// Create the SessionHandler (wrapper) to handle the sessions
-		SessionHandler sessions = new SessionHandler(new HashSessionManager());
+		SessionHandler sessions = new SessionHandler();
 		context.setHandler(sessions);
 
+		// TODO Update Jetty GZIP
 		GzipHandler gzipHandler = new GzipHandler();
 		gzipHandler.setHandler(getZ8Handler());
 		gzipHandler.addIncludedMimeTypes(ServerConfig.webServerGzipMimeTypes());

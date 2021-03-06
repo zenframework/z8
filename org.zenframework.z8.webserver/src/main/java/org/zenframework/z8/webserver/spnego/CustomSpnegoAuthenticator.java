@@ -10,25 +10,27 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+@SuppressWarnings("deprecation")
 public class CustomSpnegoAuthenticator extends SpnegoAuthenticator {
-    /**
-     * If authenticating succeed then {@link Authentication} object will be saved to the session's attribute,
-     * under `authentication` key
-     */
-    @Override
-    public Authentication validateRequest(ServletRequest request, ServletResponse response, boolean mandatory) throws ServerAuthException {
-        Authentication authentication = super.validateRequest(request, response, mandatory);
-        if (authentication instanceof UserAuthentication) {
-            HttpSession session = ((HttpServletRequest)request).getSession();
-            if (session != null) {
-                synchronized (session) {
-                    session.setAttribute("authentication", authentication);
-                    session.setAttribute("userPrincipalName",
-                            ((UserAuthentication) authentication).getUserIdentity().getUserPrincipal().getName());
-                }
-            }
-        }
-        return authentication;
-    }
+
+	/**
+	 * If authenticating succeed then {@link Authentication} object will be saved to the session's attribute,
+	 * under `authentication` key
+	 */
+	@Override
+	public Authentication validateRequest(ServletRequest request, ServletResponse response, boolean mandatory) throws ServerAuthException {
+		Authentication authentication = super.validateRequest(request, response, mandatory);
+		if (authentication instanceof UserAuthentication) {
+			HttpSession session = ((HttpServletRequest)request).getSession();
+			if (session != null) {
+				synchronized (session) {
+					session.setAttribute("authentication", authentication);
+					session.setAttribute("userPrincipalName",
+							((UserAuthentication) authentication).getUserIdentity().getUserPrincipal().getName());
+				}
+			}
+		}
+		return authentication;
+	}
 
 }

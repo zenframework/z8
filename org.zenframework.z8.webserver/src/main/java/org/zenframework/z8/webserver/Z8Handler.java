@@ -1,15 +1,19 @@
 package org.zenframework.z8.webserver;
 
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.util.component.LifeCycle;
-import org.zenframework.z8.server.base.file.Folders;
-import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.utils.IOUtils;
-import org.zenframework.z8.web.servlet.Servlet;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -17,13 +21,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.*;
+
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.utils.IOUtils;
+import org.zenframework.z8.web.servlet.DefaultServlet;
+import org.zenframework.z8.web.servlet.Servlet;
 
 public class Z8Handler extends AbstractHandler {
 
@@ -40,27 +48,30 @@ public class Z8Handler extends AbstractHandler {
 	private class LifeCycleListener extends AbstractLifeCycleListener {
 		@Override
 		public void lifeCycleStopped(LifeCycle event) {
-			if (requestServlet != null)
-				requestServlet.destroy();
+			if (z8Servlet != null)
+				z8Servlet.destroy();
+			if (defaultServlet != null)
+				defaultServlet.destroy();
 		}
 	}
 
 	private final Properties mappings;
-	private HttpServlet requestServlet;
-	private WebResourceHandler resourceHandler;
+	private HttpServlet z8Servlet;
+	private HttpServlet defaultServlet;
 
 	public Z8Handler(ContextHandler context) {
-		mappings = Z8Handler.getMappings(ServerConfig.webServerMappings());
-		urlPatterns.addAll(Z8Handler.getUrlPatterns(ServerConfig.webServerUrlPatterns()));
-		requestServlet = new Servlet();
+		mappings = getMappings(ServerConfig.webServerMappings());
+		urlPatterns.addAll(getUrlPatterns(ServerConfig.webServerUrlPatterns()));
+
+		z8Servlet = newZ8Servlet();
+		defaultServlet = newDefaultServlet();
+
 		try {
-			requestServlet.init(
-					Z8Handler.getZ8ServletConfig(context.getServletContext(), ServerConfig.webServerServletParams()));
+			z8Servlet.init(getServletConfig("Z8 Servlet", context.getServletContext(), ServerConfig.webServerServletParams()));
+			defaultServlet.init(getServletConfig("Default Servlet", context.getServletContext(), Collections.emptyMap()));
 		} catch (ServletException e) {
-			throw new RuntimeException("Z8 Servlet init failed", e);
+			throw new RuntimeException("Z8 Servlets initialization failed", e);
 		}
-		resourceHandler = getWebResourceHandler();
-		resourceHandler.init(Folders.Base, ServerConfig.webServerWebapp(), ServerConfig.language());
 
 		addLifeCycleListener(new LifeCycleListener());
 	}
@@ -79,19 +90,20 @@ public class Z8Handler extends AbstractHandler {
 
 		if (Z8Handler.isSystemRequest(path))
 			// Z8 request
-			requestServlet.service(request, response);
-		else if (path.contains("..") || path.startsWith("/WEB-INF"))
-			// Access denied
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal path " + path);
+			z8Servlet.service(request, response);
 		else
 			// Files or other resources
-			resourceHandler.handle(path, response);
+			defaultServlet.service(request, response);
 
 		baseRequest.setHandled(true);
 	}
 
-	protected WebResourceHandler getWebResourceHandler() {
-		return new WebResourceHandler();
+	protected HttpServlet newZ8Servlet() {
+		return new Servlet();
+	}
+
+	protected HttpServlet newDefaultServlet() {
+		return new DefaultServlet();
 	}
 
 	private String getContentType(String path) {
@@ -137,22 +149,21 @@ public class Z8Handler extends AbstractHandler {
 		return false;
 	}
 
-	private static Collection<UrlPattern> getUrlPatterns(String str) {
-		if (str == null || str.isEmpty())
+	private static Collection<UrlPattern> getUrlPatterns(String[] strs) {
+		if (strs == null || strs.length == 0)
 			return Collections.emptyList();
 		Collection<UrlPattern> patterns = new LinkedList<UrlPattern>();
-		String[] parts = str.split("\\,");
-		for (String part : parts)
-			patterns.add(new UrlPattern(part.trim()));
+		for (String str : strs)
+			patterns.add(new UrlPattern(str.trim()));
 		return patterns;
 	}
 
-	private static ServletConfig getZ8ServletConfig(final ServletContext context, final Map<String, String> initParameters) {
+	private static ServletConfig getServletConfig(final String name, final ServletContext context, final Map<String, String> initParameters) {
 		return new ServletConfig() {
 
 			@Override
 			public String getServletName() {
-				return "Z8 Servlet";
+				return name;
 			}
 
 			@Override

@@ -1,4 +1,4 @@
-package org.zenframework.z8.webserver;
+package org.zenframework.z8.web.servlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,13 +8,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.utils.IOUtils;
 
-public class WebResourceHandler {
+public class DefaultServlet extends HttpServlet {
+
+	private static final long serialVersionUID = -8135803465620653218L;
 
 	protected static final String CLASSPATH_WEBAPP = "web";
 	protected static final String WELCOME_FILE = "index.html";
@@ -25,33 +34,44 @@ public class WebResourceHandler {
 	private File webapp;
 	private String language;
 
-	public void init(File work, File webapp, String language) {
-		this.resourceCache = new File(work, RESOURCE_CACHE);
+	@Override
+	public void init(ServletConfig servletConfig) throws ServletException {
+		super.init(servletConfig);
+
+		String language = ServerConfig.language();
+		this.resourceCache = new File(Folders.Base, RESOURCE_CACHE);
 		this.localizedCache = new File(resourceCache, "__" + language + "__");
-		this.webapp = webapp;
+		this.webapp = ServerConfig.webServerWebapp();
 		this.language = language;
 	}
 
-	@SuppressWarnings("resource")
-	public void handle(String path, HttpServletResponse response) throws IOException {
-		File file = path.endsWith(".html") ? getLocalizedFile(path) : getFile(path);
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String path = URLDecoder.decode(request.getRequestURI(), "UTF-8");
 
-		if (file != null && file.exists()) {
-			if (file.isDirectory()) {
-				if (!path.endsWith("/")) {
-					response.sendRedirect(path + '/');
-					return;
-				} else {
-					file = getLocalizedFile(path + WELCOME_FILE);
-				}
-			}
-			if (file.exists()) {
-				copy(new FileInputStream(file), response.getOutputStream());
-				return;
-			}
+		if (path.contains("..") || path.startsWith("/WEB-INF")) {
+			// Access denied
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal path " + path);
+			return;
 		}
 
-		response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
+		File file = path.endsWith(".html") ? getLocalizedFile(path) : getFile(path);
+
+		if (file == null || !file.exists()) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File " + path + " not found");
+			return;
+		}
+
+		if (file.isDirectory()) {
+			if (!path.endsWith("/")) {
+				response.sendRedirect(path + '/');
+				return;
+			} else {
+				file = getLocalizedFile(path + WELCOME_FILE);
+			}
+		}
+		if (file.exists())
+			copy(new FileInputStream(file), response.getOutputStream());
 	}
 
 	// TODO Refactor using freemarker
@@ -99,7 +119,7 @@ public class WebResourceHandler {
 	}
 
 	protected URL getAlternateResource(String path) throws IOException {
-		ClassLoader classLoader = WebServer.class.getClassLoader();
+		ClassLoader classLoader = DefaultServlet.class.getClassLoader();
 		path = FilenameUtils.concat(CLASSPATH_WEBAPP, path.isEmpty() ? path : path.substring(1));
 		return classLoader.getResource(path);
 	}

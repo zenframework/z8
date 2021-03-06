@@ -1,6 +1,8 @@
 apply plugin: 'java'
 
 dependencies {
+	compile ("org.zenframework.z8.dependencies:z8-dependencies-servlet:${dependenciesVersion}") { transitive = true }
+
 	implementation project(':org.zenframework.z8.server')
 	implementation project(':org.zenframework.z8.auth')
 	implementation project(':org.zenframework.z8.interconnection')
