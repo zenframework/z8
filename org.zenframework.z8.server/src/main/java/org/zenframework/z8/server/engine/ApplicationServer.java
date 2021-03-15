@@ -131,9 +131,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			throw new RuntimeException("Multidomain is incompatible with multitenacy ");
 
 		try {
+			setRequest(new Request(new Session(getSchema())));
 			return Domains.newInstance().getAddresses().toArray(new String[0]);
 		} finally {
 			releaseConnections();
+			setRequest(null);
 		}
 	}
 
