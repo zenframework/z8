@@ -84,7 +84,7 @@ public class Monitor extends RequestTarget implements IMonitor {
 		if(log == null)
 			log = file.createLogFile(request().displayName(), "log");
 
-		log.write(message.toLogString() + file.EOL);
+		log.write(message.toLogString() + file.EOL, true);
 	}
 
 	@Override

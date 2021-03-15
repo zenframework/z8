@@ -9,6 +9,8 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.web.servlet.Servlet;
 import org.zenframework.z8.web.utils.ServletUtil;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,13 +32,19 @@ public class SingleSignOnAdapter extends Adapter {
 	}
 
 	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/");
 		HttpSession httpSession = request.getSession();
 		if (ServerConfig.ldapUrl() == null) {
 			httpSession.invalidate();
-			response.sendRedirect("/");
+			requestDispatcher.forward(request, response);
+			return;
 		}
 		String principalName = (String) httpSession.getAttribute("userPrincipalName");
+		if (principalName == null) {
+			requestDispatcher.forward(request, response);
+			return;
+		}
 		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
 		ISession session;
 		try {
@@ -54,6 +62,7 @@ public class SingleSignOnAdapter extends Adapter {
 
 		if (useContainerSession)
 			httpSession.setAttribute(Json.session.get(), session.id());
-		response.sendRedirect("/");
+
+		requestDispatcher.forward(request, response);
 	}
 }
