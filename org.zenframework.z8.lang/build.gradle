@@ -58,7 +58,7 @@ tasks.withType(JavaCompile) {
 task assembleBl(type: Zip, group: 'build', dependsOn: [compileBl]) {
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
-	from(projectDir) {
+	from("${projectDir}/src/bl") {
 		include '**/*.bl'
 		includeEmptyDirs = false
 	}
