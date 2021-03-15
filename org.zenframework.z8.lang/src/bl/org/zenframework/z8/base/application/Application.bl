@@ -22,6 +22,7 @@ public class Application extends Object {
 
 	static public void print(file file);
 
+	static public file[] requestFiles();
 	static public string[string] requestParameters();
 	static public JsonWriter responseWriter();
 

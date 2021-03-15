@@ -72,6 +72,10 @@ public class Application {
 		ApplicationServer.getMonitor().print(file);
 	}
 
+	static public RCollection<file> z8_requestFiles() {
+		return new RCollection<file>(ApplicationServer.getRequest().getFiles());
+	}
+
 	static public RLinkedHashMap<string, string> z8_requestParameters() {
 		return (RLinkedHashMap<string, string>)ApplicationServer.getRequest().getParameters();
 	}
