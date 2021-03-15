@@ -64,8 +64,6 @@ public class CompilationUnit extends Resource {
 
 	public CompilationUnit(Resource parent, IResource resource) {
 		super(parent, resource);
-		parent.addMember(this);
-
 		startupCodeLines = new StartupCodeLines();
 	}
 
@@ -90,7 +88,7 @@ public class CompilationUnit extends Resource {
 	}
 
 	public IPath getPackagePath() {
-		return getPath().removeLastSegments(1);
+		return getSourceRelativePath().removeLastSegments(1);
 	}
 
 	public String getPackage() {
@@ -98,7 +96,7 @@ public class CompilationUnit extends Resource {
 	}
 
 	public String getQualifiedName() {
-		return getPath().removeFileExtension().toString().replace(IPath.SEPARATOR, '.');
+		return getSourceRelativePath().removeFileExtension().toString().replace(IPath.SEPARATOR, '.');
 	}
 
 	public String getSimpleName() {
@@ -279,7 +277,7 @@ public class CompilationUnit extends Resource {
 
 	public IPath getOutputPath() {
 		IPath outputPath = getProject().getOutputPath();
-		return outputPath != null ? outputPath.append(getPath().removeFileExtension().addFileExtension("java")) : null;
+		return outputPath != null ? outputPath.append(getSourceRelativePath().removeFileExtension().addFileExtension("java")) : null;
 	}
 
 	protected void generateCode() {

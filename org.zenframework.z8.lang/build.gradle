@@ -44,7 +44,7 @@ task compileBl(type: JavaExec) {
 
 	classpath = configurations.compiler
 	main = 'org.zenframework.z8.compiler.cmd.Main'
-	args = [ projectDir, "-projectName:${project.name}", "-output:${projectDir}/.java" ]
+	args = [ projectDir, "-projectName:${project.name}", "-sources:src/bl", "-output:${projectDir}/.java" ]
 }
 
 sourceSets {

@@ -1,5 +1,6 @@
 package org.zenframework.z8.compiler.parser.type;
 
+import org.eclipse.core.runtime.IPath;
 import org.zenframework.z8.compiler.core.CodeGenerator;
 import org.zenframework.z8.compiler.core.IMethod;
 import org.zenframework.z8.compiler.core.IPosition;
@@ -114,24 +115,28 @@ public class ImportElement extends LanguageElement {
 	}
 
 	private CompilationUnit resolveToCompilationUnit(Project project) {
-		Folder folder = project;
+		for (IPath sourcePath : project.getSourcePaths()) {
+			Folder folder = project.getFolder(sourcePath);
+			if (folder == null)
+				continue;
 
-		IToken[] tokens = qualifiedName.getTokens();
+			IToken[] tokens = qualifiedName.getTokens();
 
-		for(int i = 0; i < tokens.length; i++) {
-			lastResolvedToken = Math.max(lastResolvedToken, i);
+			for(int i = 0; i < tokens.length; i++) {
+				lastResolvedToken = Math.max(lastResolvedToken, i);
 
-			IToken token = tokens[i];
+				IToken token = tokens[i];
 
-			String name = token.getRawText();
+				String name = token.getRawText();
 
-			if(i < tokens.length - 1) {
-				folder = folder.getFolder(name);
+				if(i < tokens.length - 1) {
+					folder = folder.getFolder(name);
 
-				if(folder == null)
-					break;
-			} else
-				return folder.getCompilationUnit(name + ".bl");
+					if(folder == null)
+						break;
+				} else
+					return folder.getCompilationUnit(name + ".bl");
+			}
 		}
 
 		return null;

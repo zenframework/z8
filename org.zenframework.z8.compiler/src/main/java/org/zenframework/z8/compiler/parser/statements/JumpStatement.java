@@ -104,7 +104,7 @@ public class JumpStatement extends LanguageElement implements IStatement {
 		ILanguageElement parent = getParent();
 
 		while(parent != null) {
-			if(parent instanceof ForStatement || parent instanceof WhileStatement || parent instanceof DoWhileStatement)
+			if(parent instanceof ForStatement || parent instanceof ForEachStatement || parent instanceof WhileStatement || parent instanceof DoWhileStatement)
 				return true;
 
 			parent = parent.getParent();
