@@ -1,0 +1,9 @@
+import org.zenframework.z8.base.form.Desktop;
+import org.zenframework.z8.justintime.table.SourcesView;
+
+[native "org.zenframework.z8.justintime.table.JustInTimeTools"]
+public class JustInTimeTools extends Desktop {
+
+	public SourcesView sources;
+
+}
