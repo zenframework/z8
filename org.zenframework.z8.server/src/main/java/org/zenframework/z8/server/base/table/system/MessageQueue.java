@@ -183,7 +183,7 @@ public class MessageQueue extends Table {
 		read(fields, orderBy, where, 10);
 
 		while(next()) {
-			Message message = (Message)Loader.getInstance(classId.string().get());
+			Message message = (Message) Loader.getInstance(classId.string().get());
 			message.setName(name.get().toString());
 			message.setDescription(description.get().toString());
 			message.fromBinary(data.binary());

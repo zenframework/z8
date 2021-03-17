@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public abstract class AbstractRuntime implements IRuntime {
@@ -130,13 +131,16 @@ public abstract class AbstractRuntime implements IRuntime {
 	public Executable.CLASS<? extends Executable> getExecutableByKey(guid key) {
 		return executableKeys.get(key);
 	}
-	
-	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, Collection<T> list) {
-		for(T cls : list) {
-			if(name.equals(cls.classId()))
-				return cls;
-		}
-		return null;
+
+	@Override
+	public Class<?> loadClass(String className) throws ClassNotFoundException {
+		return getClass().getClassLoader().loadClass(className);
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' unloaded");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -186,20 +190,12 @@ public abstract class AbstractRuntime implements IRuntime {
 			jobKeys.put(cls.classIdKey(), cls);
 	}
 
-	protected void mergeWith(IRuntime runtime) {
-		for(Table.CLASS<? extends Table> table : runtime.tables())
-			addTable(table);
-
-		for(Executable.CLASS<? extends Executable> job : runtime.jobs())
-			addJob(job);
-
-		for(Executable.CLASS<? extends Executable> executable : runtime.executables())
-			addExecutable(executable);
-
-		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
-			addEntry(entry);
-
-		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
-			addRequest(request);
+	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, Collection<T> list) {
+		for(T cls : list) {
+			if(name.equals(cls.classId()))
+				return cls;
+		}
+		return null;
 	}
+
 }

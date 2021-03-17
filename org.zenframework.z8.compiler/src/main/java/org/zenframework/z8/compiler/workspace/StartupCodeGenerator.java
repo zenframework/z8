@@ -1,10 +1,7 @@
 package org.zenframework.z8.compiler.workspace;
 
-import java.io.UnsupportedEncodingException;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-
 import org.zenframework.z8.compiler.file.File;
 import org.zenframework.z8.compiler.file.FileException;
 import org.zenframework.z8.compiler.parser.grammar.lexer.ABC;
@@ -65,9 +62,7 @@ public class StartupCodeGenerator {
 
 		try {
 			oldContent = new String(File.fromPath(outputPath).read());
-		} catch(FileException e) {
-		} catch(UnsupportedEncodingException e) {
-		}
+		} catch(FileException e) {}
 
 		if(!content.equals(oldContent)) {
 			File.fromPath(folder).makeDirectories();

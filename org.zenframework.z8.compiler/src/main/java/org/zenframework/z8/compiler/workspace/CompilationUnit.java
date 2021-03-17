@@ -1,6 +1,5 @@
 package org.zenframework.z8.compiler.workspace;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -304,9 +303,7 @@ public class CompilationUnit extends Resource {
 
 			try {
 				oldContent = new String(File.fromPath(outputPath).read());
-			} catch(FileException e) {
-			} catch(UnsupportedEncodingException e) {
-			}
+			} catch(FileException e) {}
 
 			String newContent = codeGenerator.toString();
 
@@ -581,8 +578,6 @@ public class CompilationUnit extends Resource {
 			file.write(imports + (imports.length() == 0 ? "" : "\n"));
 			file.append(new String(content, position.getOffset(), position.getLength()));
 		} catch(FileException e) {
-			error(e);
-		} catch(UnsupportedEncodingException e) {
 			error(e);
 		}
 	}

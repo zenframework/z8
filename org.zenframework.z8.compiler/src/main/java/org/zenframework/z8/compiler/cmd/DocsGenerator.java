@@ -10,6 +10,7 @@ import org.zenframework.z8.compiler.content.Hyperlink;
 import org.zenframework.z8.compiler.content.HyperlinkKind;
 import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.file.File;
+import org.zenframework.z8.compiler.file.FileException;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 import org.zenframework.z8.compiler.workspace.Project;
 
@@ -39,7 +40,7 @@ public class DocsGenerator {
 		}
 	}
 
-	public void run() throws Throwable {
+	public void run() throws FileException {
 		int compilationUnits = 0;
 		int projectCount = 0;
 
@@ -53,7 +54,7 @@ public class DocsGenerator {
 		System.out.println("Sources: project(s) " +  projectCount + ", files " + compilationUnits);
 	}
 
-	public int run(Project project) throws Throwable {
+	public int run(Project project) throws FileException {
 		File.fromPath(outputPath).makeDirectories();
 
 		String template = new String(File.fromPath(templatePath).read());

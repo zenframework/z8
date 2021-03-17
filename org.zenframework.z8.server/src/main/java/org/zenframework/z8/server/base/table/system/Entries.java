@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -79,8 +80,8 @@ public class Entries extends Table {
 		@SuppressWarnings("unchecked")
 		public string z8_get() {
 			super.z8_get();
-			return Runtime.instance().getEntry(((Entries.CLASS<Entries>)getContainer().getCLASS()).get().classId.get().z8_get().get())
-					.get().z8_displayName();
+			OBJECT.CLASS<? extends OBJECT> entry = Runtime.instance().getEntry(((Entries.CLASS<Entries>)getContainer().getCLASS()).get().classId.get().z8_get().get());
+			return entry != null ? entry.get().z8_displayName() : new string("<entry removed>");
 		}
 	}
 

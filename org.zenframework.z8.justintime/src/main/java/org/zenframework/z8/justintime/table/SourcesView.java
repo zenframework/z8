@@ -10,7 +10,6 @@ public class SourcesView extends Source {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(SourcesView.class);
-			setAttribute("displayName", "Sources");
 		}
 
 		public Object newObject(IObject container) {
@@ -34,18 +33,15 @@ public class SourcesView extends Source {
 	public void constructor2() {
 		super.constructor2();
 
-		parent.get().name.get().colSpan = new integer(3);
+		parent.get().name.setDisplayName(displayNames.ParentName);
 
-		shortName.get().colSpan = new integer(2);
-
-		source.get().colSpan = new integer(6);
+		source.get().colSpan = new integer(2);
 		source.get().flex = new integer(1);
 
-		colCount = new integer(6);
+		colCount = new integer(2);
 
 		names.add(name);
 
-		controls.add(type.get(IClass.Constructor1).shortName);
 		controls.add(parent.get(IClass.Constructor1).name);
 		controls.add(shortName);
 		controls.add(source);
