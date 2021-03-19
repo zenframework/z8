@@ -18,8 +18,13 @@ public abstract class AbstractRuntime implements IRuntime {
 	private Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
 	private Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
 
+	private Map<String, OBJECT.CLASS<? extends OBJECT>> entryClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+
+	private Map<String, OBJECT.CLASS<? extends OBJECT>> requestClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+
+	private Map<String, Executable.CLASS<? extends Executable>> jobClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
 	private Map<guid, Executable.CLASS<? extends Executable>> jobKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
 
 	@Override
@@ -94,12 +99,12 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public OBJECT.CLASS<? extends OBJECT> getRequest(String name) {
-		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, requests());
+		return requestClasses.get(name);
 	}
 
 	@Override
 	public OBJECT.CLASS<? extends OBJECT> getEntry(String name) {
-		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, entries());
+		return entryClasses.get(name);
 	}
 
 	@Override
@@ -109,7 +114,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public Executable.CLASS<? extends Executable> getJob(String name) {
-		return AbstractRuntime.<Executable.CLASS<? extends Executable>> get(name, jobs());
+		return jobClasses.get(name);
 	}
 
 	@Override
@@ -176,26 +181,24 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	protected void addRequest(OBJECT.CLASS<? extends OBJECT> cls) {
-		if(!requestKeys.containsKey(cls.classIdKey()))
+		if(!requestKeys.containsKey(cls.classIdKey())) {
+			requestClasses.put(cls.classId(), cls);
 			requestKeys.put(cls.classIdKey(), cls);
+		}
 	}
 
 	protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
-		if(!entryKeys.containsKey(cls.classIdKey()))
+		if(!entryKeys.containsKey(cls.classIdKey())) {
+			entryClasses.put(cls.classId(), cls);
 			entryKeys.put(cls.classIdKey(), cls);
+		}
 	}
 
 	protected void addJob(Executable.CLASS<? extends Executable> cls) {
-		if(!jobKeys.containsKey(cls.classIdKey()))
+		if(!jobKeys.containsKey(cls.classIdKey())) {
+			jobClasses.put(cls.classId(), cls);
 			jobKeys.put(cls.classIdKey(), cls);
-	}
-
-	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, Collection<T> list) {
-		for(T cls : list) {
-			if(name.equals(cls.classId()))
-				return cls;
 		}
-		return null;
 	}
 
 }
