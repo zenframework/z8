@@ -24,6 +24,7 @@ public class WebServer extends RmiServer implements IWebServer {
 	private static final String ID = guid.create().toString();
 	protected Server server;
 	protected ContextHandler context;
+	protected Z8Handler z8Handler;
 
 	public WebServer() throws RemoteException {
 		super(ServerConfig.webServerPort());
@@ -88,8 +89,10 @@ public class WebServer extends RmiServer implements IWebServer {
 	@Override
 	public void probe() throws RemoteException {}
 
-	protected Handler getZ8Handler() {
-		return new Z8Handler(context);
+	protected synchronized Handler getZ8Handler() {
+		if (z8Handler == null)
+			z8Handler = new Z8Handler(context);
+		return z8Handler;
 	}
 
 	public static void launch(ServerConfig config) throws Exception {
