@@ -48,6 +48,10 @@ public class Users extends Table {
 	[displayName "Настройки"]
 	public TextField settings;
 
+	[name "changePassword"]
+	[displayName "Изменить пароль при следующем входе"]
+	public BoolField changePassword;
+
 	virtual protected bool getParameters(guid id, string login, primary[string] parameters);
 
 	records {

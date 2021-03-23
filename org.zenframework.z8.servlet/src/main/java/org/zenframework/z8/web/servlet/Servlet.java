@@ -126,5 +126,8 @@ public class Servlet extends HttpServlet {
 		String value = servletConfig.getInitParameter(name);
 		return value != null ? Boolean.parseBoolean(value) : defaultValue;
 	}
-	
+
+	public List<Adapter> getAdapters() {
+		return adapters;
+	}
 }

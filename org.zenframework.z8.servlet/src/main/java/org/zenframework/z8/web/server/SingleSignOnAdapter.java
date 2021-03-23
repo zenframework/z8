@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * Authentication and authorization user through kerberos protocol
+ * User authorization through kerberos protocol
  */
 public class SingleSignOnAdapter extends Adapter {
 	static public final String AdapterPath = "/sso_auth";
@@ -33,16 +33,12 @@ public class SingleSignOnAdapter extends Adapter {
 
 	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("/");
 		HttpSession httpSession = request.getSession();
-		if (ServerConfig.ldapUrl() == null) {
-			httpSession.invalidate();
-			requestDispatcher.forward(request, response);
-			return;
-		}
+
 		String principalName = (String) httpSession.getAttribute("userPrincipalName");
 		if (principalName == null) {
-			requestDispatcher.forward(request, response);
+			httpSession.invalidate();
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}
 		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
@@ -63,6 +59,6 @@ public class SingleSignOnAdapter extends Adapter {
 		if (useContainerSession)
 			httpSession.setAttribute(Json.session.get(), session.id());
 
-		requestDispatcher.forward(request, response);
+		request.getRequestDispatcher("/index.html").forward(request, response);
 	}
 }
