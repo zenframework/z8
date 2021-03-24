@@ -2,11 +2,13 @@ package org.zenframework.z8.server.db.sql.functions.string;
 
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlConst;
+import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Add;
@@ -15,11 +17,16 @@ import org.zenframework.z8.server.db.sql.functions.Nvl;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.sql.sql_integer;
+import org.zenframework.z8.server.types.sql.sql_string;
 
 public class IndexOf extends SqlToken {
 	private SqlToken what;
 	private SqlToken where;
 	private SqlToken from;
+
+	public IndexOf(String what, Field where, long from) {
+		this(new sql_string(what), new SqlField(where), new sql_integer(from));
+	}
 
 	public IndexOf(SqlToken what, SqlToken where, SqlToken from) {
 		this.what = what;

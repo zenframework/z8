@@ -15,6 +15,7 @@ public class SequencesView extends Sequences {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(SequencesView.class);
+			setAttribute(SystemTool, Integer.toString(500));
 		}
 
 		@Override

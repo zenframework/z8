@@ -49,7 +49,7 @@ public class Dashboard extends RequestTarget {
 			String id = getParameter(Json.menu);
 
 			if(id != null) {
-				Desktop desktop = (Desktop)Loader.getInstance(id);
+				Desktop desktop = (Desktop) Loader.getInstance(id);
 
 				writer.startArray(Json.data);
 				writeDesktop(writer, desktop);
@@ -124,7 +124,7 @@ public class Dashboard extends RequestTarget {
 
 		for(Entry entry : entries) {
 			try {
-				result.add((OBJECT.CLASS<OBJECT>)Loader.loadClass(entry.className()));
+				result.add((OBJECT.CLASS<OBJECT>) Loader.loadClass(entry.className()));
 			} catch (Throwable e) {
 				Trace.logError(e);
 			}

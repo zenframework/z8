@@ -1,0 +1,71 @@
+import org.zenframework.z8.base.table.TreeTable;
+import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.value.StringExpression;
+import org.zenframework.z8.base.table.value.TextField;
+
+[native "org.zenframework.z8.justintime.table.Source"]
+public class Source extends TreeTable {
+
+	public Source parent = class {
+		virtual protected void beforeRead() {
+			super.beforeRead();
+			addWhere(recordId != container.recordId() && typeId == SourceType.Package);
+		}
+	};
+
+	parentId = parent;
+
+	public SourceType type;
+	[name "Type"] public Link typeId = type;
+	typeId.defaultValue = SourceType.Package;
+
+	name.length = 1000;
+	shortName.length = 100;
+
+	[name "Source"] public TextField source;
+
+	public StringExpression icon = type.icon;
+
+	private bool eventsDisabled = false;
+	private string prevName;
+	private string newName;
+
+	virtual protected void beforeUpdate(guid recordId) {
+		super.beforeUpdate(recordId);
+
+		Source source;
+
+		if (eventsDisabled || !source.readRecord(recordId, Field[] { source.name, source.shortName, source.parent.name }))
+			return;
+
+		string prevShortName = source.shortName.get();
+		string prevParentName = source.parent.name.get();
+
+		prevName = source.name.get();
+
+		newName = parentId.isChanged()
+				? (source.readRecord(parentId.get(), Field[] { source.name }) ? source.name.get() : "")
+				: prevParentName;
+
+		newName += (newName.isEmpty() ? "" : ".") + (shortName.isChanged() ? shortName.get() : prevShortName);
+
+		name = newName;
+	}
+
+	virtual protected void afterUpdate(guid recordId) {
+		super.afterUpdate(recordId);
+
+		if (eventsDisabled || !name.isChanged())
+			return;
+
+		Source source;
+		source.eventsDisabled = true;
+
+		source.read(Field[] { source.name }, source.recordId != recordId && source.path.sql_string().indexOf(recordId.toString()) >= 0);
+		while (source.next()) {
+			source.name = newName + source.name.get().substring(prevName.length());
+			source.update(source.recordId());
+		}
+	}
+}

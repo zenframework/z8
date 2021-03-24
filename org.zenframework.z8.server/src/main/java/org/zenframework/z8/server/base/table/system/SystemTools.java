@@ -1,21 +1,16 @@
 package org.zenframework.z8.server.base.table.system;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
-import org.zenframework.z8.server.base.table.system.view.DomainsView;
-import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
-import org.zenframework.z8.server.base.table.system.view.JobsView;
-import org.zenframework.z8.server.base.table.system.view.RoleTableAccessView;
-import org.zenframework.z8.server.base.table.system.view.SequencesView;
-import org.zenframework.z8.server.base.table.system.view.TablesView;
-import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
-import org.zenframework.z8.server.base.table.system.view.UsersView;
 import org.zenframework.z8.server.db.generator.SchemaGenerator;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -25,8 +20,6 @@ import org.zenframework.z8.server.types.guid;
 public class SystemTools extends Desktop {
 	static public guid Id = new SystemTools.CLASS<SystemTools>().key();
 	static public String ClassId = new SystemTools.CLASS<SystemTools>().classId();
-
-	static private Set<Class<?>> Extensions = new HashSet<Class<?>>();
 
 	static public class strings {
 		public final static String Title = "SystemTools.title";
@@ -53,77 +46,65 @@ public class SystemTools extends Desktop {
 		}
 	}
 
-	public OBJECT.CLASS<? extends OBJECT> users = new UsersView.CLASS<UsersView>(this);
-	public OBJECT.CLASS<? extends OBJECT> domains = new DomainsView.CLASS<DomainsView>(this);
-	public OBJECT.CLASS<? extends OBJECT> jobs = new JobsView.CLASS<JobsView>(this);
-	public OBJECT.CLASS<? extends OBJECT> sequences = new SequencesView.CLASS<SequencesView>(this);
-	public OBJECT.CLASS<? extends OBJECT> exportMessages = new TransportQueueView.CLASS<TransportQueueView>(this);
-	public OBJECT.CLASS<? extends OBJECT> files = new FilesView.CLASS<FilesView>(this);
+	private static Comparator<OBJECT.CLASS<? extends OBJECT>> SystemToolComparator = new Comparator<OBJECT.CLASS<? extends OBJECT>>() {
 
-	public OBJECT.CLASS<? extends OBJECT> tables = new TablesView.CLASS<TablesView>(this);
-	public OBJECT.CLASS<? extends OBJECT> roles = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
+		@Override
+		public int compare(OBJECT.CLASS<? extends OBJECT> o1, OBJECT.CLASS<? extends OBJECT> o2) {
+			return Integer.compare(systemToolIndex(o1), systemToolIndex(o2));
+		}
 
-	public OBJECT.CLASS<? extends OBJECT> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
-	public OBJECT.CLASS<? extends OBJECT> interconnectionCenter = new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this);
+	};
+
+	private List<OBJECT.CLASS<? extends OBJECT>> systemTools;
 
 	public OBJECT.CLASS<? extends OBJECT> generator = new SchemaGenerator.CLASS<SchemaGenerator>(this);
 
 	public SystemTools(IObject container) {
 		super(container);
+
+		List<OBJECT.CLASS<? extends OBJECT>> systemTools = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(Runtime.instance().systemTools());
+
+		Collections.sort(systemTools, SystemToolComparator);
+
+		this.systemTools = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(systemTools.size() + 3);
+		for (OBJECT.CLASS<? extends OBJECT> systemTool : systemTools)
+			this.systemTools.add(systemTool.clone(this));
+
+		if(ApplicationServer.getUser().isAdministrator()) {
+			this.systemTools.add(new AuthorityCenterView.CLASS<AuthorityCenterView>(this));
+			this.systemTools.add(new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this));
+		}
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		if(ApplicationServer.getDatabase().isLatestVersion()) {
-			users.setIndex("users");
-			roles.setIndex("roles");
-			jobs.setIndex("jobs");
-			tables.setIndex("tables");
-			sequences.setIndex("sequences");
-			files.setIndex("files");
-
-			domains.setIndex("domains");
-			exportMessages.setIndex("exportMessages");
-
-			objects.add(users);
-			objects.add(roles);
-			objects.add(jobs);
-			objects.add(tables);
-			objects.add(sequences);
-			objects.add(files);
-
-			objects.add(domains);
-			objects.add(exportMessages);
-
-			for (Class<?> extension : Extensions)
-				objects.add(newExtension(extension));
-
-			if(ApplicationServer.getUser().isAdministrator()) {
-				authorityCenter.setIndex("authorityCenter");
-				interconnectionCenter.setIndex("interconnectionCenter");
-
-				objects.add(authorityCenter);
-				objects.add(interconnectionCenter);
-			}
+		if (ApplicationServer.getDatabase().isLatestVersion()) {
+			for (OBJECT.CLASS<? extends OBJECT> systemTool : systemTools)
+				objects.add(systemTool);
 		}
-
-		generator.setIndex("generator");
 
 		objects.add(generator);
 	}
 
-	static public void addExtension(Class<?> extension) {
-		Extensions.add(extension);
+	public void constructor2() {
+		super.constructor2();
+
+		if (ApplicationServer.getDatabase().isLatestVersion()) {
+			int index = 0;
+			for (OBJECT.CLASS<? extends OBJECT> systemTool : systemTools)
+				systemTool.setIndex("systemTool" + index++);
+		}
+
+		generator.setIndex("generator");
 	}
 
-	@SuppressWarnings("unchecked")
-	private OBJECT.CLASS<? extends OBJECT> newExtension(Class<?> extension) {
+	private static int systemToolIndex(OBJECT.CLASS<? extends OBJECT> cls) {
 		try {
-			return (OBJECT.CLASS<? extends OBJECT>) extension.getConstructor(IObject.class).newInstance(this);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			return Integer.parseInt(cls.getAttribute(SystemTool));
+		} catch (Throwable e) {
+			return 1000;
 		}
 	}
 

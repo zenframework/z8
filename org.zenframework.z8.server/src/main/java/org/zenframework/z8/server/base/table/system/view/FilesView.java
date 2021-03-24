@@ -14,6 +14,7 @@ public class FilesView extends Files {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(FilesView.class);
+			setAttribute(SystemTool, Integer.toString(600));
 		}
 
 		@Override

@@ -23,6 +23,7 @@ public interface IAttributed {
 	static final public String Exportable = "exportable";
 	static final public String ForeignKey = "foreignKey";
 	static final public String Executable = "executable";
+	static final public String SystemTool = "systemTool";
 
 	public String classId();
 	public guid classIdKey();
