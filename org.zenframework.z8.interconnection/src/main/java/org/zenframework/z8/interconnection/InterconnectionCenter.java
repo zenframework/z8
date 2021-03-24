@@ -15,6 +15,7 @@ import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ArrayUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
@@ -72,6 +73,10 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	public IApplicationServer connect(String domain) throws RemoteException {
 		IServerInfo server = findServer(domain);
 		return server != null ? server.getServer() : null;
+	}
+
+	public IApplicationServer connect(string domain) throws RemoteException {
+		return connect(domain.get());
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Transport implements Runnable {
@@ -132,7 +133,7 @@ public class Transport implements Runnable {
 			return null;
 		}
 
-		IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
+		IApplicationServer server = ServerConfig.interconnectionCenter().connect(new string(domain));
 
 		if(server == null) {
 			transportQueue.setInfo(message.getId(), "Domain '" + domain + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
