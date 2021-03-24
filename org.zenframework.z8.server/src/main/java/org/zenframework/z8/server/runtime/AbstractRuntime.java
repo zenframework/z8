@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.runtime;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,22 +11,26 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public abstract class AbstractRuntime implements IRuntime {
-	private Map<String, Table.CLASS<? extends Table>> tableClasses = new HashMap<String, Table.CLASS<? extends Table>>();
-	private Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
-	private Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
+	protected Map<String, Table.CLASS<? extends Table>> tableClasses = new HashMap<String, Table.CLASS<? extends Table>>();
+	protected Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
+	protected Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
 
-	private Map<String, Executable.CLASS<? extends Executable>> executableClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
-	private Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
-	private Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+	protected Map<String, Executable.CLASS<? extends Executable>> executableClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	protected Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	protected Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
 
-	private Map<String, OBJECT.CLASS<? extends OBJECT>> entryClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
-	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> entryClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+	protected Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
 
-	private Map<String, OBJECT.CLASS<? extends OBJECT>> requestClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
-	private Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> requestClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+	protected Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
 
-	private Map<String, Executable.CLASS<? extends Executable>> jobClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
-	private Map<guid, Executable.CLASS<? extends Executable>> jobKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+	protected Map<String, Executable.CLASS<? extends Executable>> jobClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	protected Map<guid, Executable.CLASS<? extends Executable>> jobKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> systemTools = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+
+	protected URL url;
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -75,6 +80,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<guid> jobKeys() {
 		return jobKeys.keySet();
+	}
+
+	@Override
+	public Collection<OBJECT.CLASS<? extends OBJECT>> systemTools() {
+		return systemTools.values();
 	}
 
 	@Override
@@ -152,6 +162,14 @@ public abstract class AbstractRuntime implements IRuntime {
 		return obj != null && getClass().equals(obj.getClass());
 	}
 
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
@@ -209,6 +227,11 @@ public abstract class AbstractRuntime implements IRuntime {
 		}
 	}
 
+	protected void addSystemTool(OBJECT.CLASS<? extends OBJECT> cls) {
+		if(!systemTools.containsKey(cls.classId()))
+			systemTools.put(cls.classId(), cls);
+	}
+
 	protected void mergeRuntime(IRuntime runtime) {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
@@ -224,6 +247,9 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
 			addRequest(request);
+
+		for(OBJECT.CLASS<? extends OBJECT> systemTool : runtime.systemTools())
+			addSystemTool(systemTool);
 	}
 
 }

@@ -2,7 +2,7 @@ package org.zenframework.z8.justintime.table;
 
 import java.util.Collection;
 
-import org.zenframework.z8.justintime.runtime.JustInTimeRuntime;
+import org.zenframework.z8.justintime.runtime.DynamicRuntime;
 import org.zenframework.z8.justintime.runtime.Workspace;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
@@ -40,10 +40,10 @@ public class CompileAction extends Action {
 
 	@Override
 	public void execute(Collection<guid> records, Query context, Collection<guid> selected, Query query) {
-		JustInTimeRuntime.instance().unloadDynamic();
+		DynamicRuntime.instance().unloadDynamic();
 		Workspace workspace = Workspace.workspace(ApplicationServer.getSchema());
 		workspace.recompile((Source) query);
-		JustInTimeRuntime.instance().loadDynamic();
+		DynamicRuntime.instance().loadDynamic();
 	}
 
 }

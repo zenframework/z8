@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.runtime;
 
+import java.net.URL;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.Executable;
@@ -22,6 +23,8 @@ public interface IRuntime {
 	Collection<Executable.CLASS<? extends Executable>> executables();
 	Collection<guid> executableKeys();
 
+	Collection<OBJECT.CLASS<? extends OBJECT>> systemTools();
+
 	Table.CLASS<? extends Table> getTable(String className);
 	Table.CLASS<? extends Table> getTableByName(String name);
 	Table.CLASS<? extends Table> getTableByKey(guid key);
@@ -40,4 +43,6 @@ public interface IRuntime {
 	Executable.CLASS<? extends Executable> getJobByKey(guid key);
 
 	Class<?> loadClass(String className) throws ClassNotFoundException;
+
+	URL getUrl();
 }

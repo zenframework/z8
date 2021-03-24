@@ -10,6 +10,7 @@ public class SourcesView extends Source {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(SourcesView.class);
+			setAttribute(SystemTool, Integer.toString(900));
 		}
 
 		public Object newObject(IObject container) {

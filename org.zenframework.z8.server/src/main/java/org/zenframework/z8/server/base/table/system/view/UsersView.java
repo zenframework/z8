@@ -17,6 +17,7 @@ public class UsersView extends Users {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(UsersView.class);
+			setAttribute(SystemTool, Integer.toString(100));
 		}
 
 		@Override

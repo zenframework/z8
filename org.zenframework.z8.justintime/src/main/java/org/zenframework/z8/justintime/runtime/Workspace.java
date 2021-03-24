@@ -4,9 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -25,34 +31,53 @@ import org.zenframework.z8.server.utils.IOUtils;
 public class Workspace {
 
 	private static final File JUST_IN_TIME = new File(Folders.Base, "just-in-time");
-	private static final File SCHEMES = new File(JUST_IN_TIME, "schemes");
+	private static final File SCHEMAS = new File(JUST_IN_TIME, "schemas");
 	private static final File[] DEPENDENCIES = new File(JUST_IN_TIME, "dependencies").listFiles();
 
 	private static final String BL_SOURCES = "bl";
 	private static final String JAVA_SOURCES = "java";
 	private static final String JAVA_CLASSES = "classes";
 
-	public static Workspace workspace(String scheme) {
-		return new Workspace(new File(SCHEMES, scheme));
+	private static final Map<String, Workspace> WORKSPACES = new HashMap<String, Workspace>();
+
+	public static Workspace workspace(String schema) {
+		synchronized (WORKSPACES) {
+			Workspace workspace = WORKSPACES.get(schema);
+			if (workspace == null)
+				WORKSPACES.put(schema, (workspace = new Workspace(schema)));
+			return workspace;
+		}
 	}
 
 	public static Workspace[] workspaces() {
-		File[] schemes = SCHEMES.listFiles();
-		if (schemes == null)
+		String[] schemas = SCHEMAS.list();
+		if (schemas == null)
 			return new Workspace[0];
-		Workspace[] workspaces = new Workspace[schemes.length];
-		for (int i = 0; i < schemes.length; i++)
-			workspaces[i] = new Workspace(schemes[i]);
+		Workspace[] workspaces = new Workspace[schemas.length];
+		for (int i = 0; i < schemas.length; i++)
+			workspaces[i] = workspace(schemas[i]);
 		return workspaces;
 	}
 
+	public static String getSchema(URL resource) {
+		try {
+			Path path = Paths.get(resource.toURI());
+			Path schemas = SCHEMAS.toPath();
+			return path.startsWith(schemas) ? path.getName(schemas.getNameCount()).toString() : null;
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private final String schema;
 	private final File workspace;
 	private final File blSources;
 	private final File javaSources;
 	private final File javaClasses;
 
-	private Workspace(File workspace) {
-		this.workspace = workspace;
+	private Workspace(String schema) {
+		this.schema = schema;
+		this.workspace = new File(SCHEMAS, schema);
 		this.blSources = new File(workspace, BL_SOURCES);
 		this.javaSources = new File(workspace, JAVA_SOURCES);
 		this.javaClasses = new File(workspace, JAVA_CLASSES);
@@ -69,6 +94,10 @@ public class Workspace {
 		compileBl();
 		compileJava();
 		copyResources();
+	}
+
+	public String getSchema() {
+		return schema;
 	}
 
 	public File getWorkspace() {

@@ -25,6 +25,7 @@ public class JobsView extends ScheduledJobs {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(JobsView.class);
+			setAttribute(SystemTool, Integer.toString(300));
 		}
 
 		@Override
