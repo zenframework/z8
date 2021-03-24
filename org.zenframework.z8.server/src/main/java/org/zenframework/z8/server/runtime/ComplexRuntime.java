@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.zenframework.z8.server.base.Executable;
@@ -18,9 +21,9 @@ import org.zenframework.z8.server.utils.IOUtils;
 
 public class ComplexRuntime implements IRuntime {
 
-	static private final String[] Z8RuntimePaths = { "META-INF/z8.runtime", "META-INF/z8_bl.runtime" };
-
 	private final List<IRuntime> runtimes = new LinkedList<IRuntime>();
+
+	static private final String[] Z8RuntimePaths = { "META-INF/z8.runtime", "META-INF/z8_bl.runtime" };
 
 	public void loadRuntimes(ClassLoader classLoader) {
 		for (String path : Z8RuntimePaths) {
@@ -55,7 +58,7 @@ public class ComplexRuntime implements IRuntime {
 		}
 	}
 
-	public boolean hasRuntime(IRuntime runtime) {
+	protected boolean hasRuntime(IRuntime runtime) {
 		String name = runtime.getClass().getCanonicalName();
 		for (IRuntime r : runtimes())
 			if (r.getClass().getCanonicalName().equals(name))
@@ -63,13 +66,10 @@ public class ComplexRuntime implements IRuntime {
 		return false;
 	}
 
-	protected List<IRuntime> runtimes() {
-		return runtimes;
-	}
-
 	protected void addRuntime(IRuntime runtime) {
 		if (runtime == null)
 			return;
+
 		if (!hasRuntime(runtime)) {
 			runtimes.add(runtime);
 			Trace.logEvent("Runtime '" + runtime.getClass().getCanonicalName() + "' loaded");
@@ -78,20 +78,18 @@ public class ComplexRuntime implements IRuntime {
 		}
 	}
 
+	protected List<IRuntime> runtimes() {
+		return runtimes;
+	}
+
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
-		Set<Table.CLASS<? extends Table>> tables = new HashSet<Table.CLASS<? extends Table>>();
-		for (IRuntime runtime : runtimes())
-			tables.addAll(runtime.tables());
-		return tables;
+		return collectTables().values();
 	}
 
 	@Override
 	public Collection<guid> tableKeys() {
-		Set<guid> keys = new HashSet<guid>();
-		for (IRuntime runtime : runtimes())
-			keys.addAll(runtime.tableKeys());
-		return keys;
+		return collectTables().keySet();
 	}
 
 	@Override
@@ -144,18 +142,12 @@ public class ComplexRuntime implements IRuntime {
 
 	@Override
 	public Collection<Executable.CLASS<? extends Executable>> executables() {
-		Set<Executable.CLASS<? extends Executable>> executables = new HashSet<Executable.CLASS<? extends Executable>>();
-		for (IRuntime runtime : runtimes())
-			executables.addAll(runtime.executables());
-		return executables;
+		return collectExecutables().values();
 	}
 
 	@Override
 	public Collection<guid> executableKeys() {
-		Set<guid> keys = new HashSet<guid>();
-		for (IRuntime runtime : runtimes())
-			keys.addAll(runtime.executableKeys());
-		return keys;
+		return collectExecutables().keySet();
 	}
 
 	@Override
@@ -170,10 +162,12 @@ public class ComplexRuntime implements IRuntime {
 	@Override
 	public Table.CLASS<? extends Table> getTableByName(String name) {
 		Table.CLASS<? extends Table> table = null;
-		for (IRuntime runtime : runtimes())
-			if ((table = runtime.getTableByName(name)) != null)
-				return table;
-		return null;
+		for (IRuntime runtime : runtimes()) {
+			Table.CLASS<? extends Table> candidate = runtime.getTableByName(name);
+			if (table == null || candidate != null && table.getClass().isAssignableFrom(candidate.getClass()))
+				table = candidate;
+		}
+		return table;
 	}
 
 	@Override
@@ -197,10 +191,12 @@ public class ComplexRuntime implements IRuntime {
 	@Override
 	public Executable.CLASS<? extends Executable> getExecutableByName(String name) {
 		Executable.CLASS<? extends Executable> executable = null;
-		for (IRuntime runtime : runtimes())
-			if ((executable = runtime.getExecutableByName(name)) != null)
-				return executable;
-		return null;
+		for (IRuntime runtime : runtimes()) {
+			Executable.CLASS<? extends Executable> candidate = runtime.getExecutableByName(name);
+			if (executable == null || candidate != null && executable.getClass().isAssignableFrom(candidate.getClass()))
+				executable = candidate;
+		}
+		return executable;
 	}
 
 	@Override
@@ -274,6 +270,50 @@ public class ComplexRuntime implements IRuntime {
 			} catch (ClassNotFoundException e) {}
 		}
 		throw new ClassNotFoundException(className);
+	}
+
+	private Map<guid, Table.CLASS<? extends Table>> collectTables() {
+		Map<guid, Table.CLASS<? extends Table>> tables = new HashMap<guid, Table.CLASS<? extends Table>>();
+		for (IRuntime runtime : runtimes()) {
+			for (Table.CLASS<? extends Table> candidate : runtime.tables()) {
+				boolean addCandidate = true;
+				Iterator<Map.Entry<guid, Table.CLASS<? extends Table>>> it = tables.entrySet().iterator();
+				while (it.hasNext()) {
+					Table.CLASS<? extends Table> table = it.next().getValue();
+					if (table.getClass().isAssignableFrom(candidate.getClass()) && table.name().equals(candidate.name())) {
+						it.remove();
+					} else if (candidate.getClass().isAssignableFrom(table.getClass())) {
+						addCandidate = false;
+						break;
+					}
+				}
+				if (addCandidate)
+					tables.put(candidate.key(), candidate);
+			}
+		}
+		return tables;
+	}
+
+	private Map<guid, Executable.CLASS<? extends Executable>> collectExecutables() {
+		Map<guid, Executable.CLASS<? extends Executable>> executables = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+		for (IRuntime runtime : runtimes()) {
+			for (Executable.CLASS<? extends Executable> candidate : runtime.executables()) {
+				boolean addCandidate = true;
+				Iterator<Map.Entry<guid, Executable.CLASS<? extends Executable>>> it = executables.entrySet().iterator();
+				while (it.hasNext()) {
+					Executable.CLASS<? extends Executable> executable = it.next().getValue();
+					if (executable.getClass().isAssignableFrom(candidate.getClass()) && executable.name().equals(candidate.name())) {
+						it.remove();
+					} else if (candidate.getClass().isAssignableFrom(executable.getClass())) {
+						addCandidate = false;
+						break;
+					}
+				}
+				if (addCandidate)
+					executables.put(candidate.key(), candidate);
+			}
+		}
+		return executables;
 	}
 
 }

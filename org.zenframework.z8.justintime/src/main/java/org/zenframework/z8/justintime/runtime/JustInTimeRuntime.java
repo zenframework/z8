@@ -7,8 +7,12 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.zenframework.z8.justintime.table.JustInTimeTools;
 import org.zenframework.z8.justintime.table.Source;
+import org.zenframework.z8.justintime.table.SourcesView;
+import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.base.table.system.SystemTools;
+import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.AbstractRuntime;
 import org.zenframework.z8.server.runtime.ComplexRuntime;
@@ -20,7 +24,6 @@ public class JustInTimeRuntime extends ComplexRuntime {
 
 		InternalRuntime() {
 			addTable(new Source.CLASS<Source>(null));
-			addEntry(new JustInTimeTools.CLASS<JustInTimeTools>(null));
 		}
 
 	}
@@ -46,6 +49,8 @@ public class JustInTimeRuntime extends ComplexRuntime {
 			throw new RuntimeException("JustInTimeRuntime reinitialized");
 
 		instance = this;
+
+		SystemTools.addExtension(SourcesView.CLASS.class);
 	}
 
 	@Override
@@ -76,10 +81,16 @@ public class JustInTimeRuntime extends ComplexRuntime {
 	}
 
 	public void unloadDynamic() {
-		synchronized (dynamicRuntimes) {
-			dynamicRuntimes.clear();
+		IDatabase database = ApplicationServer.getDatabase();
+		try {
+			Scheduler.suspend(database);
+			synchronized (dynamicRuntimes) {
+				dynamicRuntimes.clear();
+			}
+			Runtime.getRuntime().gc();
+		} finally {
+			Scheduler.resume(database);
 		}
-		Runtime.getRuntime().gc();
 	}
 
 	public static JustInTimeRuntime instance() {

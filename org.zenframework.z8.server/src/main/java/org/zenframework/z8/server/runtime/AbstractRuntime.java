@@ -143,6 +143,16 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && getClass().equals(obj.getClass());
+	}
+
+	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
 		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' unloaded");
@@ -150,8 +160,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@SuppressWarnings("unchecked")
 	protected void addTable(Table.CLASS<? extends Table> cls) {
-		for(Map.Entry<String, Table.CLASS<? extends Table>> entry : tableClasses.entrySet().toArray(new Map.Entry[0])) {
-			Table.CLASS<? extends Table> table = entry.getValue();
+		for(Table.CLASS<? extends Table> table : tableClasses.values().toArray(new Table.CLASS[tableClasses.size()])) {
 			if(table.getClass().isAssignableFrom(cls.getClass()) && table.name().equals(cls.name())) {
 				tableClasses.remove(table.classId());
 				tableNames.remove(table.name());
@@ -166,8 +175,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@SuppressWarnings("unchecked")
 	protected void addExecutable(Executable.CLASS<? extends Executable> cls) {
-		for(Map.Entry<String, Executable.CLASS<? extends Executable>> entry : executableClasses.entrySet().toArray(new Map.Entry[0])) {
-			Executable.CLASS<? extends Executable> executable = entry.getValue();
+		for(Executable.CLASS<? extends Executable> executable : executableClasses.values().toArray(new Executable.CLASS[executableClasses.size()])) {
 			if(executable.getClass().isAssignableFrom(cls.getClass()) && executable.name().equals(cls.name())) {
 				executableClasses.remove(executable.classId());
 				executableNames.remove(executable.name());
@@ -199,6 +207,23 @@ public abstract class AbstractRuntime implements IRuntime {
 			jobClasses.put(cls.classId(), cls);
 			jobKeys.put(cls.classIdKey(), cls);
 		}
+	}
+
+	protected void mergeRuntime(IRuntime runtime) {
+		for(Table.CLASS<? extends Table> table : runtime.tables())
+			addTable(table);
+
+		for(Executable.CLASS<? extends Executable> job : runtime.jobs())
+			addJob(job);
+
+		for(Executable.CLASS<? extends Executable> executable : runtime.executables())
+			addExecutable(executable);
+
+		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
+			addEntry(entry);
+
+		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
+			addRequest(request);
 	}
 
 }

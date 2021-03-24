@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment></comment>
+
+	<!-- Just-in-Time Tools -->
+
+	<entry key="JustInTimeTools.title">Динамический код</entry>
+
+	<!-- Source -->
+
+	<entry key="Source.title">Исходные коды</entry>
+	<entry key="Source.name">Файл</entry>
+	<entry key="Source.shortName">Наименование файла</entry>
+	<entry key="Source.parentName">Пакет</entry>
+	<entry key="Source.source">Исходный код</entry>
+
+	<!-- CompileAction -->
+
+	<entry key="CompileAction.title">Скомпилировать</entry>
+
+</properties>
