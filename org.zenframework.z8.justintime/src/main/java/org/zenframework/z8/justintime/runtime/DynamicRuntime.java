@@ -20,8 +20,17 @@ public class DynamicRuntime extends ComplexRuntime {
 
 	private static class DynamicClassLoader extends URLClassLoader {
 
+		private final Workspace workspace;
+
 		DynamicClassLoader(Workspace workspace) {
 			super(new URL[] { toURL(workspace.getJavaClasses()) });
+			this.workspace = workspace;
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			super.finalize();
+			Trace.logEvent("Schema '" + workspace.getSchema() + "' dynamic code unloaded");
 		}
 
 	}
@@ -57,10 +66,12 @@ public class DynamicRuntime extends ComplexRuntime {
 		String schema = Workspace.getSchema(runtime.getUrl());
 		synchronized (dynamics) {
 			dynamics.put(schema, runtime);
+			Trace.logEvent("Schema '" + schema + "' dynamic code loaded");
 		}
 	}
 
 	public void loadDynamic() {
+		loadDynamic(Workspace.workspace(ApplicationServer.getSchema()));
 	}
 
 	public void loadDynamic(Workspace workspace) {

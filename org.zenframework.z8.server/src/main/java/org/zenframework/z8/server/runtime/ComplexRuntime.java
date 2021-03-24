@@ -74,10 +74,8 @@ public class ComplexRuntime extends AbstractRuntime {
 
 		if (!(runtime instanceof ComplexRuntime)) {
 			mergeRuntime(runtime);
-			Trace.logEvent("Runtime '" + runtime.getClass().getCanonicalName() + "' loaded");
 		} else if (!runtimes.contains(runtime)) {
 			runtimes.add(runtime);
-			Trace.logEvent("Runtime '" + runtime.getClass().getCanonicalName() + "' loaded");
 		} else {
 			Trace.logEvent("Runtime '" + runtime.getClass().getCanonicalName() + "' skipped (loaded already)");
 		}

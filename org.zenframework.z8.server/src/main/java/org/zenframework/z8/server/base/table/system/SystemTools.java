@@ -57,9 +57,6 @@ public class SystemTools extends Desktop {
 
 	private List<OBJECT.CLASS<? extends OBJECT>> systemTools;
 
-	public OBJECT.CLASS<? extends OBJECT> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
-	public OBJECT.CLASS<? extends OBJECT> interconnectionCenter = new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this);
-
 	public OBJECT.CLASS<? extends OBJECT> generator = new SchemaGenerator.CLASS<SchemaGenerator>(this);
 
 	public SystemTools(IObject container) {
@@ -69,23 +66,13 @@ public class SystemTools extends Desktop {
 
 		Collections.sort(systemTools, SystemToolComparator);
 
-		this.systemTools = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(systemTools.size());
+		this.systemTools = new ArrayList<OBJECT.CLASS<? extends OBJECT>>(systemTools.size() + 3);
 		for (OBJECT.CLASS<? extends OBJECT> systemTool : systemTools)
-			this.systemTools.add(systemTool.clone(container));
+			this.systemTools.add(systemTool.clone(this));
 
 		if(ApplicationServer.getUser().isAdministrator()) {
 			this.systemTools.add(new AuthorityCenterView.CLASS<AuthorityCenterView>(this));
 			this.systemTools.add(new InterconnectionCenterView.CLASS<InterconnectionCenterView>(this));
-		}
-
-		if(ApplicationServer.getUser().isAdministrator()) {
-			OBJECT.CLASS<? extends OBJECT> authorityCenter = new AuthorityCenterView.CLASS<AuthorityCenterView>(this);
-			this.systemTools.add(authorityCenter);
-			authorityCenter.setIndex("authorityCenter");
-			interconnectionCenter.setIndex("interconnectionCenter");
-
-			objects.add(authorityCenter);
-			objects.add(interconnectionCenter);
 		}
 	}
 

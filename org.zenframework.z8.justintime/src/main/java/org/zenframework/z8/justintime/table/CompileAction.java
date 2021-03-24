@@ -41,8 +41,7 @@ public class CompileAction extends Action {
 	@Override
 	public void execute(Collection<guid> records, Query context, Collection<guid> selected, Query query) {
 		DynamicRuntime.instance().unloadDynamic();
-		Workspace workspace = Workspace.workspace(ApplicationServer.getSchema());
-		workspace.recompile((Source) query);
+		Workspace.workspace(ApplicationServer.getSchema()).recompile((Source) query);
 		DynamicRuntime.instance().loadDynamic();
 	}
 

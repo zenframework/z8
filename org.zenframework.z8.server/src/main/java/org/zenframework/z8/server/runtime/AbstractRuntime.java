@@ -32,6 +32,10 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	protected URL url;
 
+	protected AbstractRuntime() {
+		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' loaded");
+	}
+
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
 		return tableClasses.values();
@@ -168,12 +172,6 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	public void setUrl(URL url) {
 		this.url = url;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' unloaded");
 	}
 
 	@SuppressWarnings("unchecked")
