@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.DomainsView;
@@ -22,6 +25,8 @@ import org.zenframework.z8.server.types.guid;
 public class SystemTools extends Desktop {
 	static public guid Id = new SystemTools.CLASS<SystemTools>().key();
 	static public String ClassId = new SystemTools.CLASS<SystemTools>().classId();
+
+	static private Set<Class<?>> Extensions = new HashSet<Class<?>>();
 
 	static public class strings {
 		public final static String Title = "SystemTools.title";
@@ -92,6 +97,9 @@ public class SystemTools extends Desktop {
 			objects.add(domains);
 			objects.add(exportMessages);
 
+			for (Class<?> extension : Extensions)
+				objects.add(newExtension(extension));
+
 			if(ApplicationServer.getUser().isAdministrator()) {
 				authorityCenter.setIndex("authorityCenter");
 				interconnectionCenter.setIndex("interconnectionCenter");
@@ -105,4 +113,18 @@ public class SystemTools extends Desktop {
 
 		objects.add(generator);
 	}
+
+	static public void addExtension(Class<?> extension) {
+		Extensions.add(extension);
+	}
+
+	@SuppressWarnings("unchecked")
+	private OBJECT.CLASS<? extends OBJECT> newExtension(Class<?> extension) {
+		try {
+			return (OBJECT.CLASS<? extends OBJECT>) extension.getConstructor(IObject.class).newInstance(this);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

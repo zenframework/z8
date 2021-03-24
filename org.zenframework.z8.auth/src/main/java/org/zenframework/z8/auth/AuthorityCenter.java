@@ -1,10 +1,5 @@
 package org.zenframework.z8.auth;
 
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.util.Collection;
-
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
@@ -18,6 +13,11 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.StringUtils;
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.rmi.RemoteException;
+import java.util.Collection;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -120,7 +120,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 					throw new AccessDeniedException();
 			}
 		} else {
-			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
+			try {
+				user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
+			} catch (UserNotFoundException ignored) {
+				throw new AccessDeniedException();
+			}
 		}
 
 		ISession session = sessionManager.create(user);
