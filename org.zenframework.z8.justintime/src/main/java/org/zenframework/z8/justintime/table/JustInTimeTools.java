@@ -5,6 +5,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 
+@Deprecated
 public class JustInTimeTools extends Desktop {
 
 	static public class strings {
