@@ -32,17 +32,21 @@ public class Rmi {
 		return get(cls, Rmi.localhost, port);
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	static public <TYPE> TYPE get(Class<TYPE> cls, String host, int port) {
-		IServer server = servers.get(serverClass(cls));
+		TYPE server = getLocal(cls);
+		return server != null ? server : getRemote(cls, host, port);
+	}
 
-		if(server != null)
-			return (TYPE)server;
+	@SuppressWarnings("unchecked")
+	static public <TYPE> TYPE getLocal(Class<TYPE> cls) {
+		return (TYPE) servers.get(serverClass(cls));
+	}
 
+	@SuppressWarnings("unchecked")
+	static public <TYPE> TYPE getRemote(Class<TYPE> cls, String host, int port) {
 		Class<?>[] interfaces = { cls, IServer.class };
 		LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint(host, port), false);
-
-		return (TYPE)ProxyUtils.newProxy(liveRef, interfaces);
+		return (TYPE) ProxyUtils.newProxy(liveRef, interfaces);
 	}
 
 	@SuppressWarnings("rawtypes")
