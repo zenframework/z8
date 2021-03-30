@@ -2,7 +2,7 @@
 
 #export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
-HOST=\$((hostname -I || hostname) | awk '{print \$1}')
+HOST=\$(hostname -I || hostname | awk '{print \$1}')
 FORM_CONTENT_SIZE=15000000
 
 HOME="\$( cd "\$(dirname "\$0")/.." ; pwd -P )"
