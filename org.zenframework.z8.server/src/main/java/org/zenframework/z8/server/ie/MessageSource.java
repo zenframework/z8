@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -241,7 +242,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		if(value.equals(guid.Null))
 			return true;
 
-		if(BuiltinUsers.System.guid().equals(value) || BuiltinUsers.Administrator.guid().equals(value))
+		if(table instanceof Users && (BuiltinUsers.System.guid().equals(value) || BuiltinUsers.Administrator.guid().equals(value)))
 			return false;
 
 		Boolean state = recordStates.get(makeUniqueId(name, value));
