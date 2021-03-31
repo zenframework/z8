@@ -617,6 +617,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		}
 	}
 
+	public void operatorAssign(file file) {
+		set(file);
+	}
+
 	public void operatorAssign(string path) {
 		File file = new File(path.get());
 

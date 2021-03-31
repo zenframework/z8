@@ -16,6 +16,7 @@ public class file extends primary {
 	public operator binary();
 	public operator string();
 
+	public void operator = (file file);
 	public void operator = (string path);
 
 	public bool exists();
