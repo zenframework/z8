@@ -12,6 +12,7 @@ Z8.define('Z8.util.Format', {
 		LongDatetime: 'j F Y H:i',
 		Integer: '0,000',
 		Float: '0,000.00',
+		Number: '0,000.' + String.repeat('#', 12),
 		TrueText: Z8.$('Format.true'),
 		FalseText: Z8.$('Format.false'),
 
