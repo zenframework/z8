@@ -40,6 +40,7 @@ public class SystemTools extends Desktop {
 			super(container);
 			setJavaClass(SystemTools.class);
 			setDisplayName(displayNames.Title);
+			setIcon("fa-cog");
 		}
 
 		@Override
