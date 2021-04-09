@@ -185,8 +185,9 @@ public class LdapAPI implements Closeable {
             return null;
         } else {
             try {
-                return (String) attribute.get();
-            } catch (NamingException ignored) {
+                return attribute.get() instanceof String ? (String) attribute.get() : null;
+            } catch (Exception ignored) {
+                ApplicationServer.getMonitor().info(String.format("Failed to extract value from: %s", attribute.getID()));
                 return null;
             }
         }
