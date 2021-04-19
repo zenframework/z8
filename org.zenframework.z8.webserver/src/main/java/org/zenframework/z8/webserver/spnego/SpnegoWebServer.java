@@ -24,6 +24,8 @@ import org.zenframework.z8.web.server.SingleSignOnAdapter;
  */
 @SuppressWarnings("deprecation")
 public class SpnegoWebServer extends org.zenframework.z8.webserver.WebServer implements IWebServer {
+	// TODO temporary until upgrade jetty up to 9.4
+	protected ConstraintSecurityHandler securityHandler;
 
 	public SpnegoWebServer() throws RemoteException {
 		super();
@@ -44,7 +46,7 @@ public class SpnegoWebServer extends org.zenframework.z8.webserver.WebServer imp
 
 		SpnegoLoginService loginService = new SpnegoLoginService(domainRealm, spnegoPropertiesPath);
 
-		ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+		securityHandler = new ConstraintSecurityHandler();
 		securityHandler.setAuthenticator(new CustomSpnegoAuthenticator());
 		securityHandler.setLoginService(loginService);
 		securityHandler.setConstraintMappings(new ConstraintMapping[]{cm});
@@ -79,5 +81,4 @@ public class SpnegoWebServer extends org.zenframework.z8.webserver.WebServer imp
 	public static void launch(ServerConfig config) throws Exception {
 		new SpnegoWebServer().start();
 	}
-
 }

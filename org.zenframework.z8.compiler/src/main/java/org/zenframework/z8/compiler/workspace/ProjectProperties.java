@@ -41,6 +41,10 @@ public class ProjectProperties {
 
 	public ProjectProperties() {}
 
+	public ProjectProperties(java.io.File projectPath) {
+		setProjectPath(projectPath);
+	}
+
 	public ProjectProperties(String projectPath) {
 		setProjectPath(projectPath);
 	}
@@ -101,6 +105,10 @@ public class ProjectProperties {
 		setRequiredPaths(Arrays.asList(requiredPaths));
 	}
 
+	public void setRequiredPaths(java.io.File[] requiredPaths) {
+		setRequiredPaths(toPaths(requiredPaths));
+	}
+
 	public IPath[] getSourcePaths() {
 		return relativePath(sourcePaths != null ? sourcePaths : SOURCE_PATHS_DEFAULT, getProjectPath());
 	}
@@ -129,6 +137,10 @@ public class ProjectProperties {
 			this.sourcePaths[i] = getValidPath(sourcePaths.get(i));
 	}
 
+	public void setSourcePaths(java.io.File[] sourcePaths) {
+		setSourcePaths(toPaths(sourcePaths));
+	}
+
 	public IPath getOutputPath() {
 		return absolutePath(outputPath, getProjectPath());
 	}
@@ -139,6 +151,10 @@ public class ProjectProperties {
 
 	public void setOutputPath(String outputPath) {
 		setOutputPath(getValidPath(outputPath));
+	}
+
+	public void setOutputPath(java.io.File outputPath) {
+		setOutputPath(new Path(outputPath.getAbsolutePath()));
 	}
 
 	public IPath getDocsPath() {
@@ -309,6 +325,15 @@ public class ProjectProperties {
 			result = result.substring(0, result.length() - 1);
 
 		return result;
+	}
+
+	static private IPath[] toPaths(java.io.File[] files) {
+		if (files == null)
+			return null;
+		IPath[] paths = new IPath[files.length];
+		for (int i = 0; i < paths.length; i++)
+			paths[i] = new Path(files[i].getAbsolutePath());
+		return paths;
 	}
 
 }

@@ -21,6 +21,7 @@ public class SchemaGenerator extends Executable {
 			setJavaClass(SchemaGenerator.class);
 			setName(SchemaGenerator.Name);
 			setDisplayName(Resources.get("Generator.displayName"));
+			setAttribute(SystemTool, Integer.toString(100000));
 		}
 
 		@Override

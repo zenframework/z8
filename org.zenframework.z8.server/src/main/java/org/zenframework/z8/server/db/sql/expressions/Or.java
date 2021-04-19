@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.db.sql.expressions;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -13,6 +14,10 @@ import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class Or extends Expression {
 	static public String sqlOr = "or";
+
+	static public Or fromArray(SqlToken... tokens) {
+		return fromList(Arrays.asList(tokens));
+	}
 
 	static public Or fromList(Collection<SqlToken> tokens) {
 		if(tokens.size() < 2)

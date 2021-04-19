@@ -1,25 +1,40 @@
 package org.zenframework.z8.server.runtime;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
 public abstract class AbstractRuntime implements IRuntime {
-	private Map<String, Table.CLASS<? extends Table>> tableClasses = new HashMap<String, Table.CLASS<? extends Table>>();
-	private Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
-	private Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
+	protected Map<String, Table.CLASS<? extends Table>> tableClasses = new HashMap<String, Table.CLASS<? extends Table>>();
+	protected Map<String, Table.CLASS<? extends Table>> tableNames = new HashMap<String, Table.CLASS<? extends Table>>();
+	protected Map<guid, Table.CLASS<? extends Table>> tableKeys = new HashMap<guid, Table.CLASS<? extends Table>>();
 
-	private Map<String, Executable.CLASS<? extends Executable>> executableClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
-	private Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
-	private Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+	protected Map<String, Executable.CLASS<? extends Executable>> executableClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	protected Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	protected Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
 
-	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
-	private Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
-	private Map<guid, Executable.CLASS<? extends Executable>> jobKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> entryClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+	protected Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> requestClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+	protected Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
+
+	protected Map<String, Executable.CLASS<? extends Executable>> jobClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
+	protected Map<guid, Executable.CLASS<? extends Executable>> jobKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
+
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> systemTools = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+
+	protected URL url;
+
+	protected AbstractRuntime() {
+		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' loaded");
+	}
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -72,6 +87,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
+	public Collection<OBJECT.CLASS<? extends OBJECT>> systemTools() {
+		return systemTools.values();
+	}
+
+	@Override
 	public Table.CLASS<? extends Table> getTable(String className) {
 		return tableClasses.get(className);
 	}
@@ -93,12 +113,12 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public OBJECT.CLASS<? extends OBJECT> getRequest(String name) {
-		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, requests());
+		return requestClasses.get(name);
 	}
 
 	@Override
 	public OBJECT.CLASS<? extends OBJECT> getEntry(String name) {
-		return AbstractRuntime.<OBJECT.CLASS<? extends OBJECT>> get(name, entries());
+		return entryClasses.get(name);
 	}
 
 	@Override
@@ -108,7 +128,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public Executable.CLASS<? extends Executable> getJob(String name) {
-		return AbstractRuntime.<Executable.CLASS<? extends Executable>> get(name, jobs());
+		return jobClasses.get(name);
 	}
 
 	@Override
@@ -130,19 +150,33 @@ public abstract class AbstractRuntime implements IRuntime {
 	public Executable.CLASS<? extends Executable> getExecutableByKey(guid key) {
 		return executableKeys.get(key);
 	}
-	
-	private static <T extends OBJECT.CLASS<? extends OBJECT>> T get(String name, Collection<T> list) {
-		for(T cls : list) {
-			if(name.equals(cls.classId()))
-				return cls;
-		}
-		return null;
+
+	@Override
+	public Class<?> loadClass(String className) throws ClassNotFoundException {
+		return getClass().getClassLoader().loadClass(className);
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && getClass().equals(obj.getClass());
+	}
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void addTable(Table.CLASS<? extends Table> cls) {
-		for(Map.Entry<String, Table.CLASS<? extends Table>> entry : tableClasses.entrySet().toArray(new Map.Entry[0])) {
-			Table.CLASS<? extends Table> table = entry.getValue();
+		for(Table.CLASS<? extends Table> table : tableClasses.values().toArray(new Table.CLASS[tableClasses.size()])) {
 			if(table.getClass().isAssignableFrom(cls.getClass()) && table.name().equals(cls.name())) {
 				tableClasses.remove(table.classId());
 				tableNames.remove(table.name());
@@ -157,8 +191,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@SuppressWarnings("unchecked")
 	protected void addExecutable(Executable.CLASS<? extends Executable> cls) {
-		for(Map.Entry<String, Executable.CLASS<? extends Executable>> entry : executableClasses.entrySet().toArray(new Map.Entry[0])) {
-			Executable.CLASS<? extends Executable> executable = entry.getValue();
+		for(Executable.CLASS<? extends Executable> executable : executableClasses.values().toArray(new Executable.CLASS[executableClasses.size()])) {
 			if(executable.getClass().isAssignableFrom(cls.getClass()) && executable.name().equals(cls.name())) {
 				executableClasses.remove(executable.classId());
 				executableNames.remove(executable.name());
@@ -172,21 +205,32 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	protected void addRequest(OBJECT.CLASS<? extends OBJECT> cls) {
-		if(!requestKeys.containsKey(cls.classIdKey()))
+		if(!requestKeys.containsKey(cls.classIdKey())) {
+			requestClasses.put(cls.classId(), cls);
 			requestKeys.put(cls.classIdKey(), cls);
+		}
 	}
 
 	protected void addEntry(OBJECT.CLASS<? extends OBJECT> cls) {
-		if(!entryKeys.containsKey(cls.classIdKey()))
+		if(!entryKeys.containsKey(cls.classIdKey())) {
+			entryClasses.put(cls.classId(), cls);
 			entryKeys.put(cls.classIdKey(), cls);
+		}
 	}
 
 	protected void addJob(Executable.CLASS<? extends Executable> cls) {
-		if(!jobKeys.containsKey(cls.classIdKey()))
+		if(!jobKeys.containsKey(cls.classIdKey())) {
+			jobClasses.put(cls.classId(), cls);
 			jobKeys.put(cls.classIdKey(), cls);
+		}
 	}
 
-	protected void mergeWith(IRuntime runtime) {
+	protected void addSystemTool(OBJECT.CLASS<? extends OBJECT> cls) {
+		if(!systemTools.containsKey(cls.classId()))
+			systemTools.put(cls.classId(), cls);
+	}
+
+	protected void mergeRuntime(IRuntime runtime) {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
 
@@ -201,5 +245,9 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
 			addRequest(request);
+
+		for(OBJECT.CLASS<? extends OBJECT> systemTool : runtime.systemTools())
+			addSystemTool(systemTool);
 	}
+
 }

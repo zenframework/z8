@@ -230,7 +230,7 @@ public class TransportQueue extends Table {
 		if(!readRecord(id, fields))
 			return null;
 
-		Message result = (Message)Loader.getInstance(classId.string().get());
+		Message result = (Message) Loader.getInstance(classId.string().get());
 		result.fromBinary((binary)data.get());
 		result.setId(recordId());
 		result.setBytesTransferred(bytesTransferred.integer().get());

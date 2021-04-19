@@ -1,0 +1,43 @@
+apply plugin: 'java'
+
+configurations {
+	bl {
+		canBeResolved = false
+		canBeConsumed = true
+		attributes {
+			attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+					project.objects.named(LibraryElements, 'bl'))
+		}
+	}
+}
+
+dependencies {
+	implementation project(':org.zenframework.z8.compiler')
+	implementation project(':org.zenframework.z8.server')
+}
+
+task assembleBl(type: Zip, group: 'build') {
+	archiveName "${project.name}-${project.version}.zip"
+	destinationDir file("${buildDir}/libs/")
+	from("${projectDir}/WEB-INF/resources") {
+		include '**/*.nls'
+		includeEmptyDirs = false
+	}
+	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
+}
+
+assemble.dependsOn assembleBl
+
+artifacts.add('bl', assembleBl) {
+	type 'zip'
+	builtBy assembleBl
+}
+
+publishing.publications {
+	maven(MavenPublication) {
+		from components.java
+	}
+	mavenBl(MavenPublication) {
+		artifact source: assembleBl, extension: 'zip'
+	}
+}

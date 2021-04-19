@@ -1,23 +1,23 @@
 package org.zenframework.z8.auth;
 
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.util.Collection;
-
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
 import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
-import org.zenframework.z8.server.ldap.ActiveDirectory;
+import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.StringUtils;
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.rmi.RemoteException;
+import java.util.Collection;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -110,7 +110,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		IUser user;
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) && ActiveDirectory.isUserExist(login)) {
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) && LdapAPI.isUserExist(new LdapAPI.Connection(), login)) {
 			try {
 				user = loginServer.user(login, null, scheme);
 			} catch (UserNotFoundException e) {
@@ -120,7 +120,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 					throw new AccessDeniedException();
 			}
 		} else {
-			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
+			try {
+				user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
+			} catch (UserNotFoundException ignored) {
+				throw new AccessDeniedException();
+			}
 		}
 
 		ISession session = sessionManager.create(user);
