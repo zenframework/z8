@@ -194,7 +194,4 @@ public class Z8Handler extends AbstractHandler {
 		};
 	}
 
-	public HttpServlet getRequestServlet() {
-		return requestServlet;
-	}
 }
