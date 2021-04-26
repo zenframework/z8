@@ -208,7 +208,7 @@ public class Roles extends Table {
 			rra.request.get().set(requests.recordId());
 			rra.create();
 		}
-}
+	}
 
 	@Override
 	public void z8_beforeDestroy(guid recordId) {
