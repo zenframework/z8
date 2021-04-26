@@ -2,7 +2,7 @@ import org.zenframework.z8.base.fts.Fts;
 
 [native "org.zenframework.z8.server.base.table.value.StringExpression"]
 public class StringExpression extends Expression {
-	aggregation = Aggregation.Sum;
+	aggregation = Aggregation.Max;
 
 	public Fts fts;
 
