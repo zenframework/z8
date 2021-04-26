@@ -72,16 +72,17 @@ Z8.define('Z8.application.User', {
 		return this.login;
 	},
 
-	isAdministrator: function() {
-		if(this.administrator)
-			return true;
-
+	hasRole: function(roleId) {
 		for(var role of this.roles) {
-			if(role.id == Z8.application.User.Administrator)
+			if(role.id == roleId)
 				return true;
 		}
 
 		return false;
+	},
+
+	isAdministrator: function() {
+		return this.administrator || this.hasRole(Z8.application.User.Administrator);
 	},
 
 	getFirstName: function() {
