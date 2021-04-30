@@ -13,13 +13,13 @@ public class Entity {
     private String requestAttributes;
     private List<IActionRequest> actions;
     private List<FieldDescription> entityFields;
-    private List<BaseInfo> actionsNames;
+    private List<EntityAction> entityActions;
     private List<BaseInfo> relatedEntities;
 
     public Entity() {
         actions = new ArrayList<>();
         entityFields = new ArrayList<>();
-        actionsNames = new ArrayList<>();
+        entityActions = new ArrayList<>();
         relatedEntities = new ArrayList<>();
     }
 
@@ -63,12 +63,12 @@ public class Entity {
         this.entityFields = entityFields;
     }
 
-    public List<BaseInfo> getActionsNames() {
-        return actionsNames;
+    public List<EntityAction> getEntityActions() {
+        return entityActions;
     }
 
-    public void setActionsNames(List<BaseInfo> actionsNames) {
-        this.actionsNames = actionsNames;
+    public void setEntityActions(List<EntityAction> entityActions) {
+        this.entityActions = entityActions;
     }
 
     public List<BaseInfo> getRelatedEntities() {
