@@ -2,6 +2,7 @@ package org.zenframework.z8.server.types.sql;
 
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
+import org.zenframework.z8.server.db.sql.expressions.Distance;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Intersects;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
@@ -123,6 +124,10 @@ public class sql_geometry extends sql_primary {
 
 	public sql_geometry z8_intersect(sql_geometry geom) {
 		return new sql_geometry(new Intersection(this, geom));
+	}
+	
+	public sql_decimal z8_distance(sql_geometry geom) {
+		return new sql_decimal(new Distance(this, geom));
 	}
 
 	public sql_geometry z8_startPoint() {
