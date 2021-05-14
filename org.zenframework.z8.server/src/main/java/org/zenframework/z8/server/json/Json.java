@@ -262,4 +262,5 @@ public interface Json {
 	static public string experimental = new string("experimental");
 
 	static public string apiDescription = new string("apiDescription");
+	static public string apiSlug = new string("apiSlug");
 }

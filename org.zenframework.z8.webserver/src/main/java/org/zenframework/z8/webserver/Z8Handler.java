@@ -35,7 +35,9 @@ public class Z8Handler extends AbstractHandler {
 					new UrlPattern("*.json"),
 					new UrlPattern("/storage/*"),
 					new UrlPattern("/files/*"),
-					new UrlPattern("/reports/*")));
+					new UrlPattern("/reports/*"),
+					new UrlPattern("/public-api/*")
+			));
 
 	private class LifeCycleListener extends AbstractLifeCycleListener {
 		@Override
