@@ -242,6 +242,7 @@ Z8.define('Z8.Component', {
 	},
 
 	destroy: function() {
+		if (this.disposed) return;
 		this.destroying = true;
 		this.onDestroy();
 		this.destroying = false;
