@@ -993,7 +993,7 @@ Z8.define('Z8.list.List', {
 
 	clear: function() {
 		Component.destroy(this.items);
-		this.items = this.fragments = [];
+		this.items = []; this.fragments = [];
 		this.itemsRendered = this.itemsAdded = false;
 	},
 
