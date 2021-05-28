@@ -143,6 +143,10 @@ public class Workspace {
 
 	private void compileJava() {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+		if (compiler == null)
+			throw new RuntimeException("Java compiler not found");
+
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 		List<String> options = Arrays.asList("-d", javaClasses.getAbsolutePath());
