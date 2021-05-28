@@ -346,7 +346,12 @@ Z8.define('Z8.data.Store', {
 	},
 
 	insert: function(records, index) {
-		if(records == null || records.length == 0)
+		if(records == null)
+			return;
+
+		records = Array.isArray(records) ? records : [records];
+
+		if(records.isEmpty())
 			return;
 
 		this.inserted.push(records);

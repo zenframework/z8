@@ -227,6 +227,11 @@ Z8.define('Z8.data.Model', {
 		return lock != RecordLock.Destroy && lock != RecordLock.Full;
 	},
 
+	getIndex: function() {
+		var store = this.getStore();
+		return store != null ? store.indexOf(this) : -1;
+	},
+
 	getOrdinals: function() {
 		if(this.ordinals != null)
 			return this.ordinals;
