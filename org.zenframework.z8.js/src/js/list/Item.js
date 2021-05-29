@@ -337,7 +337,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	isTree: function() {
-		return this.record != null && this.record.parentId != null;
+		return this.getList().isTree();
 	},
 
 	hasChildren: function() {
