@@ -6,11 +6,16 @@ import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
@@ -29,6 +34,8 @@ public class Executable extends Action {
 	}
 
 	private IRequest request;
+
+	public guid user = null;
 
 	public Executable(IObject container) {
 		super(container);
@@ -86,9 +93,16 @@ public class Executable extends Action {
 	public void run() {
 		ApplicationServer.setRequest(request);
 
+		ISession defaultSession = request.getSession();
 		Connection connection = null;
 
 		try {
+			if (user != null) {
+				if (!defaultSession.user().isBuiltinAdministrator())
+					throw new AccessDeniedException();
+				request.setSession(new Session("", User.read(user)));
+			}
+
 			connection = useTransaction.get() ? ConnectionManager.get() : null;
 
 			if(connection != null)
@@ -102,6 +116,9 @@ public class Executable extends Action {
 			if(connection != null)
 				connection.rollback();
 			getMonitor().error(e);
+		} finally {
+			if (user != null)
+				request.setSession(defaultSession);
 		}
 	}
 

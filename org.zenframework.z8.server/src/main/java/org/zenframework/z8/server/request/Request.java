@@ -42,6 +42,11 @@ public class Request extends IRequest {
 	}
 
 	@Override
+	public void setResponse(IResponse response) {
+		this.response = response;
+	}
+
+	@Override
 	public Map<string, string> getParameters() {
 		return parameters;
 	}
@@ -56,6 +61,7 @@ public class Request extends IRequest {
 		return session;
 	}
 
+	@Override
 	public void setSession(ISession session) {
 		this.session = session;
 	}
