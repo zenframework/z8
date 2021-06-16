@@ -1,0 +1,54 @@
+.navigator 
+	height: 100%
+	width: 100%
+	display: flex
+	flex-direction: column
+	align-items: stretch
+	background-color: #fff
+
+.navigator>.body 
+	display: flex
+	align-items: stretch
+	flex: 1
+	padding-left: $ems-2
+	overflow-y: auto
+
+.navigator>.body>.list,
+.navigator>.body>.listbox 
+	margin-top: $ems-5
+	margin-bottom: $ems-9
+	width: 25%
+
+.navigator.one-record>.body>.listbox 
+	display: none
+
+.navigator>.body>.listbox .label .btn-text
+	padding: 0 $ems-10 0 0
+	box-shadow: none
+	text-shadow: none
+	font-weight: 500
+	border: none
+	background: none
+
+.navigator>.body>.listbox.focus .label .btn-text 
+	color: $light-blue
+
+.navigator>.body>.listbox .label .btn-text:not(.btn-trigger)>.fa 
+	width: auto
+	padding-right: $ems-7
+
+.navigator>.body>.listbox .label .btn-text:not(.btn-trigger)>.fa.empty 
+	padding-right: 0
+
+.navigator>.body>.form 
+	flex: 1
+	min-height: 0 !important
+	padding-top: $ems-9
+
+.navigator>.body>.table 
+	width: 100%
+	margin-top: 0
+	margin-bottom: 0
+
+.navigator>.body>.table>.control 
+	border-top-width: 0

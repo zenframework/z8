@@ -1,0 +1,100 @@
+.source-code 
+	position: absolute
+	top: $ems-90
+	right: -90%
+	bottom: 0
+	background-color: #fff
+	width: 90%
+	z-index: 9999
+	-webkit-box-shadow: -3px 0 6px rgba(0, 0, 0, 0.100)
+	box-shadow: -3px 0 6px rgba(0, 0, 0, 0.100)
+
+@media screen and (min-width: 768px) 
+	.source-code 
+		right: -60%
+		width: 60%
+
+.source-code.open 
+	right: 0%
+	-webkit-transition: right .3s
+	transition: right .3s
+
+.source-code.disabled 
+	right: -$ems-75
+
+.source-code>.toolbar 
+	height: $ems-40
+	width: 100%
+
+.source-code>.toolbar>.text 
+	max-width: calc(100% - 7em)
+	margin-left: $ems-25
+	padding-top: $ems-9
+	overflow: hidden
+	white-space: nowrap
+	text-overflow: ellipsis
+	float: left
+
+.source-code>.code 
+	position: absolute
+	top: $ems-40
+	bottom: 0
+	width: 100%
+	overflow: auto
+
+.source-code pre.code 
+	-moz-tab-size: 4
+	-o-tab-size: 4
+	tab-size: 4
+	font-family: 'Roboto Mono', monospace
+	margin: 1em
+	color: #000
+	user-select: text
+	-webkit-user-select: text
+
+.source-code pre.code a 
+	text-decoration: none
+	color: #000
+
+.source-code pre.code a:hover 
+	text-decoration: underline
+
+.source-code pre.code span.keyword 
+	font-weight: bold
+	color: $purple
+
+.source-code pre.code span.literal 
+	color: $blue
+	font-weight: normal
+
+.source-code pre.code span.comment,
+.source-code pre.code span.comment>* 
+	color: $pale-green
+	font-weight: normal
+
+.source-code pre.code .enum 
+	color: $blue
+	font-weight: bold
+	font-style: italic
+
+.source-code pre.code .attribute 
+	color: $pale-green
+	font-weight: bold
+
+.source-code pre.code .record 
+	color: $purple
+	font-weight: bold
+
+.source-code pre.code .static.member 
+	color: $blue
+	font-weight: bold
+
+.source-code pre.code .local
+	color: $brown
+
+.source-code pre.code .static 
+	font-style: italic
+
+.source-code pre.code .selected 
+	background-color: $light-blue !important
+	color: white !important

@@ -1,0 +1,63 @@
+.popup.messages>.message 
+	min-width: 25em
+	margin: 0 0 $ems-7 0
+	-webkit-transition: all .3s ease
+	-moz-transition: all .3s ease
+	-o-transition: all .3s ease
+	transition: all .3s ease
+
+.popup.messages>.message.hiding 
+	position: relative
+	margin-bottom: 0
+	overflow: hidden
+
+.popup.messages>.message>.body 
+	display: flex
+	flex-direction: row
+	position: relative
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2)
+	padding: $ems-16 $ems-9 $ems-16 $ems-15
+	color: #333
+	background-color: #f5f5f5
+	border-radius: $ems-3
+	-webkit-transition: all .3s ease
+	-moz-transition: all .3s ease
+	-o-transition: all .3s ease
+	transition: all .3s ease
+
+.popup.messages>.message.hiding>.body 
+	height: 0
+	overflow: hidden
+	padding: 0
+	box-shadow: none
+	border: none
+
+.popup.messages>.message.error>.body 
+	background-color: $danger
+	color: #fff
+
+.popup.messages>.message.error>.body>.icon 
+	color: #fff
+
+.popup.messages>.message>.body>.icon 
+	margin-right: $ems-10
+
+.popup.messages>.message.error>.body>.close 
+	color: #fff
+
+.popup.messages>.message.error>.body>.close:hover 
+	color: #ccc
+
+.popup.messages>.message>.body>.close 
+	position: absolute
+	top: $ems-7
+	right: $ems-7
+	color: #444
+
+.popup.messages>.message>.body>.close:hover 
+	color: #222
+	cursor: pointer
+
+.popup.messages>.message>.body>.text 
+	overflow-wrap: break-word
+	overflow: hidden

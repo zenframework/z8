@@ -1,0 +1,1037 @@
+body 
+	color: #222
+	background-color: #fff !important
+	font: 400 11px Roboto, 'Segoe UI', helvetica, arial
+
+
+.air .btn 
+	padding: 0 8px
+	border-radius: 4px
+	text-align: center
+
+
+.air .btn>.btn:first-child 
+	border-radius: 4px 0 0 4px
+
+
+.air .btn>.btn-trigger 
+	border-radius: 0 4px 4px 0
+
+
+.air .btn>.icon 
+	width: 16px
+	margin-right: 4px
+	opacity: .8
+
+
+.air .btn.no-text>.icon 
+	margin-right: 0
+
+
+.air .btn.active>.icon,
+.air .btn.active>.btn>.icon,
+.air .btn.active>.text,
+.air .btn.active>.btn>.text,
+.air .btn:hover>.icon,
+.air .btn:hover>.btn>.icon,
+.air .btn:hover>.text,
+.air .btn:hover>.btn>.text 
+	opacity: 1
+
+
+.air .btn.active 
+	background: #eee
+
+
+.btn.active+.btn-trigger 
+	background: #eee
+
+
+.air .btn>.btn 
+	padding: 0
+
+
+.air .btn>.btn-trigger 
+	padding-left: 4px
+
+
+.air .btn-group 
+	padding: 0 8px
+
+
+.air .btn-group>.btn 
+	padding: 0 4px
+
+
+.air .btn-tool 
+	background-color: transparent !important
+	border: none !important
+	padding: $ems-1 $ems-1
+
+
+.air .btn-tool.disabled 
+	color: #999
+
+
+.air .btn-tool:hover>.icon,
+.air .btn-tool:hover>.text 
+	color: #fff
+
+
+.air .fieldset 
+	border-color: #dfdfdf
+	padding-top: $ems-15
+
+
+.air .fieldset>.legend 
+	left: $ems-6
+	top: -$ems-8
+
+	font-size: .8em
+	font-weight: 600
+	text-transform: uppercase
+
+
+.air .fieldset>.legend>.fa 
+	font-size: 1em
+
+
+.air .control-group>.box 
+	min-height: $ems-25
+	border: 1px solid #dfdfdf
+
+	-webkit-transition: border-color ease-in-out .15s, color ease-in-out .15s
+	-o-transition: border-color ease-in-out .15s, color ease-in-out .15s
+	transition: border-color ease-in-out .15s, color ease-in-out .15s
+
+
+.air .control-group.scrollable>.box 
+	padding: 0
+
+
+.air .control-group:not(.scrollable)>.box
+	padding: 0 $ems-2 1px
+	border-top-width: 0
+	border-right-width: 0
+	border-left-width: 0
+	border-bottom-width: 1px
+
+
+.air .control-group.focus>.box 
+	border-color: $light-blue
+
+
+.air .control-group.focus:not(.scrollable)>.box 
+	padding-bottom: 0
+	border-bottom-width: 2px
+
+
+.air .control-group.invalid.focus:not(.readonly)>.box 
+	border-color: $red
+
+.air .control-group.scrollable>.box>.control 
+	overflow-y: auto
+
+
+.air .control::-webkit-input-placeholder 
+	font-size: $ems-12
+	font-style: italic
+
+
+.air .control::-moz-placeholder 
+	font-size: $ems-12
+	font-style: italic
+
+
+.air .control:-ms-input-placeholder 
+	font-size: $ems-12
+	font-style: italic
+
+
+.air .number.control 
+	text-align: right
+
+
+.air .list.control.columns 
+	padding-top: 0
+
+
+.air .textarea.control,
+.air .html.control 
+	min-height: 6.54545454em
+
+
+.air .control-group.readonly>.box>.trigger-1,
+.air .control-group.readonly>.box>.trigger-2,
+.air .control-group.readonly>.box>.trigger-3,
+.air .control-group.disabled>.box>.trigger-1,
+.air .control-group.disabled>.box>.trigger-2,
+.air .control-group.disabled>.box>.trigger-3 
+	display: none
+
+
+.air .file.control-group.readonly:not(.disabled)>.box>.trigger-1 
+	display: block
+
+
+.air .control[disabled],
+.air .control.disabled 
+	color: #a6a6a6
+	background-color: transparent
+
+
+.air .control[readOnly],
+.air .control.readOnly 
+	color: #151515
+	background-color: transparent
+
+
+.air .label 
+	height: $ems-21
+	background: none
+	border: none
+	padding-left: 0
+	padding-right: 0
+	position: relative
+	-webkit-transition: color ease-in-out .15s
+	-o-transition: color ease-in-out .15s
+	transition: color ease-in-out .15s
+
+
+.air .label.readonly 
+	padding-right: $ems-16 !important
+
+
+.air .label.readonly:after 
+	content: '\f023'
+	font-family: FontAwesome
+	width: 1em
+	color: #aaa
+	position: absolute
+	right: 0
+
+
+.air .control-group>.label.toolbar 
+	border: none
+	height: 32px
+
+
+.air .control-group>.label.toolbar .label 
+	height: auto
+	padding-top: 0
+
+
+.air .label.toolbar>.text 
+	float: left
+	max-width: calc(100% - #{$ems-80})
+	overflow-x: hidden
+	overflow-y: hidden
+	text-overflow: ellipsis
+	white-space: nowrap
+
+
+.air .label.no-text:not(.toolbar),
+.air .label.no-text.toolbar>.text 
+	display: none
+
+
+.air .control-group.label-left>.label,
+.air .control-group.label-right>.label 
+	padding-top: $ems-4
+	padding-bottom: 0
+	height: $ems-25
+
+
+.air .control-group.label-left>.label 
+	padding-right: $ems-10
+
+
+.air .control-group.label-right>.label 
+	padding-left: $ems-10
+
+
+.air .label>.text 
+	font-size: .8em
+	font-weight: 600
+	text-transform: uppercase
+	padding-right: $ems-20
+	padding-left: $ems-2
+	color: $light-blue
+
+
+.air .label>.text.has-control 
+	overflow: visible
+
+
+.air .label>.text>.fa 
+	text-align: left
+	color: #808080
+	margin-right: $ems-7
+
+
+.air .invalid:not(.readonly)>.label>.text
+	color: $red
+
+
+.air .label.disabled 
+	color: #999
+
+
+.air .control-group>.box>.btn-trigger 
+	padding: 0
+	margin-left: $ems-5
+	border: none
+	color: #222
+	background: none !important
+	text-shadow: none
+
+
+.air .control-group>.box>.btn-trigger.active  
+	text-shadow: 0 3px 5px rgba(0, 0, 0, 0.125)
+
+
+.air .control-group>.box>.btn-trigger:hover:not(.disabled),
+.air .control-group>.box>.btn-trigger:focus:not(.disabled), 
+.air .control-group>.box>.btn-trigger.active:focus:not(.disabled) 
+	color: $light-blue
+
+
+.air .control-group>.box>.btn-trigger>.fa 
+	width: $ems-20
+
+
+.air .list 
+	padding: $ems-1 0
+	margin: $ems-2 0 $ems-2 0
+	border: 1px solid #ccc
+
+
+.air .list .divider 
+	margin-top: $ems-4
+	margin-bottom: $ems-4
+	border-bottom: 1px solid #eee
+
+
+.air .list .scroller.headers 
+	background-color: #fcfcfc
+	border-bottom: 1px solid #ccc
+
+.air .list .scroller.totals 
+	border-top: 1px solid #ccc
+	background-color: #fcfcfc
+
+
+.air .list .header 
+	color: #777
+
+
+.air .list .item 
+	font-weight: normal
+
+
+.air .list .header>.column>.text 
+	font-weight: 500
+	font-size: $ems-12
+
+
+.air .list .number>.column,
+.air .list .item>.column,
+.air .list .total>.column 
+	padding: 0
+
+
+.air .list .header>.column.sort>.text,
+.air .list .header>.column.filter>.text 
+	max-width: calc(100% - #{$ems-25})
+
+
+.air .list .header>.column.sort.filter>.text 
+	max-width: calc(100% - #{$ems-50})
+
+
+.air .list .number>.column,
+.air .list .item>.column,
+.air .list .total>.column 
+	border-left: 1px solid #eee
+
+
+.air .list .filter>.column 
+	border-top: 1px solid #ccc
+	background-color: #fff
+	padding: 0 $ems-2
+
+
+.air .list .item>.column>.cell 
+	padding: $ems-7 $ems-7
+
+
+.air .list .number>.column>.cell,
+.air .list .total>.column>.cell 
+	padding: $ems-6 $ems-7
+	font-size: $ems-12
+	font-weight: bold
+
+
+.air .list .number>.column>.cell 
+	border-top: 1px solid #eee
+
+
+.air .list .item>.column.file>.cell 
+	padding-right: $ems-21
+
+
+.air .list .item>.column.file>.cell>.text:hover,
+.air .list .item>.column>.cell>.text.follow:hover 
+	text-decoration: underline
+
+
+.air .list .number>.column:first-child,
+.air .list .item>.column:first-child,
+.air .list .total>.column:first-child 
+	border-left: none
+
+
+.air .list .item>.column 
+	border-bottom: 1px solid #eee
+
+
+.air .list .item.active>.column:first-child:before 
+	background-color: $light-blue
+
+
+.air .list .item>.column.check,
+.air .list .item>.column.lock 
+	width: $ems-30
+	max-width: $ems-30
+	min-width: $ems-30
+
+
+.air .list .item>.column.check>.cell,
+.air .list .item>.column.lock>.cell 
+	padding: 0
+
+
+.list .item>.column.check .fa-check-square 
+	color: $light-blue
+
+
+.air .list .header>.column:first-child 
+	padding-left: 1em
+
+
+.air .list .header>.column 
+	position: relative
+	border-bottom: none
+	padding: $ems-6 $ems-7
+
+	-webkit-transition: background-color ease-in-out .15s, color ease-in-out .15s
+	-o-transition: background-color ease-in-out .15s, color ease-in-out .15s
+	transition: background-color ease-in-out .15s, color ease-in-out .15s
+
+
+.air .list .number>.column,
+.air .list .total>.column 
+	height: $ems-22
+
+
+.air .list .item>.column.first>.cell,
+.air .list .total>.column.first>.cell 
+	padding-left: 1em
+
+
+.air .list .header>.column>.text>.icon,
+.air .list .item>.column>.cell>.icon 
+	margin-right: $ems-7
+
+
+.air .list .item>.column>.cell>.icon 
+	margin-top: $ems-2
+
+
+.air .list:not(.auto-fit) .header>.column.last,
+.air .list:not(.auto-fit) .number>.column.last,
+.air .list:not(.auto-fit) .total>.column.last,
+.air .list:not(.auto-fit) .filter>.column:last-child,
+.air .list:not(.auto-fit) .item>.column:last-child 
+	border-right: 1px solid #eee
+
+
+.air .list.auto-fit .item>.column:last-child 
+	border-right-width: 0
+
+
+.air .list .header>.column:not(.extra):hover 
+	color: #fff
+	background-color: $light-blue
+
+
+.air .list .item:hover>.column 
+	background-color: #f5f5f5
+
+
+.air .focus .list .item.active>.column 
+	background-color: $light-blue
+
+
+.air .focus .list .item.active>.column.check,
+.air .focus .list .item.active>.column.lock 
+	background-color: inherit
+
+
+.air .focus .list .item.active>.column>.cell 
+	color: #fff
+
+
+.air .focus .list .item.active>.column.check>.cell,
+.air .focus .list .item.active>.column.lock>.cell 
+	color: inherit
+
+
+.air .list .item.disabled>.column,
+.air .list .item.disabled:hover>.column,
+.air .list .item.disabled>.column 
+	color: #999
+
+
+.air .list .item.disabled:hover>.column,
+.air .list .item.disabled>.column 
+	cursor: not-allowed
+
+.air .item.level-1>.column>.cell>.collapser 
+	padding-left: $ems-15
+
+
+.air .item.level-2>.column>.cell>.collapser 
+	padding-left: $ems-30
+
+
+.air .item.level-3>.column>.cell>.collapser 
+	padding-left: $ems-45
+
+
+.air .item.level-4>.column>.cell>.collapser 
+	padding-left: $ems-60
+
+
+.air .item.level-5>.column>.cell>.collapser 
+	padding-left: $ems-75
+
+
+.air .item.level-6>.column>.cell>.collapser 
+	padding-left: $ems-90
+
+
+.air .item.level-7>.column>.cell>.collapser 
+	padding-left: $ems-105
+
+
+.air .item.level-8>.column>.cell>.collapser 
+	padding-left: $ems-120
+
+
+.air .item.level-9>.column>.cell>.collapser 
+	padding-left: $ems-135
+
+
+.air .item.level-10>.column>.cell>.collapser 
+	padding-left: $ems-150
+
+
+.air .list .item>.column>.control-group 
+	background-color: white
+	bottom: 0
+
+
+.air .list .item>.column>.control-group>.box 
+	padding-left: calc(#{$ems-7} - 1px)
+	border-width: 1px
+	border-color: $light-blue
+
+
+.air .list .item>.column>.control-group.invalid>.box 
+	border-color: $red
+
+
+.air .list .item>.column.first>.control-group>.box 
+	padding-left: calc(1em - 1px)
+
+
+.air .list .item>.column>.control-group>.box>.control 
+	text-align: inherit
+
+
+.air .list .item>.column>.control-group>.box>.textarea.control 
+	padding-top: calc(#{$ems-7} - 1px)
+	padding-left: 0
+	padding-right: 0
+
+
+.air .list .header>.column.icon 
+	width: $ems-30
+	min-width: $ems-30
+	max-width: $ems-30
+	padding-left: 0
+	padding-right: 0
+	text-align: center
+
+
+.air .list .total>.column.icon 
+	text-align: center
+	padding-top: $ems-4
+	font-weight: bold
+	border-right: none
+
+
+.air .list .header>.column.icon:not(:first-child) 
+	border-left: 1px solid #eee
+
+
+.air .list .header>.column>.sort,
+.air .list .header>.column>.filter 
+	position: relative
+	left: 0
+	top: 1px
+	width: auto
+	padding-left: $ems-7
+
+
+.air .list .item>.column>.cell>.collapser 
+	margin-right: $ems-7
+
+
+.air .list .item.no-children>.column>.cell>.collapser 
+	color: transparent
+
+
+.air .list .item:not(.no-children)>.column>.cell>.collapser:hover 
+	color: $light-blue
+
+
+.air .focus .list .item:not(.no-children).active>.column>.cell>.collapser:hover 
+	color: #333
+
+
+.air .list .item>.column>.cell>.collapser>.icon 
+	width: 1em
+	text-align: center
+	margin-top: $ems-2
+
+
+.air .list .header>.column>.resize-handle-left,
+.air .list .header>.column>.resize-handle-right 
+	width: $ems-4
+
+
+.air .list .header>.column>.resize-handle-left 
+	border-left: 1px solid #eee
+
+
+
+.air .dropdown-list,
+.air .combobox>.pager,
+.air .dropdown-calendar 
+	margin: 0
+
+
+.air .dropdown-list.list 
+	min-width: $ems-250
+
+
+.air .dropdown-list.list.columns>.scroller.items 
+	height: calc(100% - #{$ems-27})
+
+
+.air .dropdown-list.list,
+.air .dropdown-menu.list 
+	-webkit-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100)
+	box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100)
+	background-color: #fff
+
+
+.air .dropdown-list.list.pull-up 
+	-webkit-box-shadow: 1px -1px 12px rgba(0, 0, 0, 0.100)
+	box-shadow: 1px -1px 12px rgba(0, 0, 0, 0.100)
+
+
+.air .dropdown-menu.list 
+	padding: $ems-5 0
+	display: block
+
+
+.air .dropdown-menu.list>.scroller.items 
+	height: calc(100% + #{$ems-2})
+
+
+.air .dropdown-menu.list table 
+	margin-top: 1px
+	margin-bottom: 1px
+
+
+.air .dropdown-menu.list .menu.item>.column 
+	border-bottom: none
+
+
+.air .dropdown-menu.list .item>.column>.cell>.text 
+	border: none
+
+
+.air .dropdown-menu.list .item>.column:first-child>.cell 
+	padding-left: $ems-20
+
+
+.air .dropdown-menu.list .item>.column:last-child>.cell 
+	padding-right: $ems-20
+
+
+.air .dropdown-menu.list .item>.column>.cell>.text>.shortcut 
+	margin-left: $ems-15
+
+
+.air .dropdown-menu.list .item.active>.column 
+	color: #fff
+	background-color: $light-blue
+
+
+.air .dropdown-list.pull-down:not(:last-child) 
+	margin-bottom: 0
+
+
+.air .dropdown-list.pull-up:not(:last-child) 
+	margin-bottom: 0
+
+
+.air .checkbox.control-group.label-left>.label,
+.air .checkbox.control-group.label-right>.label 
+	padding-top: 0
+
+
+.air .checkbox.focus>.box 
+	color: $light-blue
+
+
+.air .checkbox>.box 
+	flex: none
+	border: none
+	padding: 0
+	min-height: auto
+
+
+.air .checkbox>.label 
+	height: auto
+	padding-top: 0
+	padding-bottom: 0
+
+
+.air .checkbox>.label>.text 
+	font-size: inherit
+	text-transform: inherit
+	font-weight: 500
+
+
+.air .control-group.label-left>.label 
+	padding-left: 0
+	padding-right: $ems-6
+
+
+.air .control-group.label-right>.label 
+	padding-left: $ems-6
+	padding-right: 0
+
+
+.air .checkbox.label-left>.label.readonly 
+	max-width: calc(100% - 2.2em)
+
+
+.air .checkbox.label-right>.label.readonly 
+	max-width: calc(100% - 1em)
+
+
+.air .listbox.control-group>.box>.list.control 
+	margin: 0
+	border: none
+
+
+.air .listbox.control-group>.actions 
+	height: 4em
+
+
+.air .listbox.control-group>.actions>.btn-group,
+.air .listbox.control-group>.actions>.btn 
+	margin-left: $ems-10
+
+
+.air .listbox>.toolbar>.btn>.fa-external-link 
+	position: relative
+	top: $ems-2
+
+
+/* action buttons */
+
+.air .btn.push 
+	height: 32px
+	padding: 0 16px
+
+
+.air .btn.push~.btn-trigger 
+	height: 32px
+	padding: 0 4px
+
+
+.air .btn.push>.icon,
+.air .btn.push>.text 
+	opacity: 1
+
+
+.air .btn.push.disabled>.icon,
+.air .btn.push.disabled>.text 
+	opacity: .7
+
+
+.air .btn.default 
+	background-color: #eee
+
+
+.air .btn.default:focus,
+.air .btn.default:hover,
+.air .btn.default.active 
+	background-color: #ddd
+
+
+.air .btn.default.disabled,
+.air .btn.default.disabled:hover,
+.air .btn.default.disabled:focus,
+.air .btn.default.disabled.active 
+	background-color: #fafafa
+
+
+.air .btn.primary 
+	color: #fff
+	background-color: #337ab7
+
+
+.air .btn.primary:focus,
+.air .btn.primary:hover,
+.air .btn.primary.active 
+	background-color: #286090
+
+
+.air .btn.primary.active:hover,
+.air .btn.primary.active:focus 
+	background-color: #204d74
+
+
+.air .btn.primary.disabled,
+.air .btn.primary.disabled:hover,
+.air .btn.primary.disabled:focus,
+.air .btn.primary.disabled.active 
+	background-color: #337ab7
+
+
+.air .btn.success 
+	color: #fff
+	background-color: #1d9d74
+
+
+.air .btn.success:focus,
+.air .btn.success:hover,
+.air .btn.success.active 
+	background-color: #157254
+
+
+.air .btn.success.active:hover,
+.air .btn.success.active:focus 
+	background-color: #0f543e
+
+
+.air .btn.success.disabled,
+.air .btn.success.disabled:hover,
+.air .btn.success.disabled:focus,
+.air .btn.success.disabled.active 
+	background-color: #1d9d74
+
+
+.air .btn.info 
+	color: #fff
+	background-color: #5bc0de
+
+
+.air .btn.info:focus,
+.air .btn.info:hover,
+.air .btn.info.active 
+	background-color: $info
+
+
+.air .btn.info.active:hover,
+.air .btn.info.active:focus 
+	background-color: #269abc
+
+
+.air .btn.info.disabled,
+.air .btn.info.disabled:hover,
+.air .btn.info.disabled:focus,
+.air .btn.info.disabled.active 
+	background-color: #5bc0de
+
+
+.air .btn.warning 
+	color: #fff
+	background-color: $warning
+
+
+.air .btn.warning:focus,
+.air .btn.warning:hover,
+.air .btn.warning.active 
+	background-color: #ec971f
+
+
+.air .btn.warning.active:hover,
+.air .btn.warning.active:focus 
+	background-color: #d58512
+
+
+.air .btn.warning.disabled,
+.air .btn.warning.disabled:hover,
+.air .btn.warning.disabled:focus,
+.air .btn.warning.disabled.active 
+	background-color: $warning
+
+
+.air .btn.danger 
+	color: #fff
+	background-color: $danger
+
+
+.air .btn.danger:focus,
+.air .btn.danger:hover,
+.air .btn.danger.active 
+	background-color: $red
+
+
+.air .btn.danger.active:hover,
+.air .btn.danger.active:focus 
+	background-color: #ac2925
+
+
+.air .btn.danger.disabled,
+.air .btn.danger.disabled:hover,
+.air .btn.danger.disabled:focus,
+.air .btn.danger.disabled.active 
+	background-color: $danger
+
+
+/* Toolbar */
+
+.air .toolbar 
+	display: flex
+	flex-direction: row
+	align-items: center
+	height: 40px
+	padding: 0 8px
+	border-bottom: 1px solid rgba(0, 0, 0, 0.14902)
+
+.air .toolbar>.btn,
+.air .toolbar>.btn-group>.btn 
+	margin-right: 4px
+
+.air .toolbar .btn 
+	height: 24px
+	padding: 0 4px
+
+.air .toolbar .btn.push 
+	padding: 0 8px
+
+.air .toolbar .btn>.btn-trigger 
+	padding: 0
+
+.air .toolbar .btn.default>.btn-trigger 
+	padding: 0
+
+.air .toolbar>.text 
+	font-weight: 500
+	color: #333
+	white-space: nowrap
+	overflow: hidden
+	text-overflow: ellipsis
+
+.air .toolbar>.control-group>.box,
+.air .toolbar>.btn-group>.control-group>.box 
+	background: #fff
+	border-radius: 4px
+	border: 1px solid #eee
+	padding-bottom: 0
+	margin: 0 4px
+
+.air .toolbar>.control-group.focus>.box,
+.air .toolbar>.btn-group>.control-group.focus>.box 
+	border-color: $light-blue
+	border-width: 1px
+	padding-bottom: 0
+
+.air .toolbar .btn.default 
+	background-color: #fff
+
+.air .toolbar .btn.default:focus,
+.air .toolbar .btn.default:hover,
+.air .toolbar .btn.default.active 
+	background-color: #eee
+
+/* Window */
+.air .window 
+	left: 2.5%
+	top: 2.5%
+	width: 95%
+	height: 95%
+	-webkit-box-shadow: 0 0 8px rgba(127,127,127,0.4)
+	box-shadow: 0 0 8px rgba(127,127,127,0.4)
+	border-radius: $ems-4
+
+.air .window>.header 
+	height: $ems-40
+	min-height: $ems-40
+	background-color: #222
+	padding-left: $ems-10
+	padding-right: $ems-10
+	border: 1px solid #222
+	border-top-left-radius: $ems-4
+	border-top-right-radius: $ems-4
+	border-bottom-width: 0
+
+.air .window>.header>.icon 
+	color: #eee
+	margin-right: $ems-10
+
+.air .window>.header>.text 
+	font-weight: 500
+	color: #eee
+
+.air .window>.header .btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active) 
+	color: #eee
+
+.air .window>.body 
+	background-color: #fff
+	border: 1px solid #adadad
+	border-top-width: 0
+	border-bottom-width: 0
+	padding: $ems-15
+
+.air .window>.footer 
+	height: $ems-75
+	min-height: $ems-75
+	border: 1px solid #adadad
+	border-bottom-left-radius: $ems-4
+	border-bottom-right-radius: $ems-4
+	background-color: #fff
+	padding: 0 $ems-15
+
+.air .window>.footer>.btn 
+	margin-right: $ems-10
+	min-width: $ems-90
+
+.air .window.change-password 
+	left: calc(50% - 15em)
+	top: calc(50% - 12em)
+	width: 30em
+	height: 24em
+
+.air .window.change-password>.body 
+	padding: 1em

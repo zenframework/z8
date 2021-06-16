@@ -1,0 +1,73 @@
+.pager 
+	margin: 0
+	line-height: 1.28571428em
+	padding: $ems-5 $ems-4
+	border: 1px solid #ccc
+	background-color: #fcfcfc
+	min-width: $ems-250
+	position: relative
+	z-index: 0
+	-webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s
+	-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s
+	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s
+
+.pager>.paging 
+	font-size: $ems-12
+	min-width: $ems-160
+	float: left
+
+.pager>.paging>.btn 
+	float: left
+
+.pager>.paging>.btn>.fa 
+	font-weight: bold
+
+.pager .totals 
+	font-weight: 500
+	padding-top: $ems-2
+
+.pager>.paging>.control-group 
+	float: left
+	padding-top: $ems-2
+
+.pager>.paging>.control-group>.box>input 
+	width: $ems-50
+	height: $ems-17
+	min-height: 0
+	margin: 0 $ems-5
+	font-weight: bold
+	text-align: center
+
+.pager>.paging>.totals 
+	margin-right: $ems-5
+	float: left
+
+.pager>.totals 
+	font-size: $ems-12
+	text-align: right
+	float: right
+
+.listbox.control-group>.actions 
+	display: flex
+	flex-direction: row
+	justify-content: flex-end
+	align-items: center
+
+.listbox>.box>.pager 
+	border-top: 1px solid #dfdfdf
+	border-left: none
+	border-right: none
+	border-bottom: none
+	min-width: 0
+
+.listbox>.box>.pager>.paging 
+	min-width: 0
+
+.combobox .pager 
+	position: fixed
+	min-width: $ems-250
+	z-index: 1001
+	box-shadow: rgba(0, 0, 0, 0.172549) 0 6px 12px
+	border-top-width: 0
+	border-bottom-left-radius: $ems-4
+	border-bottom-right-radius: $ems-4

@@ -1,0 +1,123 @@
+.viewport>.menu 
+	position: absolute
+	top: $ems-40
+	left: -$ems-250
+	bottom: 0
+	background-color: #222
+	width: $ems-250
+	z-index: 10000
+	padding-right: $ems-10
+	opacity: .97
+	border-right: 1px solid #333
+	-webkit-box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+	box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+
+.viewport>.menu>.handle 
+	width: $ems-10
+	position: absolute
+	height: 25%
+	top: 37.5%
+	padding-top: 70%
+	right: 0
+	color: #aaa
+	text-align: center
+
+.viewport>.menu.open 
+	padding-right: 0
+	left: 0
+	-webkit-transition: left .3s
+	transition: left .3s
+
+.viewport>.menu.disabled 
+	left: -$ems-250
+
+/*.viewport>.menu:hover>.handle,*/
+.viewport>.menu.open>.handle 
+	display: none
+
+.viewport>.menu>.logo 
+	text-align: center
+	color: #fff
+	padding-left: $ems-20
+	padding-top: $ems-30
+	padding-bottom: $ems-30
+	border-bottom: 1px solid #333
+	width: 100%
+
+.viewport>.menu .item 
+	height: $ems-36
+	width: 100%
+	color: #eee
+	background-color: #222
+	padding-left: $ems-15
+	padding-right: $ems-20
+	border-left: 2px solid transparent
+	border-bottom: 1px solid #333
+	position: relative
+	cursor: pointer
+	display: flex
+	align-items: center
+
+.viewport>.menu .item:after 
+	position: absolute
+	top: 0
+	left: 0
+	content: ''
+	height: $ems-36
+	width: 0
+	z-index: 1
+	background-color: #2a2a2a
+	-webkit-transition: width .3s
+	transition: width .3s
+	opacity: .5
+
+.viewport>.menu .item.active 
+	border-left-color: $light-blue
+
+.viewport>.menu .item.active:after 
+	width: 100%
+
+.viewport>.menu .item>.icon 
+	float: left
+	margin-right: $ems-10
+	width: 1em
+
+.viewport>.menu .item>.text 
+	float: left
+	overflow-x: hidden
+	overflow-y: hidden
+	text-overflow: ellipsis
+	white-space: nowrap
+	flex: 1
+
+.viewport>.menu .item>.chevron 
+	color: #aaa
+	position: absolute
+	right: $ems-10
+	top: $ems-18
+	font-size: $ems-10
+	z-index: 2
+
+.viewport>.menu .item.active>.chevron 
+	color: $light-blue
+
+.viewport>.menu .item>.submenu 
+	position: absolute
+	display: none
+	top: 0
+	left: calc(#{$ems-248} - 1px)
+	background-color: #222
+	width: 21.42857142em
+	min-height: $ems-117
+	-webkit-box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+	box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+	z-index: 10000
+
+.viewport>.menu>.item.active>.submenu 
+	display: block
+
+.viewport>.menu.disabled>.item.active>.submenu 
+	display: none
+
+.viewport>.menu .submenu>.item>.text 
+	width: $ems-230

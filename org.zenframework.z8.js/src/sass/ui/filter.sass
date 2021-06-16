@@ -1,0 +1,123 @@
+.filter-control>.box 
+	border: 1px solid #eee
+
+.filter-control>.box>.expression 
+	overflow-y: auto
+
+.filter-control .group 
+	position: relative
+	display: inline-block
+	float: left
+	clear: both
+
+.filter-control .group>.btn.vertical 
+	position: absolute
+	top: 0
+	bottom: 0
+	width: $ems-30
+
+.filter-control .group>.btn.vertical.open 
+	z-index: 5
+
+.filter-control .group>.btn.vertical>.btn 
+	position: absolute
+	width: 100%
+	padding: 0
+	text-align: center
+	font-weight: 500
+	z-index: 1
+
+.filter-control .group>.btn.vertical>.btn:focus 
+	z-index: 2
+
+.filter-control .group>.btn.vertical:not(:hover):not(:active):not(:focus):not(.active):not(.focus) 
+	background-color: #fff
+
+.filter-control .group>.btn.vertical>.btn:first-child 
+	top: 0
+	bottom: $ems-15
+
+.filter-control .group>.btn.vertical>.btn>.icon 
+	font-weight: 400
+
+.filter-control .group>.btn.vertical>.btn:first-child>.text 
+	position: absolute
+	width: 100%
+	left: 0
+	top: calc(50% + #{$ems-4})
+	font-size: $ems-12
+
+.filter-control .group>.btn.vertical>.btn:first-child>.icon 
+	position: absolute
+	left: $ems-7
+	top: $ems-10
+
+.filter-control .group>.btn.vertical>.btn-trigger 
+	bottom: 0
+	top: calc(100% - #{$ems-15})
+
+.filter-control .group:not(.expression)>.group .btn:first-child>.fa 
+	left: $ems-8
+
+.filter-control .group.active>.group,
+.filter-control .group.active>.line,
+.filter-control .group>.btn:hover~.group,
+.filter-control .group>.btn:hover~.line,
+.filter-control .line.active 
+	background-color: #fafafa
+
+.filter-control .group,
+.filter-control .line 
+	padding-left: $ems-30
+	width: 100%
+	margin-left: -1px
+
+.filter-control>.box>.expression>.group,
+.filter-control>.box>.expression>.line 
+	padding-left: 0
+
+.filter-control>.box>.expression>.group>.btn.vertical 
+	left: 0
+
+.filter-control>.box>.expression
+	padding: $ems-4 $ems-4 $ems-10
+
+.filter-control .line 
+	clear: left
+	float: left
+	position: relative
+	padding-top: $ems-5
+	padding-bottom: $ems-5
+	padding-right: 0
+	display: flex
+	flex-direction: row
+
+.filter-control .line>.control-group.invalid>.control 
+	border-color: $red
+
+.filter-control .line>.checkbox 
+	width: $ems-30 !important
+	justify-content: center
+	margin-right: 0 !important
+	text-align: center
+	margin-top: 0
+	min-height: auto
+
+.filter-control .line>.property,
+.filter-control .line>.operator,
+.filter-control .line>.value 
+	float: left
+
+.filter-control .line>.property,
+.filter-control .line>.operator 
+	margin-right: $ems-25
+
+.filter-control .line>.property 
+	flex: 1
+
+.filter-control .line>.operator 
+	width: $ems-250
+
+.filter-control .line>.value 
+	width: 21.42857142em
+

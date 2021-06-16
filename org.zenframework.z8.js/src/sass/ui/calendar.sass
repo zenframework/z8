@@ -1,0 +1,294 @@
+.calendar 
+	color: #555
+	min-height: 18.4642857em
+
+.calendar>.header 
+	position: relative
+	text-align: center
+
+.calendar>.header>.month 
+	padding-right: $ems-3
+	font-weight: bold
+
+.calendar>.header>.year 
+	padding-left: $ems-3
+	font-weight: bold
+
+.calendar>.header>.previous-month,
+.calendar>.header>.next-month 
+	width: $ems-20
+
+.calendar>.header>.previous-month 
+	float: left
+	margin-left: $ems-10
+
+.calendar>.header>.next-month 
+	float: right
+	margin-right: $ems-10
+
+.calendar>.header,
+.calendar>.days,
+.calendar>.days-of-week 
+	clear: both
+
+.calendar>.days>.day,
+.calendar>.days-of-week>.day 
+	float: left
+	width: $ems-31-5
+	height: $ems-31-5
+	padding-top: .625em
+	padding-bottom: .625em
+	text-align: center
+	color: #404040
+	border-radius: 50%
+
+.calendar>.days-of-week>.day 
+	padding-top: .925em
+	padding-bottom: .325em
+
+.calendar>.days-of-week,
+.calendar>.days 
+	min-width: $ems-220-5
+	margin-left: $ems-5
+	margin-right: $ems-5
+
+.calendar>.days 
+	height: $ems-189
+
+.calendar>.days>.day:focus,
+.calendar>.days>.day:hover,
+.calendar>.days>.day.selected,
+.calendar>.header>.years>.year:hover,
+.calendar>.header>.years>.year:focus,
+.calendar>.header>.months>.month:hover,
+.calendar>.header>.months>.month:focus,
+.calendar>.time>.hours>.hour:hover,
+.calendar>.time>.hours>.hour:focus,
+.calendar>.time>.minutes>.minute:hover,
+.calendar>.time>.minutes>.minute:focus 
+	background-color: #ebebeb
+
+.calendar>.header>.previous-month,
+.calendar>.header>.next-month,
+.calendar>.header>.years>.previous-year,
+.calendar>.header>.years>.next-year,
+.calendar>.header>.year,
+.calendar>.header>.month,
+.calendar>.time>.hour,
+.calendar>.time>.minute 
+	transition: color .15s linear
+
+.calendar>.header>.previous-month:hover,
+.calendar>.header>.previous-month:focus,
+.calendar>.header>.next-month:hover,
+.calendar>.header>.next-month:focus,
+.calendar>.header>.years>.previous-year:hover,
+.calendar>.header>.years>.previous-year:focus,
+.calendar>.header>.years>.next-year:hover,
+.calendar>.header>.years>.next-year:focus,
+.calendar>.header>.year:hover,
+.calendar>.header>.year:focus,
+.calendar>.header>.month:hover,
+.calendar>.header>.month:focus,
+.calendar>.time>.hour:hover,
+.calendar>.time>.hour:focus,
+.calendar>.time>.minute:hover,
+.calendar>.time>.minute:focus 
+	color: $light-blue
+
+.calendar>.days>.day.today 
+	font-weight: 500
+
+.calendar>.days-of-week>.day.week-end,
+.calendar>.days>.day.week-end 
+	color: #d43f3a
+
+.calendar>.days>.day.previous-month,
+.calendar>.days>.day.next-month 
+	color: #a6a6a6
+
+.calendar>.days>.day.previous-month.week-end,
+.calendar>.days>.day.next-month.week-end 
+	color: #e6918e
+
+.calendar>.days>.day.selected:focus 
+	color: white
+	background-color: $light-blue
+
+.calendar>.days>.day.selected.week-end:focus 
+	background-color: #ef5350
+
+.calendar>.time 
+	position: relative
+	padding-top: $ems-8
+	border-top: 1px solid #dfdfdf
+	text-align: center
+
+.calendar>.time>.hour,
+.calendar>.time>.minute 
+	font-weight: bold
+
+.calendar>.time>.hour 
+	padding-left: $ems-10
+
+.calendar>.days>.day,
+.calendar>.header>.previous-month,
+.calendar>.header>.next-month,
+.calendar>.header>.year,
+.calendar>.header>.month,
+.calendar>.header>.years>.year,
+.calendar>.header>.years>.previous-year,
+.calendar>.header>.years>.next-year,
+.calendar>.header>.months>.month,
+.calendar>.time>.hour,
+.calendar>.time>.hours>.hour,
+.calendar>.time>.minute,
+.calendar>.time>.minutes>.minute 
+	cursor: pointer
+
+.calendar>.header>.years,
+.calendar>.header>.months,
+.calendar>.time>.hours,
+.calendar>.time>.minutes 
+	position: absolute
+	margin-top: $ems-5
+	background-color: white
+	border-top: 1px solid #dfdfdf
+	border-left: 1px solid #dfdfdf
+
+.calendar>.header>.years>.year,
+.calendar>.header>.months>.month,
+.calendar>.time>.hours>.hour,
+.calendar>.time>.minutes>.minute 
+	float: left
+	height: $ems-28
+	line-height: $ems-28
+	text-align: center
+	color: #404040
+	border-right: 1px solid #dfdfdf
+	border-bottom: 1px solid #dfdfdf
+
+.calendar>.header>.years>.year,
+.calendar>.header>.months>.month 
+	width: $ems-50
+
+.calendar>.time>.hours>.hour,
+.calendar>.time>.minutes>.minute 
+	width: $ems-35
+
+.calendar>.header>.months 
+	left: 0
+
+.calendar>.header>.years 
+	right: 0
+	padding-left: $ems-20
+	padding-right: $ems-20
+
+.calendar>.header>.years>.previous-year,
+.calendar>.header>.years>.next-year 
+	position: absolute
+	width: $ems-20
+	height: 8em
+	padding-top: $ems-48
+	text-align: center
+	border-right: 1px solid #dfdfdf
+	border-bottom: 1px solid #dfdfdf
+
+.calendar>.header>.years>.previous-year 
+	left: 0
+
+.calendar>.header>.years>.next-year 
+	right: 0
+
+.calendar>.time>.hours 
+	bottom: $ems-30
+	left: 0
+
+.calendar>.time>.minutes 
+	bottom: $ems-30
+	right: 0
+
+.calendar>.header>.years>.year-3,
+.calendar>.header>.years>.year-6,
+.calendar>.header>.years>.year-9,
+.calendar>.header>.months>.month-3,
+.calendar>.header>.months>.month-6,
+.calendar>.header>.months>.month-9,
+.calendar>.days>.day-7,
+.calendar>.days>.day-14,
+.calendar>.days>.day-21,
+.calendar>.days>.day-28,
+.calendar>.days>.day-35,
+.calendar>.time>.hours>.hour-6,
+.calendar>.time>.hours>.hour-12,
+.calendar>.time>.hours>.hour-18,
+.calendar>.time>.minutes>.minute-4,
+.calendar>.time>.minutes>.minute-8 
+	clear: left
+
+.calendar>.header>.years,
+.calendar>.header>.months,
+.calendar>.time>.hours,
+.calendar>.time>.minutes 
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+
+.dropdown-calendar 
+	padding: $ems-8 0
+	min-height: 19.75em
+	background-color: #fff
+	border: 1px solid #ccc
+	border-radius: $ems-4
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+	position: fixed
+	top: 100%
+	left: 0
+	z-index: 1000000
+	float: left
+
+.period>.body 
+	display: flex
+	flex-direction: row
+	padding: $ems-10
+
+.period>.body>.calendar 
+	border: 1px solid #eee
+	padding: $ems-10
+
+.period>.body>.calendar.finish 
+	margin-left: $ems-10
+
+.period>.body>.selector 
+	margin-left: $ems-10
+
+.period>.body>.selector>.btn 
+	margin-left: $ems-10
+
+.period>.body>.selector>.separator 
+	margin-top: $ems-5
+	margin-bottom: $ems-5
+	border-bottom: 1px solid #eee
+
+.period>.body>.selector>.btn 
+	border: none
+	padding: $ems-5 1em $ems-5 0
+	text-align: left
+	background: none
+	box-shadow: none
+
+.period>.buttons 
+	display: flex
+	flex-direction: row
+	justify-content: flex-end
+
+.period>.buttons>.btn 
+	margin-right: $ems-10
+	height: 32px
+	padding: 0 16px
+
+.date>.dropdown-calendar 
+	min-height: 17.25em
+
+.date>.dropdown-calendar>.time 
+	display: none

@@ -1,0 +1,48 @@
+.air .tabs 
+	border: 1px solid #dfdfdf
+
+.air .tabs>.header 
+	display: inline-block
+	margin: 0
+	border-bottom: 1px solid #eee
+	background-color: #fcfcfc
+
+.air .tabs>.body 
+	min-height: fit-content
+	padding: 1em $ems-5 $ems-5 $ems-5
+
+.air .tabs>.header>.tag 
+	height: $ems-42
+	border: $ems-2 solid transparent
+	padding-left: $ems-20
+	padding-top: $ems-10
+	padding-right: $ems-20
+	border-radius: 0
+	font-weight: 500
+	color: #555
+	text-transform: uppercase
+	background-color: inherit
+	float: left
+	max-width: $ems-200
+	-webkit-transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s
+	-o-transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s
+	transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s
+
+.air .tabs>.header>.tag>.text 
+	font-weight: 600
+	font-size: 0.8em
+
+.air .tabs>.header>.tag>.icon 
+	width: auto
+
+.air .tabs>.header>.tag.active 
+	padding-top: $ems-15
+	border-bottom-color: #888
+	color: inherit
+
+.air .tabs>.header>.tag:hover,
+.air .tabs>.header>.tag:focus 
+	color: $light-blue
+
+.air .tabs>.header>.tag.active:focus 
+	border-bottom-color: $light-blue
