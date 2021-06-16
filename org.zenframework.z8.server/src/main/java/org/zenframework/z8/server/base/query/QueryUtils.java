@@ -136,7 +136,8 @@ public class QueryUtils {
 			String name = (context != null && !context.isEmpty() ? context + '.' : "") +
 					(object instanceof JsonObject ? ((JsonObject)object).getString(Json.id) : (String)object);
 			Field field = query.findFieldById(name);
-			if(field != null && field.type() != FieldType.Binary)
+			// TODO Why field.type() != FieldType.Binary ??? Remove later
+			if(field != null /*&& field.type() != FieldType.Binary*/)
 				fields.add(field);
 		}
 
