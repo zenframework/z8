@@ -34,8 +34,7 @@ public class Executable extends Action {
 	}
 
 	private IRequest request;
-
-	public guid user = null;
+	private ISession defaultSession;
 
 	public Executable(IObject container) {
 		super(container);
@@ -86,23 +85,36 @@ public class Executable extends Action {
 		z8_execute(parameters);
 	}
 
-	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
+	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {}
+
+	protected void switchUser(guid user) {
+		if (!defaultSession.user().isBuiltinAdministrator())
+			throw new AccessDeniedException();
+		if (!request.getSession().user().id().equals(user))
+			request.setSession(new Session("", User.read(user)));
+	}
+
+	protected void z8_switchUser(guid user) {
+		switchUser(user);
+	}
+
+	protected void resetUser() {
+		if (request.getSession() != defaultSession)
+			request.setSession(defaultSession);
+	}
+
+	protected void z8_resetUser() {
+		resetUser();
 	}
 
 	@Override
 	public void run() {
 		ApplicationServer.setRequest(request);
 
-		ISession defaultSession = request.getSession();
+		defaultSession = request.getSession();
 		Connection connection = null;
 
 		try {
-			if (user != null) {
-				if (!defaultSession.user().isBuiltinAdministrator())
-					throw new AccessDeniedException();
-				request.setSession(new Session("", User.read(user)));
-			}
-
 			connection = useTransaction.get() ? ConnectionManager.get() : null;
 
 			if(connection != null)
@@ -117,8 +129,7 @@ public class Executable extends Action {
 				connection.rollback();
 			getMonitor().error(e);
 		} finally {
-			if (user != null)
-				request.setSession(defaultSession);
+			resetUser();
 		}
 	}
 
