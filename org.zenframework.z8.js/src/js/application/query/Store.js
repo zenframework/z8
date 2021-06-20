@@ -82,6 +82,7 @@ Z8.define('Z8.query.Store', {
 			names: fields.names,
 			columns: fields.columns,
 			quickFilters: fields.quickFilters,
+			filterFields: fields.filterFields,
 			requestFields: fields.request,
 
 			links: fields.links,
@@ -120,6 +121,7 @@ Z8.define('Z8.query.Store', {
 		result.names = this.createFields(config.nameFields, fieldsMap);
 		result.columns = this.createFields(config.columns, fieldsMap);
 		result.quickFilters = this.createFields(config.quickFilters, fieldsMap);
+		result.filterFields = this.createFields(config.filterFields, fieldsMap);
 		result.request = this.createFields(config.requestFields, fieldsMap);
 		result.links = this.getFieldsBy(result.data, 'isLink');
 		result.valueFor = this.getFieldsBy(result.data, 'valueFor');
