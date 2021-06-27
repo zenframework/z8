@@ -1,11 +1,6 @@
-if(Array.prototype.fill == null) {
-	Array.prototype.fill = function(value) {
-		var values = [];
-		for(var i = 0, length = this.length; i < length; i++)
-			this[i] = value;
-		return this;
-	};
-}
+Array.isEmpty = function(value) {
+	return value == null || value.length == 0;
+};
 
 Array.asArray = function(value) {
 	return Array.isArray(value) ? value : [value];
@@ -112,3 +107,13 @@ Array.prototype.last = function() {
 Array.prototype.contains = function(value) {
 	return this.indexOf(value) != -1;
 };
+
+if(Array.prototype.fill == null) {
+	Array.prototype.fill = function(value) {
+		var values = [];
+		for(var i = 0, length = this.length; i < length; i++)
+			this[i] = value;
+		return this;
+	};
+}
+

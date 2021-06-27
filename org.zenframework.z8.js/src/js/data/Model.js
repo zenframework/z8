@@ -45,6 +45,9 @@ Z8.define('Z8.data.Model', {
 	},
 
 	constructor: function(data) {
+		data = data || {};
+		data = data.isModel ? data.data : data;
+
 		var myData = this.data = {};
 		this.editing = 0;
 

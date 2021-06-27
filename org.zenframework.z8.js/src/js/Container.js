@@ -5,13 +5,9 @@ Z8.define('Z8.Container', {
 	isContainer: true,
 
 	constructor: function(config) {
-		config = config || {};
-		var items = config.items = config.items || [];
+		Component.prototype.constructor.call(this, config);
 
-		for(var i = 0, length = items.length; i < length; i++)
-			items[i].container = this;
-
-		this.callParent(config);
+		this.setItems(this.items);
 	},
 
 	getItem: function(index) {
@@ -22,6 +18,18 @@ Z8.define('Z8.Container', {
 		return this.items;
 	},
 
+	setItems: function(items) {
+		this.items = items != null ? Array.asArray(items) : [];
+
+		for(var item of this.items)
+			item.container = this;
+	},
+/*
+	setItems: function(items) {
+		this.removeAll();
+		this.add(items);
+	},
+*/
 	subcomponents: function() {
 		return this.getItems();
 	},
@@ -29,9 +37,7 @@ Z8.define('Z8.Container', {
 	htmlMarkup: function() {
 		var markup = [];
 
-		var items = this.items;
-		for(var i = 0, length = items.length; i < length; i++) {
-			var item = items[i];
+		for(var item of this.items) {
 			item.container = this;
 			markup.push(item.htmlMarkup != null ? item.htmlMarkup() : item);
 		}
@@ -41,7 +47,7 @@ Z8.define('Z8.Container', {
 
 	onDestroy: function() {
 		Component.destroy(this.items);
-		this.callParent();
+		Component.prototype.onDestroy.call(this);
 	},
 
 	getCount: function() {
@@ -54,13 +60,8 @@ Z8.define('Z8.Container', {
 
 	add: function(component, index) {
 		var items = this.items;
-		var result = component;
 
-		var components = Array.isArray(component) ? component : [component];
-
-		for(var i = 0, length = components.length; i < length; i++) {
-			component = components[i];
-
+		for(var component of Array.asArray(component)) {
 			if(this.indexOf(component) != -1)
 				continue;
 
@@ -92,7 +93,7 @@ Z8.define('Z8.Container', {
 				before != null ? DOM.insertBefore(before, dom) : DOM.append(this, dom);
 		}
 
-		return result;
+		return component;
 	},
 
 	remove: function(component) {
@@ -113,27 +114,18 @@ Z8.define('Z8.Container', {
 		this.items = [];
 	},
 
-	setItems: function(items) {
-		this.removeAll();
-		this.add(items);
-	},
-
 	focus: function() {
-		var items = this.items;
-		for(var i = 0, length = items.length; i < length; i++) {
-			var item = items[i];
+		for(var item of this.items) {
 			if(item.focus != null && item.focus())
 				return true;
 		}
-		return this.callParent();
+		return Component.prototype.focus.call(this);
 	},
 
 	setEnabled: function(enabled) {
-		this.callParent(enabled);
+		Component.prototype.setEnabled.call(this, enabled);
 
-		var items = this.items;
-		for(var i = 0, length = items.length; i < length; i++) {
-			var item = items[i];
+		for(var item of this.items) {
 			if(item.isComponent && !item.enabledLock)
 				item.setEnabled(enabled);
 		}
@@ -143,11 +135,9 @@ Z8.define('Z8.Container', {
 		if(this.isActive() == active)
 			return;
 
-		this.callParent(active);
+		Component.prototype.setActive.call(this, active);
 
-		var items = this.items;
-		for(var i = 0, length = items.length; i < length; i++) {
-			var item = items[i];
+		for(var item of this.items) {
 			if(item.setActive != null)
 				item.setActive(active);
 		}

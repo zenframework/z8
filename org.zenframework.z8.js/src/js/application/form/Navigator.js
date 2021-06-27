@@ -1,5 +1,5 @@
 Z8.define('Z8.application.form.Navigator', {
-	extend: 'viewport.Form',
+	extend: 'ViewportForm',
 
 	oneRecord: false,
 
@@ -37,7 +37,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	getCls: function() {
-		var cls = viewport.Form.prototype.getCls.call(this);
+		var cls = ViewportForm.prototype.getCls.call(this);
 
 		if(this.oneRecord)
 			cls.pushIf('one-record');
@@ -708,7 +708,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onKeyDown: function(event, target) {
-		viewport.Form.prototype.onKeyDown.call(this, event, target);
+		ViewportForm.prototype.onKeyDown.call(this, event, target);
 
 		switch(event.getKey()) {
 		case Event.F:
