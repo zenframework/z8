@@ -29,7 +29,7 @@ Z8.define('Z8.util.Format', {
 				var arg = arguments[i];
 
 				if(!Z8.isEmpty(arg))
-					result += (result == '' ? '' : ', ') + arg;
+					result += (result.isEmpty() ? '' : ', ') + arg;
 			}
 			return result;
 		},
@@ -92,7 +92,7 @@ Z8.define('Z8.util.Format', {
 		},
 
 		dateOrTime: function(value, dateFormat, timeFormat) {
-			if(value == null || value == '')
+			if(String.isEmpty(value))
 				return '';
 
 			dateFormat = dateFormat || Format.Datetime;
