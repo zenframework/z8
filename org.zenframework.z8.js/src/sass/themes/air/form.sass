@@ -1,0 +1,179 @@
+.air
+	.fieldset
+		border-color: #dfdfdf
+		padding-top: em(15)
+
+		&>.legend
+			left: em(6)
+			top: -#{em(8)}
+			font-size: .8em
+			font-weight: 600
+			text-transform: uppercase
+
+			&>.fa
+				font-size: 1em
+
+
+	.control-group
+		&>.box
+			min-height: em(25)
+			border: 1px solid #dfdfdf
+			-webkit-transition: border-color ease-in-out .15s, color ease-in-out .15s
+			-o-transition: border-color ease-in-out .15s, color ease-in-out .15s
+			transition: border-color ease-in-out .15s, color ease-in-out .15s
+
+		&.scrollable
+			&>.box
+				padding: 0
+
+		&:not(.scrollable)>.box
+			padding: 0 em(2) 1px
+			border-top-width: 0
+			border-right-width: 0
+			border-left-width: 0
+			border-bottom-width: 1px
+
+		&.focus
+			&>.box
+				border-color: $light-blue
+
+			&:not(.scrollable)
+				&>.box
+					padding-bottom: 0
+					border-bottom-width: 2px
+
+		&.invalid.focus:not(.readonly)>.box
+			border-color: $red
+
+		&.scrollable>.box>.control
+			overflow-y: auto
+
+		.readonly, .disabled
+			&>.box
+				&>.trigger-1, &>.trigger-2, &>.trigger-3
+					display: none
+
+		&>.label.toolbar
+			border: none
+			height: 32px
+
+			.label
+				height: auto
+				padding-top: 0
+
+		&.label-left, &.label-right
+			&>.label
+				padding-top: em(4)
+				padding-bottom: 0
+				height: em(25)
+				padding-left: em(10)
+
+	.control
+		&::-webkit-input-placeholder
+			font-size: em(12)
+			font-style: italic
+
+		&::-moz-placeholder
+			font-size: em(12)
+			font-style: italic
+
+		&:-ms-input-placeholder
+			font-size: em(12)
+			font-style: italic
+
+		&[disabled], &.disabled
+			color: #a6a6a6
+			background-color: transparent
+
+		&[readOnly], &.readOnly
+			color: #151515
+			background-color: transparent
+
+	.number.control
+		text-align: right
+
+	.list.control.columns
+		padding-top: 0
+
+	.textarea.control, .html.control
+		min-height: 6.54545454em
+
+	.file.control-group.readonly:not(.disabled)>.box>.trigger-1
+		display: block
+
+	.label
+		height: em(21)
+		background: none
+		border: none
+		padding-left: 0
+		padding-right: 0
+		position: relative
+		-webkit-transition: color ease-in-out .15s
+		-o-transition: color ease-in-out .15s
+		transition: color ease-in-out .15s
+
+		&.readonly
+			padding-right: em(16) !important
+
+			&:after
+				content: '\f023'
+				font-family: FontAwesome
+				width: 1em
+				color: #aaa
+				position: absolute
+				right: 0
+
+		&.toolbar
+			&>.text
+				float: left
+				max-width: calc(100% - #{em(80)})
+				overflow-x: hidden
+				overflow-y: hidden
+				text-overflow: ellipsis
+				white-space: nowrap
+
+		&.no-text:not(.toolbar),
+		&.no-text.toolbar>.text
+			display: none
+
+		&>.text
+			font-size: .8em
+			font-weight: 600
+			text-transform: uppercase
+			padding-right: em(20)
+			padding-left: em(2)
+			color: $light-blue
+
+			&.has-control
+				overflow: visible
+
+			&>.fa
+				text-align: left
+				color: #808080
+				margin-right: em(7)
+
+		&.disabled
+			color: #999
+
+	.invalid:not(.readonly)>.label>.text
+		color: $red
+
+	.control-group
+		&>.box
+			&>.btn-trigger
+				padding: 0
+				margin-left: em(5)
+				border: none
+				color: #222
+				background: none !important
+				text-shadow: none
+
+				&.active
+					text-shadow: 0 3px 5px rgba(0, 0, 0, 0.125)
+
+				&:hover, &:focus, &:focus
+					&:not(.disabled)
+						color: $light-blue
+
+				&>.fa
+					width: em(20)

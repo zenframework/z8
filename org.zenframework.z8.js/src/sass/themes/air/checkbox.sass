@@ -1,0 +1,45 @@
+.air
+	.checkbox
+		&.control-group
+			&.label-left, &.label-right
+				&>.label
+					padding-top: 0
+
+		&.focus
+			&>.box
+				color: $light-blue
+
+		&>.box
+			flex: none
+			border: none
+			padding: 0
+			min-height: auto
+
+		&>.label
+			height: auto
+			padding-top: 0
+			padding-bottom: 0
+
+			&>.text
+				font-size: inherit
+				text-transform: inherit
+				font-weight: 500
+
+		&.label-left
+			&>.label.readonly
+				max-width: calc(100% - 2.2em)
+
+		&.label-right
+			&>.label.readonly
+				max-width: calc(100% - 1em)
+
+	.control-group
+		&.label-left
+			&>.label
+				padding-left: 0
+				padding-right: em(6)
+
+		&.label-right
+			&>.label
+				padding-left: em(6)
+				padding-right: 0

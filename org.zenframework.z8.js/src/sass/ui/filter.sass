@@ -1,123 +1,121 @@
-.filter-control>.box 
-	border: 1px solid #eee
+.filter-control
+	&>.box
+		border: 1px solid #eee
 
-.filter-control>.box>.expression 
-	overflow-y: auto
+		&>.expression
+			overflow-y: auto
 
-.filter-control .group 
-	position: relative
-	display: inline-block
-	float: left
-	clear: both
+	.group
+		position: relative
+		display: inline-block
+		float: left
+		clear: both
 
-.filter-control .group>.btn.vertical 
-	position: absolute
-	top: 0
-	bottom: 0
-	width: $ems-30
+		&>.btn.vertical
+			position: absolute
+			top: 0
+			bottom: 0
+			width: em(30)
 
-.filter-control .group>.btn.vertical.open 
-	z-index: 5
+			&.open
+				z-index: 5
 
-.filter-control .group>.btn.vertical>.btn 
-	position: absolute
-	width: 100%
-	padding: 0
-	text-align: center
-	font-weight: 500
-	z-index: 1
+			&>.btn
+				position: absolute
+				width: 100%
+				padding: 0
+				text-align: center
+				font-weight: 500
+				z-index: 1
 
-.filter-control .group>.btn.vertical>.btn:focus 
-	z-index: 2
+				&:focus
+					z-index: 2
 
-.filter-control .group>.btn.vertical:not(:hover):not(:active):not(:focus):not(.active):not(.focus) 
-	background-color: #fff
+			&:not(:hover):not(:active):not(:focus):not(.active):not(.focus)
+				background-color: #fff
 
-.filter-control .group>.btn.vertical>.btn:first-child 
-	top: 0
-	bottom: $ems-15
+			&>.btn
+				&:first-child
+					top: 0
+					bottom: em(15)
 
-.filter-control .group>.btn.vertical>.btn>.icon 
-	font-weight: 400
+					&>.text
+						position: absolute
+						width: 100%
+						left: 0
+						top: calc(50% + #{em(4)})
+						font-size: em(12)
 
-.filter-control .group>.btn.vertical>.btn:first-child>.text 
-	position: absolute
-	width: 100%
-	left: 0
-	top: calc(50% + #{$ems-4})
-	font-size: $ems-12
+					&>.icon
+						position: absolute
+						left: em(7)
+						top: em(10)
 
-.filter-control .group>.btn.vertical>.btn:first-child>.icon 
-	position: absolute
-	left: $ems-7
-	top: $ems-10
+				&>.icon
+					font-weight: 400
 
-.filter-control .group>.btn.vertical>.btn-trigger 
-	bottom: 0
-	top: calc(100% - #{$ems-15})
+			&>.btn-trigger
+				bottom: 0
+				top: calc(100% - #{em(15)})
 
-.filter-control .group:not(.expression)>.group .btn:first-child>.fa 
-	left: $ems-8
+		&:not(.expression)>.group .btn:first-child>.fa
+			left: em(8)
 
-.filter-control .group.active>.group,
-.filter-control .group.active>.line,
-.filter-control .group>.btn:hover~.group,
-.filter-control .group>.btn:hover~.line,
-.filter-control .line.active 
-	background-color: #fafafa
+	.group.active>.group,
+	.group.active>.line,
+	.group>.btn:hover~.group,
+	.group>.btn:hover~.line,
+	.line.active
+		background-color: #fafafa
 
-.filter-control .group,
-.filter-control .line 
-	padding-left: $ems-30
-	width: 100%
-	margin-left: -1px
+	.group, .line
+		padding-left: em(30)
+		width: 100%
+		margin-left: -1px
 
-.filter-control>.box>.expression>.group,
-.filter-control>.box>.expression>.line 
-	padding-left: 0
+	&>.box
+		&>.expression
+			padding: em(4) em(4) em(10)
 
-.filter-control>.box>.expression>.group>.btn.vertical 
-	left: 0
+			&>.group, &>.line
+				padding-left: 0
 
-.filter-control>.box>.expression
-	padding: $ems-4 $ems-4 $ems-10
+			&>.group>.btn.vertical
+				left: 0
 
-.filter-control .line 
-	clear: left
-	float: left
-	position: relative
-	padding-top: $ems-5
-	padding-bottom: $ems-5
-	padding-right: 0
-	display: flex
-	flex-direction: row
+	.line
+		clear: left
+		float: left
+		position: relative
+		padding-top: em(5)
+		padding-bottom: em(5)
+		padding-right: 0
+		display: flex
+		flex-direction: row
 
-.filter-control .line>.control-group.invalid>.control 
-	border-color: $red
+		&>.control-group.invalid>.control
+			border-color: $red
 
-.filter-control .line>.checkbox 
-	width: $ems-30 !important
-	justify-content: center
-	margin-right: 0 !important
-	text-align: center
-	margin-top: 0
-	min-height: auto
+		&>.checkbox
+			width: em(30) !important
+			justify-content: center
+			margin-right: 0 !important
+			text-align: center
+			margin-top: 0
+			min-height: auto
 
-.filter-control .line>.property,
-.filter-control .line>.operator,
-.filter-control .line>.value 
-	float: left
+		&>.property, &>.operator, &>.value
+			float: left
 
-.filter-control .line>.property,
-.filter-control .line>.operator 
-	margin-right: $ems-25
+		&>.property, &>.operator
+			margin-right: em(25)
 
-.filter-control .line>.property 
-	flex: 1
+		&>.property
+			flex: 1
 
-.filter-control .line>.operator 
-	width: $ems-250
+		&>.operator
+			width: em(250)
 
-.filter-control .line>.value 
-	width: 21.42857142em
+		&>.value
+			width: 21.42857142em
 

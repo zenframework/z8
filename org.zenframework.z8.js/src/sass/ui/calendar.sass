@@ -1,244 +1,230 @@
 .calendar 
 	color: #555
 	min-height: 18.4642857em
+	
+	&>.header
+		position: relative
+		text-align: center
 
-.calendar>.header 
-	position: relative
-	text-align: center
+		&>.month
+			padding-right: em(3)
+			font-weight: bold
 
-.calendar>.header>.month 
-	padding-right: $ems-3
-	font-weight: bold
+		&>.year
+			padding-left: em(3)
+			font-weight: bold
 
-.calendar>.header>.year 
-	padding-left: $ems-3
-	font-weight: bold
+		&>.previous-month, &>.next-month
+			width: em(20)
 
-.calendar>.header>.previous-month,
-.calendar>.header>.next-month 
-	width: $ems-20
+		&>.previous-month 
+			float: left
+			margin-left: em(10)
 
-.calendar>.header>.previous-month 
-	float: left
-	margin-left: $ems-10
+		&>.next-month 
+			float: right
+			margin-right: em(10)
 
-.calendar>.header>.next-month 
-	float: right
-	margin-right: $ems-10
+	&>.header, &>.days, &>.days-of-week 
+		clear: both
+		
+	&>.days, &>.days-of-week
+		min-width: em(220.5)
+		margin-left: em(5)
+		margin-right: em(5)
 
-.calendar>.header,
-.calendar>.days,
-.calendar>.days-of-week 
-	clear: both
+		&>.day
+			float: left
+			width: em(31.5)
+			height: em(31.5)
+			padding-top: .625em
+			padding-bottom: .625em
+			text-align: center
+			color: #404040
+			border-radius: 50%
 
-.calendar>.days>.day,
-.calendar>.days-of-week>.day 
-	float: left
-	width: $ems-31-5
-	height: $ems-31-5
-	padding-top: .625em
-	padding-bottom: .625em
-	text-align: center
-	color: #404040
-	border-radius: 50%
+			&.week-end
+				color: #d43f3a
 
-.calendar>.days-of-week>.day 
-	padding-top: .925em
-	padding-bottom: .325em
+	&>.days-of-week>.day 
+		padding-top: .925em
+		padding-bottom: .325em
 
-.calendar>.days-of-week,
-.calendar>.days 
-	min-width: $ems-220-5
-	margin-left: $ems-5
-	margin-right: $ems-5
+	&>.days 
+		height: em(189)
 
-.calendar>.days 
-	height: $ems-189
+		&>.day
+			&.today
+				font-weight: 500
 
-.calendar>.days>.day:focus,
-.calendar>.days>.day:hover,
-.calendar>.days>.day.selected,
-.calendar>.header>.years>.year:hover,
-.calendar>.header>.years>.year:focus,
-.calendar>.header>.months>.month:hover,
-.calendar>.header>.months>.month:focus,
-.calendar>.time>.hours>.hour:hover,
-.calendar>.time>.hours>.hour:focus,
-.calendar>.time>.minutes>.minute:hover,
-.calendar>.time>.minutes>.minute:focus 
-	background-color: #ebebeb
+			&.previous-month, &.next-month
+				color: #a6a6a6
 
-.calendar>.header>.previous-month,
-.calendar>.header>.next-month,
-.calendar>.header>.years>.previous-year,
-.calendar>.header>.years>.next-year,
-.calendar>.header>.year,
-.calendar>.header>.month,
-.calendar>.time>.hour,
-.calendar>.time>.minute 
-	transition: color .15s linear
+				&.week-end
+					color: #e6918e
 
-.calendar>.header>.previous-month:hover,
-.calendar>.header>.previous-month:focus,
-.calendar>.header>.next-month:hover,
-.calendar>.header>.next-month:focus,
-.calendar>.header>.years>.previous-year:hover,
-.calendar>.header>.years>.previous-year:focus,
-.calendar>.header>.years>.next-year:hover,
-.calendar>.header>.years>.next-year:focus,
-.calendar>.header>.year:hover,
-.calendar>.header>.year:focus,
-.calendar>.header>.month:hover,
-.calendar>.header>.month:focus,
-.calendar>.time>.hour:hover,
-.calendar>.time>.hour:focus,
-.calendar>.time>.minute:hover,
-.calendar>.time>.minute:focus 
-	color: $light-blue
+			&.selected
+				&:focus
+					color: white
+					background-color: $light-blue
 
-.calendar>.days>.day.today 
-	font-weight: 500
+				&.week-end
+					&:focus
+						background-color: #ef5350
 
-.calendar>.days-of-week>.day.week-end,
-.calendar>.days>.day.week-end 
-	color: #d43f3a
+	&>.days>.day,
+	&>.header>.years>.year,
+	&>.header>.months>.month,
+	&>.time>.hours>.hour,
+	&>.time>.minutes>.minute
+		&:focus, &:hover
+			background-color: #ebebeb
 
-.calendar>.days>.day.previous-month,
-.calendar>.days>.day.next-month 
-	color: #a6a6a6
+	&>.days>.day.selected
+		background-color: #ebebeb
 
-.calendar>.days>.day.previous-month.week-end,
-.calendar>.days>.day.next-month.week-end 
-	color: #e6918e
+	&>.header
+		&>.previous-month, &>.next-month, &>.year, &>.month
+			transition: color .15s linear
+		
+		&>.years
+			&>.previous-year, &>.next-year
+				transition: color .15s linear
 
-.calendar>.days>.day.selected:focus 
-	color: white
-	background-color: $light-blue
+		&>.time
+			&>.hour, &>.minute
+				transition: color .15s linear
 
-.calendar>.days>.day.selected.week-end:focus 
-	background-color: #ef5350
+	&>.header>.previous-month,
+	&>.header>.next-month,
+	&>.header>.years>.previous-year,
+	&>.header>.years>.next-year,
+	&>.header>.year,
+	&>.header>.month,
+	&>.time>.hour,
+	&>.time>.minute
+		&:focus, &:hover
+			color: $light-blue
 
-.calendar>.time 
-	position: relative
-	padding-top: $ems-8
-	border-top: 1px solid #dfdfdf
-	text-align: center
+	&>.time
+		position: relative
+		padding-top: em(8)
+		border-top: 1px solid #dfdfdf
+		text-align: center
 
-.calendar>.time>.hour,
-.calendar>.time>.minute 
-	font-weight: bold
+		&.hour, &.minute
+			font-weight: bold
 
-.calendar>.time>.hour 
-	padding-left: $ems-10
+		&.hour
+			padding-left: em(10)
 
-.calendar>.days>.day,
-.calendar>.header>.previous-month,
-.calendar>.header>.next-month,
-.calendar>.header>.year,
-.calendar>.header>.month,
-.calendar>.header>.years>.year,
-.calendar>.header>.years>.previous-year,
-.calendar>.header>.years>.next-year,
-.calendar>.header>.months>.month,
-.calendar>.time>.hour,
-.calendar>.time>.hours>.hour,
-.calendar>.time>.minute,
-.calendar>.time>.minutes>.minute 
-	cursor: pointer
+	&>.days>.day,
+	&>.header>.previous-month,
+	&>.header>.next-month,
+	&>.header>.year,
+	&>.header>.month,
+	&>.header>.years>.year,
+	&>.header>.years>.previous-year,
+	&>.header>.years>.next-year,
+	&>.header>.months>.month,
+	&>.time>.hour,
+	&>.time>.hours>.hour,
+	&>.time>.minute,
+	&>.time>.minutes>.minute
+		cursor: pointer
 
-.calendar>.header>.years,
-.calendar>.header>.months,
-.calendar>.time>.hours,
-.calendar>.time>.minutes 
-	position: absolute
-	margin-top: $ems-5
-	background-color: white
-	border-top: 1px solid #dfdfdf
-	border-left: 1px solid #dfdfdf
+	&>.header>.years,
+	&>.header>.months,
+	&>.time>.hours,
+	&>.time>.minutes
+		position: absolute
+		margin-top: em(5)
+		background-color: white
+		border-top: 1px solid #dfdfdf
+		border-left: 1px solid #dfdfdf
 
-.calendar>.header>.years>.year,
-.calendar>.header>.months>.month,
-.calendar>.time>.hours>.hour,
-.calendar>.time>.minutes>.minute 
-	float: left
-	height: $ems-28
-	line-height: $ems-28
-	text-align: center
-	color: #404040
-	border-right: 1px solid #dfdfdf
-	border-bottom: 1px solid #dfdfdf
+	&>.header>.years>.year,
+	&>.header>.months>.month,
+	&>.time>.hours>.hour,
+	&>.time>.minutes>.minute
+		float: left
+		height: em(28)
+		line-height: em(28)
+		text-align: center
+		color: #404040
+		border-right: 1px solid #dfdfdf
+		border-bottom: 1px solid #dfdfdf
 
-.calendar>.header>.years>.year,
-.calendar>.header>.months>.month 
-	width: $ems-50
+	&>.time
+		&>.hours>.hour, &>.minutes>.minute
+			width: em(35)
 
-.calendar>.time>.hours>.hour,
-.calendar>.time>.minutes>.minute 
-	width: $ems-35
+		&>.hours>.hour
+			bottom: em(30)
+			left: 0
+			
+		&>.minutes>.minute
+			bottom: em(30)
+			right: 0
 
-.calendar>.header>.months 
-	left: 0
+	&>.header
+		&>.months
+			left: 0
 
-.calendar>.header>.years 
-	right: 0
-	padding-left: $ems-20
-	padding-right: $ems-20
+		&>.years>.year, &>.months>.year
+			width: em(50)
 
-.calendar>.header>.years>.previous-year,
-.calendar>.header>.years>.next-year 
-	position: absolute
-	width: $ems-20
-	height: 8em
-	padding-top: $ems-48
-	text-align: center
-	border-right: 1px solid #dfdfdf
-	border-bottom: 1px solid #dfdfdf
+		&>.years
+			right: 0
+			padding-left: em(20)
+			padding-right: em(20)
 
-.calendar>.header>.years>.previous-year 
-	left: 0
+			&.previous-year, &.next-year
+				position: absolute
+				width: em(20)
+				height: 8em
+				padding-top: em(48)
+				text-align: center
+				border-right: 1px solid #dfdfdf
+				border-bottom: 1px solid #dfdfdf
 
-.calendar>.header>.years>.next-year 
-	right: 0
+			&>.previous-year
+				left: 0
 
-.calendar>.time>.hours 
-	bottom: $ems-30
-	left: 0
+			&>.next-year
+				right: 0
 
-.calendar>.time>.minutes 
-	bottom: $ems-30
-	right: 0
+	&>.header>.years>.year-3,
+	&>.header>.years>.year-6,
+	&>.header>.years>.year-9,
+	&>.header>.months>.month-3,
+	&>.header>.months>.month-6,
+	&>.header>.months>.month-9,
+	&>.days>.day-7,
+	&>.days>.day-14,
+	&>.days>.day-21,
+	&>.days>.day-28,
+	&>.days>.day-35,
+	&>.time>.hours>.hour-6,
+	&>.time>.hours>.hour-12,
+	&>.time>.hours>.hour-18,
+	&>.time>.minutes>.minute-4,
+	&>.time>.minutes>.minute-8 
+		clear: left
 
-.calendar>.header>.years>.year-3,
-.calendar>.header>.years>.year-6,
-.calendar>.header>.years>.year-9,
-.calendar>.header>.months>.month-3,
-.calendar>.header>.months>.month-6,
-.calendar>.header>.months>.month-9,
-.calendar>.days>.day-7,
-.calendar>.days>.day-14,
-.calendar>.days>.day-21,
-.calendar>.days>.day-28,
-.calendar>.days>.day-35,
-.calendar>.time>.hours>.hour-6,
-.calendar>.time>.hours>.hour-12,
-.calendar>.time>.hours>.hour-18,
-.calendar>.time>.minutes>.minute-4,
-.calendar>.time>.minutes>.minute-8 
-	clear: left
-
-.calendar>.header>.years,
-.calendar>.header>.months,
-.calendar>.time>.hours,
-.calendar>.time>.minutes 
-	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
-	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+	&>.header>.years,
+	&>.header>.months,
+	&>.time>.hours,
+	&>.time>.minutes
+		-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
 
 .dropdown-calendar 
-	padding: $ems-8 0
+	padding: em(8) 0
 	min-height: 19.75em
 	background-color: #fff
 	border: 1px solid #ccc
-	border-radius: $ems-4
+	border-radius: em(4)
 	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
 	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
 	position: fixed
@@ -247,48 +233,50 @@
 	z-index: 1000000
 	float: left
 
-.period>.body 
-	display: flex
-	flex-direction: row
-	padding: $ems-10
+.period
+	&>.body
+		display: flex
+		flex-direction: row
+		padding: em(10)
 
-.period>.body>.calendar 
-	border: 1px solid #eee
-	padding: $ems-10
+		&>.calendar
+			border: 1px solid #eee
+			padding: em(10)
 
-.period>.body>.calendar.finish 
-	margin-left: $ems-10
+			&.finish
+				margin-left: em(10)
 
-.period>.body>.selector 
-	margin-left: $ems-10
+		&>.selector
+			margin-left: em(10)
 
-.period>.body>.selector>.btn 
-	margin-left: $ems-10
+			&>.btn
+				margin-left: em(10)
 
-.period>.body>.selector>.separator 
-	margin-top: $ems-5
-	margin-bottom: $ems-5
-	border-bottom: 1px solid #eee
+			&>.separator
+				margin-top: em(5)
+				margin-bottom: em(5)
+				border-bottom: 1px solid #eee
 
-.period>.body>.selector>.btn 
-	border: none
-	padding: $ems-5 1em $ems-5 0
-	text-align: left
-	background: none
-	box-shadow: none
+			&>.btn
+				border: none
+				padding: em(5) 1em em(5) 0
+				text-align: left
+				background: none
+				box-shadow: none
 
-.period>.buttons 
-	display: flex
-	flex-direction: row
-	justify-content: flex-end
+	&>.buttons
+		display: flex
+		flex-direction: row
+		justify-content: flex-end
 
-.period>.buttons>.btn 
-	margin-right: $ems-10
-	height: 32px
-	padding: 0 16px
+		&>.btn
+			margin-right: em(10)
+			height: 32px
+			padding: 0 16px
 
-.date>.dropdown-calendar 
-	min-height: 17.25em
+.date
+	&>.dropdown-calendar
+		min-height: 17.25em
 
-.date>.dropdown-calendar>.time 
-	display: none
+		&>.time
+			display: none

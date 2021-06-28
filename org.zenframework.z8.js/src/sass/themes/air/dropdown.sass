@@ -1,0 +1,61 @@
+.air
+	.dropdown-list, .combobox>.pager, .dropdown-calendar
+		margin: 0
+
+	.dropdown-list.list,
+	.dropdown-menu.list
+		-webkit-box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100)
+		box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.100)
+		background-color: #fff
+
+	.dropdown-list.list
+		min-width: em(250)
+
+		&.columns
+			&>.scroller.items
+				height: calc(100% - #{em(27)})
+
+		&.pull-up
+			-webkit-box-shadow: 1px -1px 12px rgba(0, 0, 0, 0.100)
+			box-shadow: 1px -1px 12px rgba(0, 0, 0, 0.100)
+
+			&:not(:last-child)
+				margin-bottom: 0
+
+		&.pull-down:not(:last-child)
+			margin-bottom: 0
+
+	.dropdown-menu.list
+		padding: em(5) 0
+		display: block
+
+		&>.scroller.items
+			height: calc(100% + #{em(2)})
+
+		table
+			margin-top: 1px
+			margin-bottom: 1px
+
+		.menu.item>.column
+			border-bottom: none
+
+		.item
+			&>.column
+				&>.cell
+					&>.text
+						border: none
+
+						&>.shortcut
+							margin-left: em(15)
+
+				&:first-child
+					&>.cell
+						padding-left: em(20)
+
+				&:last-child
+					&>.cell
+						padding-right: em(20)
+
+			&.active>.column
+				color: #fff
+				background-color: $light-blue

@@ -1,0 +1,313 @@
+.air
+	.list
+		padding: em(1) 0
+		margin: em(2) 0 em(2) 0
+		border: 1px solid #ccc
+
+		.divider
+			margin-top: em(4)
+			margin-bottom: em(4)
+			border-bottom: 1px solid #eee
+
+		.scroller
+			&.headers
+				background-color: #fcfcfc
+				border-bottom: 1px solid #ccc
+
+			&.totals
+				border-top: 1px solid #ccc
+				background-color: #fcfcfc
+
+		.header
+			color: #777
+
+			&>.column
+				&>.text
+					font-weight: 500
+					font-size: em(12)
+
+				&.sort, &.filter
+					&>.text
+						max-width: calc(100% - #{em(25)})
+
+				&.sort.filter
+					&>.text
+						max-width: calc(100% - #{em(50)})
+
+		.item
+			font-weight: normal
+
+			>.column
+				border-bottom: 1px solid #eee
+
+				&>.cell
+					padding: em(7) em(7)
+
+					&>.icon
+						margin-right: em(7)
+						margin-top: em(2)
+
+					&>.collapser
+						margin-right: em(7)
+
+						&>.icon
+							width: 1em
+							text-align: center
+							margin-top: em(2)
+
+				&.file
+					&>.cell
+						padding-right: em(21)
+
+				&, &.file
+					&.cell
+						&>.text
+							&, &.follow
+								&:hover
+									text-decoration: underline
+
+				&.check, &.lock
+					width: em(30)
+					max-width: em(30)
+					min-width: em(30)
+
+					&>.cell
+						padding: 0
+
+				&.check
+					.fa-check-square
+						color: $light-blue
+
+				&>.control-group
+					background-color: white
+					bottom: 0
+
+					&>.box
+						padding-left: calc(#{em(7)} - 1px)
+						border-width: 1px
+						border-color: $light-blue
+
+					&.invalid
+						&>.box
+							border-color: $red
+
+				&.first
+					&>.control-group
+						&>.box
+							padding-left: calc(1em - 1px)
+
+							&>.control
+								text-align: inherit
+
+								&.textarea
+									padding-top: calc(#{em(7)} - 1px)
+									padding-left: 0
+									padding-right: 0
+
+			&.active
+				&>.column:first-child:before
+					background-color: $light-blue
+
+			&:hover
+				&>.column
+					background-color: #f5f5f5
+
+			&.disabled
+				&, &:hover
+					&>.column
+						color: #999
+						cursor: not-allowed
+
+			&.level-1
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(15)
+
+			&.level-2
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(30)
+
+			&.level-3
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(45)
+
+			&.level-4
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(60)
+
+			&.level-5
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(75)
+
+			&.level-6
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(90)
+
+			&.level-7
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(105)
+
+			&.level-8
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(120)
+
+			&.level-9
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(135)
+
+			&.level-10
+				&>.column
+					&>.cell
+						&>.collapser
+							padding-left: em(150)
+
+			&.no-children
+				&>.column
+					&>.cell
+						&>.collapser
+							color: transparent
+
+			&:not(.no-children)
+				&>.column
+					&>.cell
+						&>.collapser
+							&:hover
+								color: $light-blue
+
+				&.active
+					&>.column
+						&>.cell
+							&>.collapser
+								&:hover
+									color: #333
+
+		.number, .item, .total
+			&>.column
+				padding: 0
+				border-left: 1px solid #eee
+
+				&:first-child
+					border-left: none
+
+		.filter>.column
+			border-top: 1px solid #ccc
+			background-color: #fff
+			padding: 0 em(2)
+
+		.number, .total
+			&>.column
+				height: em(22)
+
+				&>.cell
+					padding: em(6) em(7)
+					font-size: em(12)
+					font-weight: bold
+
+		.number
+			&>.column
+				&>.cell
+					border-top: 1px solid #eee
+
+		.item, .total
+			&>.column.first
+				&>.cell
+					padding-left: 1em
+
+		.header
+			&>.column
+				position: relative
+				border-bottom: none
+				padding: em(6) em(7)
+				-webkit-transition: background-color ease-in-out .15s, color ease-in-out .15s
+				-o-transition: background-color ease-in-out .15s, color ease-in-out .15s
+				transition: background-color ease-in-out .15s, color ease-in-out .15s
+
+				&:first-child
+					padding-left: 1em
+
+				&.icon
+					width: em(30)
+					min-width: em(30)
+					max-width: em(30)
+					padding-left: 0
+					padding-right: 0
+					text-align: center
+
+					&:not(:first-child)
+						border-left: 1px solid #eee
+
+				&>.text
+					&>.icon
+						margin-right: em(7)
+
+				&:not(.extra)
+					&:hover
+						color: #fff
+						background-color: $light-blue
+
+				&>.sort, &>.filter
+					position: relative
+					left: 0
+					top: 1px
+					width: auto
+					padding-left: em(7)
+
+				&>.resize-handle-left, &>.resize-handle-right
+					width: em(4)
+
+				&>.resize-handle-left
+					border-left: 1px solid #eee
+
+		&:not(.auto-fit)
+			.header, .number, .total
+				&>.column.last
+					border-right: 1px solid #eee
+
+			.filter, .item
+				&>.column:last-child
+					border-right: 1px solid #eee
+
+		&.auto-fit
+			.item
+				&>.column:last-child
+					border-right-width: 0
+
+		.total
+			&>.column.icon
+				text-align: center
+				padding-top: em(4)
+				font-weight: bold
+				border-right: none
+
+	.focus
+		.list
+			.item
+				&.active
+					&>.column
+						background-color: $light-blue
+
+						&>.cell
+							color: #fff
+
+						&.check, &.lock
+							background-color: inherit
+
+							&>.cell
+								color: inherit

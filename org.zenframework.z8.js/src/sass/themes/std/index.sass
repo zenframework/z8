@@ -6,8 +6,7 @@
 html 
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0)
 
-html,
-body 
+html, body
 	width: 100%
 	height: 100%
 	margin: 0
@@ -26,7 +25,6 @@ body
 	-webkit-text-size-adjust: 100%
 	-ms-text-size-adjust: 100%
 
-
 body * 
 	line-height: inherit
 
@@ -42,22 +40,20 @@ input, textarea
 	min-height: 0
 	background: none
 
-
-input[type="number"]:-webkit-inner-spin-button,
-input[type="number"]:-webkit-outer-spin-button 
-	height: auto
+input[type="number"]
+	&:-webkit-inner-spin-button, &:-webkit-outer-spin-button
+		height: auto
 
 input[type="file"] 
 	display: none
 
-input::-ms-clear,
-input::ms-reveal 
-	display: none
+input
+	&::-ms-clear, &::ms-reveal
+		display: none
 
-input::-webkit-contacts-auto-fill-button,
-input::-webkit-credentials-auto-fill-button 
-	-webkit-appearance: none !important
-	display: none !important
+	&::-webkit-contacts-auto-fill-button, &::-webkit-credentials-auto-fill-button
+		-webkit-appearance: none !important
+		display: none !important
 
 textarea 
 	overflow-x: auto
@@ -67,19 +63,15 @@ table
 	table-layout: fixed
 	border-spacing: 0
 
-
 td 
 	padding: 0
-
 
 canvas 
 	background: none
 
-
 .row 
-	margin-left: -$ems-15
-	margin-right: -$ems-15
-
+	margin-left: -#{em(15)}
+	margin-right: -#{em(15)}
 
 .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2,
 .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3,
@@ -90,64 +82,50 @@ canvas
 .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11,
 .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 
 	position: relative
-	padding-left: $ems-15
-	padding-right: $ems-15
+	padding-left: em(15)
+	padding-right: em(15)
 	display: flex
 	flex-direction: column
-
 
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6,
 .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 
 	float: left
 
-
 .col-xs-12 
 	width: 100%
-
 
 .col-xs-11 
 	width: 91.66666667%
 
-
 .col-xs-10 
 	width: 83.33333333%
-
 
 .col-xs-9 
 	width: 75%
 
-
 .col-xs-8 
 	width: 66.66666667%
-
 
 .col-xs-7 
 	width: 58.33333333%
 
-
 .col-xs-6 
 	width: 50%
-
 
 .col-xs-5 
 	width: 41.66666667%
 
-
 .col-xs-4 
 	width: 33.33333333%
-
 
 .col-xs-3 
 	width: 25%
 
-
 .col-xs-2 
 	width: 16.66666667%
 
-
 .col-xs-1 
 	width: 8.33333333%
-
 
 @media (min-width: 768px) 
 	.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
@@ -189,8 +167,6 @@ canvas
 	
 	.col-sm-1 
 		width: 8.33333333%
-	
-
 
 @media (min-width: 992px) 
 	.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6,
@@ -232,8 +208,6 @@ canvas
 	
 	.col-md-1 
 		width: 8.33333333%
-	
-
 
 @media (min-width: 1200px) 
 	.col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
@@ -275,168 +249,12 @@ canvas
 	
 	.col-lg-1 
 		width: 8.33333333%
-	
 
+@import "control-group"
+@import "btn"
 
-.control-group 
-	position: relative
-	display: flex
-	flex-direction: column
-	align-items: stretch
-	overflow: hidden
+.control-group
+	&.label-left, &.label-right
+		flex-direction: row
 
-
-.control-group>.box 
-	flex: 1
-	display: flex
-	flex-direction: row
-	align-items: center
-	position: relative
-	overflow-x: hidden
-	overflow-y: hidden
-
-
-.control-group.scrollable>.box 
-	flex-direction: column
-	align-items: stretch
-
-
-.control-group.checkbox 
-	align-items: center
-	cursor: pointer
-
-
-.control-group.checkbox>.box 
-	flex: none
-
-
-.control-group>.box>.control 
-	flex: 1
-	position: relative
-	resize: none
-
-
-.control-group>.box>div[name=input].control 
-	user-select: text
-	-webkit-user-select: text
-
-
-.control-group>.box>.control:-ms-expand 
-	border: 0
-	background: none
-
-
-.control-group>.box>.textarea.control,
-.control-group>.box>.html.control 
-	height: auto
-	user-select: text
-	-webkit-user-select: text
-	cursor: text
-
-
-.control-group>.box>.control[readonly],
-.control-group>.box>.control.readonly 
-	cursor: text
-
-
-.control-group>.box>.control.disabled,
-.control-group>.box>.control-group.disabled 
-	cursor: not-allowed
-
-
-.control-group>.label 
-	display: flex
-	flex-direction: row
-	align-items: center
-	position: relative
-	text-align: left
-	overflow: hidden
-	text-overflow: ellipsis
-	white-space: nowrap
-
-
-.control-group>.label>.text 
-	text-overflow: ellipsis
-	overflow: hidden
-
-
-.btn 
-	display: flex
-	flex-direction: row
-	align-items: center
-	position: relative
-	white-space: nowrap
-	touch-action: manipulation
-	cursor: pointer
-
-
-.btn.disabled 
-	cursor: not-allowed
-
-
-.btn.vertical,
-.btn.vertical>.btn 
-	flex-direction: column
-
-
-.btn>.icon.empty 
-	display: none
-
-
-.btn>.text 
-	flex: 1
-	overflow: hidden
-	white-space: nowrap
-	text-overflow: ellipsis
-
-
-.btn-trigger>.icon 
-	text-align: center
-
-
-.btn-group,
-.btn-group.vertical 
-	display: flex
-	flex-direction: row
-	align-items: center
-	position: relative
-	vertical-align: middle
-
-
-.btn-group.vertical 
-	flex-direction: column
-
-
-.control-group.label-left,
-.control-group.label-right 
-	flex-direction: row
-
-
-.tabs 
-	display: flex
-	flex-direction: column
-
-.tabs>.header 
-	display: flex
-	align-items: stretch
-	width: 100%
-
-.tabs>.header>.tag 
-	overflow-x: hidden
-	overflow-y: hidden
-	text-overflow: ellipsis
-
-.tabs>.body 
-	position: relative
-	flex: 1
-	display: flex
-	flex-direction: row
-
-.tabs>.body>.tab 
-	width: 100%
-	overflow-x: hidden
-	overflow-y: hidden
-
-.tabs>.body>.tab.inactive 
-	display: none !important
-
+@import "tabs"

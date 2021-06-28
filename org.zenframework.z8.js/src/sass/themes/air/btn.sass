@@ -1,0 +1,51 @@
+.air
+	.btn
+		padding: 0 8px
+		border-radius: 4px
+		text-align: center
+
+		&>.btn
+			padding: 0
+
+			&:first-child
+				border-radius: 4px 0 0 4px
+
+		&>.btn-trigger
+			padding-left: 4px
+			border-radius: 0 4px 4px 0
+
+		&>.icon
+			width: 16px
+			margin-right: 4px
+			opacity: .8
+
+		&.no-text>.icon
+			margin-right: 0
+
+		&.active, &:hover
+			&>.icon, &>.text, &>.btn>.icon
+				opacity: 1
+
+		&.active
+			background: #eee
+
+			&+.btn-trigger
+				background: #eee
+
+	.btn-group
+		padding: 0 8px
+
+		&>.btn
+			padding: 0 4px
+
+	.btn-tool
+		background-color: transparent !important
+		border: none !important
+		padding: em(1) em(1)
+
+		&.disabled
+			color: #999
+
+		&:hover
+			&>.icon, &>.text
+				color: #fff

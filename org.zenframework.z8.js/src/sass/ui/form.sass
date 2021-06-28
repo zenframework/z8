@@ -1,7 +1,7 @@
-.form.fieldset 
-	padding-top: $ems-15
-	padding-left: $ems-15
-	padding-right: $ems-15
+.form.fieldset
+	padding-top: em(15)
+	padding-left: em(15)
+	padding-right: em(15)
 	margin: 0
 	overflow-y: auto
 	overflow-x: hidden
@@ -10,43 +10,40 @@
 .fieldset 
 	position: relative
 	margin-top: .71428572em
-	padding: $ems-20 $ems-10 $ems-10
+	padding: em(20) em(10) em(10)
 	border: 1px solid #ccc
 
-.fieldset.section 
-	padding: 0
-	border: none
-	margin-top: 0
-	margin-bottom: 0
+	&.section
+		padding: 0
+		border: none
+		margin-top: 0
+		margin-bottom: 0
 
-.fieldset>.legend 
-	position: absolute
-	top: -$ems-8
-	max-width: 85%
-	padding-left: $ems-10
-	padding-right: $ems-10
-	color: #555
-	background-color: #fff
-	white-space: nowrap
-	text-overflow: ellipsis
-	overflow: hidden
+	&>.legend
+		position: absolute
+		top: -#{em(8)}
+		max-width: 85%
+		padding-left: em(10)
+		padding-right: em(10)
+		color: #555
+		background-color: #fff
+		white-space: nowrap
+		text-overflow: ellipsis
+		overflow: hidden
 
-.fieldset>.legend>.fa 
-	margin-right: $ems-7
+		&>.fa
+			margin-right: em(7)
 
-.fieldset>.row 
-	position: relative
+	&>.row
+		position: relative
 
-.fieldset>.row>.cell.action 
-	justify-content: center
-	align-items: flex-start
+		&>.cell.action
+			justify-content: center
+			align-items: flex-start
 
-.fieldset>.row:not(:last-child)>.cell>.tabs,
-.fieldset>.row:not(:last-child)>.cell>.fieldset,
-.fieldset>.row:not(:last-child)>.cell>.control-group,
-.fieldset>.row:not(:last-child)>.cell>.btn-group,
-.fieldset>.row:not(:last-child)>.cell>.btn 
-	margin-bottom: $ems-24
+		&:not(:last-child)>.cell
+			&>.tabs, &>.fieldset, &>.control-group, &>.btn-group, &>.btn
+				margin-bottom: em(24)
 
 .action-group 
 	display: flex
@@ -55,43 +52,42 @@
 	justify-content: flex-end
 	flex: 1
 
-.action-group>.btn,
-.action-group>.btn-group 
-	margin-right: 1em
+	&>.btn, &>.btn-group
+		margin-right: 1em
 
-.fieldset>.row>.cell>.btn-group:not(:first-child),
-.fieldset>.row>.cell>.btn:not(:first-child) 
-	margin-left: $ems-10
+.fieldset
+	&>.row>.cell
+		&>.btn-group, &>.btn
+			&:not(:first-child)
+				margin-left: em(10)
 
-.fieldset>.row>.cell>.tabs,
-.fieldset>.row>.cell>.fieldset,
-.fieldset>.row>.cell>.control-group:not(.scrollable) 
-	flex: 1
+		&>.tabs, &>.fieldset, &>.control-group:not(.scrollable)
+			flex: 1
 
-.fieldset>.row>.cell>.control-group.scrollable 
-	position: absolute
-	top: 0
-	left: $ems-15
-	right: $ems-15
-	bottom: 0
+		&>.control-group.scrollable
+			position: absolute
+			top: 0
+			left: em(15)
+			right: em(15)
+			bottom: 0
 
 @media screen and (min-width: 768px) 
 	.fieldset 
 		display: flex
 		flex-direction: column
 
-	.fieldset>.row 
-		display: flex
-		flex-direction: row
-		align-items: stretch
-		min-height: fit-content
-		min-height: -moz-fit-content
+		&>.row
+			display: flex
+			flex-direction: row
+			align-items: stretch
+			min-height: fit-content
+			min-height: -moz-fit-content
 
-	.fieldset>.row>.cell.stretch 
-		align-items: stretch
+			&>.cell.stretch
+				align-items: stretch
 
-.fieldset>.row>.cell>.control-group>.box>.textarea.control,
-.fieldset>.row>.cell>.control-group>.box>.html.control 
-	padding: $ems-2
-	overflow-x: hidden
-	overflow-y: hidden
+.fieldset>.row>.cell>.control-group>.box
+	&>.textarea.control, >.html.control
+		padding: em(2)
+		overflow-x: hidden
+		overflow-y: hidden

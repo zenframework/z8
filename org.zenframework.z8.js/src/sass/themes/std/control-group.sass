@@ -1,0 +1,69 @@
+.control-group
+	position: relative
+	display: flex
+	flex-direction: column
+	align-items: stretch
+	overflow: hidden
+
+	&>.box
+		flex: 1
+		display: flex
+		flex-direction: row
+		align-items: center
+		position: relative
+		overflow-x: hidden
+		overflow-y: hidden
+
+		&>.control
+			flex: 1
+			position: relative
+			resize: none
+
+			&:-ms-expand
+				border: 0
+				background: none
+
+			&[readonly], &.readonly
+				cursor: text
+
+		&>div[name=input].control
+			user-select: text
+			-webkit-user-select: text
+
+		&>.textarea, &>.html
+			&.control
+				height: auto
+				user-select: text
+				-webkit-user-select: text
+				cursor: text
+
+		&>.control-group, &>.control
+			&.disabled
+				cursor: not-allowed
+
+	&.scrollable
+		&>.box
+			flex-direction: column
+			align-items: stretch
+
+	&.checkbox
+		align-items: center
+		cursor: pointer
+
+		&>.box
+			flex: none
+
+.control-group
+	&>.label
+		display: flex
+		flex-direction: row
+		align-items: center
+		position: relative
+		text-align: left
+		overflow: hidden
+		text-overflow: ellipsis
+		white-space: nowrap
+
+		&>.text
+			text-overflow: ellipsis
+			overflow: hidden
