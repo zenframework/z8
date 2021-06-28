@@ -796,6 +796,23 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onAction: function(menu, item) {
+		var action = item.action;
+
+		if(!Z8.isEmpty(action.parameters))
+			this.requestActionParameters(menu, item);
+		else
+			this.runAction(menu, item);
+	},
+	
+	requestActionParameters: function(menu, item) {
+		var handler = function() { this.runAction(menu, item) };
+		var action = item.action;
+		
+		var window = Z8.form.action.params.Editor.getParametersWindow(action, handler, this);
+		window.open();
+	},
+
+	runAction: function(menu, item) {
 		this.actionsButton.setBusy(true);
 
 		var action = item.action;
