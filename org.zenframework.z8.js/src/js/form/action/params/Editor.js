@@ -3,12 +3,12 @@ Z8.define('Z8.form.action.params.Editor', {
 
 	plain: true,
 	parameters: null,
-	
+
 	htmlMarkup: function() {
 		var controls = [];
 		for (var i = 0; i < this.parameters.length; ++i) {
 			var parameter = this.parameters[i];
-			var control = this.createFieldControl(field);
+			var control = this.createFieldControl(parameter);
 			controls.add(control);
 		}
 
@@ -16,7 +16,7 @@ Z8.define('Z8.form.action.params.Editor', {
 		this.controls = controls;
 		return this.callParent();
 	},
-	
+
 	createFieldControl: function(parameter) {
 		var control = Z8.form.Helper.createControl(parameter);
 
@@ -28,16 +28,17 @@ Z8.define('Z8.form.action.params.Editor', {
 
 		return control;
 	},
-	
+
 	getParameters: function() {
 		var controls = this.controls;
-		var parameters = []
+		var parameters = [];
 		for (var i = 0; i < controls.length; ++i) {
 			var control = controls[i];
-			var parameter;
+			parameters.add({ id: control.field.id, value: control.getValue() });
 		}
+		return parameters;
 	},
-	
+
 	statics: {
 		getParametersEditor: function(action) {
 			if(!Z8.isEmpty(action.parameters)) {
@@ -47,15 +48,22 @@ Z8.define('Z8.form.action.params.Editor', {
 				return null;
 			}
 		},
-		
+
 		getParametersWindow: function(action, handler, scope) {
 			var editor = this.getParametersEditor(action);
-			
+
 			if(editor == null)
 				return null;
-				
+
+			var winHandler = function(window, success) {
+				if (success) {
+					var params = editor.getParameters();
+					handler.call(scope, params);
+				}
+			}
+
 			var windowCfg = { header: action.text, icon: 'fa-list-alt', controls: [editor],
-								handler: handler, scope: scope };
+								handler: winHandler, scope: null };
 			return new Z8.window.Window(windowCfg);
 		}
 	}

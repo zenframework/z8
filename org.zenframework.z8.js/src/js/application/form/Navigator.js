@@ -803,16 +803,16 @@ Z8.define('Z8.application.form.Navigator', {
 		else
 			this.runAction(menu, item);
 	},
-	
+
 	requestActionParameters: function(menu, item) {
-		var handler = function() { this.runAction(menu, item) };
+		var handler = function(params) { this.runAction(menu, item, params) };
 		var action = item.action;
-		
+
 		var window = Z8.form.action.params.Editor.getParametersWindow(action, handler, this);
 		window.open();
 	},
 
-	runAction: function(menu, item) {
+	runAction: function(menu, item, parameters) {
 		this.actionsButton.setBusy(true);
 
 		var action = item.action;
@@ -824,6 +824,9 @@ Z8.define('Z8.application.form.Navigator', {
 			name: action.name,
 			records: records
 		};
+
+		if (parameters)
+			params.parameters = parameters;
 
 		var callback = function(response, success) {
 			this.onActionComplete(action, this.getChecked(), response, success);
