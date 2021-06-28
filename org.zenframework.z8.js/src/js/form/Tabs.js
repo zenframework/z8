@@ -83,7 +83,7 @@ Z8.define('Z8.form.Tabs', {
 			var activeTab = tabs.getActiveTab();
 
 			if(activeTab == this)
-				return;
+				return this;
 
 			if(activeTab != null)
 				activeTab.deactivate();

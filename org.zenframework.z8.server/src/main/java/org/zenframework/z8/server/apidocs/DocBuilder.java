@@ -37,7 +37,7 @@ public class DocBuilder {
 
     protected List<Entity> collectEntities(Collection<OBJECT.CLASS<? extends OBJECT>> entities) {
         List<Entity> entitiesDescription = new ArrayList<>();
-        for(OBJECT.CLASS<? extends OBJECT> entity : entities) {
+/*        for(OBJECT.CLASS<? extends OBJECT> entity : entities) {
             OBJECT z8Object = entity.newInstance();
             Entity entityResult = new Entity();
             entityResult.setEntityName(z8Object.name());
@@ -65,7 +65,7 @@ public class DocBuilder {
                 }
             }
             entitiesDescription.add(entityResult);
-        }
+        }*/
         return entitiesDescription;
     }
 
