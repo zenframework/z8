@@ -76,6 +76,19 @@ Z8.define('Z8.form.Tabs', {
 
 			if(show !== undefined && !show && tab == this.getTabs().getActiveTab())
 				tab.deactivate();
+
+			return this;
+		};
+
+		tab.protoHide = tab.hide;
+		tab.hide = function(hide) {
+			this.getTabTag().hide(hide);
+			this.protoHide(hide);
+
+			if((hide === undefined || !hide) && tab == this.getTabs().getActiveTab())
+				tab.deactivate();
+
+			return this;
 		};
 
 		tab.activate = function() {
