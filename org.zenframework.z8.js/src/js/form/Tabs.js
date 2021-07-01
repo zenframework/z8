@@ -117,6 +117,12 @@ Z8.define('Z8.form.Tabs', {
 			return this;
 		},
 
+		tab.protoOnDestroy = tab.onDestroy;
+		tab.onDestroy = function() {
+			this.getTabTag().destroy();
+			this.protoOnDestroy();
+		},
+
 		tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive').join(' ');
 		tab.tabTag = new Z8.button.Button({ cls: 'tag', visible: tab.visible, toggle: true, text: tab.getTitle(), icon: tab.icon, tab: tab, toggleHandler: this.onTabToggle, scope: this });
 		tab.icon = null;
