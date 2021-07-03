@@ -266,7 +266,7 @@ Z8.define('Z8.button.Button', {
 			};
 
 			if(delay != 0) {
-				this.setBusyTask = this.setBusyTask || new Z8.util.DelayedTask();
+				this.setBusyTask = this.setBusyTask || new DelayedTask();
 				this.setBusyTask.delay(delay || 1000, callback, this);
 			} else
 				callback.call(this);

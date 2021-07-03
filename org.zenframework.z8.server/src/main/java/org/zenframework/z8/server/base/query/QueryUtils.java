@@ -97,8 +97,10 @@ public class QueryUtils {
 	}
 
 	static public void setFieldValues(Query query, String json) {
-		JsonObject record = parse(json);
+		setFieldValues(query, parse(json));
+	}
 
+	static public void setFieldValues(Query query, JsonObject record) {
 		if(record == null)
 			return;
 

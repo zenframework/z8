@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.SearchText', {
 	extend: 'Z8.form.field.Text',
+	shortClassName: 'SearchTextBox',
 
 	triggers: { icon: '' },
 

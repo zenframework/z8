@@ -384,7 +384,8 @@ Z8.define('Z8.data.Model', {
 		if(!this.destroyed)
 			Z8.apply(data, phantom ? this.data: this.getModifiedFields());
 
-		data[this.idProperty] = phantom ? guid.Null : this.id;
+		var idProperty = this.idProperty;
+		data[idProperty] = phantom && (this.modified == null || !this.modified.hasOwnProperty(idProperty)) ? guid.Null : this.id;
 		return data;
 	},
 
@@ -451,7 +452,7 @@ Z8.define('Z8.data.Model', {
 		if(!this.isPhantom())
 			throw 'copy of the record ' + this.id + ' must be a phantom';
 
-		this.executeAction('copy', callback, Z8.apply(options || {}, { recordId: record.isModel ? record.id : record }));
+		this.executeAction('copy', callback, Z8.apply(options || {}, { recordId: [record.isModel ? record.id : record] }));
 	},
 
 	destroy: function(callback, options) {

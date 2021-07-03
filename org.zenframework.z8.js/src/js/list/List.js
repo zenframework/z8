@@ -988,6 +988,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	onContentChange: function() {
+		DOM.swapCls(this, this.getCount() == 0, 'empty');
 		this.fireEvent('contentChange', this);
 	},
 
