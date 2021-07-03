@@ -209,6 +209,7 @@
 	<entry key="Exception.invalidVersion">Database schema version does not match server version.</entry>
 	<entry key="Exception.accessDenied">Incorrect login or password</entry>
 	<entry key="Exception.accessRightsViolation">Access rights violation.</entry>
+	<entry key="Exception.userNotFound">Unknown not found</entry>
 	<entry key="Exception.serverUnavailable">Server does not respond.</entry>
 	<entry key="Exception.resourceNotFound">Resource not found: {0}</entry>
 	<entry key="Exception.fileNotFound">File not found: {0}</entry>

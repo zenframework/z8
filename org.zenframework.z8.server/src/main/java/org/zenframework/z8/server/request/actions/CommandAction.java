@@ -53,12 +53,7 @@ public class CommandAction extends RequestAction {
 	}
 
 	private void parseParameters(Action action) {
-		String json = getParametersParameter();
-
-		if(json == null)
-			return;
-
-		JsonArray parameters = new JsonArray(json);
+		JsonArray parameters = new JsonArray(getRequestParameter(Json.parameters));
 
 		for(int i = 0; i < parameters.length(); i++) {
 			JsonObject object = parameters.getJsonObject(i);

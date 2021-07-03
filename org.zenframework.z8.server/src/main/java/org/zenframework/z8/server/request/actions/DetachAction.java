@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.types.file;
@@ -25,15 +26,15 @@ public class DetachAction extends RequestAction {
 	public void writeResponse(JsonWriter writer) throws Throwable {
 
 		List<file> files = new ArrayList<file>();
-		JsonArray jsonArray = new JsonArray(getDataParameter());
+		JsonArray jsonArray = new JsonArray(getRequestParameter(Json.data));
 
 		for(int i = 0; i < jsonArray.length(); i++)
 			files.add(new file(jsonArray.getGuid(i)));
 
 		Query query = getQuery();
-		guid target = getRecordIdParameter();
-		String fieldId = getFieldParameter();
+		guid target = getRecordId();
 
+		String fieldId = getRequestParameter(Json.field);
 		Field field = fieldId != null ? query.findFieldById(fieldId) : null;
 
 		AttachmentProcessor processor = new AttachmentProcessor((FileField)field);

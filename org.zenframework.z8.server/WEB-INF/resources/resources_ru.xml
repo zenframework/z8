@@ -209,6 +209,7 @@
 	<entry key="Exception.invalidVersion">Версия схемы базы данных не соответствует версии сервера.</entry>
 	<entry key="Exception.accessDenied">Неверный логин или пароль</entry>
 	<entry key="Exception.accessRightsViolation">Нарушение прав доступа</entry>
+	<entry key="Exception.userNotFound">Пользователь не найден</entry>
 	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
 	<entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>

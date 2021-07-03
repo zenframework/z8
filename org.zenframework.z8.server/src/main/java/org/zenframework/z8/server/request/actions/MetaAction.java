@@ -27,8 +27,8 @@ public class MetaAction extends ReadAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		ActionConfig config = config();
-		Map<string, string> requestParameters = requestParameters();
+		ActionConfig config = getConfig();
+		Map<string, string> requestParameters = getRequestParameters();
 
 		Query query = getQuery();
 

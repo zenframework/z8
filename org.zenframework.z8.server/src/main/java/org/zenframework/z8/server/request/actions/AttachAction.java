@@ -11,6 +11,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.file;
@@ -27,10 +28,11 @@ public class AttachAction extends RequestAction {
 		Collection<file> files = request().getFiles();
 
 		Query query = getQuery();
-		guid target = getRecordIdParameter();
-		String fieldId = getFieldParameter();
+		guid target = getRecordId();
 
-		JsonObject json = new JsonObject(getDetailsParameter());
+		String fieldId = getRequestParameter(Json.field);
+
+		JsonObject json = new JsonObject(getRequestParameter(Json.details));
 		Map<string, string> details = new HashMap<string, string>();
 
 		for(String name : JsonObject.getNames(json))
