@@ -112,6 +112,7 @@ Z8.define('Z8.Container', {
 	removeAll: function() {
 		Component.destroy(this.items);
 		this.items = [];
+		return this;
 	},
 
 	focus: function() {
@@ -129,6 +130,8 @@ Z8.define('Z8.Container', {
 			if(item.isComponent && !item.enabledLock)
 				item.setEnabled(enabled);
 		}
+
+		return this;
 	},
 
 	setActive: function(active) {
@@ -141,5 +144,7 @@ Z8.define('Z8.Container', {
 			if(item.setActive != null)
 				item.setActive(active);
 		}
+
+		return this;
 	}
 });
