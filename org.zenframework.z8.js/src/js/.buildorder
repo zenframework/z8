@@ -75,6 +75,7 @@ form/field/Integer.js
 form/field/File.js
 form/field/Float.js
 form/field/Checkbox.js
+form/field/Buttonbox.js
 form/field/TextArea.js
 form/field/Combobox.js
 form/field/Listbox.js

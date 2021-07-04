@@ -316,7 +316,8 @@ canvas {
 	cursor: pointer;
 }
 
-.control-group.checkbox>.box {
+.control-group.checkbox>.box,
+.control-group.buttonbox>.box {
 	flex: none;
 }
 
