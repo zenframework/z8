@@ -124,11 +124,14 @@ Z8.define('Z8.Component', {
 	},
 
 	getInnerHtml: function() {
-		return DOM.getInnerHtml(this);
+		return this.getDom() != null ? DOM.getInnerHtml(this) : this.html;
 	},
 
 	setInnerHtml: function(html) {
-		DOM.setInnerHtml(this, html);
+		if(this.getDom() != null)
+			DOM.setInnerHtml(this, html);
+		else
+			this.html = html;
 		return this;
 	},
 
