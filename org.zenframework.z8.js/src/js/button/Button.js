@@ -131,6 +131,8 @@ Z8.define('Z8.button.Button', {
 
 		if(this.trigger)
 			this.trigger.setEnabled(enabled);
+
+		return this;
 	},
 
 	getButtonTypeCls: function() {
