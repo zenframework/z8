@@ -8,7 +8,7 @@ Z8.define('Z8.form.field.ButtonBox', {
 
 	initComponent: function() {
 		Control.prototype.initComponent.call(this);
-		this.buttons = new ButtonGroup({ items: this.items });
+		this.buttons = new ButtonGroup({ cls: 'control', items: this.items });
 	},
 
 	getButtonGroup: function() {
