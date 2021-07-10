@@ -77,7 +77,7 @@ public abstract class Adapter {
 					throw new AccessDeniedException();
 
 				session = login(login, password, ServletUtil.getSchema(request));
-				if (httpSession != null)
+				if(httpSession != null)
 					httpSession.setAttribute(Json.session.get(), session.id());
 			} else
 				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
@@ -87,7 +87,7 @@ public abstract class Adapter {
 
 			service(session, parameters, files, request, response);
 		} catch(AccessDeniedException e) {
-			if (httpSession != null)
+			if(httpSession != null)
 				httpSession.invalidate();
 			processAccessDenied(response);
 		} catch(NoSuchObjectException e) {
@@ -193,8 +193,7 @@ public abstract class Adapter {
 	}
 
 	protected void writeResponse(HttpServletResponse response, String content) throws IOException {
-		InputStream in = new ByteArrayInputStream(content.getBytes());
-		writeResponse(response, in, ContentType.Json);
+		writeResponse(response, new ByteArrayInputStream(content.getBytes()), ContentType.Json);
 	}
 
 	protected void writeResponse(HttpServletResponse response, InputStream in, ContentType contentType) throws IOException {
@@ -210,9 +209,8 @@ public abstract class Adapter {
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
 		String value = parameters.get(key);
 
-		if(httpSession != null && value == null) {
+		if(httpSession != null && value == null)
 			value = (String)httpSession.getAttribute(key);
-		}
 
 		return value;
 	}
