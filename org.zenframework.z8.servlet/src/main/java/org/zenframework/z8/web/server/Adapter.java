@@ -198,11 +198,12 @@ public abstract class Adapter {
 
 	protected void writeResponse(HttpServletResponse response, InputStream in, ContentType contentType) throws IOException {
 		response.setContentType(contentType + ";charset=" + encoding.Default.toString());
-		response.setContentLength(in.available());
 
-		if(in != null) {
-			OutputStream out = response.getOutputStream();
-			IOUtils.copyLarge(in, out);
+		try {
+			response.setContentLength(in.available());
+			IOUtils.copyLarge(in, response.getOutputStream());
+		} finally {
+			IOUtils.closeQuietly(in);
 		}
 	}
 
