@@ -62,7 +62,7 @@ Z8.define('Z8.Container', {
 		var items = this.items;
 
 		for(var component of Array.asArray(component)) {
-			if(this.indexOf(component) != -1)
+			if(component.container == this)
 				continue;
 
 			var container = component.container;
