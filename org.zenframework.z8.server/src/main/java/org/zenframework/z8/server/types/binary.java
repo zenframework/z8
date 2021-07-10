@@ -93,10 +93,6 @@ public class binary extends primary {
 		}
 	}
 
-	protected void finalize() throws Throwable {
-		close();
-	}
-
 	@Override
 	public FieldType type() {
 		return FieldType.Binary;
