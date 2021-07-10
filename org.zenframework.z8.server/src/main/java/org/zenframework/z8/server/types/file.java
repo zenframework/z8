@@ -730,7 +730,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public void z8_delete() {
 		File file = toFile();
-		if(!file.delete())
+		file.delete();
+
+		if(file.exists())
 			throw new RuntimeException(Resources.format("Exception.fileCanNotBeDeleted", file.getName()));
 	}
 
