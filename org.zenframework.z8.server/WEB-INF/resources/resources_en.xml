@@ -213,6 +213,7 @@
 	<entry key="Exception.serverUnavailable">Server does not respond.</entry>
 	<entry key="Exception.resourceNotFound">Resource not found: {0}</entry>
 	<entry key="Exception.fileNotFound">File not found: {0}</entry>
+	<entry key="Exception.fileCanNotBeDeleted">File can not be deleted: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">File size ''{0}'' exceeds limit {1}Mb</entry>
 
 	<entry key="Exception.unknownDatabase">Unknown database</entry>
