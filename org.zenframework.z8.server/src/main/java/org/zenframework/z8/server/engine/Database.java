@@ -57,6 +57,9 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return database;
 	}
 
+	public Database() {
+	}
+
 	private Database(String schema, String user, String password, String connection, String driver, encoding charset) {
 		this.schema = schema;
 		this.user = user;
@@ -215,6 +218,8 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
+		RmiIO.writeLong(out, serialVersionUID);
+
 		RmiIO.writeString(out, schema);
 		RmiIO.writeString(out, user);
 		RmiIO.writeString(out, password);
@@ -243,7 +248,6 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		isSystemInstalled = RmiIO.readBoolean(in);
 		isLatestVersion = RmiIO.readBoolean(in);
 
-		charset = encoding.fromString(RmiIO.readString(in));
 		vendor = DatabaseVendor.fromString(RmiIO.readString(in));
 	}
 }

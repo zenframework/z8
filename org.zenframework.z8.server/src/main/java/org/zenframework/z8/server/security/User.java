@@ -97,6 +97,9 @@ public class User implements IUser {
 		return system;
 	}
 
+	public User() {
+	}
+
 	public User(IDatabase database) {
 		this.database = database;
 	}
