@@ -20,6 +20,9 @@ public class Session implements ISession {
 
 	private long lastAccessTime;
 
+	public Session() {
+	}
+
 	public Session(String scheme) {
 		this("system", User.system(scheme));
 	}
