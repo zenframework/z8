@@ -10,8 +10,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IDatabase;
 
 public class ConnectionManager {
-	static private Map<String, List<Connection>> databaseConnections = new HashMap<String, List<Connection>>();
-	static private Map<String, IDatabase> databases = new HashMap<String, IDatabase>();
+	static private Map<IDatabase, List<Connection>> databaseConnections = new HashMap<IDatabase, List<Connection>>();
 
 	public static IDatabase database() {
 		return get().database();
@@ -31,13 +30,11 @@ public class ConnectionManager {
 		Object lock = database.getLock();
 
 		synchronized(lock) {
-			String key = database.key();
-			connections = databaseConnections.get(key);
+			connections = databaseConnections.get(database);
 
 			if(connections == null) {
 				connections = new ArrayList<Connection>();
-				databaseConnections.put(key, connections);
-				databases.put(key, database);
+				databaseConnections.put(database, connections);
 			}
 
 			for(Connection connection : connections) {
@@ -64,8 +61,8 @@ public class ConnectionManager {
 	}
 
 	public static void release() {
-		for(Map.Entry<String, List<Connection>> entry : databaseConnections.entrySet()) {
-			synchronized(databases.get(entry.getKey()).getLock()) {
+		for(Map.Entry<IDatabase, List<Connection>> entry : databaseConnections.entrySet()) {
+			synchronized(entry.getKey().getLock()) {
 				List<Connection> connections = entry.getValue();
 				Iterator<Connection> iterator = connections.iterator();
 
