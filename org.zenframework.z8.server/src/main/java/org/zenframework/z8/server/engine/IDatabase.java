@@ -17,8 +17,6 @@ public interface IDatabase {
 	public String driver();
 	public encoding charset();
 
-	public String key();
-
 	public String tableName(String name);
 	public boolean tableExists(String name);
 

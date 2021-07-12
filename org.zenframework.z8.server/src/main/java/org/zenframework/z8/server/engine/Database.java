@@ -85,6 +85,17 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return driver + connection + schema;
 	}
 
+	@Override
+	public int hashCode() {
+		return key().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		Database database = (Database)object;
+		return database != null && database.hashCode() == hashCode();
+	}
+
 	public Object getLock() {
 		Object lock = locks.get(this);
 		if(lock == null) {
