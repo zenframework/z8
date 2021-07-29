@@ -37,6 +37,8 @@ public class FileConverter {
 	public static file convert(binary source, string type, file target, string[string] parameters);
 
 	// Deprecated methods
+	public static file convertToDocx(file source, file target);
+	public static file convertToDocx(binary source, file target);
 
 	public static file convertToPdf(file source, file target);
 	public static file convertToPdf(file source, file target, string[string] parameters);

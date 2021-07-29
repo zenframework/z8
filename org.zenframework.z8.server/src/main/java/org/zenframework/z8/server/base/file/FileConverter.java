@@ -300,6 +300,16 @@ public class FileConverter {
 	// Deprecated methods
 
 	@Deprecated
+	public static file z8_convertToDocx(file source, file target) {
+		return z8_convertToDocx(source.binary(), target);
+	}
+
+	@Deprecated
+	public static file z8_convertToDocx(binary source, file target) {
+		return z8_convert(source, target);
+	}
+
+	@Deprecated
 	public static file z8_convertToPdf(file source, file target) {
 		return new file(convert(source.toFile(), target.toFile()));
 	}
