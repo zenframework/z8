@@ -1,11 +1,21 @@
 [native "org.zenframework.z8.server.base.file.FileConverter"]
 public class FileConverter {
 
+
 	// Parameter - path to background file (PDF, image)
-	public static final string Background;
+	public static final string Background = "background";
 
 	// Parameter - true/false - force target file clean
-	public static final string Reset;
+	public static final string Reset = "reset";
+
+	// Parameter - one of supported formats (see below)
+	public static final string Format = "format";
+
+	public static final string PDFX = "PDF/X";
+	public static final string PDFX1A2001 = "PDF/X-1a:2001";
+	public static final string PDFX32002 = "PDF/X-3:2002";
+	public static final string PDFA1A = "PDF/A-1a";
+	public static final string PDFA1B = "PDF/A-1b";
 
 	public static string getExtension(file file);
 	public static string getExtension(string fileName);
@@ -18,13 +28,18 @@ public class FileConverter {
 
 	public static bool isConvertableToPdf(string extension);
 
-	public static file convertToPdf(file source, file target);
+	// Parameters: Background, Reset, Format
+	public static file convert(file source, file target);
+	public static file convert(file source, file target, string[string] parameters);
+	public static file convert(binary source, file target);
+	public static file convert(binary source, file target, string[string] parameters);
+	public static file convert(binary source, string type, file target);
+	public static file convert(binary source, string type, file target, string[string] parameters);
 
-	// Parameters: Background, Reset
+	// Deprecated methods
+
+	public static file convertToPdf(file source, file target);
 	public static file convertToPdf(file source, file target, string[string] parameters);
 	public static file convertToPdf(binary source, string type, file target);
-
-	public static file convertToDocx(file source, file target);
-	public static file convertToDocx(binary source, file target);
 
 }

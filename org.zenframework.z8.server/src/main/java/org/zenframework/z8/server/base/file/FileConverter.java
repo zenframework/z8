@@ -5,13 +5,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.core.document.DocumentFamily;
+import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.document.DocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.local.JodConverter;
+import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
@@ -29,68 +34,86 @@ import org.zenframework.z8.server.utils.PrimaryUtils;
 public class FileConverter {
 
 	private static final int OFFICE_PORT = 8100;
-	
-	public static final String PDF_EXTENSION = "pdf";
+
+	public static final String PDF = "pdf";
+
+	public static final string PDFX = new string("PDF/X");
+	public static final string PDFX1A2001 = new string("PDF/X-1a:2001");
+	public static final string PDFX32002 = new string("PDF/X-3:2002");
+	public static final string PDFA1A = new string("PDF/A-1a");
+	public static final string PDFA1B = new string("PDF/A-1b");
 
 	public static final string Background = new string("background");
 	public static final string Reset = new string("reset");
+	public static final string Format = new string("format");
+
+	private static final Map<String, Integer> PDF_VERSIONS = getPdfVersions();
 
 	private static OfficeManager officeManager;
 
 	private FileConverter() {}
 
-	public static file z8_convertToPdf(file source, file target) {
-		return new file(convertToPdf(source.toFile(), target.toFile()));
+	public static file z8_convert(file source, file target) {
+		return new file(convert(source.toFile(), target.toFile()));
 	}
 
-	public static file z8_convertToPdf(binary source, string type, file target) {
-		return new file(convertToPdf(source.get(), type.get(), target.toFile(), Collections.<String, String> emptyMap()));
+	public static file z8_convert(file source, file target, RLinkedHashMap<string, string> parameters) {
+		return new file(convert(source.toFile(), target.toFile(), PrimaryUtils.unwrapStringMap(parameters)));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static file z8_convertToPdf(file source, file target, RLinkedHashMap parameters) {
-		return new file(convertToPdf(source.toFile(), target.toFile(), PrimaryUtils.unwrapStringMap(parameters)));
+	public static file z8_convert(binary source, file target) {
+		return new file(convert(source.get(), null, target.toFile(), Collections.<String, String>emptyMap()));
 	}
 
-	public static file z8_convertToDocx(file source, file target) {
-		return z8_convertToDocx(source.binary(), target);
+	public static file z8_convert(binary source, file target, RLinkedHashMap<string, string> parameters) {
+		return new file(convert(source.get(), null, target.toFile(), PrimaryUtils.unwrapStringMap(parameters)));
 	}
 
-	public static file z8_convertToDocx(binary source, file target) {
-		return new file(convertToDocx(source.get(), target.toFile()));
+	public static file z8_convert(binary source, string extension, file target) {
+		return new file(convert(source.get(), extension.get(), target.toFile(), Collections.<String, String>emptyMap()));
 	}
 
-	public static File convertToPdf(File source, File target) {
-		return convertToPdf(source, target, Collections.<String, String>emptyMap());
+	public static file z8_convert(binary source, string extension, file target, RLinkedHashMap<string, string> parameters) {
+		return new file(convert(source.get(), extension.get(), target.toFile(), PrimaryUtils.unwrapStringMap(parameters)));
 	}
 
-	public static File convertToPdf(File source, File target, Map<String, String> parameters) {
+	public static File convert(File source, File target) {
+		return convert(source, target, Collections.<String, String>emptyMap());
+	}
+
+	public static File convert(File source, File target, Map<String, String> parameters) {
 		try {
-			return convertToPdf(new FileInputStream(source), getExtension(source.getName()), target, parameters);
-		} catch(Throwable e) {
+			return convert(new FileInputStream(source), getExtension(source.getName()), target, parameters);
+		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static File convertToPdf(InputStream in, String extension, File target, Map<String, String> parameters) {
+	public static File convert(InputStream in, String extension, File target) {
+		return convert(in, extension, target, Collections.<String, String>emptyMap());
+	}
+
+	public static File convert(InputStream in, String extension, File target, Map<String, String> parameters) {
 		boolean reset = Boolean.parseBoolean(parameters.get(Reset.get()));
 
 		if (reset && target.exists())
 			target.delete();
+
+		boolean toPdf = isPdfExtension(getExtension(target));
+
 		if (!target.exists()) {
 			target.getParentFile().mkdirs();
 			try {
-				if (isTextExtension(extension))
+				if (toPdf && isTextExtension(extension))
 					PdfUtils.textToPdf(in, target);
-				else if (isImageExtension(extension))
+				else if (toPdf && isImageExtension(extension))
 					PdfUtils.imageToPdf(in, extension, target);
-				else if (isEmailExtension(extension))
+				else if (toPdf && isEmailExtension(extension))
 					PdfUtils.textToPdf(EmlUtils.emailToString(in), target);
-				else if (isOfficeExtension(extension))
-					convertOffice(in, target);
+				else
+					convertOffice(in, target, parameters);
 			} catch (IOException e) {
-				Trace.logError("Can't convert " + in + " to " + target, e);
-				throw new RuntimeException(e);
+				throw new RuntimeException("Can't convert file to " + target, e);
 			} finally {
 				IOUtils.closeQuietly(in);
 			}
@@ -98,29 +121,28 @@ public class FileConverter {
 
 		String background = parameters.get(Background.get());
 		File backgroundFile;
-		if (background != null && (backgroundFile = new File(Folders.Base, background)).exists()) {
-			File source = target;
-			target = new File(source.getParentFile(), addSuffix(source.getName(), "-background"));
-			if (reset && target.exists())
-				target.delete();
-			if (!target.exists()) {
-				extension = FilenameUtils.getExtension(background).toLowerCase();
-				try {
-					if (isPdfExtension(extension))
-						PdfUtils.insertBackgroundPdf(source, target, backgroundFile, false);
-					else
-						PdfUtils.insertBackgroundImg(source, target, backgroundFile);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
+		if (!toPdf || background == null || !(backgroundFile = new File(Folders.Base, background)).exists())
+			return target;
+
+		File source = target;
+		target = new File(source.getParentFile(), addSuffix(source.getName(), "-background"));
+
+		if (target.exists()) {
+			if (!reset)
+				return target;
+			target.delete();
+		}
+
+		try {
+			if (isPdfExtension(getExtension(background)))
+				PdfUtils.insertBackgroundPdf(source, target, backgroundFile, false);
+			else
+				PdfUtils.insertBackgroundImg(source, target, backgroundFile);
+		} catch (IOException e) {
+			throw new RuntimeException("Can't insert background " + backgroundFile + " into " + source, e);
 		}
 
 		return target;
-	}
-
-	public static File convertToDocx(InputStream input, File target) {
-		return convertOffice(input, target);
 	}
 
 	public static string z8_getExtension(file file) {
@@ -154,7 +176,7 @@ public class FileConverter {
 	}
 
 	public static boolean isPdfExtension(String extension) {
-		return PDF_EXTENSION.equals(extension);
+		return PDF.equals(extension);
 	}
 
 	public static bool z8_isTextExtension(string extension) {
@@ -162,7 +184,7 @@ public class FileConverter {
 	}
 
 	public static boolean isTextExtension(String extension) {
-		return ArrayUtils.contains(ServerConfig.textExtensions(), extension.toLowerCase());
+		return extension != null && ArrayUtils.contains(ServerConfig.textExtensions(), extension.toLowerCase());
 	}
 
 	public static bool z8_isImageExtension(string extension) {
@@ -170,7 +192,7 @@ public class FileConverter {
 	}
 
 	public static boolean isImageExtension(String extension) {
-		return ArrayUtils.contains(ServerConfig.imageExtensions(), extension.toLowerCase());
+		return extension != null && ArrayUtils.contains(ServerConfig.imageExtensions(), extension.toLowerCase());
 	}
 
 	public static bool z8_isEmailExtension(string extension) {
@@ -178,7 +200,7 @@ public class FileConverter {
 	}
 
 	public static boolean isEmailExtension(String extension) {
-		return ArrayUtils.contains(ServerConfig.emailExtensions(), extension.toLowerCase());
+		return extension != null && ArrayUtils.contains(ServerConfig.emailExtensions(), extension.toLowerCase());
 	}
 
 	public static bool z8_isOfficeExtension(string extension) {
@@ -186,7 +208,7 @@ public class FileConverter {
 	}
 
 	public static boolean isOfficeExtension(String extension) {
-		return ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
+		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
 	public static void startOfficeManager() {
@@ -213,10 +235,18 @@ public class FileConverter {
 		officeManager = null;
 	}
 
-	private static File convertOffice(InputStream input, File target) {
+	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {
 		try {
 			startOfficeManager();
-			JodConverter.convert(input).to(target).execute();
+
+			DocumentConverter converter = LocalConverter.make(officeManager);
+			DocumentFormatRegistry registry = converter.getFormatRegistry();
+			//DocumentFormat inputFormat = registry.getFormatByExtension(extension);
+			DocumentFormat targetFormat = getDocumentFormat(parameters);
+			if (targetFormat == null)
+				targetFormat = registry.getFormatByExtension(new file(target).extension());
+
+			converter.convert(input)/*.as(inputFormat)*/.to(target).as(targetFormat).execute();
 			return target;
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
@@ -230,5 +260,58 @@ public class FileConverter {
 		if (extIndex < 0)
 			return filename + suffix;
 		return filename.substring(0, extIndex) + suffix + filename.substring(extIndex);
+	}
+
+	private static DocumentFormat getDocumentFormat(Map<String, String> parameters) {
+		String format = parameters.get(Format.get());
+
+		if (format == null)
+			return null;
+
+		Integer pdfVersion = PDF_VERSIONS.get(format);
+
+		if (pdfVersion == null)
+			return null;
+
+		final Map<String, Integer> pdfOptions = new HashMap<String, Integer>();
+		pdfOptions.put("SelectPdfVersion", pdfVersion);
+
+		return DocumentFormat.builder()
+				.name(format)
+				.inputFamily(DocumentFamily.TEXT)
+				.extension(PDF)
+				.mediaType(PDF)
+				.storeProperty(DocumentFamily.TEXT, "FilterData", pdfOptions)
+				.storeProperty(DocumentFamily.TEXT, "FilterName", "writer_pdf_Export")
+				.unmodifiable(false)
+				.build();
+	}
+
+	private static Map<String, Integer> getPdfVersions() {
+		Map<String, Integer> versions = new HashMap<String, Integer>();
+		versions.put(PDFX.get(), 0);
+		versions.put(PDFX1A2001.get(), 1);
+		versions.put(PDFX32002.get(), 2);
+		versions.put(PDFA1A.get(), 3);
+		versions.put(PDFA1B.get(), 4);
+		return versions;
+	}
+
+	// Deprecated methods
+
+	@Deprecated
+	public static file z8_convertToPdf(file source, file target) {
+		return new file(convert(source.toFile(), target.toFile()));
+	}
+
+	@Deprecated
+	public static file z8_convertToPdf(binary source, string type, file target) {
+		return new file(convert(source.get(), type.get(), target.toFile(), Collections.<String, String> emptyMap()));
+	}
+
+	@Deprecated
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static file z8_convertToPdf(file source, file target, RLinkedHashMap parameters) {
+		return new file(convert(source.toFile(), target.toFile(), PrimaryUtils.unwrapStringMap(parameters)));
 	}
 }
