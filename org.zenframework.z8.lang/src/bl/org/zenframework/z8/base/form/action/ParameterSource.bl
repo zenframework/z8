@@ -1,0 +1,11 @@
+import org.zenframework.z8.base.query.Query;
+import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.action.ParameterSource"]
+public class ParameterSource extends Object {
+	public Query query;
+	public Field displayField;
+
+	static public ParameterSource create(Query query, Field displayField);
+}

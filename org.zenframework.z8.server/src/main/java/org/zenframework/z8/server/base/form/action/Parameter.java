@@ -36,6 +36,7 @@ public class Parameter extends OBJECT implements IParameter {
 	}
 
 	public string text = new string();
+	public ParameterSource.CLASS<? extends ParameterSource> source = null;
 
 	protected FieldType type = FieldType.None;
 	protected Object value = new string(); // primary or RCollection<primary>
@@ -124,6 +125,14 @@ public class Parameter extends OBJECT implements IParameter {
 			writer.finishArray();
 		} else
 			writer.writeProperty(Json.value, (primary)value);
+		
+		writer.startObject(Json.field);
+		writer.writeProperty(Json.header, text);
+		writer.writeProperty(Json.type, getType().toString());
+		if(source != null) {
+			source.get().writeMeta(writer);
+		}
+		writer.finishObject();
 	}
 
 	public bool bool() {
@@ -160,11 +169,23 @@ public class Parameter extends OBJECT implements IParameter {
 		parameter.get().value = value;
 		return parameter;
 	}
+	
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, guid value, ParameterSource.CLASS<? extends ParameterSource> source) {
+		 Parameter.CLASS<? extends Parameter> parameter = z8_create(name, value);
+		 parameter.get().source = source;
+		 return parameter;
+	}
 
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, FieldType type) {
 		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
 		parameter.get().text = name;
 		parameter.get().type = type;
 		return parameter;
+	}
+	
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, ParameterSource.CLASS<? extends ParameterSource> source) {
+		 Parameter.CLASS<? extends Parameter> parameter = z8_create(name, FieldType.Guid);
+		 parameter.get().source = source;
+		 return parameter;
 	}
 }

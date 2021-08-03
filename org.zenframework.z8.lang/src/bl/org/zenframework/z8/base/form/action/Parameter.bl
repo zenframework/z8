@@ -4,6 +4,7 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.form.action.Parameter"]
 public class Parameter extends Object {
 	public string text;
+	public ParameterSource source;
 
 	public operator bool();
 	public operator guid();
@@ -14,6 +15,7 @@ public class Parameter extends Object {
 	public operator file();
 
 	static public Parameter create(string text, FieldType type);
+	static public Parameter create(string text, ParameterSource source);
 
 	static public Parameter create(string text, bool value);
 	static public Parameter create(string text, date value);
@@ -21,5 +23,6 @@ public class Parameter extends Object {
 	static public Parameter create(string text, int value);
 	static public Parameter create(string text, string value);
 	static public Parameter create(string text, guid value);
+	static public Parameter create(string text, guid value, ParameterSource source);
 	static public Parameter create(string text, file value);
 }
