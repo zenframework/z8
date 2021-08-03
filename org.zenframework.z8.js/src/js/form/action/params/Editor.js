@@ -18,7 +18,7 @@ Z8.define('Z8.form.action.params.Editor', {
 	},
 
 	createFieldControl: function(parameter) {
-		var control = Z8.form.Helper.createControl(parameter);
+		var control = Z8.form.Helper.createControl(parameter.field);
 
 		control.setReadOnly(false);
 		control.label.align = 'left';
@@ -31,12 +31,14 @@ Z8.define('Z8.form.action.params.Editor', {
 
 	getParameters: function() {
 		var controls = this.controls;
-		var parameters = [];
+		var parameters = this.parameters;
+		var values = [];
 		for (var i = 0; i < controls.length; ++i) {
 			var control = controls[i];
-			parameters.add({ id: control.field.id, value: control.getValue() });
+			var parameter = parameters[i];
+			values.add({ id: parameter.id, value: control.getValue() });
 		}
-		return parameters;
+		return values;
 	},
 
 	statics: {
