@@ -14,15 +14,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.compiler.cmd.Main;
+import org.zenframework.z8.compiler.workspace.Project;
 import org.zenframework.z8.compiler.workspace.ProjectProperties;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -83,17 +82,12 @@ public class Workspace {
 		this.javaClasses = new File(workspace, JAVA_CLASSES);
 	}
 
-	public void recompile(ISource source) {
+	public boolean recompile(ISource source, JustInTimeListener listener) {
 		cleanWorkspace();
-
-		javaSources.mkdirs();
-		javaClasses.mkdirs();
 
 		source.exportSources(this);
 
-		compileBl();
-		compileJava();
-		copyResources();
+		return compileBl(listener) && compileJava(listener) && copyResources();
 	}
 
 	public String getSchema() {
@@ -125,36 +119,38 @@ public class Workspace {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		javaSources.mkdirs();
+		javaClasses.mkdirs();
 	}
 
-	private void compileBl() {
-		ProjectProperties properties = new ProjectProperties(workspace);
+	private boolean compileBl(JustInTimeListener listener) {
+		ProjectProperties properties = new ProjectProperties(this.workspace);
 		properties.setProjectName(getProjectName());
 		properties.setSourcePaths(BL_SOURCES);
 		properties.setOutputPath(JAVA_SOURCES);
 		properties.setRequiredPaths(DEPENDENCIES);
 
 		try {
-			Main.compile(properties);
+			Project project = Main.initializeProject(properties);
+			project.build(listener);
+			return listener.getErrorCount() == 0;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void compileJava() {
+	private boolean compileJava(JustInTimeListener listener) {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
 		if (compiler == null)
 			throw new RuntimeException("Java compiler not found");
 
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 		List<String> options = Arrays.asList("-d", javaClasses.getAbsolutePath());
-		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null,
+		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null,
 				fileManager.getJavaFileObjectsFromFiles(getJavaFiles(javaSources, new LinkedList<File>())));
 		try {
-			if (!task.call())
-				throw new RuntimeException("Java compilation failed");
+			return task.call();
 		} finally {
 			try {
 				fileManager.close();
@@ -162,8 +158,9 @@ public class Workspace {
 		}
 	}
 
-	private void copyResources() {
+	private boolean copyResources() {
 		copyResources(javaSources, javaClasses);
+		return true;
 	}
 
 	private static void copyResources(File from, File to) {

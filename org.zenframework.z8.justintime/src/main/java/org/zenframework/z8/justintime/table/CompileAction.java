@@ -3,12 +3,16 @@ package org.zenframework.z8.justintime.table;
 import java.util.Collection;
 
 import org.zenframework.z8.justintime.runtime.DynamicRuntime;
+import org.zenframework.z8.justintime.runtime.JustInTimeListener;
 import org.zenframework.z8.justintime.runtime.Workspace;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
 public class CompileAction extends Action {
@@ -36,13 +40,31 @@ public class CompileAction extends Action {
 
 	public CompileAction(IObject container) {
 		super(container);
+		useTransaction = bool.False;
 	}
 
 	@Override
 	public void execute(Collection<guid> records, Query context, Collection<guid> selected, Query query) {
-		DynamicRuntime.instance().unloadDynamic();
-		Workspace.workspace(ApplicationServer.getSchema()).recompile((Source) query);
-		DynamicRuntime.instance().loadDynamic();
+		Source source = (Source) query;
+		IMonitor monitor = ApplicationServer.getMonitor();
+		JustInTimeListener listener = new JustInTimeListener();
+
+		try {
+			DynamicRuntime.instance().unloadDynamic();
+			ConnectionManager.get().beginTransaction();
+			boolean result = Workspace.workspace(ApplicationServer.getSchema()).recompile(source, listener);
+			listener.writeMessages(source);
+			ConnectionManager.get().commit();
+
+			if (result)
+				DynamicRuntime.instance().loadDynamic();
+			else if (monitor != null)
+				monitor.warning("COMPILATION FAILED. See error messages.");
+		} catch (Throwable e) {
+			ConnectionManager.get().rollback();
+			if (monitor != null)
+				monitor.error(e);
+		}
 	}
 
 }
