@@ -49,8 +49,6 @@ public class SourcesView extends Source {
 		controls.add(parent.get(IClass.Constructor1).name);
 		controls.add(shortName);
 		controls.add(source);
-		controls.add(errors);
-		controls.add(warnings);
 		controls.add(description);
 
 		columns.add(parent.get(IClass.Constructor1).name);
