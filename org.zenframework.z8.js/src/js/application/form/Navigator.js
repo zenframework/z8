@@ -334,7 +334,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createFilterButton: function() {
-		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFields() });
+		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFilterFields() });
 		filter.on('filter', this.onFilter, this);
 		return filter;
 	},

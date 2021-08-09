@@ -194,6 +194,10 @@ Z8.define('Z8.data.Store', {
 		return this.getModel().prototype.getQuickFilters();
 	},
 
+	getFilterFields: function() {
+		return this.getModel().prototype.getFilterFields();
+	},
+
 	getLimit: function() {
 		return (this.isTree() ? 0 : this.limit) || 0;
 	},
