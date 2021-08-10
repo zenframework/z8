@@ -164,6 +164,10 @@ Z8.define('Z8.data.Model', {
 		return this.quickFilters;
 	},
 
+	getFilterFields: function() {
+		return this.filterFields.length > 0 ? this.filterFields : this.getFields();
+	},
+
 	getRequestFields: function() {
 		return this.requestFields;
 	},

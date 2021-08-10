@@ -78,6 +78,7 @@ public class Query extends OBJECT {
 	public RCollection<Field.CLASS<? extends Field>> names = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> filterFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> extraFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
@@ -784,6 +785,10 @@ public class Query extends OBJECT {
 		return CLASS.asList(quickFilters);
 	}
 
+	public Collection<Field> filterFields() {
+		return CLASS.asList(filterFields);
+	}
+
 	public Collection<Field> sortFields() {
 		return CLASS.asList(sortFields);
 	}
@@ -1156,6 +1161,7 @@ public class Query extends OBJECT {
 		writer.writeControls(Json.columns, columns(), this, context);
 		writer.writeControls(Json.nameFields, names(), this, context);
 		writer.writeControls(Json.quickFilters, quickFilters(), this, context);
+		writer.writeControls(Json.filterFields, filterFields(), this, context);
 
 		writer.writeControls(Json.fields, selectFields(), this, context);
 
