@@ -110,6 +110,10 @@
 	<entry key="Files.title">Файлы</entry>
 	<entry key="Files.name">Имя файла</entry>
 	<entry key="Files.path">Путь к файлу в кэше</entry>
+	<entry key="Files.size">Размер файла</entry>
+	<entry key="Files.time">Дата создания</entry>
+	<entry key="Files.lastModified">Дата изменения</entry>
+	<entry key="Files.extension">Тип</entry>
 
 	<entry key="Preview.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}: формат не поддерживается.</entry>
 
@@ -139,17 +143,6 @@
 
 	<!-- InterconnectionCenterView -->
 	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
-
-	<!-- BuiltinUsers -->
-	<entry key="BuiltinUsers.system.name">System</entry>
-	<entry key="BuiltinUsers.system.description">Системный вход</entry>
-	<entry key="BuiltinUsers.administrator.name">Admin</entry>
-	<entry key="BuiltinUsers.administrator.description">Администратор системы</entry>
-
-	<!-- Role -->
-	<entry key="Role.user">Пользователи</entry>
-	<entry key="Role.guest">Гости</entry>
-	<entry key="Role.administrator">Администраторы</entry>
 
 	<!-- Roles -->
 	<entry key="Roles.title">Группы безопасности</entry>
@@ -216,9 +209,11 @@
 	<entry key="Exception.invalidVersion">Версия схемы базы данных не соответствует версии сервера.</entry>
 	<entry key="Exception.accessDenied">Неверный логин или пароль</entry>
 	<entry key="Exception.accessRightsViolation">Нарушение прав доступа</entry>
+	<entry key="Exception.userNotFound">Пользователь не найден</entry>
 	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
 	<entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
+	<entry key="Exception.fileCanNotBeDeleted">Файл не может быть удален: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
 
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
@@ -227,10 +222,6 @@
 	<entry key="Generator.displayName">Генерация схемы данных</entry>
 	<entry key="Generator.schedulerStopped">Планировщик заданий остановлен</entry>
 	<entry key="Generator.schedulerStarted">Планировщик заданий запущен</entry>
-	<entry key="Generator.recreatringTable">Таблица ''{0}''({1}) требует регенерации</entry>
-	<entry key="Generator.droppingTable">Таблица ''{0}'' требует удаления</entry>
-	<entry key="Generator.createTableError">Ошибка. Таблица ''{0}''({1}) - генерация не выполнена.{2}</entry>
-	<entry key="Generator.packTableError">Ошибка. Таблица ''{0}''({1}) - паковка не выполнена. {2}</entry>
 	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено. {1}</entry>
 	<entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей. {2}</entry>
 	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей. {2}</entry>
@@ -238,7 +229,4 @@
 	<entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено. {3}</entry>
 	<entry key="Generator.createIndexError">Ошибка. Таблица ''{1}''({2}) - создание индекса ''{0}'' не выполнено. {3}</entry>
 	<entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице ''{1}''({2}), закончилось неудачей. {3}</entry>
-
-	<entry key="SearchEngine.errorIndexUndefined">Не определен поисковый индекс для запроса {0}</entry>
-
 </properties>
