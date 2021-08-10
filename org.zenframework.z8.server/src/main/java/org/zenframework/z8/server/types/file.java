@@ -774,8 +774,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 				delete(child, recursively);
 		}
 
-		if (!file.delete())
+		if (file.exists() && !file.delete())
 			throw new RuntimeException(Resources.format("Exception.fileCanNotBeDeleted", file.getName()));
 	}
 
+	static public void main(String[] args) {
+		delete(new File("/opt/prog/_/6"), false);
+	}
 }
