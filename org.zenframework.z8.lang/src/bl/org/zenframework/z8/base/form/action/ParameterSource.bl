@@ -6,6 +6,8 @@ import org.zenframework.z8.lang.Object;
 public class ParameterSource extends Object {
 	public Query query;
 	public Field displayField;
+	public Field valueField;
 
 	static public ParameterSource create(Query query, Field displayField);
+	static public ParameterSource create(Query query, Field displayField, Field valueField);
 }
