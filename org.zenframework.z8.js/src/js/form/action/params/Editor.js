@@ -23,6 +23,7 @@ Z8.define('Z8.form.action.params.Editor', {
 		control.setReadOnly(false);
 		control.label.align = 'left';
 		control.placeholder = 'Не задано';
+		control.param = parameter;
 		if(!Z8.isEmpty(parameter.value))
 			control.initValue(parameter.value);
 
@@ -31,12 +32,19 @@ Z8.define('Z8.form.action.params.Editor', {
 
 	getParameters: function() {
 		var controls = this.controls;
-		var parameters = this.parameters;
+		
 		var values = [];
 		for (var i = 0; i < controls.length; ++i) {
 			var control = controls[i];
-			var parameter = parameters[i];
-			values.add({ id: parameter.id, value: control.getValue() });
+			var value;
+			var fields = control.param.field.query.fields;
+			if (control instanceof Z8.form.field.Combobox && Array.isArray(fields)) {
+				var rec = control.getSelectedRecord();
+				value = (rec != null && fields.length >= 2) ? rec.get(fields[1].name) : guid.Null;
+			} else
+				value = control.getValue();
+			
+			values.add({ id: control.param.id, value: value });
 		}
 		return values;
 	},
