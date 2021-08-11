@@ -15,14 +15,20 @@ public class Parameter extends Object {
 	public operator file();
 
 	static public Parameter create(string text, FieldType type);
-	static public Parameter create(string text, ParameterSource source);
+	static public Parameter create(string text, FieldType type, ParameterSource source);
 
 	static public Parameter create(string text, bool value);
+	static public Parameter create(string text, bool value, ParameterSource source);
 	static public Parameter create(string text, date value);
+	static public Parameter create(string text, date value, ParameterSource source);
 	static public Parameter create(string text, decimal value);
+	static public Parameter create(string text, decimal value, ParameterSource source);
 	static public Parameter create(string text, int value);
+	static public Parameter create(string text, int value, ParameterSource source);
 	static public Parameter create(string text, string value);
+	static public Parameter create(string text, string value, ParameterSource source);
 	static public Parameter create(string text, guid value);
 	static public Parameter create(string text, guid value, ParameterSource source);
 	static public Parameter create(string text, file value);
+	static public Parameter create(string text, file value, ParameterSource source);
 }
