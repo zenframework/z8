@@ -37,7 +37,9 @@ Z8.define('Z8.form.action.params.Editor', {
 		for (var i = 0; i < controls.length; ++i) {
 			var control = controls[i];
 			var value;
-			var fields = control.param.field.query.fields;
+			var fields;
+			if(control.param.field.query)
+				fields = control.param.field.query.fields;
 			if (control instanceof Z8.form.field.Combobox && Array.isArray(fields)) {
 				var rec = control.getSelectedRecord();
 				value = (rec != null && fields.length >= 2) ? rec.get(fields[1].name) : guid.Null;

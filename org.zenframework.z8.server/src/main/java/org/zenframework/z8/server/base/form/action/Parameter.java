@@ -170,7 +170,7 @@ public class Parameter extends OBJECT implements IParameter {
 		return parameter;
 	}
 	
-	static public Parameter.CLASS<? extends Parameter> z8_create(string name, guid value, ParameterSource.CLASS<? extends ParameterSource> source) {
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value, ParameterSource.CLASS<? extends ParameterSource> source) {
 		 Parameter.CLASS<? extends Parameter> parameter = z8_create(name, value);
 		 parameter.get().source = source;
 		 return parameter;
@@ -183,8 +183,8 @@ public class Parameter extends OBJECT implements IParameter {
 		return parameter;
 	}
 	
-	static public Parameter.CLASS<? extends Parameter> z8_create(string name, ParameterSource.CLASS<? extends ParameterSource> source) {
-		 Parameter.CLASS<? extends Parameter> parameter = z8_create(name, FieldType.Guid);
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, FieldType type, ParameterSource.CLASS<? extends ParameterSource> source) {
+		 Parameter.CLASS<? extends Parameter> parameter = z8_create(name, type);
 		 parameter.get().source = source;
 		 return parameter;
 	}
