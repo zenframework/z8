@@ -12,8 +12,8 @@ public class SourcesView extends Source {
 	colCount = 6;
 
 	names = { name };
-	controls = { type.shortName, parent.name, shortName, source };
-	columns = { parent.name, shortName };
+	controls = { parent.name, shortName, source, description };
+	columns = { parent.name, shortName, errors, warnings };
 	extraFields = { icon };
 
 }
