@@ -1,0 +1,9 @@
+import org.zenframework.z8.base.form.action.Action;
+import org.zenframework.z8.base.query.Query;
+
+[native "org.zenframework.z8.justintime.table.CompileAction"]
+public class CompileAction extends Action {
+	useTransaction = false;
+
+	virtual public void execute(guid[] recordIds, Query context, guid[] selected, Query query);
+}

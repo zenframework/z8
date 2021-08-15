@@ -12,6 +12,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
@@ -65,6 +66,11 @@ public class CompileAction extends Action {
 			if (monitor != null)
 				monitor.error(e);
 		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
+		execute((Collection<guid>)records, context.get(), (Collection<guid>)selected, query.get());
 	}
 
 }

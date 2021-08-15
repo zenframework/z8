@@ -1,6 +1,7 @@
 import org.zenframework.z8.base.table.TreeTable;
+import org.zenframework.z8.base.table.value.BoolExpression;
 import org.zenframework.z8.base.table.value.Field;
-import org.zenframework.z8.base.table.value.Link;
+import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.StringExpression;
 import org.zenframework.z8.base.table.value.TextField;
 
@@ -10,22 +11,26 @@ public class Source extends TreeTable {
 	public Source parent = class {
 		virtual protected void beforeRead() {
 			super.beforeRead();
-			addWhere(recordId != container.recordId() && typeId == SourceType.Package);
+			addWhere(isPackage);
 		}
 	};
 
 	parentId = parent;
-
-	public SourceType type;
-	[name "Type"] public Link typeId = type;
-	typeId.defaultValue = SourceType.Package;
 
 	name.length = 1000;
 	shortName.length = 100;
 
 	[name "Source"] public TextField source;
 
-	public StringExpression icon = type.icon;
+	public IntField errors;
+	public IntField warnings;
+
+	public StringExpression ext;
+	public BoolExpression isBl;
+	public BoolExpression isNls;
+	public BoolExpression isJava;
+	public BoolExpression isPackage;
+	public StringExpression icon;
 
 	private bool eventsDisabled = false;
 	private string prevName;
