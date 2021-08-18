@@ -12,9 +12,6 @@ dependencies {
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-commons:${dependenciesVersion}@pom") { transitive = true }
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-libreoffice:${dependenciesVersion}@pom") { transitive = true }
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-birt:${dependenciesVersion}@pom") { transitive = true }
-
-	testImplementation ("org.junit.jupiter:junit-jupiter-api:5.7.2")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
 }
 
 eclipse.classpath.file.whenMerged {
@@ -35,9 +32,4 @@ publishing.publications {
 	maven(MavenPublication) {
 		from components.java
 	}
-}
-
-test {
-	useJUnitPlatform()
-	systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
 }
