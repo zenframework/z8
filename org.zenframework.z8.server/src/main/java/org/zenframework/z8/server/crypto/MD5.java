@@ -7,10 +7,12 @@ import java.security.NoSuchAlgorithmException;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.StringUtils;
 
+@Deprecated
+//TODO: remove after several releases, current version: '1.3.0'
 public class MD5 {
-	public static String hex(String value) {
-		MessageDigest messageDigest = null;
 
+	public static String hex(String value) {
+		MessageDigest messageDigest;
 		try {
 			messageDigest = MessageDigest.getInstance("MD5");
 			messageDigest.reset();
