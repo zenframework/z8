@@ -15,7 +15,7 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.crypto.MD5;
+import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -250,7 +250,7 @@ public class User implements IUser {
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 		user.login = loginOrId;
-		user.password = MD5.hex(plainPassword);
+		user.password = Digest.md5(plainPassword);
 
 		Users users = Users.newInstance();
 		users.name.get().set(loginOrId);

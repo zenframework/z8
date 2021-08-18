@@ -9,7 +9,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.crypto.MD5;
+import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
@@ -31,7 +31,7 @@ public class Users extends Table {
 	static public final guid System = BuiltinUsers.System.guid();
 	static public final guid Administrator = BuiltinUsers.Administrator.guid();
 
-	static private String defaultPassword = MD5.hex("");
+	static private String defaultPassword = Digest.md5("");
 
 	static public class fieldNames {
 		public final static String Password = "Password";
