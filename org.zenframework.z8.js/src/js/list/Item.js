@@ -76,7 +76,7 @@ Z8.define('Z8.list.Item', {
 		var list = this.getList();
 
 		if(list.checks) {
-			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' ') };
+			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' '), html: String.htmlText() };
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });

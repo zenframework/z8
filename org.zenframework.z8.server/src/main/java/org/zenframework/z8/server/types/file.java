@@ -729,11 +729,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void z8_delete() {
-		File file = toFile();
-		file.delete();
+		delete(toFile(), false);
+	}
 
-		if(file.exists())
-			throw new RuntimeException(Resources.format("Exception.fileCanNotBeDeleted", file.getName()));
+	public void z8_delete(bool recursively) {
+		delete(toFile(), recursively.get());
 	}
 
 	public file z8_zip(file fileOrDirectory) {
@@ -768,4 +768,17 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return createTempFile(prefix.get(), ext.get());
 	}
 
+	static private void delete(File file, boolean recursively) {
+		if (recursively && file.isDirectory()) {
+			for (File child : file.listFiles())
+				delete(child, recursively);
+		}
+
+		if (file.exists() && !file.delete())
+			throw new RuntimeException(Resources.format("Exception.fileCanNotBeDeleted", file.getName()));
+	}
+
+	static public void main(String[] args) {
+		delete(new File("/opt/prog/_/6"), false);
+	}
 }

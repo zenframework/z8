@@ -334,7 +334,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createFilterButton: function() {
-		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFields() });
+		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFilterFields() });
 		filter.on('filter', this.onFilter, this);
 		return filter;
 	},
@@ -805,11 +805,15 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	requestActionParameters: function(menu, item) {
-		var handler = function(params) { this.runAction(menu, item, params) };
+		var handler = function(action) { this.runAction(menu, item, ActionUtil.getParameters(action)) };
 		var action = item.action;
 
-		var window = Z8.form.action.params.Editor.getParametersWindow(action, handler, this);
-		window.open();
+		if(ActionUtil.hasVisibleParameters(action)) {
+			var window = ActionUtil.getParametersWindow(action, handler, this);
+			window.open();
+		} else {
+			handler.call(this, action);
+		}
 	},
 
 	runAction: function(menu, item, parameters) {

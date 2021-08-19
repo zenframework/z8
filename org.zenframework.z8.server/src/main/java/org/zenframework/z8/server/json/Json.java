@@ -211,6 +211,7 @@ public interface Json {
 	static public string controls = new string("controls");
 	static public string nameFields = new string("nameFields");
 	static public string quickFilters = new string("quickFilters");
+	static public string filterFields = new string("filterFields");
 
 	static public string grid = new string("grid");
 	static public string tree = new string("tree");
