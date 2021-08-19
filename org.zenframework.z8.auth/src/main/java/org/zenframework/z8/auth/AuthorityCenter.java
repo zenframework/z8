@@ -2,7 +2,7 @@ package org.zenframework.z8.auth;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.crypto.MD5;
+import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
@@ -121,7 +121,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			}
 		} else {
 			try {
-				user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
+				user = loginServer.user(login, clientHashPassword ? password : Digest.md5(password), scheme);
 			} catch (UserNotFoundException ignored) {
 				throw new AccessDeniedException();
 			}

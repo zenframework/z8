@@ -338,7 +338,10 @@ Date.prototype.toISOString = function() {
 			(zoneMinutes < 10 ? '0' : '') + zoneMinutes;
 	}
 
-	return String.padLeft(year, 4, '0') + '-' +
+	var extendedFormat = year < 0 || year > 9999;
+	var sign = extendedFormat ? (year < 0 ? '-' : '+') : '';
+
+	return sign + String.padLeft(year, extendedFormat ? 6 : 4, '0') + '-' +
 		(month < 10 ? '0' : '') + month + '-' +
 		(day < 10 ? '0' : '') + day + 'T' +
 		(hours < 10 ? '0' : '') + hours + ':' +

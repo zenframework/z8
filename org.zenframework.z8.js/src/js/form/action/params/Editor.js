@@ -8,8 +8,10 @@ Z8.define('Z8.form.action.params.Editor', {
 		var controls = [];
 		for (var i = 0; i < this.parameters.length; ++i) {
 			var parameter = this.parameters[i];
-			var control = this.createFieldControl(parameter);
-			controls.add(control);
+			if(parameter.visible) {
+				var control = this.createFieldControl(parameter);
+				controls.add(control);
+			}
 		}
 
 		this.colCount = 1;
@@ -30,7 +32,7 @@ Z8.define('Z8.form.action.params.Editor', {
 		return control;
 	},
 
-	getParameters: function() {
+	setValues: function() {
 		var controls = this.controls;
 		
 		var values = [];
@@ -46,37 +48,7 @@ Z8.define('Z8.form.action.params.Editor', {
 			} else
 				value = control.getValue();
 			
-			values.add({ id: control.param.id, value: value });
-		}
-		return values;
-	},
-
-	statics: {
-		getParametersEditor: function(action) {
-			if(!Z8.isEmpty(action.parameters)) {
-				var editorCfg = { flex: 1, parameters: action.parameters };
-				return new Z8.form.action.params.Editor(editorCfg);
-			} else {
-				return null;
-			}
-		},
-
-		getParametersWindow: function(action, handler, scope) {
-			var editor = this.getParametersEditor(action);
-
-			if(editor == null)
-				return null;
-
-			var winHandler = function(window, success) {
-				if (success) {
-					var params = editor.getParameters();
-					handler.call(scope, params);
-				}
-			}
-
-			var windowCfg = { header: action.text, icon: 'fa-list-alt', controls: [editor],
-								handler: winHandler, scope: null };
-			return new Z8.window.Window(windowCfg);
+			control.param.value = value;
 		}
 	}
 });

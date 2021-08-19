@@ -28,6 +28,10 @@ public class ParameterSource extends OBJECT {
 	public Field.CLASS<? extends Field> displayField = null;
 	public Field.CLASS<? extends Field> valueField = null;
 	
+	public Field getValueField() {
+		return valueField == null ? null : valueField.get();
+	}
+	
 	public void writeMeta(JsonWriter writer) {
 		if(query == null)
 			return;
