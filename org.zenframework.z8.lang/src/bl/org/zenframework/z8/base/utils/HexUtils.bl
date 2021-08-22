@@ -1,9 +1,0 @@
-[native "org.zenframework.z8.server.utils.HexUtils"]
-public class HexUtils {
-
-	public static string hex(string value);
-
-	public static string sha256hex(string value);
-
-	public static string sha1hex(string value);
-}

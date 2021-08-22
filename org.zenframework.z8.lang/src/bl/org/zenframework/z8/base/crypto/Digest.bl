@@ -2,7 +2,7 @@
 public class Digest {
 
 	public static string md5(string value);
-	public static string sha256(string value);
+	public static string sha256(byte[] value);
 	public static string sha1(string value);
 
 }
