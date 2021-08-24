@@ -1,21 +1,25 @@
 package org.zenframework.z8.server.db;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.engine.IDatabase;
 
-public class BasicSelect extends BasicStatement {
+public class SelectStatement extends Statement {
 	private Cursor cursor = null;
 
-	public BasicSelect(Connection connection) {
-		super(connection);
+	public SelectStatement(Connection connection, String sql) {
+		super(connection, sql, 0);
 	}
 
 	@Override
-	public void prepare(String sql, int priority) throws SQLException {
-		this.sql = sql;
-		this.statement = connection().prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+	protected PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException {
+		return  connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+	}
+
+	@Override
+	protected void prepare() throws SQLException {
 	}
 
 	public Cursor execute() throws SQLException {
@@ -25,12 +29,12 @@ public class BasicSelect extends BasicStatement {
 	}
 
 	@Override
-	protected void cleanup() throws SQLException {
+	public void close() {
 		if(cursor != null && !cursor.isClosed()) {
 			cursor.close();
 			cursor = null;
 		}
-		super.cleanup();
+		super.close();
 	}
 
 	public static Cursor cursor(String sql) throws SQLException {
@@ -42,8 +46,7 @@ public class BasicSelect extends BasicStatement {
 	}
 
 	public static Cursor cursor(Connection connection, String sql) throws SQLException {
-		BasicSelect select = new BasicSelect(connection);
-		select.prepare(sql);
+		SelectStatement select = new SelectStatement(connection, sql);
 		return select.execute();
 	}
 }

@@ -35,7 +35,7 @@ public class MaintenanceJob extends Executable {
 
 		try {
 			Trace.logEvent("VACUUM ANALYZE started.");
-			Statement.executeUpdate("vacuum analyze");
+			DmlStatement.execute("vacuum analyze");
 			Trace.logEvent("VACUUM ANALYZE finished successfully.");
 		} catch(SQLException e) {
 			Trace.logError("VACUUM ANALYZE finished with error.", e);

@@ -258,7 +258,7 @@ public class Query extends OBJECT {
 	}
 
 	public Connection getConnection() {
-		return connection;
+		return connection != null ? connection : ConnectionManager.get();
 	}
 
 	public void setConnection(Connection connection) {
@@ -345,12 +345,11 @@ public class Query extends OBJECT {
 	}
 
 	public int executeUpdate(guid recordId) {
-		return new Update(this, getChangedFields(), recordId).execute();
+		return Update.create(this, getChangedFields(), recordId).execute();
 	}
 
 	private void executeInsert(Collection<Field> fields) {
-		Insert insert = new Insert(this, fields);
-		insert.execute();
+		Insert.create(this, fields).execute();
 	}
 
 	public guid insert(guid recordId) {

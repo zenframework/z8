@@ -2,7 +2,7 @@ package org.zenframework.z8.server.base.sql;
 
 import java.sql.SQLException;
 
-import org.zenframework.z8.server.db.BasicSelect;
+import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -42,7 +42,7 @@ public class Cursor extends OBJECT {
 	static public Cursor.CLASS<? extends Cursor> z8_open(Database.CLASS<? extends Database> database, string sql) {
 		Cursor.CLASS<Cursor> cls = new Cursor.CLASS<Cursor>(null);
 		try {
-			cls.get().cursor = BasicSelect.cursor(database.get().database, sql.get());
+			cls.get().cursor = SelectStatement.cursor(database.get().database, sql.get());
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}

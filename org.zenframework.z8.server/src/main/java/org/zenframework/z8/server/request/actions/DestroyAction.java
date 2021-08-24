@@ -58,7 +58,7 @@ public class DestroyAction extends RequestAction {
 
 		if(!guid.Null.equals(id)) {
 			query.beforeDestroy(id);
-			result = new Delete(query, id).execute();
+			result = Delete.create(query, id).execute();
 			query.afterDestroy(id);
 		}
 
