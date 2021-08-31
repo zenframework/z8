@@ -29,12 +29,17 @@ public class Insert extends DmlStatement {
 		String sql = "insert into " + database.tableName(query.name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
 
 		Insert insert = (Insert)connection.getStatement(sql);
-		return insert != null ? insert : new Insert(query.getConnection(), sql, query.priority(), fields);
+		return insert != null ? insert.initialize(fields) : new Insert(connection, sql, query.priority(), fields);
 	}
 
 	private Insert(Connection connection, String sql, int priority, Collection<Field> fields) {
 		super(connection, sql, priority);
+		initialize(fields);
+	}
+
+	private Insert initialize(Collection<Field> fields) {
 		this.fields = fields;
+		return this;
 	}
 
 	@Override

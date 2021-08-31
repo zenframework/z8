@@ -18,12 +18,17 @@ public class Delete extends DmlStatement {
 		String sql = "delete from " + database.tableName(query.name()) + " where " + vendor.quote(query.primaryKey().name()) + "=?";
 
 		Delete delete = (Delete)connection.getStatement(sql);
-		return delete != null ? delete : new Delete(query.getConnection(), sql, Integer.MAX_VALUE - query.priority(), recordId);
+		return delete != null ? delete.initialize(recordId) : new Delete(query.getConnection(), sql, Integer.MAX_VALUE - query.priority(), recordId);
 	}
 
 	private Delete(Connection connection, String sql, int priority, guid recordId) {
 		super(connection, sql, priority);
+		initialize(recordId);
+	}
+
+	private Delete initialize(guid recordId) {
 		this.recordId = recordId;
+		return this;
 	}
 
 	@Override
