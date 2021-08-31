@@ -50,9 +50,13 @@ public class Update extends DmlStatement {
 
 	private Update(Connection connection, String sql, int priority, Collection<Field> fields, guid recordId) {
 		super(connection, sql, priority);
+		initialize(fields, recordId);
+	}
 
+	private Update initialize(Collection<Field> fields, guid recordId) {
 		this.fields = fields;
 		this.recordId = recordId;
+		return this;
 	}
 
 	@Override
