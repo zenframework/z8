@@ -11,7 +11,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.BasicSelect;
+import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.json.Json;
@@ -183,7 +183,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		Cursor cursor = null;
 
 		try {
-			cursor = BasicSelect.cursor(sql);
+			cursor = SelectStatement.cursor(sql);
 			return cursor.next() && cursor.getInteger(1).get() != 0;
 		} catch(SQLException e) {
 			Trace.logError(e);

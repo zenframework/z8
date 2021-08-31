@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.base.sql;
 
-import org.zenframework.z8.server.db.Call;
+import org.zenframework.z8.server.db.CallStatement;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -51,6 +51,6 @@ public class Connection extends OBJECT {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void z8_call(string name, RCollection parameters) {
-		new Call(name.get(), parameters, connection).execute();
+		CallStatement.create(connection, name.get(), parameters).execute();
 	}
 }

@@ -7,7 +7,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.Statement;
+import org.zenframework.z8.server.db.DmlStatement;
 import org.zenframework.z8.server.engine.IDatabase;
 
 class IndexGenerator {
@@ -30,7 +30,7 @@ class IndexGenerator {
 		boolean unique = field.unique();
 		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " " + formatIndexField(vendor);
 
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 
 	private String formatIndexField(DatabaseVendor vendor) {
@@ -67,12 +67,12 @@ class IndexGenerator {
 	private static void dropIndexOracle(Connection connection, String tableName, String indexName) throws SQLException {
 		IDatabase database = connection.database();
 		String sql = "drop index " + database.tableName(indexName);
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 
 	private static void dropIndexSQLServer(Connection connection, String tableName, String indexName) throws SQLException {
 		DatabaseVendor vendor = connection.vendor();
 		String sql = "drop index " + vendor.quote(tableName) + "." + vendor.quote(indexName);
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 }
