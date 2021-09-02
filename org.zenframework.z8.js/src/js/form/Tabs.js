@@ -115,16 +115,16 @@ Z8.define('Z8.form.Tabs', {
 			this.getTabs().onDeactivateTab(this);
 			DOM.addCls(this, 'inactive');
 			return this;
-		},
+		};
 
 		tab.protoOnDestroy = tab.onDestroy;
 		tab.onDestroy = function() {
 			this.getTabTag().destroy();
 			this.protoOnDestroy();
-		},
+		};
 
-		tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive').join(' ');
-		tab.tabTag = new Z8.button.Button({ cls: 'tag', visible: tab.visible, toggle: true, text: tab.getTitle(), icon: tab.icon, tab: tab, toggleHandler: this.onTabToggle, scope: this });
+		tab.tabTag = new Z8.button.Button({ cls: DOM.parseCls(tab.cls).pushIf('tag'), visible: tab.visible, toggle: true, text: tab.getTitle(), icon: tab.icon, tab: tab, toggleHandler: this.onTabToggle, scope: this });
+		tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive');
 		tab.icon = null;
 		tab.tabs = this;
 
