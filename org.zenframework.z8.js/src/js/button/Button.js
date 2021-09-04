@@ -172,6 +172,10 @@ Z8.define('Z8.button.Button', {
 		return cls;
 	},
 
+	getIcon: function() {
+		return this.icon;
+	},
+
 	setIcon: function(cls) {
 		this.iconCls = cls;
 		DOM.setCls(this.icon, this.getIconCls());
