@@ -45,7 +45,7 @@ public class Update extends DmlStatement {
 		sql += " set " + set + (whereClause.isEmpty() ? "" : " where " + whereClause);
 
 		Update update = (Update)connection.getStatement(sql);
-		return update != null ? update : new Update(query.getConnection(), sql, query.priority(), fields, recordId);
+		return update != null ? update.initialize(fields, recordId) : new Update(query.getConnection(), sql, query.priority(), fields, recordId);
 	}
 
 	private Update(Connection connection, String sql, int priority, Collection<Field> fields, guid recordId) {
