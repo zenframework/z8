@@ -36,8 +36,12 @@
 	<entry key="Users.changePassword">Изменить пароль при следующем входе</entry>
 	<entry key="Users.resetPassword">Сбросить пароль</entry>
 	<entry key="Users.settings">Настройки</entry>
+	<entry key="Users.isGroup">Группа</entry>
 
 	<entry key="Users.name.default">User</entry>
+
+	<entry key="Users.error.builtinBannedChanged">Состояние блокировки системных пользователей не может быть изменено</entry>
+	<entry key="Users.error.builtinIsGroupChanged">Системные учётные записи не могут быть преобразованы в группы</entry>
 
 	<!-- Domains -->
 	<entry key="Domains.title">Домены</entry>

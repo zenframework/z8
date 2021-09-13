@@ -36,8 +36,12 @@
 	<entry key="Users.changePassword">Change password at next login</entry>
 	<entry key="Users.resetPassword">Reset password</entry>
 	<entry key="Users.settings">Settings</entry>
+	<entry key="Users.isGroup">Is group</entry>
 
 	<entry key="Users.name.default">User</entry>
+
+	<entry key="Users.error.builtinBannedChanged">Builtin users ban state can not be changed</entry>
+	<entry key="Users.error.builtinIsGroupChanged">Builtin users can not be changed to groups</entry>
 
 	<!-- Domains -->
 	<entry key="Domains.title">Domains</entry>
