@@ -35,6 +35,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -82,7 +83,7 @@ public abstract class Adapter {
 				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = login(login, password, ServletUtil.getSchema(request));
+				session = login(getLoginParameters(login, request), password);
 				if(httpSession != null)
 					httpSession.setAttribute(Json.session.get(), session.id());
 			} else
@@ -109,8 +110,8 @@ public abstract class Adapter {
 		}
 	}
 
-	protected ISession login(String login, String password, String scheme) throws IOException, ServletException {
-		return ServerConfig.authorityCenter().login(login, password, scheme);
+	protected ISession login(LoginParameters loginParameters, String password) throws IOException, ServletException {
+		return ServerConfig.authorityCenter().login(loginParameters, password);
 	}
 
 	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
@@ -211,6 +212,13 @@ public abstract class Adapter {
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
+	}
+
+	protected static LoginParameters getLoginParameters(String login, HttpServletRequest request) {
+		LoginParameters loginParameters = new LoginParameters(login);
+		loginParameters.setAddress(request.getRemoteAddr());
+		loginParameters.setSchema(ServletUtil.getSchema(null));
+		return loginParameters;
 	}
 
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {

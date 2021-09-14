@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.query.RecordLock;
+import org.zenframework.z8.server.base.security.LoginParameters;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IField;
@@ -302,11 +303,17 @@ public class Users extends Table {
 		}
 	}
 
-	public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {
-		return z8_getParameters(user.id(), new string(user.login()), parameters).get();
+	public boolean getExtraParameters(org.zenframework.z8.server.security.LoginParameters loginParameters, RLinkedHashMap<string, primary> parameters) {
+		return z8_getParameters(LoginParameters.newInstance(loginParameters), parameters).get();
 	}
 
-	public bool z8_getParameters(guid id, string name, RLinkedHashMap<string, primary> parameters) {
+	@SuppressWarnings("rawtypes")
+	public bool z8_getParameters(guid id, string name, RLinkedHashMap parameters) {
 		return bool.True;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public bool z8_getParameters(LoginParameters.CLASS<? extends LoginParameters> loginParameters, RLinkedHashMap parameters) {
+		return z8_getParameters(loginParameters.get().z8_userId(), loginParameters.get().z8_login(), parameters);
 	}
 }

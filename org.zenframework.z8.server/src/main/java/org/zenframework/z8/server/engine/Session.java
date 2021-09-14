@@ -23,8 +23,8 @@ public class Session implements ISession {
 	public Session() {
 	}
 
-	public Session(String scheme) {
-		this("system", User.system(scheme));
+	public Session(String schema) {
+		this("system", User.system(schema));
 	}
 
 	public Session(String id, IUser user) {

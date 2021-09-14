@@ -20,6 +20,7 @@ import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.file;
@@ -138,11 +139,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(String login, String password, String scheme) {
-		setRequest(new Request(new Session(scheme)));
+	public IUser user(LoginParameters loginParameters, String password) {
+		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
 
 		try {
-			return User.load(login, password);
+			return User.load(loginParameters, password);
 		} finally {
 			Scheduler.start(getDatabase());
 
@@ -152,11 +153,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser create(String login, String scheme) {
-		setRequest(new Request(new Session(scheme)));
+	public IUser create(LoginParameters loginParameters) {
+		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
 
 		try {
-			return User.create(login);
+			return User.create(loginParameters);
 		} finally {
 			Scheduler.start(getDatabase());
 

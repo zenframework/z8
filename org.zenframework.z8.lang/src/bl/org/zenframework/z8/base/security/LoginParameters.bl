@@ -1,0 +1,9 @@
+[native "org.zenframework.z8.server.base.security.LoginParameters"]
+public class LoginParameters {
+
+	public guid userId();
+	public string login();
+	public string address();
+	public string schema();
+
+}

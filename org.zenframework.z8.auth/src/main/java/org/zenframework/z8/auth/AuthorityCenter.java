@@ -10,6 +10,7 @@ import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.StringUtils;
@@ -100,7 +101,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login, String password, String scheme) throws RemoteException {
+	public ISession login(LoginParameters loginParameters, String password) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
 		IApplicationServer loginServer = serverInfo.getServer();
 
@@ -110,18 +111,19 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		IUser user;
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) && LdapAPI.isUserExist(new LdapAPI.Connection(), login)) {
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())
+				&& LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
 			try {
-				user = loginServer.user(login, null, scheme);
+				user = loginServer.user(loginParameters, null);
 			} catch (UserNotFoundException e) {
 				if (ldapUsersCreateOnSuccessfulLogin)
-					user = loginServer.create(login, scheme);
+					user = loginServer.create(loginParameters);
 				else
 					throw new AccessDeniedException();
 			}
 		} else {
 			try {
-				user = loginServer.user(login, clientHashPassword ? password : Digest.md5(password), scheme);
+				user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
 			} catch (UserNotFoundException ignored) {
 				throw new AccessDeniedException();
 			}
@@ -133,20 +135,20 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession trustedLogin(String login, String scheme, boolean createIfNotExist) throws RemoteException {
+	public ISession trustedLogin(LoginParameters loginParameters, boolean createIfNotExist) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
 		try {
-			return login0(serverInfo, login, scheme);
+			return login0(serverInfo, loginParameters);
 		} catch (UserNotFoundException e) {
 			if (!createIfNotExist)
 				throw e;
-			serverInfo.getServer().create(login, scheme);
-			return login0(serverInfo, login, scheme);
+			serverInfo.getServer().create(loginParameters);
+			return login0(serverInfo, loginParameters);
 		}
 	}
 
-	private ISession login0(IServerInfo serverInfo, String login, String scheme) throws RemoteException {
-		IUser user = serverInfo.getServer().user(login, null, scheme);
+	private ISession login0(IServerInfo serverInfo, LoginParameters loginParameters) throws RemoteException {
+		IUser user = serverInfo.getServer().user(loginParameters, null);
 		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;

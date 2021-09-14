@@ -214,16 +214,16 @@ public class User implements IUser {
 	}
 
 	static public IUser read(guid userId) {
-		return userId.isNull() ? null : read((primary)userId);
+		return userId.isNull() ? null : read(new LoginParameters(userId));
 	}
 
-	static private IUser read(primary loginOrId) {
+	static private IUser read(LoginParameters loginParameters) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
 
 		boolean isLatestVersion = database.isLatestVersion();
 
-		boolean exists = user.readInfo(loginOrId, !isLatestVersion);
+		boolean exists = user.readInfo(loginParameters, !isLatestVersion);
 		if(!exists)
 			throw new UserNotFoundException();
 
@@ -244,28 +244,28 @@ public class User implements IUser {
 		return user;
 	}
 
-	public static IUser create(String loginOrId) {
+	public static IUser create(LoginParameters loginParameters) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
-		user.login = loginOrId;
+		user.login = loginParameters.getLogin();
 		user.password = Digest.md5(plainPassword);
 
 		Users users = Users.newInstance();
-		users.name.get().set(loginOrId);
+		users.name.get().set(loginParameters.getLogin());
 		users.password.get().set(new string(user.password));
-		user.id = users.create();
-		return read(new string(loginOrId));
+		loginParameters.setId(user.id = users.create());
+		return read(loginParameters);
 	}
 
-	static public IUser load(String login, String password) {
+	static public IUser load(LoginParameters loginParameters, String password) {
 		IDatabase database = ApplicationServer.getDatabase();
 
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = read(new string(login));
+		IUser user = read(loginParameters);
 
 		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 			throw new AccessDeniedException();
@@ -283,14 +283,15 @@ public class User implements IUser {
 		entries.add(new Entry(systemTools.key(), systemTools.classId(), Resources.get(SystemTools.strings.Title)));
 	}
 
-	private boolean readInfo(primary loginOrId, boolean shortInfo) {
+	private boolean readInfo(LoginParameters loginParameters, boolean shortInfo) {
 		Users users = Users.newInstance();
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
 
-		SqlToken where = (loginOrId instanceof guid) ? new Equ(users.recordId.get(), loginOrId) : new EqualsIgnoreCase(users.name.get(), (string)loginOrId);
+		SqlToken where = (loginParameters.getId() != null) ? new Equ(users.recordId.get(), loginParameters.getId())
+				: new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
@@ -323,8 +324,10 @@ public class User implements IUser {
 		if(shortInfo)
 			return true;
 
+		loginParameters.setId(this.id);
+
 		try {
-			return users.getExtraParameters(this, parameters);
+			return users.getExtraParameters(loginParameters, parameters);
 		} catch(Throwable e) {
 			Trace.logError(e);
 			return BuiltinUsers.Administrator.guid().equals(id) || BuiltinUsers.System.guid().equals(id);
