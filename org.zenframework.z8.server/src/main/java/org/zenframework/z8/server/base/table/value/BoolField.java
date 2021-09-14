@@ -59,7 +59,7 @@ public class BoolField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public bool get() {
 		return z8_get();
 	}
 

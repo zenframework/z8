@@ -36,7 +36,7 @@ public class DatespanExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public datespan get() {
 		return z8_get();
 	}
 

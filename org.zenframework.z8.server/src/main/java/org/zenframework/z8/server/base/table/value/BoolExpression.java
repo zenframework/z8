@@ -38,7 +38,7 @@ public class BoolExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public bool get() {
 		return z8_get();
 	}
 
