@@ -12,6 +12,7 @@ public class TablesView extends Tables {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(TablesView.class);
+			setAttribute(SystemTool, Integer.toString(400));
 		}
 
 		@Override

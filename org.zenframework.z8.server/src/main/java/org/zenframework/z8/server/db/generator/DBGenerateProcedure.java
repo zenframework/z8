@@ -13,6 +13,7 @@ public class DBGenerateProcedure extends Procedure {
 			super(container);
 			setJavaClass(DBGenerateProcedure.class);
 			setDisplayName(Resources.get("Generator.displayName"));
+			setAttribute(SystemTool, Integer.toString(100000));
 		}
 
 		@Override

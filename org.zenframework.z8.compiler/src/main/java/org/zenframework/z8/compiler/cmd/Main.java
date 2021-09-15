@@ -54,7 +54,7 @@ public class Main {
 		outputExitCode(-3);
 	}
 
-	static private boolean initializeWorkspaceAndBuild(ProjectProperties properties) throws FileException, CoreException {
+	static public Project initializeProject(ProjectProperties properties) throws CoreException {
 		Workspace workspace = Workspace.initialize(new DummyContainer());
 
 		Project project = workspace.createProject(new DummyProject(properties.getProjectName(), (DummyContainer) workspace.getResource(), properties.getProjectPath()), properties);
@@ -73,17 +73,10 @@ public class Main {
 		for(Project p : projects)
 			p.setReferencedProjects(resources.toArray(new IResource[0]));
 
-		DefaultBuildMessageConsumer consumer = new DefaultBuildMessageConsumer();
-
-		project.build(consumer);
-
-		generateSourceList(project, properties.getOutputPath());
-		generateDocs(projects, properties.getDocsPath(), properties.getDocTemplatePath());
-
-		return consumer.getErrorCount() == 0;
+		return project;
 	}
 
-	static protected void generateSourceList(Project project, IPath outputPath) {
+	static protected void generateSourceList(Project project, IPath outputPath) throws FileException {
 		final StringBuffer sources = new StringBuffer();
 
 		CompilationUnit[] compilationUnits = project.getCompilationUnits();
@@ -96,22 +89,13 @@ public class Main {
 		sources.append("\"" + project.getOutputPath().append(StartupCodeGenerator.getRuntimeJavaPath(project)) + "\"\n");
 		sources.append("\"" + project.getOutputPath().append(StartupCodeGenerator.Z8BlRuntimePath) + "\"");
 
-		try {
-			outputPath = outputPath.append("javafiles.lst");
-			File.fromPath(outputPath).write(sources.toString());
-		} catch(FileException e) {
-			outputErrorAndExit(e.getMessage());
-		}
+		outputPath = outputPath.append("javafiles.lst");
+		File.fromPath(outputPath).write(sources.toString());
 	}
 
-	static protected void generateDocs(Project[] projects, IPath docsPath, IPath docTemplatePath) {
-		try {
-			if(docsPath != null) {
-				new DocsGenerator(projects, docsPath, docTemplatePath).run();
-			}
-		} catch(Throwable e) {
-			outputErrorAndExit(e.getMessage());
-		}
+	static protected void generateDocs(Project[] projects, IPath docsPath, IPath docTemplatePath) throws FileException {
+		if(docsPath != null)
+			new DocsGenerator(projects, docsPath, docTemplatePath).run();
 	}
 
 	static private boolean validateDirectory(IPath path) throws FileException {
@@ -186,7 +170,17 @@ public class Main {
 				System.out.println("Warning: required path " + requiredPath + " does not exist");
 		}
 
-		if (!initializeWorkspaceAndBuild(properties))
+		Project project = initializeProject(properties);
+		Project[] projects = project.getWorkspace().getProjects();
+
+		DefaultBuildMessageConsumer consumer = new DefaultBuildMessageConsumer();
+
+		project.build(consumer);
+
+		generateSourceList(project, properties.getOutputPath());
+		generateDocs(projects, properties.getDocsPath(), properties.getDocTemplatePath());
+
+		if (consumer.getErrorCount() != 0)
 			throw new CompilerException("COMPILATION FAILED");
 	}
 

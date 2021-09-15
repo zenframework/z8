@@ -17,7 +17,7 @@ public class Resources {
 
 	private static Resources instance;
 
-	private Map<String, Properties> boundles = new ConcurrentHashMap<String, Properties>();
+	private Map<String, Properties> bundles = new ConcurrentHashMap<String, Properties>();
 
 	static {
 		instance = new Resources();
@@ -25,6 +25,13 @@ public class Resources {
 
 	public static String get(String id) {
 		return getResources().getString(id);
+	}
+
+	public static String getByKey(String id) {
+		if(id.length() < 2 || id.charAt(0) != '$' || id.charAt(id.length() - 1) != '$')
+			return id;
+
+		return get(id.substring(1, id.length() - 1));
 	}
 
 	public static Resources getResources() {
@@ -36,7 +43,7 @@ public class Resources {
 	}
 
 	private String getString(String key) {
-		Properties properties = boundles.get(DefaultLanguage);
+		Properties properties = bundles.get(DefaultLanguage);
 
 		if(properties == null)
 			return key;
@@ -50,7 +57,7 @@ public class Resources {
 	}
 
 	public boolean load(final String language) {
-		if(boundles.containsKey(language))
+		if(bundles.containsKey(language))
 			return true;
 
 		File resourcesFolder = new File(Folders.Base, "resources");
@@ -79,7 +86,7 @@ public class Resources {
 		boolean result = true;
 
 		Properties boundle = new Properties();
-		boundles.put(language, boundle);
+		bundles.put(language, boundle);
 
 		for(File file : files) {
 			try {

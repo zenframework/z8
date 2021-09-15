@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -92,7 +91,7 @@ public class File {
 		}
 	}
 
-	public char[] read() throws FileException, UnsupportedEncodingException {
+	public char[] read() throws FileException {
 		InputStream stream = inputStream();
 		try {
 			byte[] rawBytes = new byte[stream.available()];

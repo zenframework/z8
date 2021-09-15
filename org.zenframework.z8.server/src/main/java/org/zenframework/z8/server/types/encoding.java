@@ -46,6 +46,9 @@ public enum encoding {
 	}
 
 	static public encoding fromString(String string) {
+		if (string == null)
+			return Default;
+
 		string = string.toLowerCase();
 
 		if(Names.Cp866.toLowerCase().equals(string))

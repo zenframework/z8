@@ -3,6 +3,7 @@ package org.zenframework.z8.compiler.workspace;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
@@ -493,16 +494,24 @@ public class Project extends Folder {
 	}
 
 	public CompilationUnit findCompilationUnit(IPath path) {
+		return findCompilationUnit(path, new HashSet<Project>());
+	}
+
+	private CompilationUnit findCompilationUnit(IPath path, java.util.Set<Project> checked) {
 		for (IPath sourcePath : sourcePaths) {
 			CompilationUnit unit = getCompilationUnit(sourcePath.append(path));
 			if(unit != null)
 				return unit;
 		}
 
+		checked.add(this);
+
 		Project[] referencedProjects = getReferencedProjects();
 
 		for(Project project : referencedProjects) {
-			CompilationUnit unit = project.findCompilationUnit(path);
+			if (checked.contains(project))
+				continue;
+			CompilationUnit unit = project.findCompilationUnit(path, checked);
 			if(unit != null)
 				return unit;
 		}

@@ -23,6 +23,7 @@ public class InterconnectionCenterView extends HubServerView {
 			super(container);
 			setJavaClass(InterconnectionCenterView.class);
 			setDisplayName(displayNames.Title);
+			setAttribute(SystemTool, Integer.toString(20000));
 		}
 
 		@Override

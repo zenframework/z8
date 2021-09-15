@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
 public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
@@ -34,18 +35,10 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	private Object[] closure;
 
-	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
-		List<T> result = new ArrayList<T>();
-
-		if(collection != null) {
-			for(org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
-				result.add((T)(cls.get()));
-		}
-
-		return result;
+	public CLASS(IObject container) {
+		this.container = container;
 	}
 
-	
 	@Override
 	public Map<String, String> getAttributes() {
 		return attributes;
@@ -68,16 +61,12 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	@Override
 	public void setAttribute(String key, String value) {
-		attributes.put(key, value);
+		attributes.put(key, Resources.getByKey(value));
 	}
 
 	@Override
 	public void removeAttribute(String key) {
 		attributes.remove(key);
-	}
-
-	public CLASS(IObject container) {
-		this.container = container;
 	}
 
 	@Override
@@ -205,6 +194,15 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		return null;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T extends CLASS> T clone(IObject container) {
+		try {
+			return (T) getClass().getConstructor(IObject.class).newInstance(container);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private void create(IObject container) {
 		try {
@@ -326,8 +324,8 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	@Override
-	public void setForeignKey(boolean foreignKey) {
-		setAttribute(ForeignKey, Boolean.toString(foreignKey));
+	public void setExportable(boolean exportable) {
+		setAttribute(Exportable, Boolean.toString(exportable));
 	}
 
 	@Override
@@ -337,8 +335,8 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	}
 
 	@Override
-	public void setExportable(boolean exportable) {
-		setAttribute(Exportable, Boolean.toString(exportable));
+	public void setForeignKey(boolean foreignKey) {
+		setAttribute(ForeignKey, Boolean.toString(foreignKey));
 	}
 
 	@Override
@@ -391,4 +389,14 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		writer.writeProperty(Json.url, url());
 	}
 
+	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
+		List<T> result = new ArrayList<T>();
+
+		if(collection != null) {
+			for(org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
+				result.add((T)(cls.get()));
+		}
+
+		return result;
+	}
 }
