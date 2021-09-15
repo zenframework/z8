@@ -3,6 +3,7 @@ package org.zenframework.z8.justintime.table;
 import java.util.Collection;
 
 import org.zenframework.z8.justintime.runtime.DynamicRuntime;
+import org.zenframework.z8.justintime.runtime.ISource;
 import org.zenframework.z8.justintime.runtime.JustInTimeListener;
 import org.zenframework.z8.justintime.runtime.Workspace;
 import org.zenframework.z8.server.base.form.action.Action;
@@ -46,7 +47,15 @@ public class CompileAction extends Action {
 
 	@Override
 	public void execute(Collection<guid> records, Query context, Collection<guid> selected, Query query) {
-		Source source = (Source) query;
+		compileAll((Source) query);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
+		execute((Collection<guid>)records, context.get(), (Collection<guid>)selected, query.get());
+	}
+
+	public static void compileAll(ISource source) {
 		IMonitor monitor = ApplicationServer.getMonitor();
 		JustInTimeListener listener = new JustInTimeListener();
 
@@ -59,8 +68,13 @@ public class CompileAction extends Action {
 
 			if (result)
 				DynamicRuntime.instance().loadDynamic();
-			else if (monitor != null)
-				monitor.warning("COMPILATION FAILED. See error messages.");
+
+			if (monitor != null) {
+				if (result)
+					monitor.info("COMPILATION SUCCESSFUL");
+				else
+					monitor.warning("COMPILATION FAILED. See error messages.");
+			}
 		} catch (Throwable e) {
 			ConnectionManager.get().rollback();
 			if (monitor != null)
@@ -68,9 +82,7 @@ public class CompileAction extends Action {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
-		execute((Collection<guid>)records, context.get(), (Collection<guid>)selected, query.get());
+	public static void z8_compileAll(Source.CLASS<? extends Source> source) {
+		compileAll(source.get());
 	}
-
 }

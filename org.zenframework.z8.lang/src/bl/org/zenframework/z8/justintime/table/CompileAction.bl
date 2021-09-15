@@ -6,4 +6,6 @@ public class CompileAction extends Action {
 	useTransaction = false;
 
 	virtual public void execute(guid[] recordIds, Query context, guid[] selected, Query query);
+
+	public static void compileAll(Source source);
 }
