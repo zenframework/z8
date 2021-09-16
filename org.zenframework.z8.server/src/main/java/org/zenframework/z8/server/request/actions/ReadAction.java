@@ -743,6 +743,9 @@ public class ReadAction extends RequestAction {
 
 		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.values));
 
+		if(isRequest())
+			query.onReadAction();
+
 		query.beforeRead();
 
 		initFilters();

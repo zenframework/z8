@@ -117,3 +117,10 @@ if(Array.prototype.fill == null) {
 	};
 }
 
+Array.prototype.toIdArray = function() {
+	var idArray = new Array(this.length);
+	for(var i = 0, length = this.length; i < length; i++)
+		idArray[i] = this[i].getId();
+	return idArray;
+};
+

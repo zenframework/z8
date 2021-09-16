@@ -57,13 +57,13 @@ public class FramedSelect extends Select {
 		} else if(vendor == DatabaseVendor.Postgres) {
 			String sql = super.sql(options);
 
-			sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
+			sql += "\nlimit " + (limit > 0 ? limit : "all") + " offset " + start;
 			return sql;
 		} else if(vendor == DatabaseVendor.H2) {
 			options.disableReadLock();
 			String sql = super.sql(options);
 			if (limit > 0)
-				sql += "\nlimit " + (limit != -1 ? limit : "all") + " offset " + start;
+				sql += "\nlimit " + (limit > 0 ? limit : "all") + " offset " + start;
 			options.enableReadLock();
 			sql += formatReadLock(options);
 			return sql;

@@ -477,8 +477,14 @@ Z8.define('Z8.list.Item', {
 		if(!this.isEnabled())
 			return;
 
+		var list = this.getList(), editor = list.getCurrentEditor();
+
+		if(editor != null && (target == editor.getDom() || DOM.isParentOf(editor, target)))
+			return;
+
 		var index = this.findCellIndex(target);
-		this.getList().onItemContextMenu(this, index);
+		this.getList().onItemContextMenu(this, index, event.pageX, event.pageY);
+		event.stopEvent();
 	},
 
 	onDblClick: function(event, target) {

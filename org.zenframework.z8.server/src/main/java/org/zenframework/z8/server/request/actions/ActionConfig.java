@@ -54,6 +54,10 @@ public class ActionConfig {
 		this.recordIds = recordIds;
 	}
 
+	public boolean isRequest() {
+		return !requestParameters.isEmpty();
+	}
+
 	public Map<string, string> requestParameters() {
 		return requestParameters;
 	}

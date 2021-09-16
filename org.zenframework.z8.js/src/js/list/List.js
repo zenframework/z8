@@ -640,10 +640,10 @@ Z8.define('Z8.list.List', {
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
 			var cls = i != 0 ? (i == length - 1 ? 'last': null) : 'first';
-			var isSortHeader = sorter != null && field.name == sorter.property && field.sortable !== false;
-			field.sortDirection = isSortHeader ? sorter.direction : null;
-			var header = this.createHeader(fields[i], cls);
-			if(isSortHeader)
+			var header = this.createHeader(field, cls);
+			var isSortable = header.isSortableWith(sorter);
+			header.setSort(isSortable ? sorter.direction || 'asc' : null);
+			if(isSortable)
 				this.sortHeader = header;
 			headers.push(header);
 		}
@@ -918,7 +918,7 @@ Z8.define('Z8.list.List', {
 		var start = 0 + (this.checks ? 1 : 0) + (this.locks ? 1 : 0);
 		for(var i = start, length = headers.length; i < length; i++) {
 			var header = headers[i];
-			if(header.field.name == name)
+			if(header.getName() == name || header.isSortableWith(name))
 				return header;
 		}
 		return null;
@@ -1308,11 +1308,11 @@ Z8.define('Z8.list.List', {
 	},
 
 	onHeaderSort: function(header) {
-		if(header.field.sortable == false)
+		if(header.field.sortable === false)
 			return;
 
 		var direction = header.getSort() == 'asc' ?  'desc' : 'asc';
-		var sorter = { property: header.field.name, direction: direction };
+		var sorter = { property: header.getSortProperty(), direction: direction };
 
 		var callback = function(store, records, success) {
 			header.setBusy(false);
@@ -1337,15 +1337,11 @@ Z8.define('Z8.list.List', {
 		if(sorter == null && header == null)
 			return;
 
-		if(header != null && sorter != null && header.field.name == sorter.property && header.field.sortable !== false) {
-			header.setSort(sorter.direction);
-			return;
-		}
+		if(header != null && header.isSortableWith(sorter))
+			return header.setSort(sorter.direction);
 
-		if(header != null) {
-			header.setSort(null);
-			this.sortHeader = null;
-		}
+		if(header != null)
+			header.setSort(this.sortHeader = null);
 
 		if(sorter != null) {
 			header = this.getHeader(sorter.property);
@@ -1498,12 +1494,6 @@ Z8.define('Z8.list.List', {
 		this.fireEvent('itemClick', this, item, index);
 	},
 
-	onItemContextMenu: function(item, index) {
-		if(this.selectOnRightClick)
-			this.setSelection(item);
-		this.fireEvent('itemContextMenu', this, item, index);
-	},
-
 	onIconClick: function(item) {
 		this.fireEvent('iconClick', this, item);
 	},
@@ -1511,6 +1501,12 @@ Z8.define('Z8.list.List', {
 	onItemDblClick: function(item, index) {
 		this.startEditTask.cancel();
 		this.fireEvent('itemDblClick', this, item, index);
+	},
+
+	onItemContextMenu: function(item, index, x, y) {
+		if(this.selectOnRightClick)
+			this.setSelection(item);
+		this.fireEvent('itemContextMenu', this, item, index, x, y);
 	},
 
 	processCheckBoxEdit: function(item, index) {
@@ -1699,8 +1695,12 @@ Z8.define('Z8.list.List', {
 		return false;
 	},
 
+	getCurrentEditor: function() {
+		return this.currentEditor || null;
+	},
+
 	isEditing: function() {
-		return this.currentEditor != null;
+		return this.getCurrentEditor() != null;
 	},
 
 	canStartEdit: function(item, editor) {

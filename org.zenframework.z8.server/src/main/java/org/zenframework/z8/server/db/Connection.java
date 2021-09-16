@@ -239,7 +239,7 @@ public class Connection {
 	public void rollback() {
 		try {
 			if(!inTransaction())
-				throw new RuntimeException("Connection.rollback() - not in transaction");
+				return;
 
 			transactionCount--;
 			if(inTransaction())

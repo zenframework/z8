@@ -45,6 +45,10 @@ public abstract class RequestAction extends RequestTarget {
 		return config;
 	}
 
+	public boolean isRequest() {
+		return config.isRequest();
+	}
+
 	public Map<string, string> getRequestParameters() {
 		return config.requestParameters();
 	}

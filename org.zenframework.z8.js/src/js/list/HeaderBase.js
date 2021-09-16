@@ -1,5 +1,5 @@
 Z8.define('Z8.list.HeaderBase', {
-	extend: 'Z8.Component',
+	extend: 'Component',
 	shortClassName: 'HeaderBase',
 
 	statics: {
@@ -14,11 +14,26 @@ Z8.define('Z8.list.HeaderBase', {
 	},
 
 	initComponent: function() {
-		this.callParent();
+		Component.prototype.initComponent.call(this);
+	},
+
+	getName: function() {},
+
+	getSortProperty: function() {
+		return null;
+	},
+
+	isSortable: function() {
+		return false;
+	},
+
+	isSortableWith: function(sorter) {
+		return false;
 	},
 
 	getSort: function() {},
 	setSort: function() {},
+
 	getFilter: function() {},
 	setFilter: function() {}
 });

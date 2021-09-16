@@ -1,5 +1,5 @@
 Z8.define('Z8.list.HeaderCheck', {
-	extend: 'Z8.list.HeaderIcon',
+	extend: 'HeaderIcon',
 
 	cls: 'check',
 
