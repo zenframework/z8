@@ -2,16 +2,22 @@ package org.zenframework.z8.server.db.sql.functions;
 
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 
 public class If extends SqlToken {
 	private SqlToken condition;
 	private SqlToken trueToken;
 	private SqlToken falseToken;
+
+	public If(BoolField field, SqlToken trueToken, SqlToken falseToken) {
+		this(new SqlField(field), trueToken, falseToken);
+	}
 
 	public If(SqlToken condition, SqlToken trueToken, SqlToken falseToken) {
 		this.condition = condition;

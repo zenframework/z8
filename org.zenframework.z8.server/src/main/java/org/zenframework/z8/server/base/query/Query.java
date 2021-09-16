@@ -163,6 +163,11 @@ public class Query extends OBJECT {
 			z8_onCopy(recordId);
 	}
 
+	public void onReadAction() {
+		if(ApplicationServer.userEventsEnabled())
+			z8_onReadAction();
+	}
+
 	public void beforeRead() {
 		if(ApplicationServer.userEventsEnabled())
 			z8_beforeRead();
@@ -1458,6 +1463,9 @@ public class Query extends OBJECT {
 	}
 
 	public void z8_onCopy(guid recordId) {
+	}
+
+	public void z8_onReadAction() {
 	}
 
 	public void z8_beforeRead() {
