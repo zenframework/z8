@@ -217,7 +217,7 @@ public abstract class Adapter {
 	protected static LoginParameters getLoginParameters(String login, HttpServletRequest request) {
 		LoginParameters loginParameters = new LoginParameters(login);
 		loginParameters.setAddress(request.getRemoteAddr());
-		loginParameters.setSchema(ServletUtil.getSchema(null));
+		loginParameters.setSchema(ServletUtil.getSchema(request));
 		return loginParameters;
 	}
 
