@@ -52,8 +52,8 @@ public class Fields extends Table {
 		}
 	}
 
-	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
-	public Link.CLASS<Link> table = new Link.CLASS<Link>(this);
+	public Tables.CLASS<Tables> table = new Tables.CLASS<Tables>(this);
+	public Link.CLASS<Link> tableId = new Link.CLASS<Link>(this);
 
 	public StringField.CLASS<? extends StringField> classId = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> displayName = new StringField.CLASS<StringField>(this);
@@ -66,7 +66,7 @@ public class Fields extends Table {
 
 	@Override
 	public void constructor1() {
-		table.get(IClass.Constructor1).operatorAssign(tables);
+		tableId.get(IClass.Constructor1).operatorAssign(table);
 	}
 
 	@Override
@@ -74,22 +74,22 @@ public class Fields extends Table {
 		super.initMembers();
 
 		objects.add(classId);
-		objects.add(table);
+		objects.add(tableId);
 		objects.add(displayName);
 		objects.add(type);
 		objects.add(position);
 
-		objects.add(tables);
+		objects.add(table);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
-		tables.setIndex("tables");
-
-		table.setName(fieldNames.Table);
 		table.setIndex("table");
+
+		tableId.setName(fieldNames.Table);
+		tableId.setIndex("tableId");
 
 		name.get().length = new integer(256);
 

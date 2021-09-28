@@ -75,26 +75,26 @@ public class UsersView extends Users {
 		UserEntries userEntries = this.userEntries.get();
 
 		entriesListbox.get().query = this.userEntries;
-		entriesListbox.get().link = userEntries.user;
+		entriesListbox.get().link = userEntries.userId;
 		entriesListbox.get().flex = new integer(1);
 
 		userEntries.position.get().editable = bool.True;
 
-		userEntries.columns.add(userEntries.entries.get().name);
+		userEntries.columns.add(userEntries.entry.get().name);
 		userEntries.columns.add(userEntries.position);
 		userEntries.sortFields.add(userEntries.position);
 
 		UserRoles userRoles = this.userRoles.get();
 
 		Source.CLASS<Source> rolesSource = new Source.CLASS<Source>(rolesListbox.get());
-		rolesSource.get().query = new RoleTableAccessView.CLASS<RoleTableAccessView>(this);
+		rolesSource.get().query = new RoleView.CLASS<RoleView>(this);
 
 		rolesListbox.get().query = this.userRoles;
-		rolesListbox.get().link = userRoles.user;
+		rolesListbox.get().link = userRoles.userId;
 		rolesListbox.get().source = rolesSource;
 		rolesListbox.get().flex = new integer(1);
 
-		userRoles.columns.add(userRoles.roles.get().name);
+		userRoles.columns.add(userRoles.role.get().name);
 
 		name.get().colSpan = new integer(3);
 		name.get().editable = bool.True;

@@ -18,7 +18,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 abstract public class HubServer extends RmiServer implements IHubServer {
 	private static final long serialVersionUID = -3444119932500940159L;
 
-	private Collection<IServerInfo> servers = new ArrayList<IServerInfo>();
+	private Collection<ServerInfo> servers = new ArrayList<ServerInfo>();
 
 	protected HubServer(int port) throws RemoteException {
 		super(port);
@@ -32,29 +32,29 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	}
 
 	@Override
-	public IServerInfo[] servers() throws RemoteException {
+	public ServerInfo[] servers() throws RemoteException {
 		return getServers();
 	}
 
-	protected IServerInfo[] getServers() {
+	protected ServerInfo[] getServers() {
 		synchronized(this) {
-			return servers.toArray(new IServerInfo[0]);
+			return servers.toArray(new ServerInfo[0]);
 		}
 	}
 
-	private void add(IServerInfo server) {
+	private void add(ServerInfo server) {
 		synchronized(this) {
 			servers.add(server);
 		}
 	}
 
-	private void remove(IServerInfo server) {
+	private void remove(ServerInfo server) {
 		synchronized(this) {
 			servers.remove(server);
 		}
 	}
 
-	protected void sendToBottom(IServerInfo server) {
+	protected void sendToBottom(ServerInfo server) {
 		if(servers.size() > 1) {
 			synchronized(this) {
 				servers.remove(server);
@@ -63,8 +63,8 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		}
 	}
 
-	protected void addServer(IServerInfo server) {
-		IServerInfo existing = findServer(server.getServer());
+	protected void addServer(ServerInfo server) {
+		ServerInfo existing = findServer(server.getServer());
 
 		if(existing != null) {
 			existing.setId(server.getId());
@@ -77,19 +77,19 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	}
 
 	protected void removeServer(IApplicationServer server) {
-		IServerInfo info = findServer(server);
+		ServerInfo info = findServer(server);
 
 		if(info != null)
 			removeServer(info);
 	}
 
-	protected void removeServer(IServerInfo server) {
+	protected void removeServer(ServerInfo server) {
 		remove(server);
 		saveServers();
 	}
 
-	protected IServerInfo findServer(IApplicationServer server) {
-		for(IServerInfo existing : getServers()) {
+	protected ServerInfo findServer(IApplicationServer server) {
+		for(ServerInfo existing : getServers()) {
 			if(existing.equals(server))
 				return existing;
 		}
@@ -134,7 +134,7 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
 			if(serialVersionUID == objectIn.readLong())
-				servers = (Collection<IServerInfo>)objectIn.readObject();
+				servers = (Collection<ServerInfo>)objectIn.readObject();
 
 			IOUtils.closeQuietly(objectIn);
 			IOUtils.closeQuietly(fileIn);

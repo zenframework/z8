@@ -26,7 +26,7 @@ import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.ServerUnavailableException;
 import org.zenframework.z8.server.json.Json;
@@ -63,7 +63,7 @@ public abstract class Adapter {
 		HttpSession httpSession = useContainerSession ? request.getSession() : null;
 
 		try {
-			ISession session = null;
+			Session session = null;
 
 			Map<String, String> parameters = new HashMap<String, String>();
 			List<file> files = new ArrayList<file>();
@@ -84,7 +84,7 @@ public abstract class Adapter {
 
 				session = login(login, password, ServletUtil.getSchema(request));
 				if(httpSession != null)
-					httpSession.setAttribute(Json.session.get(), session.id());
+					httpSession.setAttribute(Json.session.get(), session.getId());
 			} else
 				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
 
@@ -109,11 +109,11 @@ public abstract class Adapter {
 		}
 	}
 
-	protected ISession login(String login, String password, String scheme) throws IOException, ServletException {
+	protected Session login(String login, String password, String scheme) throws IOException, ServletException {
 		return ServerConfig.authorityCenter().login(login, password, scheme);
 	}
 
-	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
+	protected Session authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
@@ -162,7 +162,7 @@ public abstract class Adapter {
 
 	abstract public boolean canHandleRequest(HttpServletRequest request);
 
-	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(Session session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		GNode node = new GNode(parameters, files);
 
 		IApplicationServer server = session.getServerInfo().getServer();

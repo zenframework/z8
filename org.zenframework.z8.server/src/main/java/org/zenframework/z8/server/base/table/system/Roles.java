@@ -1,13 +1,12 @@
 package org.zenframework.z8.server.base.table.system;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -17,10 +16,7 @@ import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.security.Access;
-import org.zenframework.z8.server.security.IAccess;
-import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.Role;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -67,14 +63,11 @@ public class Roles extends Table {
 	static public guid Guest = Role.Guest;
 	static public guid Administrator = Role.Administrator;
 
-	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
-	public BoolField.CLASS<BoolField> write = new BoolField.CLASS<BoolField>(this);
-	public BoolField.CLASS<BoolField> create = new BoolField.CLASS<BoolField>(this);
-	public BoolField.CLASS<BoolField> copy = new BoolField.CLASS<BoolField>(this);
-	public BoolField.CLASS<BoolField> destroy = new BoolField.CLASS<BoolField>(this);
-	public BoolField.CLASS<BoolField> execute = new BoolField.CLASS<BoolField>(this);
-
 	public static class CLASS<T extends Roles> extends Table.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
+
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Roles.class);
@@ -88,6 +81,14 @@ public class Roles extends Table {
 		}
 	}
 
+	static public void notifyRoleChange(guid role) {
+		try {
+			ServerConfig.authorityCenter().roleChanged(role, ApplicationServer.getSchema());
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public Roles(IObject container) {
 		super(container);
 	}
@@ -95,13 +96,6 @@ public class Roles extends Table {
 	@Override
 	public void initMembers() {
 		super.initMembers();
-
-		objects.add(read);
-		objects.add(write);
-		objects.add(create);
-		objects.add(copy);
-		objects.add(destroy);
-		objects.add(execute);
 	}
 
 	@Override
@@ -110,40 +104,6 @@ public class Roles extends Table {
 
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(50);
-
-		IAccess access = Access.guest();
-
-		read.setName(fieldNames.Read);
-		read.setIndex("read");
-		read.setDisplayName(displayNames.Read);
-		read.get().setDefault(new bool(access.read()));
-
-		write.setName(fieldNames.Write);
-		write.setIndex("write");
-		write.setDisplayName(displayNames.Write);
-		write.get().setDefault(new bool(access.write()));
-
-		create.setName(fieldNames.Create);
-		create.setIndex("create");
-		create.setDisplayName(displayNames.Create);
-		create.get().setDefault(new bool(access.create()));
-
-		copy.setName(fieldNames.Copy);
-		copy.setIndex("copy");
-		copy.setDisplayName(displayNames.Copy);
-		copy.get().setDefault(new bool(access.copy()));
-
-		destroy.setName(fieldNames.Destroy);
-		destroy.setIndex("destroy");
-		destroy.setDisplayName(displayNames.Destroy);
-		destroy.get().setDefault(new bool(access.destroy()));
-
-		execute.setName(fieldNames.Execute);
-		execute.setIndex("execute");
-		execute.setDisplayName(displayNames.Execute);
-		execute.get().setDefault(new bool(access.execute()));
-
-		this.setTransactive(true);
 	}
 
 	@Override
@@ -153,20 +113,12 @@ public class Roles extends Table {
 		initStaticRecord(Role.displayNames.Guest, Role.guest());
 	}
 
-	private void initStaticRecord(String displayName, IRole role) {
-		IAccess access = role.access();
-
+	private void initStaticRecord(String displayName, Role role) {
 		LinkedHashMap<IField, primary> values = new LinkedHashMap<IField, primary>();
 		values.put(name.get(), new string(displayName));
 		values.put(description.get(), new string(displayName));
-		values.put(read.get(), new bool(access.read()));
-		values.put(write.get(), new bool(access.write()));
-		values.put(create.get(), new bool(access.create()));
-		values.put(copy.get(), new bool(access.copy()));
-		values.put(destroy.get(), new bool(access.destroy()));
-		values.put(execute.get(), new bool(access.execute()));
 		values.put(lock.get(), RecordLock.Destroy);
-		addRecord(role.id(), values);
+		addRecord(role.getId(), values);
 	}
 
 	@Override
@@ -182,8 +134,8 @@ public class Roles extends Table {
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
 
 		for(guid table : Runtime.instance().tableKeys()) {
-			rta.role.get().set(recordId);
-			rta.table.get().set(table);
+			rta.roleId.get().set(recordId);
+			rta.tableId.get().set(table);
 			rta.create();
 		}
 
@@ -193,8 +145,8 @@ public class Roles extends Table {
 		fields.read(Arrays.asList(fields.primaryKey()));
 
 		while(fields.next()) {
-			rfa.role.get().set(recordId);
-			rfa.field.get().set(fields.recordId());
+			rfa.roleId.get().set(recordId);
+			rfa.fieldId.get().set(fields.recordId());
 			rfa.create();
 		}
 
@@ -204,10 +156,22 @@ public class Roles extends Table {
 		requests.read(Arrays.asList(requests.primaryKey()));
 
 		while(requests.next()) {
-			rra.role.get().set(recordId);
-			rra.request.get().set(requests.recordId());
+			rra.roleId.get().set(recordId);
+			rra.requestId.get().set(requests.recordId());
 			rra.create();
 		}
+
+		SecuredObjectAccess securedObjectAccess = new SecuredObjectAccess.CLASS<SecuredObjectAccess>().get();
+		RoleSecuredObjectAccess rsoa = new RoleSecuredObjectAccess.CLASS<RoleSecuredObjectAccess>().get();
+
+		securedObjectAccess.read(Arrays.asList(securedObjectAccess.primaryKey()));
+
+		while(securedObjectAccess.next()) {
+			rsoa.roleId.get().set(recordId);
+			rsoa.securedObjectAccessId.get().set(requests.recordId());
+			rsoa.create();
+		}
+
 	}
 
 	@Override
@@ -219,49 +183,45 @@ public class Roles extends Table {
 			throw new exception("Builtin roles can not be deleted");
 
 		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
-		rfa.destroy(new Equ(rfa.role.get(), recordId));
+		rfa.destroy(new Equ(rfa.roleId.get(), recordId));
 
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
-		rta.destroy(new Equ(rta.role.get(), recordId));
+		rta.destroy(new Equ(rta.roleId.get(), recordId));
 
 		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
-		rra.destroy(new Equ(rra.role.get(), recordId));
+		rra.destroy(new Equ(rra.roleId.get(), recordId));
+
+		RoleSecuredObjectAccess rsoa = new RoleSecuredObjectAccess.CLASS<RoleSecuredObjectAccess>().get();
+		rsoa.destroy(new Equ(rsoa.roleId.get(), recordId));
 	}
 
-	public Collection<IRole> get() {
-		Field name = this.name.get();
-		Field read = this.read.get();
-		Field write = this.write.get();
-		Field create = this.create.get();
-		Field copy = this.copy.get();
-		Field destroy = this.destroy.get();
-		Field execute = this.execute.get();
+	static public Map<guid, Role> get() {
+		Roles roles = new Roles.CLASS<Roles>().get();
 
-		read(Arrays.asList(name, read, write, create, copy, destroy, execute));
+		Map<guid, Role> rolesMap = new HashMap<guid, Role>();
 
-		Collection<IRole> roles = new ArrayList<IRole>();
+		Field name = roles.name.get();
 
-		while(next()) {
-			IAccess access = new Access();
-			access.setRead(read.bool().get());
-			access.setWrite(write.bool().get());
-			access.setCreate(create.bool().get());
-			access.setCopy(copy.bool().get());
-			access.setDestroy(destroy.bool().get());
-			access.setExecute(execute.bool().get());
+		roles.read(Arrays.asList(name));
 
-			roles.add(new Role(recordId(), name.string().get(), access));
+		while(roles.next()) {
+			guid id = roles.recordId();
+			rolesMap.put(id, new Role(id, name.string().get(), new Access()));
 		}
 
-		return roles;
-	}
+		RoleSecuredObjectAccess rsoa = new RoleSecuredObjectAccess.CLASS<RoleSecuredObjectAccess>().get();
 
-	static public void notifyRoleChange(guid role) {
-		try {
-			ServerConfig.authorityCenter().roleChanged(role, ApplicationServer.getSchema());
-		} catch(Throwable e) {
-			throw new RuntimeException(e);
+		Field roleId = rsoa.roleId.get();
+		Field value = rsoa.value.get();
+		Field securedObjectAccessId = rsoa.securedObjectAccessId.get();
+
+		rsoa.read(Arrays.asList(roleId, securedObjectAccessId, value));
+		while(rsoa.next()) {
+			if(!value.bool().get())
+				continue;
+			rolesMap.get(roleId.guid()).getAccess().set(securedObjectAccessId.guid(), true);
 		}
-	}
 
+		return rolesMap;
+	}
 }

@@ -26,6 +26,10 @@ Z8.define('Z8.application.User', {
 		return this.id;
 	},
 
+	getEntries: function() {
+		return this.entries;
+	},
+
 	getProperty: function(key, subkey) {
 		var application = this.settings[Application.id];
 		var section = application ? application[key] : null;

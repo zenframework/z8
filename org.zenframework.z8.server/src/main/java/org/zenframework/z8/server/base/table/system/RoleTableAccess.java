@@ -62,11 +62,11 @@ public class RoleTableAccess extends Table {
 		}
 	}
 
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
-	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
+	public Roles.CLASS<Roles> role = new Roles.CLASS<Roles>(this);
+	public Tables.CLASS<Tables> table = new Tables.CLASS<Tables>(this);
 
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> table = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> roleId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> tableId = new Link.CLASS<Link>(this);
 
 	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> write = new BoolField.CLASS<BoolField>(this);
@@ -84,16 +84,16 @@ public class RoleTableAccess extends Table {
 
 	@Override
 	public void constructor1() {
-		role.get(IClass.Constructor1).operatorAssign(roles);
-		table.get(IClass.Constructor1).operatorAssign(tables);
+		roleId.get(IClass.Constructor1).operatorAssign(role);
+		tableId.get(IClass.Constructor1).operatorAssign(table);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(role);
-		objects.add(table);
+		objects.add(roleId);
+		objects.add(tableId);
 
 		objects.add(read);
 		objects.add(write);
@@ -101,8 +101,8 @@ public class RoleTableAccess extends Table {
 		objects.add(copy);
 		objects.add(destroy);
 
-		objects.add(roles);
-		objects.add(tables);
+		objects.add(role);
+		objects.add(table);
 	}
 
 	@Override
@@ -111,14 +111,14 @@ public class RoleTableAccess extends Table {
 
 		lock.get().setDefault(RecordLock.Destroy);
 
-		roles.setIndex("roles");
-		tables.setIndex("tables");
-
-		role.setName(fieldNames.Role);
 		role.setIndex("role");
-
-		table.setName(fieldNames.Table);
 		table.setIndex("table");
+
+		roleId.setName(fieldNames.Role);
+		roleId.setIndex("roleId");
+
+		tableId.setName(fieldNames.Table);
+		tableId.setIndex("tableId");
 
 		read.setName(fieldNames.Read);
 		read.setIndex("read");
@@ -192,20 +192,19 @@ public class RoleTableAccess extends Table {
 	}
 
 	@Override
-	public void z8_afterUpdate(guid recordId) {
-		super.z8_afterUpdate(recordId);
+	public void onUpdateAction(guid recordId) {
+		super.onUpdateAction(recordId);
 
-		Field role = this.role.get();
-		if(readRecord(recordId, Arrays.asList(role)))
-			Roles.notifyRoleChange(role.guid());
+		if(readRecord(recordId, Arrays.asList(roleId.get())))
+			Roles.notifyRoleChange(roleId.get().guid());
 	}
 
 	private void updateFieldsAccess(guid recordId, bool read, bool write) {
 		try {
 			saveState();
 
-			Field role = this.role.get();
-			Field table = this.table.get();
+			Field role = this.roleId.get();
+			Field table = this.tableId.get();
 			if(!readRecord(recordId, Arrays.asList(role, table)))
 				return;
 

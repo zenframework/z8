@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.util.Arrays;
+
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -7,6 +9,7 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.guid;
 
 public class RoleRequestAccess extends Table {
 	final static public String TableName = "SystemRoleRequestAccess";
@@ -45,11 +48,11 @@ public class RoleRequestAccess extends Table {
 		}
 	}
 
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
-	public Requests.CLASS<Requests> requests = new Requests.CLASS<Requests>(this);
+	public Roles.CLASS<Roles> role = new Roles.CLASS<Roles>(this);
+	public Requests.CLASS<Requests> request = new Requests.CLASS<Requests>(this);
 
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> request = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> roleId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> requestId = new Link.CLASS<Link>(this);
 
 	public BoolField.CLASS<BoolField> execute = new BoolField.CLASS<BoolField>(this);
 
@@ -63,21 +66,21 @@ public class RoleRequestAccess extends Table {
 
 	@Override
 	public void constructor1() {
-		role.get(IClass.Constructor1).operatorAssign(roles);
-		request.get(IClass.Constructor1).operatorAssign(requests);
+		roleId.get(IClass.Constructor1).operatorAssign(role);
+		requestId.get(IClass.Constructor1).operatorAssign(request);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(role);
-		objects.add(request);
+		objects.add(roleId);
+		objects.add(requestId);
 
 		objects.add(execute);
 
-		objects.add(roles);
-		objects.add(requests);
+		objects.add(role);
+		objects.add(request);
 	}
 
 	@Override
@@ -86,17 +89,25 @@ public class RoleRequestAccess extends Table {
 
 		lock.get().setDefault(RecordLock.Destroy);
 
-		roles.setIndex("roles");
-		requests.setIndex("requests");
-
-		role.setName(fieldNames.Role);
 		role.setIndex("role");
-
-		request.setName(fieldNames.Request);
 		request.setIndex("request");
+
+		roleId.setName(fieldNames.Role);
+		roleId.setIndex("roleId");
+
+		requestId.setName(fieldNames.Request);
+		requestId.setIndex("requestId");
 
 		execute.setName(fieldNames.Execute);
 		execute.setIndex("execute");
 		execute.setDisplayName(displayNames.Execute);
+	}
+
+	@Override
+	public void onUpdateAction(guid recordId) {
+		super.onUpdateAction(recordId);
+
+		if(readRecord(recordId, Arrays.asList(roleId.get())))
+			Roles.notifyRoleChange(roleId.get().guid());
 	}
 }

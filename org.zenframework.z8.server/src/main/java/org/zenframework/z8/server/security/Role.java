@@ -3,11 +3,13 @@ package org.zenframework.z8.server.security;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.guid;
 
-public class Role implements IRole {
+public class Role implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -8469285386216624596L;
 
 	static public guid User = new guid("421A8413-A8EC-4DAB-9235-9A5FF83341C5");
@@ -22,7 +24,7 @@ public class Role implements IRole {
 
 	private guid id = null;
 	private String name = null;
-	private IAccess access = null;
+	private Access access = null;
 
 	static public Role administrator() {
 		return new Role(Administrator, displayNames.Administrator, Access.administrator());
@@ -39,24 +41,21 @@ public class Role implements IRole {
 	public Role() {
 	}
 
-	public Role(guid id, String name, IAccess access) {
+	public Role(guid id, String name, Access access) {
 		this.id = id;
 		this.name = name;
 		this.access = access;
 	}
 
-	@Override
-	public guid id() {
+	public guid getId() {
 		return id;
 	}
 
-	@Override
-	public String name() {
+	public String getName() {
 		return name;
 	}
 
-	@Override
-	public IAccess access() {
+	public Access getAccess() {
 		return access;
 	}
 
@@ -82,6 +81,6 @@ public class Role implements IRole {
 		long version = RmiIO.readLong(in);
 
 		id = RmiIO.readGuid(in);
-		access = (IAccess)in.readObject();
+		access = (Access)in.readObject();
 	}
 }

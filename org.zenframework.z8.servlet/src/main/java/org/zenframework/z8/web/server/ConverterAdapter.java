@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.xml.GNode;
-import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
@@ -43,7 +43,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	@Override
-	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(Session session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());

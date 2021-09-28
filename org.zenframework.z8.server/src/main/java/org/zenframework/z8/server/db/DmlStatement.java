@@ -28,7 +28,7 @@ public class DmlStatement extends Statement {
 		try {
 			return statement.executeUpdate();
 		} catch(SQLException e) {
-			SqlExceptionConverter.rethrow(statement.vendor(), e);
+			SqlExceptionConverter.rethrow(statement.getVendor(), e);
 		} finally {
 			statement.close();
 		}
@@ -73,7 +73,7 @@ public class DmlStatement extends Statement {
 
 	@Override
 	public void close() {
-		if(connection().inTransaction())
+		if(getConnection().inTransaction())
 			return;
 
 		IOUtils.closeQuietly(closeables);

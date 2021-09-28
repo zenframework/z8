@@ -448,6 +448,8 @@ public class JsonObject extends HashMap<String, Object> {
 
 	public boolean getBoolean(String key) throws JsonException {
 		Object object = get(key);
+		if(object == null)
+			return false;
 		if(object.equals(Boolean.FALSE) || (object instanceof String && ((String)object).equalsIgnoreCase("false")))
 			return false;
 		else if(object.equals(Boolean.TRUE) || (object instanceof String && ((String)object).equalsIgnoreCase("true")))
@@ -570,7 +572,7 @@ public class JsonObject extends HashMap<String, Object> {
 
 	public guid getGuid(String key) throws JsonException {
 		Object object = get(key);
-		return object instanceof guid ? (guid)object : new guid(object.toString());
+		return object == null || object == NULL || object instanceof guid ? (guid)object : new guid(object.toString());
 	}
 
 	/**
@@ -631,7 +633,7 @@ public class JsonObject extends HashMap<String, Object> {
 
 	public String getString(String key) throws JsonException {
 		Object object = get(key);
-		return object == NULL ? null : object.toString();
+		return object == null || object == NULL ? null : object.toString();
 	}
 
 	/**

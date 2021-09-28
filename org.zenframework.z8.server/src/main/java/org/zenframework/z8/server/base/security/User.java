@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.security;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -46,19 +45,19 @@ public class User extends OBJECT {
 		super(container);
 	}
 
-	public void initialize(IUser user) {
-		id = user.id();
-		login = new string(user.login());
+	public void initialize(org.zenframework.z8.server.security.User user) {
+		id = user.getId();
+		login = new string(user.getLogin());
 
-		firstName = new string(user.firstName());
-		middleName = new string(user.middleName());
-		lastName = new string(user.lastName());
+		firstName = new string(user.getFirstName());
+		middleName = new string(user.getMiddleName());
+		lastName = new string(user.getLastName());
 
-		description = new string(user.description());
-		phone = new string(user.phone());
-		email = new string(user.email());
+		description = new string(user.getDescription());
+		phone = new string(user.getPhone());
+		email = new string(user.getEmail());
 
-		parameters = (RLinkedHashMap<string, primary>)user.parameters();
+		parameters = (RLinkedHashMap<string, primary>)user.getParameters();
 
 		isSystem = user.isBuiltinAdministrator();
 		isAdministrator = user.isAdministrator();

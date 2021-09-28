@@ -188,6 +188,6 @@ public class guid extends primary {
 	}
 
 	static public guid z8_parse(string string) {
-		return new guid(string != null ? string.get() : null);
+		return string != null ? new guid(string.get()) : null;
 	}
 }

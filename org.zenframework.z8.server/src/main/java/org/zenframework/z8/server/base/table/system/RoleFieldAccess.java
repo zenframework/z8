@@ -55,11 +55,11 @@ public class RoleFieldAccess extends Table {
 		}
 	}
 
-	public Roles.CLASS<Roles> roles = new Roles.CLASS<Roles>(this);
-	public Fields.CLASS<Fields> fields = new Fields.CLASS<Fields>(this);
+	public Roles.CLASS<Roles> role = new Roles.CLASS<Roles>(this);
+	public Fields.CLASS<Fields> field = new Fields.CLASS<Fields>(this);
 
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> field = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> roleId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> fieldId = new Link.CLASS<Link>(this);
 
 	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> write = new BoolField.CLASS<BoolField>(this);
@@ -74,22 +74,22 @@ public class RoleFieldAccess extends Table {
 
 	@Override
 	public void constructor1() {
-		role.get(IClass.Constructor1).operatorAssign(roles);
-		field.get(IClass.Constructor1).operatorAssign(fields);
+		roleId.get(IClass.Constructor1).operatorAssign(role);
+		fieldId.get(IClass.Constructor1).operatorAssign(field);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(role);
-		objects.add(field);
+		objects.add(roleId);
+		objects.add(fieldId);
 
 		objects.add(read);
 		objects.add(write);
 
-		objects.add(roles);
-		objects.add(fields);
+		objects.add(role);
+		objects.add(field);
 	}
 
 	@Override
@@ -98,14 +98,14 @@ public class RoleFieldAccess extends Table {
 
 		lock.get().setDefault(RecordLock.Destroy);
 
-		roles.setIndex("roles");
-		fields.setIndex("fields");
-
-		role.setName(fieldNames.Role);
 		role.setIndex("role");
-
-		field.setName(fieldNames.Field);
 		field.setIndex("field");
+
+		roleId.setName(fieldNames.Role);
+		roleId.setIndex("roleId");
+
+		fieldId.setName(fieldNames.Field);
+		fieldId.setIndex("fieldId");
 
 		read.setName(fieldNames.Read);
 		read.setIndex("read");
@@ -132,18 +132,12 @@ public class RoleFieldAccess extends Table {
 		super.z8_beforeUpdate(recordId);
 	}
 
-	private boolean notificationsDisabled = false;
-
 	@Override
-	public void z8_afterUpdate(guid recordId) {
-		super.z8_afterUpdate(recordId);
+	public void onUpdateAction(guid recordId) {
+		super.onUpdateAction(recordId);
 
-		if(notificationsDisabled)
-			return;
-
-		Field role = this.role.get();
-		if(readRecord(recordId, Arrays.asList(role)))
-			Roles.notifyRoleChange(role.guid());
+		if(readRecord(recordId, Arrays.asList(roleId.get())))
+			Roles.notifyRoleChange(roleId.get().guid());
 	}
 
 	public void updateAccess(guid roleId, guid tableId, bool read, bool write) {
@@ -153,8 +147,6 @@ public class RoleFieldAccess extends Table {
 		if(write != null)
 			this.write.get().set(write);
 
-		notificationsDisabled = true;
-		update(new And(new Equ(role.get(), roleId), new Equ(fields.get().table.get(), tableId)));
-		notificationsDisabled = false;
+		update(new And(new Equ(this.roleId.get(), roleId), new Equ(field.get().tableId.get(), tableId)));
 	}
 }

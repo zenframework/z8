@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
@@ -41,7 +41,7 @@ public class SingleSignOnAdapter extends Adapter {
 			return;
 		}
 		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
-		ISession session;
+		Session session;
 		try {
 			session = ServerConfig.authorityCenter().trustedLogin(login, ServletUtil.getSchema(request), true);
 		} catch (AccessDeniedException e) {
@@ -56,7 +56,7 @@ public class SingleSignOnAdapter extends Adapter {
 		}
 
 		if (useContainerSession)
-			httpSession.setAttribute(Json.session.get(), session.id());
+			httpSession.setAttribute(Json.session.get(), session.getId());
 
 		request.getRequestDispatcher("/index.html").forward(request, response);
 	}

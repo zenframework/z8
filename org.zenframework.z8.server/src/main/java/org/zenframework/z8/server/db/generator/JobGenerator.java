@@ -53,8 +53,8 @@ public class JobGenerator {
 
 		while(jobs.next()) {
 			guid job = jobs.recordId();
-			scheduledJobLogs.destroy(new Equ(scheduledJobLogs.scheduledJobs.get().job.get(), job));
-			scheduledJobs.destroy(new Equ(scheduledJobs.job.get(), job));
+			scheduledJobLogs.destroy(new Equ(scheduledJobLogs.scheduledJob.get().jobId.get(), job));
+			scheduledJobs.destroy(new Equ(scheduledJobs.jobId.get(), job));
 			jobs.destroy(job);
 		}
 
@@ -86,9 +86,9 @@ public class JobGenerator {
 		if(jobCron == null)
 			return;
 
-		if(!scheduledJobs.hasRecord(new Equ(scheduledJobs.job.get(), job.key()))) {
+		if(!scheduledJobs.hasRecord(new Equ(scheduledJobs.jobId.get(), job.key()))) {
 			scheduledJobs.active.get().set(new bool(!jobCron.isEmpty()));
-			scheduledJobs.job.get().set(job.key());
+			scheduledJobs.jobId.get().set(job.key());
 			scheduledJobs.cron.get().set(jobCron);
 			scheduledJobs.create();
 		}

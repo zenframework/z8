@@ -30,7 +30,7 @@ public class MaintenanceJob extends Executable {
 	@Override
 	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 		Connection connection = ConnectionManager.get();
-		if(connection.vendor() != DatabaseVendor.Postgres)
+		if(connection.getVendor() != DatabaseVendor.Postgres)
 			return;
 
 		try {

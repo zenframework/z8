@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.IServerInfo;
+import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 
@@ -37,12 +37,12 @@ public class AuthorityCenterView extends HubServerView {
 	}
 	
 	@Override
-	protected IServerInfo[] getServers() throws Throwable {
+	protected ServerInfo[] getServers() throws Throwable {
 		return ServerConfig.authorityCenter().servers();
 	}
 	
 	@Override
-	protected void unregister(IServerInfo server) throws Throwable {
+	protected void unregister(ServerInfo server) throws Throwable {
 		ServerConfig.authorityCenter().unregister(server.getServer());
 	}
 }

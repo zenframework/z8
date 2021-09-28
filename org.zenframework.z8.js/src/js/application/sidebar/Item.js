@@ -6,18 +6,18 @@ Z8.define('Z8.application.sidebar.Item', {
 	},
 
 	htmlMarkup: function() {
-		var data = this.data;
-		var icon = { tag: 'i', cls: DOM.parseCls(data.icon).pushIf('fa', 'icon').join(' '), html: String.htmlText() };
-		var text = { tag: 'span', cls: 'text', html: data.text };
+		var entry = this.entry;
+		var icon = { tag: 'i', cls: DOM.parseCls(entry.icon).pushIf('fa', 'icon').join(' '), html: String.htmlText() };
+		var text = { tag: 'span', cls: 'text', html: entry.text };
 
 		var cn = [icon, text];
 
-		var items = data.items;
+		var items = entry.items;
 		if(!Z8.isEmpty(items)) {
 			var chevron = { tag: 'i', cls: 'fa fa-chevron-right chevron' };
 			cn.push(chevron);
 
-			var menu = this.menu = new Z8.application.sidebar.Menu({ data: items, parent: this });
+			var menu = this.menu = new Z8.application.sidebar.Menu({ entries: items, parent: this });
 			cn.push(menu.htmlMarkup());
 		}
 

@@ -6,7 +6,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.DmlStatement;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 
 public class ForeignKey {
 	public String name;
@@ -46,10 +46,10 @@ public class ForeignKey {
 	public void drop() throws SQLException {
 		if(!dropped) {
 			Connection connection = ConnectionManager.get();
-			IDatabase database = connection.database();
-			DatabaseVendor vendor = database.vendor();
+			Database database = connection.getDatabase();
+			DatabaseVendor vendor = database.getVendor();
 
-			String sql = "alter table " + database.tableName(table) + " drop constraint " + vendor.quote(name);
+			String sql = "alter table " + database.getTableName(table) + " drop constraint " + vendor.quote(name);
 			DmlStatement.execute(sql);
 
 			dropped = true;

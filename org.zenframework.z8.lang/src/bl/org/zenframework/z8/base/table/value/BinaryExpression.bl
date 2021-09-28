@@ -1,0 +1,14 @@
+[native "org.zenframework.z8.server.base.table.value.BinaryExpression"]
+public class BinaryExpression extends Expression {
+	public void setDefault(binary defaultValue);
+
+	virtual public binary get();
+
+	public BinaryExpression operator = (sql_binary expression);
+
+	public operator sql_binary();
+
+	virtual protected sql_binary expression();
+
+	public void setExpression(sql_binary expression);
+}

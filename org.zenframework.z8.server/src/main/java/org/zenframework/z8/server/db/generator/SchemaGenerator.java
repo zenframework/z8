@@ -4,8 +4,8 @@ import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.EventsLevel;
-import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -53,7 +53,7 @@ public class SchemaGenerator extends Executable {
 	@Override
 	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 		ILogger logger = new Logger();
-		IDatabase database = ApplicationServer.getDatabase();
+		Database database = ApplicationServer.getDatabase();
 
 		try {
 			Scheduler.suspend(database);

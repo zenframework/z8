@@ -411,7 +411,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	updateText: function(index, field) {
-		var field = field || this.getFieldByIndex(index);
+		field = field || this.getFieldByIndex(index);
 		this.setText(index, this.renderText(field, this.record.get(field.name)));
 	},
 
@@ -443,7 +443,14 @@ Z8.define('Z8.list.Item', {
 
 		var list = this.getList();
 
-		if(list.getFocused() && !list.isEditing() && event.button == 0 /* Primary button */ && this.canStartEdit(target) && this.startEdit(index, 300))
+		if(!list.getFocused() || list.isEditing() || event.button != 0 /* Primary button */)
+			return;
+
+		var field = this.getFieldByIndex(index);
+		if(field == null || field.clickToEdit === false)
+			return;
+
+		if(this.canStartEdit(target) && this.startEdit(index, 300))
 			event.stopEvent();
 	},
 

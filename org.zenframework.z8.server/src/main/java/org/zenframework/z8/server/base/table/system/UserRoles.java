@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
@@ -15,10 +16,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.BuiltinUsers;
-import org.zenframework.z8.server.security.IAccess;
-import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
@@ -62,11 +60,11 @@ public class UserRoles extends Table {
 		}
 	}
 
-	public Users.CLASS<? extends Users> users = new Users.CLASS<Users>(this);
-	public Roles.CLASS<? extends Roles> roles = new Roles.CLASS<Roles>(this);
+	public Users.CLASS<? extends Users> user = new Users.CLASS<Users>(this);
+	public Roles.CLASS<? extends Roles> role = new Roles.CLASS<Roles>(this);
 
-	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> role = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> userId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> roleId = new Link.CLASS<Link>(this);
 
 	public UserRoles() {
 		this(null);
@@ -78,33 +76,33 @@ public class UserRoles extends Table {
 
 	@Override
 	public void constructor1() {
-		user.get(IClass.Constructor1).operatorAssign(users);
-		role.get(IClass.Constructor1).operatorAssign(roles);
+		userId.get(IClass.Constructor1).operatorAssign(user);
+		roleId.get(IClass.Constructor1).operatorAssign(role);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(userId);
+		objects.add(roleId);
+
 		objects.add(user);
 		objects.add(role);
-
-		objects.add(users);
-		objects.add(roles);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
-		users.setIndex("users");
-		roles.setIndex("roles");
-
-		user.setName(fieldNames.User);
 		user.setIndex("user");
-
-		role.setName(fieldNames.Role);
 		role.setIndex("role");
+
+		userId.setName(fieldNames.User);
+		userId.setIndex("userId");
+
+		roleId.setName(fieldNames.Role);
+		roleId.setIndex("roleId");
 
 		readOnly = new bool(!ApplicationServer.getUser().isAdministrator());
 	}
@@ -113,16 +111,16 @@ public class UserRoles extends Table {
 	public void initStaticRecords() {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(user.get(), BuiltinUsers.Administrator.guid());
-			record.put(role.get(), Role.Administrator);
+			record.put(userId.get(), BuiltinUsers.Administrator.guid());
+			record.put(roleId.get(), Role.Administrator);
 			record.put(lock.get(), RecordLock.Full);
 			addRecord(Administrator, record);
 		}
 
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(user.get(), BuiltinUsers.System.guid());
-			record.put(role.get(), Role.Administrator);
+			record.put(userId.get(), BuiltinUsers.System.guid());
+			record.put(roleId.get(), Role.Administrator);
 			record.put(lock.get(), RecordLock.Full);
 			addRecord(System, record);
 		}
@@ -131,7 +129,7 @@ public class UserRoles extends Table {
 	@Override
 	public void afterCreate(guid recordId) {
 		super.afterCreate(recordId);
-		Users.notifyUserChange(user.get().guid());
+		Users.notifyUserChange(userId.get().guid());
 	}
 
 	@Override
@@ -141,40 +139,26 @@ public class UserRoles extends Table {
 		if(recordId.equals(Administrator) || recordId.equals(System))
 			throw new exception("Builtin user's roles can not be removed.");
 
-		Field user = this.user.get();
+		Field user = this.userId.get();
 		saveState();
 		if(readRecord(recordId, Arrays.asList(user)))
 			Users.notifyUserChange(user.guid());
 		restoreState();
 	}
 
-	public Collection<IRole> get(guid userId) {
-		Field user = this.user.get();
-		Field role = this.role.get();
-		Field name = this.roles.get().name.get();
-		Field read = this.roles.get().read.get();
-		Field write = this.roles.get().write.get();
-		Field create = this.roles.get().create.get();
-		Field copy = this.roles.get().copy.get();
-		Field destroy = this.roles.get().destroy.get();
-		Field execute = this.roles.get().execute.get();
+	static public Collection<Role> get(guid userId) {
+		Map<guid, Role> rolesMap = Roles.get();
 
-		Collection<Field> fields = Arrays.asList(name, role, read, write, create, copy, destroy, execute);
-		read(fields, new Equ(user, userId));
+		UserRoles userRoles = new UserRoles.CLASS<UserRoles>().get();
+		Field user = userRoles.userId.get();
+		Field role = userRoles.roleId.get();
 
-		Collection<IRole> roles = new HashSet<IRole>();
+		userRoles.read(Arrays.asList(role), new Equ(user, userId));
 
-		while(next()) {
-			IAccess access = new Access();
-			access.setRead(read.bool().get());
-			access.setWrite(write.bool().get());
-			access.setCreate(create.bool().get());
-			access.setCopy(copy.bool().get());
-			access.setDestroy(destroy.bool().get());
-			access.setExecute(execute.bool().get());
+		Collection<Role> roles = new HashSet<Role>();
 
-			roles.add(new Role(role.guid(), name.string().get(), access));
-		}
+		while(userRoles.next())
+			roles.add(rolesMap.get(role.guid()));
 
 		return roles;
 	}

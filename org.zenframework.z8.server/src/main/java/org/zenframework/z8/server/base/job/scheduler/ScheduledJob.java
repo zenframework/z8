@@ -8,7 +8,7 @@ import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -19,7 +19,6 @@ import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.Response;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -45,15 +44,15 @@ public class ScheduledJob implements Runnable {
 
 	private int executionCount = 0;
 
-	private IDatabase database;
+	private Database database;
 	private Thread thread;
 
-	public ScheduledJob(guid id, IDatabase database) {
+	public ScheduledJob(guid id, Database database) {
 		this.id = id;
 		this.database = database;
 	}
 
-	public ScheduledJob(String classId, String cron, IDatabase database) {
+	public ScheduledJob(String classId, String cron, Database database) {
 		this.classId = classId;
 		this.database = database;
 
@@ -69,7 +68,7 @@ public class ScheduledJob implements Runnable {
 
 	@Override
 	public String toString() {
-		return database.schema() + ": " + name + "-" + (executionCount + 1);
+		return database.getSchema() + ": " + name + "-" + (executionCount + 1);
 	}
 
 	@Override
@@ -86,8 +85,8 @@ public class ScheduledJob implements Runnable {
 				Cron.nextDate(lastStart, cron).getTicks() < new date().getTicks();
 	}
 
-	private IUser getUser() {
-		ApplicationServer.setRequest(new Request(new Session(database.schema())));
+	private User getUser() {
+		ApplicationServer.setRequest(new Request(new Session(database.getSchema())));
 
 		try {
 			return this.user != null ? User.read(this.user) : User.system(database);
@@ -97,7 +96,7 @@ public class ScheduledJob implements Runnable {
 	}
 
 	private boolean beforeStart() {
-		ApplicationServer.setRequest(new Request(new Session(database.schema())));
+		ApplicationServer.setRequest(new Request(new Session(database.getSchema())));
 
 		try {
 			date lastStart = new date();
@@ -130,11 +129,11 @@ public class ScheduledJob implements Runnable {
 		if(id == null || !hasErrors && logErrorsOnly)
 			return;
 
-		ApplicationServer.setRequest(new Request(new Session(database.schema())));
+		ApplicationServer.setRequest(new Request(new Session(database.getSchema())));
 
 		try {
 			ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
-			logs.scheduledJob.get().set(id);
+			logs.scheduledJobId.get().set(id);
 			logs.start.get().set(lastStart);
 			logs.finish.get().set(new date());
 			logs.errors.get().set(new bool(hasErrors));

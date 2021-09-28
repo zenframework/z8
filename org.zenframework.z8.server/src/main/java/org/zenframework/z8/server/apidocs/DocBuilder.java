@@ -13,17 +13,9 @@ import org.zenframework.z8.server.apidocs.actions.DetachAction;
 import org.zenframework.z8.server.apidocs.actions.ExportAction;
 import org.zenframework.z8.server.apidocs.actions.ReadAction;
 import org.zenframework.z8.server.apidocs.actions.UpdateAction;
-import org.zenframework.z8.server.apidocs.dto.BaseInfo;
 import org.zenframework.z8.server.apidocs.dto.Documentation;
 import org.zenframework.z8.server.apidocs.dto.Entity;
-import org.zenframework.z8.server.apidocs.field.extractor.FieldExtractor;
-import org.zenframework.z8.server.apidocs.field.extractor.FieldExtractorFactory;
-import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.json.Json;
-import org.zenframework.z8.server.runtime.IClass;
-import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 public class DocBuilder {

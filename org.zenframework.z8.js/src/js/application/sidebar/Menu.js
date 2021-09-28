@@ -1,5 +1,5 @@
 Z8.define('Z8.application.sidebar.Menu', {
-	extend: 'Z8.Container',
+	extend: 'Container',
 
 	cls: 'submenu',
 
@@ -9,15 +9,14 @@ Z8.define('Z8.application.sidebar.Menu', {
 	htmlMarkup: function() {
 		var items = this.items;
 		var menuItems = this.menuItems = [];
-		var data = this.data;
 
-		for(var i = 0, length = data.length; i < length; i++) {
-			var item = new Z8.application.sidebar.Item({ data: data[i], parent: this });
+		for(var entry of this.entries) {
+			var item = new Z8.application.sidebar.Item({ entry: entry, parent: this });
 			items.push(item);
 			menuItems.push(item);
 		}
 
-		return this.callParent();
+		return Container.prototype.htmlMarkup.call(this);
 	},
 
 	completeRender: function() {
@@ -77,7 +76,7 @@ Z8.define('Z8.application.sidebar.Menu', {
 	onClick: function(event, target) {
 		var active = this.active;
 		var dom = DOM.get(active);
-		if((dom == target || DOM.isParentOf(dom, target)) && active.data.request != null)
+		if((dom == target || DOM.isParentOf(dom, target)) && active.entry.request != null)
 			this.getTopLevelParent().onSelectItem(active);
 	},
 
@@ -104,7 +103,7 @@ Z8.define('Z8.application.sidebar.Menu', {
 			active.showMenu();
 			active.menu.activate();
 			event.stopEvent();
-		} else if(key == Event.ENTER && active != null && active.data.request != null)
+		} else if(key == Event.ENTER && active != null && active.entry.request != null)
 			this.getTopLevelParent().onSelectItem(active);
 	},
 

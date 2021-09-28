@@ -7,9 +7,9 @@ import org.zenframework.z8.base.table.value.StringField;
 [displayName "Поля"]
 [native "org.zenframework.z8.server.base.table.system.Fields"]
 public class Fields extends Table {
-	public Tables tables;
+	public Tables table;
 
-	public Link table = tables;
+	public Link tableId = table;
 
 	name.length = 256;
 

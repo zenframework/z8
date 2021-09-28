@@ -20,8 +20,9 @@ import org.zenframework.z8.server.request.actions.ActionFactory;
 import org.zenframework.z8.server.request.actions.RequestAction;
 import org.zenframework.z8.server.runtime.IAttributed;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.Privileges;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
@@ -107,7 +108,7 @@ public class RequestDispatcher implements Runnable {
 			Dashboard dashboard = new Dashboard();
 			dashboard.processRequest(response);
 		} else if(Json.settings.get().equals(requestId)) {
-			IUser user = ApplicationServer.getUser();
+			User user = ApplicationServer.getUser();
 			user.setSettings(request.getParameter(Json.data));
 
 			JsonWriter writer = new JsonWriter();
@@ -117,7 +118,7 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} else {
-			if(!ApplicationServer.getUser().privileges().getRequestAccess(guid.create(requestId)).execute())
+			if(!ApplicationServer.getUser().getPrivileges().getRequestAccess(guid.create(requestId)).get(Access.RequestExecute))
 				throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
 
 			OBJECT object = Loader.getInstance(requestId);

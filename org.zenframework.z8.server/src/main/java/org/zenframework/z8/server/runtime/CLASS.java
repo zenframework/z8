@@ -126,11 +126,10 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		if(id == null) {
 			id = "";
 
-			IObject container = getContainer();
+			IObject owner = getOwner() != null ? getOwner() : getContainer();
 
-			// never change !!!
-			if(container != null) {
-				id = container.getCLASS().get().id();
+			if(owner != null) {
+				id = owner.getCLASS().get().id();
 				id += (id.isEmpty() ? "" : ".") + index();
 			}
 		}
@@ -389,6 +388,12 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	public void setIcon(String icon) {
 		setAttribute(Icon, icon);
+	}
+
+	public void writeObject(JsonWriter writer) {
+		writer.startObject();
+		write(writer);
+		writer.finishObject();
 	}
 
 	public void write(JsonWriter writer) {

@@ -1,0 +1,12 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.Link;
+
+[name "System Secured Object Access"]
+[displayName "Права доступа к таблицам"]
+[native "org.zenframework.z8.server.base.table.system.SecuredObjectAccess"]
+public class SecuredObjectAccess extends Table {
+	name.length = 256;
+
+	public SecuredObjects securedObject;
+	public Link securedObjectId = securedObject;
+}

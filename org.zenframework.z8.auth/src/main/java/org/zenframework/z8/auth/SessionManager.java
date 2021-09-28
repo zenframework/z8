@@ -4,18 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
-import org.zenframework.z8.server.security.IRole;
-import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.Role;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.guid;
 
 public class SessionManager {
 	private long sessionTimeout = 0;
 
-	private Map<String, ISession> sessions = new HashMap<String, ISession>();
-	private Map<String, ISession> userSessions = new HashMap<String, ISession>();
+	private Map<String, Session> sessions = new HashMap<String, Session>();
+	private Map<String, Session> userSessions = new HashMap<String, Session>();
 
 	SessionManager() {
 	}
@@ -27,11 +26,11 @@ public class SessionManager {
 	public void stop() {
 	}
 
-	public ISession systemSession(String sessionId) {
-		ISession session = sessions.get(sessionId);
+	public Session systemSession(String sessionId) {
+		Session session = sessions.get(sessionId);
 
 		if(session != null) {
-			session.access();
+			session.touch();
 			return new Session(session);
 		}
 
@@ -42,9 +41,9 @@ public class SessionManager {
 		return schema + '/' + id;
 	}
 
-	synchronized public ISession create(IUser user) {
-		String userId = userKey(user.id(), user.database().schema());
-		ISession session = userSessions.get(userId);
+	synchronized public Session create(User user) {
+		String userId = userKey(user.getId(), user.getDatabase().getSchema());
+		Session session = userSessions.get(userId);
 
 		if(session == null) {
 			String sessionId = guid.create().toString();
@@ -59,24 +58,24 @@ public class SessionManager {
 
 	synchronized public void dropUserSessions(guid userId, String schema) {
 		String userKey = userKey(userId, schema);
-		ISession session = userSessions.get(userKey);
+		Session session = userSessions.get(userKey);
 
 		if(session != null) {
 			userSessions.remove(userKey);
-			sessions.remove(session.id());
+			sessions.remove(session.getId());
 		}
 	}
 
 	synchronized public void dropRoleSessions(guid roleId, String schema) {
-		for(ISession session : userSessions.values().toArray(new ISession[0])) {
-			IUser user = session.user();
-			if(user.isAdministrator() || !user.database().schema().equals(schema))
+		for(Session session : userSessions.values().toArray(new Session[0])) {
+			User user = session.getUser();
+			if(user.isAdministrator() || !user.getDatabase().getSchema().equals(schema))
 				continue;
 
-			for(IRole role : user.roles()) {
-				if(role.id().equals(roleId)) {
-					userSessions.remove(userKey(user.id(), schema));
-					sessions.remove(session.id());
+			for(Role role : user.getRoles()) {
+				if(role.getId().equals(roleId)) {
+					userSessions.remove(userKey(user.getId(), schema));
+					sessions.remove(session.getId());
 					break;
 				}
 			}
@@ -89,12 +88,12 @@ public class SessionManager {
 
 		long timeLimit = System.currentTimeMillis() - sessionTimeout;
 
-		for(ISession session : sessions.values().toArray(new ISession[0])) {
+		for(Session session : sessions.values().toArray(new Session[0])) {
 			if(session.getLastAccessTime() < timeLimit) {
 				synchronized(this) {
-					IUser user = session.user();
-					userSessions.remove(userKey(user.id(), user.database().schema()));
-					sessions.remove(session.id());
+					User user = session.getUser();
+					userSessions.remove(userKey(user.getId(), user.getDatabase().getSchema()));
+					sessions.remove(session.getId());
 				}
 			}
 		}

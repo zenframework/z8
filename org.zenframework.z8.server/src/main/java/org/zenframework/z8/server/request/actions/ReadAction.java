@@ -43,6 +43,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -759,7 +760,7 @@ public class ReadAction extends RequestAction {
 	public void writeResponse(JsonWriter writer) throws Throwable {
 		Query query = getQuery();
 
-		if(!query.access().read()) {
+		if(!query.access().get(Access.TableRead)) {
 			ApplicationServer.getMonitor().warning(Privileges.displayNames.NoReadAccess);
 			return;
 		}

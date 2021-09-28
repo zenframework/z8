@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.encoding;
@@ -27,7 +27,7 @@ public class Connection {
 
 	static private long FiveMinutes = 5 * datespan.TicksPerMinute;
 
-	private IDatabase database = null;
+	private Database database = null;
 	private java.sql.Connection connection = null;
 	private Thread owner = null;
 
@@ -39,12 +39,12 @@ public class Connection {
 	private Set<Statement> statements = new HashSet<Statement>();
 	private Collection<Listener> listeners;
 
-	static private java.sql.Connection newConnection(IDatabase database) {
+	static private java.sql.Connection newConnection(Database database) {
 		ConnectionSavePoint savePoint = ConnectionSavePoint.create(database);
 
 		try {
-			Class.forName(database.driver());
-			return DriverManager.getConnection(database.connection(), database.user(), database.password());
+			Class.forName(database.getDriver());
+			return DriverManager.getConnection(database.getConnection(), database.getUser(), database.getPassword());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -52,11 +52,11 @@ public class Connection {
 		}
 	}
 
-	static public Connection connect(IDatabase database) {
+	static public Connection connect(Database database) {
 		return new Connection(database, newConnection(database));
 	}
 
-	private Connection(IDatabase database, java.sql.Connection connection) {
+	private Connection(Database database, java.sql.Connection connection) {
 		this.database = database;
 		this.connection = connection;
 	}
@@ -150,20 +150,20 @@ public class Connection {
 		return connection;
 	}
 
-	public IDatabase database() {
+	public Database getDatabase() {
 		return database;
 	}
 
-	public String schema() {
-		return database.schema();
+	public String getSchema() {
+		return database.getSchema();
 	}
 
-	public encoding charset() {
-		return database.charset();
+	public encoding getCharset() {
+		return database.getCharset();
 	}
 
-	public DatabaseVendor vendor() {
-		return database.vendor();
+	public DatabaseVendor getVendor() {
+		return database.getVendor();
 	}
 
 	private void checkAndReconnect(SQLException exception) throws SQLException {
@@ -171,7 +171,7 @@ public class Connection {
 		String sqlState = exception.getSQLState();
 		int errorCode = exception.getErrorCode();
 
-		SqlExceptionConverter.rethrowIfKnown(database.vendor(), exception);
+		SqlExceptionConverter.rethrowIfKnown(database.getVendor(), exception);
 
 		Trace.logEvent(message + "(error code: " + errorCode + "; sqlState: " + sqlState + ") - reconnecting...");
 
@@ -241,9 +241,7 @@ public class Connection {
 			if(!inTransaction())
 				return;
 
-			transactionCount--;
-			if(inTransaction())
-				return;
+			transactionCount = 0;
 
 			onRollback();
 			batch.rollback();

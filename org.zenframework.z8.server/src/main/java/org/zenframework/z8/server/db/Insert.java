@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 
 public class Insert extends DmlStatement {
@@ -13,8 +13,8 @@ public class Insert extends DmlStatement {
 
 	static public Insert create(Query query, Collection<Field> fields) {
 		Connection connection = query.getConnection();
-		IDatabase database = connection.database();
-		DatabaseVendor vendor = database.vendor();
+		Database database = connection.getDatabase();
+		DatabaseVendor vendor = database.getVendor();
 
 		String insertFields = "";
 		String insertValues = "";
@@ -26,7 +26,7 @@ public class Insert extends DmlStatement {
 			insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
 		}
 
-		String sql = "insert into " + database.tableName(query.name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
+		String sql = "insert into " + database.getTableName(query.name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";
 
 		Insert insert = (Insert)connection.getStatement(sql);
 		return insert != null ? insert.initialize(fields) : new Insert(connection, sql, query.priority(), fields);
@@ -55,7 +55,7 @@ public class Insert extends DmlStatement {
 
 	@Override
 	protected void log() {
-		Trace.logEvent(sql());
+		Trace.logEvent(getSql());
 
 		for(Field field : fields) {
 			if(field.isExpression())

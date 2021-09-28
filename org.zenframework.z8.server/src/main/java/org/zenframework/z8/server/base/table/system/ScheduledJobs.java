@@ -73,11 +73,11 @@ public class ScheduledJobs extends Table {
 		}
 	}
 
-	public Jobs.CLASS<Jobs> jobs = new Jobs.CLASS<Jobs>(this);
-	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
+	public Jobs.CLASS<Jobs> job = new Jobs.CLASS<Jobs>(this);
+	public Users.CLASS<Users> user = new Users.CLASS<Users>(this);
 
-	public Link.CLASS<Link> job = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> jobId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> userId = new Link.CLASS<Link>(this);
 
 	public DatetimeField.CLASS<DatetimeField> lastStart = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> nextStart = new DatetimeField.CLASS<DatetimeField>(this);
@@ -91,42 +91,41 @@ public class ScheduledJobs extends Table {
 
 	@Override
 	public void constructor1() {
-		job.get(IClass.Constructor1).operatorAssign(jobs);
-		user.get(IClass.Constructor1).operatorAssign(users);
+		jobId.get(IClass.Constructor1).operatorAssign(job);
+		userId.get(IClass.Constructor1).operatorAssign(user);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(job);
-		objects.add(user);
+		objects.add(jobId);
+		objects.add(userId);
 		objects.add(cron);
 		objects.add(lastStart);
 		objects.add(nextStart);
 		objects.add(active);
 		objects.add(logErrorsOnly);
 
-		objects.add(jobs);
-		objects.add(users);
+		objects.add(job);
+		objects.add(user);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
-		jobs.setIndex("jobs");
-
-		users.setIndex("users");
+		job.setIndex("job");
+		user.setIndex("user");
 
 		description.setDisplayName(displayNames.Settings);
 
-		job.setName(fieldNames.Job);
-		job.setIndex("job");
+		jobId.setName(fieldNames.Job);
+		jobId.setIndex("jobId");
 
-		user.setName(fieldNames.User);
-		user.setIndex("user");
-		user.get().setDefault(Users.System);
+		userId.setName(fieldNames.User);
+		userId.setIndex("userId");
+		userId.get().setDefault(Users.System);
 
 		cron.setName(fieldNames.Cron);
 		cron.setIndex("cron");

@@ -1,23 +1,28 @@
 package org.zenframework.z8.auth;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.rmi.RemoteException;
+import java.util.Collection;
+
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.MD5;
-import org.zenframework.z8.server.engine.*;
+import org.zenframework.z8.server.engine.HubServer;
+import org.zenframework.z8.server.engine.IApplicationServer;
+import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.IInterconnectionCenter;
+import org.zenframework.z8.server.engine.ServerInfo;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
-import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.StringUtils;
-
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.util.Collection;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -100,14 +105,14 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login, String password, String scheme) throws RemoteException {
-		IServerInfo serverInfo = getServerInfo();
+	public Session login(String login, String password, String scheme) throws RemoteException {
+		ServerInfo serverInfo = getServerInfo();
 		IApplicationServer loginServer = serverInfo.getServer();
 
 		if(password == null)
 			password = "";
 
-		IUser user;
+		User user;
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
 		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) && LdapAPI.isUserExist(new LdapAPI.Connection(), login)) {
@@ -127,14 +132,14 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			}
 		}
 
-		ISession session = sessionManager.create(user);
+		Session session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;
 	}
 
 	@Override
-	public ISession trustedLogin(String login, String scheme, boolean createIfNotExist) throws RemoteException {
-		IServerInfo serverInfo = getServerInfo();
+	public Session trustedLogin(String login, String scheme, boolean createIfNotExist) throws RemoteException {
+		ServerInfo serverInfo = getServerInfo();
 		try {
 			return login0(serverInfo, login, scheme);
 		} catch (UserNotFoundException e) {
@@ -145,15 +150,15 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		}
 	}
 
-	private ISession login0(IServerInfo serverInfo, String login, String scheme) throws RemoteException {
-		IUser user = serverInfo.getServer().user(login, null, scheme);
-		ISession session = sessionManager.create(user);
+	private Session login0(ServerInfo serverInfo, String login, String scheme) throws RemoteException {
+		User user = serverInfo.getServer().user(login, null, scheme);
+		Session session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;
 	}
 
-	private IServerInfo getServerInfo() throws RemoteException {
-		IServerInfo serverInfo = findServer((String)null);
+	private ServerInfo getServerInfo() throws RemoteException {
+		ServerInfo serverInfo = findServer((String)null);
 
 		if(serverInfo == null)
 			throw new AccessDeniedException();
@@ -161,9 +166,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession server(String sessionId, String serverId) throws RemoteException {
-		ISession session = sessionManager.systemSession(sessionId);
-		IServerInfo server = findServer(serverId);
+	public Session server(String sessionId, String serverId) throws RemoteException {
+		Session session = sessionManager.systemSession(sessionId);
+		ServerInfo server = findServer(serverId);
 
 		if(server == null)
 			return null;
@@ -182,10 +187,10 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager.dropRoleSessions(role, schema);
 	}
 
-	private IServerInfo findServer(String serverId) throws RemoteException {
-		IServerInfo[] servers = getServers();
+	private ServerInfo findServer(String serverId) throws RemoteException {
+		ServerInfo[] servers = getServers();
 
-		for(IServerInfo server : servers) {
+		for(ServerInfo server : servers) {
 			if(serverId != null && !server.getId().equals(serverId))
 				continue;
 
@@ -223,7 +228,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		try {
 			IInterconnectionCenter center = ServerConfig.interconnectionCenter();
 
-			for(IServerInfo server : getServers()) {
+			for(ServerInfo server : getServers()) {
 				if(server.isAlive())
 					center.register(server.getServer());
 			}

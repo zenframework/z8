@@ -64,9 +64,9 @@ public class ScheduledJobLogs extends Table {
 		return new ScheduledJobLogs.CLASS<ScheduledJobLogs>(null).get();
 	}
 
-	public ScheduledJobs.CLASS<ScheduledJobs> scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(this);
+	public ScheduledJobs.CLASS<ScheduledJobs> scheduledJob = new ScheduledJobs.CLASS<ScheduledJobs>(this);
 
-	public Link.CLASS<Link> scheduledJob = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> scheduledJobId = new Link.CLASS<Link>(this);
 
 	public DatetimeField.CLASS<DatetimeField> start = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> finish = new DatetimeField.CLASS<DatetimeField>(this);
@@ -81,21 +81,21 @@ public class ScheduledJobLogs extends Table {
 
 	@Override
 	public void constructor1() {
-		scheduledJob.get(IClass.Constructor1).operatorAssign(scheduledJobs);
+		scheduledJobId.get(IClass.Constructor1).operatorAssign(scheduledJob);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(scheduledJob);
+		objects.add(scheduledJobId);
 		objects.add(start);
 		objects.add(finish);
 		objects.add(errors);
 		objects.add(file);
 		objects.add(fileSize);
 
-		objects.add(scheduledJobs);
+		objects.add(scheduledJob);
 	}
 
 	@Override
@@ -104,10 +104,10 @@ public class ScheduledJobLogs extends Table {
 
 		description.setDisplayName(displayNames.Description);
 
-		scheduledJobs.setIndex("scheduledJobs");
-
-		scheduledJob.setName(fieldNames.ScheduledJob);
 		scheduledJob.setIndex("scheduledJob");
+
+		scheduledJobId.setName(fieldNames.ScheduledJob);
+		scheduledJobId.setIndex("scheduledJobId");
 
 		start.setName(fieldNames.Start);
 		start.setIndex("start");
