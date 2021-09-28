@@ -407,7 +407,9 @@ Z8.define('Z8.list.Item', {
 
 		var isString = String.isString(text);
 		DOM.setInnerHtml(textElement, isString ? String.htmlText(text) : DOM.markup(text));
-		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
+		var encodedText = Format.htmlEncode(Format.br2nl(text));
+		DOM.setAttribute(textElement, 'title', isString ? encodedText : '');
+		DOM.setAttribute(cell, 'title', isString ? encodedText : '');
 	},
 
 	updateText: function(index, field) {
