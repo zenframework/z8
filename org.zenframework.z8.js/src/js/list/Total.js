@@ -54,6 +54,8 @@ Z8.define('Z8.list.Total', {
 			return Format.integer(value, field.format);
 		case Type.Float:
 			return Format.float(value, field.format);
+		case Type.Datespan:
+			return value;
 		default:
 			return '';
 		}
