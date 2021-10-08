@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
@@ -23,6 +24,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.zenframework.z8.compiler.cmd.Main;
 import org.zenframework.z8.compiler.workspace.Project;
 import org.zenframework.z8.compiler.workspace.ProjectProperties;
+import org.zenframework.z8.justintime.compiler.CustomClassloaderJavaFileManager;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -145,15 +147,16 @@ public class Workspace {
 		if (compiler == null)
 			throw new RuntimeException("Java compiler not found");
 
-		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+		StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(null, null, null);
+		JavaFileManager customFileManager = new CustomClassloaderJavaFileManager(getClass().getClassLoader(), standardFileManager);
 		List<String> options = Arrays.asList("-d", javaClasses.getAbsolutePath());
-		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null,
-				fileManager.getJavaFileObjectsFromFiles(getJavaFiles(javaSources, new LinkedList<File>())));
+		JavaCompiler.CompilationTask task = compiler.getTask(null, customFileManager, listener, options, null,
+				standardFileManager.getJavaFileObjectsFromFiles(getJavaFiles(javaSources, new LinkedList<File>())));
 		try {
 			return task.call();
 		} finally {
 			try {
-				fileManager.close();
+				standardFileManager.close();
 			} catch (IOException e) {}
 		}
 	}

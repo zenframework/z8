@@ -22,7 +22,7 @@ public class DynamicRuntime extends ComplexRuntime {
 		private final Workspace workspace;
 
 		DynamicClassLoader(Workspace workspace) {
-			super(new URL[] { toURL(workspace.getJavaClasses()) });
+			super(new URL[] { toURL(workspace.getJavaClasses()) }, workspace.getClass().getClassLoader());
 			this.workspace = workspace;
 		}
 
