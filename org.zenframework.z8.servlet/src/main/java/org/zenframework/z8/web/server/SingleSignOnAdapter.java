@@ -13,11 +13,7 @@ import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.web.servlet.Servlet;
-import org.zenframework.z8.web.utils.ServletUtil;
 
-/**
- * User authorization through kerberos protocol
- */
 public class SingleSignOnAdapter extends Adapter {
 	static public final String AdapterPath = "/sso_auth";
 
@@ -34,8 +30,8 @@ public class SingleSignOnAdapter extends Adapter {
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession httpSession = request.getSession();
 
-		String principalName = (String) httpSession.getAttribute("userPrincipalName");
-		if (principalName == null) {
+		String principalName = (String)httpSession.getAttribute("userPrincipalName");
+		if(principalName == null) {
 			httpSession.invalidate();
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
@@ -43,19 +39,19 @@ public class SingleSignOnAdapter extends Adapter {
 		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
 		Session session;
 		try {
-			session = ServerConfig.authorityCenter().trustedLogin(login, ServletUtil.getSchema(request), true);
-		} catch (AccessDeniedException e) {
+			session = ServerConfig.authorityCenter().trustedLogin(login, extractSchemaName(request), true);
+		} catch(AccessDeniedException e) {
 			httpSession.invalidate();
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			httpSession.invalidate();
 			Trace.logError(e.getMessage(), e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
 		}
 
-		if (useContainerSession)
+		if(useContainerSession)
 			httpSession.setAttribute(Json.session.get(), session.getId());
 
 		request.getRequestDispatcher("/index.html").forward(request, response);

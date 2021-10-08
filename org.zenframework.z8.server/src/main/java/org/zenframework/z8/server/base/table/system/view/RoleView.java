@@ -185,7 +185,7 @@ public class RoleView extends Roles {
 
 		/* SecuredObjects */
 		RoleSecuredObjectAccess rso = this.rso.get();
-		rso.groupBy.add(rso.securedObjectAccess.get().securedObjectId);
+		rso.groupBy.add(rso.soa.get().securedObjectId);
 
 		securedObjects.setIndex("securedObjects");
 		securedObjects.setDisplayName(SecuredObjects.displayNames.Title);
@@ -193,9 +193,9 @@ public class RoleView extends Roles {
 		securedObjects.get().query = this.rso;
 		securedObjects.get().link = rso.roleId;
 		securedObjects.get().flex = new integer(1);
-		securedObjects.get().sortFields.add(rso.securedObjectAccess.get().securedObject.get().name);
+		securedObjects.get().sortFields.add(rso.soa.get().securedObject.get().name);
 
-		securedObjects.get().columns.add(rso.securedObjectAccess.get().securedObject.get().name);
+		securedObjects.get().columns.add(rso.soa.get().securedObject.get().name);
 		/* SecuredObjects */
 
 		/* SecuredObjectAccess */
@@ -207,17 +207,17 @@ public class RoleView extends Roles {
 		securedObjectAccess.get().query = this.rsoa;
 		securedObjectAccess.get().link = rsoa.roleId;
 		securedObjectAccess.get().flex = new integer(1);
-		securedObjectAccess.get().sortFields.add(rsoa.securedObjectAccess.get().name);
+		securedObjectAccess.get().sortFields.add(rsoa.soa.get().name);
 
 		rsoa.value.get().editable = bool.True;
 		rsoa.value.setIcon("fa-check");
 
-		securedObjectAccess.get().columns.add(rsoa.securedObjectAccess.get().name);
+		securedObjectAccess.get().columns.add(rsoa.soa.get().name);
 		securedObjectAccess.get().columns.add(rsoa.value);
 
 		securedObjects.get().dependencies.add(securedObjectAccess);
-		securedObjectAccess.get().dependency = rsoa.securedObjectAccess.get().securedObjectId;
-		securedObjectAccess.get().dependsOn = rso.securedObjectAccess.get().securedObjectId;
+		securedObjectAccess.get().dependency = rsoa.soa.get().securedObjectId;
+		securedObjectAccess.get().dependsOn = rso.soa.get().securedObjectId;
 		/* SecuredObjectAccess */
 
 		securedObjectTab.setIndex("securedObjectTab");

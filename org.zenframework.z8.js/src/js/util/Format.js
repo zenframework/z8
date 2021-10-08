@@ -155,7 +155,7 @@ Z8.define('Z8.util.Format', {
 			if(format == null)
 				return value;
 
-			if(isNaN(value))
+			if(isNaN(value) || value == null)
 				return '';
 
 			var formatFn = Format.formats[format];
@@ -167,53 +167,53 @@ Z8.define('Z8.util.Format', {
 				var trimPart = '';
 				var hasComma = format.indexOf(',') !== -1;
 				var splitFormat = format.replace(/[^\d\.#]/g, '').split('.');
+				var trimTrailingZeroes = false;
 				var extraChars = format.replace(/[\d,\.#]+/, '');
 
-				if (splitFormat.length > 2)
+				if(splitFormat.length > 2)
 					throw 'Invalid number format, should have no more than 1 decimal';
 
-				if (splitFormat.length == 2) {
-					var precision = splitFormat[1].length;
-					var trimTrailingZeroes = splitFormat[1].match(/#+$/);
-					if (trimTrailingZeroes) {
-						var length = trimTrailingZeroes[0].length;
-						trimPart = 'trailingZeroes=new RegExp(Format.DecimalSeparator.replace(/([-.*+?\\^${}()|\\[\\]\\/\\\\])/g, "\\\\$1") + "*0{0,' + length + '}$");';
-					}
+				if(splitFormat.length == 2) {
+					precision = splitFormat[1].length;
+					trimTrailingZeroes = splitFormat[1].match(/#+$/);
+					if(trimTrailingZeroes)
+						trimPart = 'var trailingZeroes = new RegExp(Format.DecimalSeparator.replace(/([-.*+?\\^${}()|\\[\\]\\/\\\\])/g, "\\\\$1") + "*0{0,' + trimTrailingZeroes[0].length + '}$");';
 				}
 
-				var code = [
-					'var neg,absVal,fnum,parts' + (hasComma ? ',thousandSeparator,thousands=[],j,n,i' : '') + (extraChars ? ',format="' + format + '"' : '') + ',trailingZeroes;' + 'return function(v){' + 'if(typeof v!=="number"&&isNaN(v=parseFloat(v)))return"";' + 'neg=v<0;',
-					'absVal=Math.abs(v.round(' + precision + '));',
-					'fnum=String(absVal);',
-					trimPart
-				];
+				var code = 'return function(value) {';
+				code += 'var format = "' + format + '";';
+				code += 'var neg = value < 0;';
+				code += 'var absVal = Math.abs(value.round(' + precision + '));';
+				code += 'var formatted = String(absVal);';
+				code += trimPart;
+
 				if(hasComma) {
 					if(precision) {
-						code[code.length] = 'parts=fnum.split(".");';
-						code[code.length] = 'fnum=parts[0];';
+						code += 'var parts = formatted.split(".");';
+						code += 'formatted = parts[0];';
 					}
-					code[code.length] = 'if(absVal>=1000) {';
-					code[code.length] = 'thousandSeparator=Format.ThousandSeparator;' + 'thousands.length=0;' + 'j=fnum.length;' + 'n=fnum.length%3||3;' + 'for(i=0;i<j;i+=n){' + 'if(i!==0){' + 'n=3;' + '}' + 'thousands[thousands.length]=fnum.substr(i,n);' + '}' + 'fnum=thousands.join(thousandSeparator);' + '}';
-					if (precision)
-						code[code.length] = 'fnum += parts[1] ? Format.DecimalSeparator+parts[1] : "";';
-				} else if(precision)
-					code[code.length] = 'if(Format.DecimalSeparator!=="."){' + 'parts=fnum.split(".");' + 'fnum=parts[0]+(parts[1] ? Format.DecimalSeparator+parts[1] : "");' + '}';
+	
+					code += 'if(absVal >= 1000) {';
+						code += 'var thousandSeparator = Format.ThousandSeparator;';
+						code += 'var thousands = [];';
+						code += 'for(var i = 0, j = formatted.length, n = formatted.length % 3 || 3; i < j; i += n) thousands[thousands.length] = formatted.substr(i, n = i == 0 ? n : 3);';
+						code += 'formatted = thousands.join(thousandSeparator);';
+					code += '}';
+	
+					if(precision)
+						code += 'formatted += Format.DecimalSeparator + String.padRight(parts[1] || "0",' + precision + ', "0").substring(0, ' + precision +');';
+				}
 
-				code[code.length] = 'if(neg&&fnum!=="' + (precision ? '0.' + String.repeat('0', precision) : '0') + '") { fnum="-"+fnum; }';
+				code += 'if(neg && formatted != "' + (precision ? '0.' + String.repeat('0', precision) : '0') + '") formatted = "-" + formatted;';
 
 				if(trimTrailingZeroes)
-					code[code.length] = 'if(parts[1]) { fnum=fnum.replace(trailingZeroes,""); }';
+					code += 'formatted = formatted.replace(trailingZeroes, "");';
 
-				code[code.length] = 'return ';
+				code += 'return ' + (extraChars ? 'format.replace(/[\\d,\\.#]+/, formatted)' : 'formatted') + ';';
 
-				if(extraChars)
-					code[code.length] = 'format.replace(/[\\d,\\.#]+/, fnum);';
-				else
-					code[code.length] = 'fnum;';
+				code += '};';
 
-				code[code.length] = '};';
-
-				formatFn = Format.formats[originalFormat] = Function.prototype.constructor.call(Function.prototype, code.join(''))();
+				formatFn = Format.formats[originalFormat] = Function.prototype.constructor.call(Function.prototype, code)();
 			}
 			return formatFn(value);
 		},

@@ -40,7 +40,6 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
-import org.zenframework.z8.web.utils.ServletUtil;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
@@ -82,7 +81,7 @@ public abstract class Adapter {
 				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
 					throw new AccessDeniedException();
 
-				session = login(login, password, ServletUtil.getSchema(request));
+				session = login(login, password, extractSchemaName(request));
 				if(httpSession != null)
 					httpSession.setAttribute(Json.session.get(), session.getId());
 			} else
@@ -152,6 +151,18 @@ public abstract class Adapter {
 		} catch(FileUploadException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	protected String extractSchemaName(HttpServletRequest request) {
+		if(!ServerConfig.isMultitenant())
+			return null;
+
+		String serverName = request.getServerName();
+		int index = serverName.indexOf('.');
+		if(index == -1 || index == serverName.lastIndexOf('.') && !serverName.endsWith("localhost"))
+			throw new AccessDeniedException();
+
+		return serverName.substring(0, index);
 	}
 
 	public void start() {

@@ -55,10 +55,10 @@ public class RoleSecuredObjectAccess extends Table {
 	}
 
 	public Roles.CLASS<Roles> role = new Roles.CLASS<Roles>(this);
-	public SecuredObjectAccess.CLASS<SecuredObjectAccess> securedObjectAccess = new SecuredObjectAccess.CLASS<SecuredObjectAccess>(this);
+	public SecuredObjectAccess.CLASS<SecuredObjectAccess> soa = new SecuredObjectAccess.CLASS<SecuredObjectAccess>(this);
 
 	public Link.CLASS<Link> roleId = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> securedObjectAccessId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> soaId = new Link.CLASS<Link>(this);
 
 	public BoolField.CLASS<BoolField> value = new BoolField.CLASS<BoolField>(this);
 
@@ -73,7 +73,7 @@ public class RoleSecuredObjectAccess extends Table {
 	@Override
 	public void constructor1() {
 		roleId.get(IClass.Constructor1).operatorAssign(role);
-		securedObjectAccessId.get(IClass.Constructor1).operatorAssign(securedObjectAccess);
+		soaId.get(IClass.Constructor1).operatorAssign(soa);
 	}
 
 	@Override
@@ -81,10 +81,10 @@ public class RoleSecuredObjectAccess extends Table {
 		super.initMembers();
 
 		objects.add(role);
-		objects.add(securedObjectAccess);
+		objects.add(soa);
 
 		objects.add(roleId);
-		objects.add(securedObjectAccessId);
+		objects.add(soaId);
 
 		objects.add(value);
 	}
@@ -94,43 +94,43 @@ public class RoleSecuredObjectAccess extends Table {
 		super.constructor2();
 
 		role.setIndex("role");
-		securedObjectAccess.setIndex("securedObjectAccess");
+		soa.setIndex("soa");
 
 		roleId.setName(fieldNames.Role);
 		roleId.setIndex("roleId");
 
-		securedObjectAccessId.setName(fieldNames.SecuredObjectAccess);
-		securedObjectAccessId.setIndex("securedObjectAccessId");
+		soaId.setName(fieldNames.SecuredObjectAccess);
+		soaId.setIndex("securedObjectAccessId");
 
 		value.setName(fieldNames.Value);
 		value.setIndex("value");
 		value.setDisplayName(displayNames.Value);
 	}
 
-	private void addStaticRecord(guid roleId, guid securedObjectAccessId, boolean value) {
+	private void addStaticRecord(guid id, guid roleId, guid securedObjectAccessId, boolean value) {
 		LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 		record.put(this.roleId.get(), roleId);
-		record.put(this.securedObjectAccessId.get(), securedObjectAccessId);
+		record.put(this.soaId.get(), securedObjectAccessId);
 		record.put(this.value.get(), new bool(value));
 		record.put(lock.get(), RecordLock.Full);
-		addRecord(guid.create(), record);
+		addRecord(id, record);
 	}
 
 	@Override
 	public void initStaticRecords() {
-		addStaticRecord(Role.Administrator, Access.TableRead, true);
-		addStaticRecord(Role.Administrator, Access.TableWrite, true);
-		addStaticRecord(Role.Administrator, Access.TableCreate, true);
-		addStaticRecord(Role.Administrator, Access.TableCopy, true);
-		addStaticRecord(Role.Administrator, Access.TableDestroy, true);
+		addStaticRecord(new guid("2B9B1579-BDA2-457D-8ACA-660A4591D2F3"), Role.Administrator, Access.TableRead, true);
+		addStaticRecord(new guid("B3E84DAC-CB0D-40A4-9A46-53957F8D8131"), Role.Administrator, Access.TableWrite, true);
+		addStaticRecord(new guid("8EE7ECEA-7578-40C7-A628-D045BD00083F"), Role.Administrator, Access.TableCreate, true);
+		addStaticRecord(new guid("50A38EEF-C662-4EE2-BE5F-8A07D4F17371"), Role.Administrator, Access.TableCopy, true);
+		addStaticRecord(new guid("450E96CA-AE90-4224-B5CA-A13B1419390A"), Role.Administrator, Access.TableDestroy, true);
 
-		addStaticRecord(Role.Administrator, Access.FieldRead, true);
-		addStaticRecord(Role.Administrator, Access.FieldWrite, true);
+		addStaticRecord(new guid("19B2B413-DD3A-42FE-A0FF-9B9A076D9F0C"), Role.Administrator, Access.FieldRead, true);
+		addStaticRecord(new guid("24035128-7430-403E-8B28-023CAE21CF55"), Role.Administrator, Access.FieldWrite, true);
 
-		addStaticRecord(Role.Administrator, Access.RequestExecute, true);
+		addStaticRecord(new guid("FB86A054-FB6C-4893-974A-9BB9A7439AD6"), Role.Administrator, Access.RequestExecute, true);
 
-		addStaticRecord(Role.User, Access.TableRead, true);
-		addStaticRecord(Role.User, Access.FieldRead, true);
+		addStaticRecord(new guid("4083E37C-7ADB-414F-8003-B16CC1704FA1"), Role.User, Access.TableRead, true);
+		addStaticRecord(new guid("E4F62430-04EB-4371-ADBE-CCDA0932D29E"), Role.User, Access.FieldRead, true);
 	}
 
 	@Override
