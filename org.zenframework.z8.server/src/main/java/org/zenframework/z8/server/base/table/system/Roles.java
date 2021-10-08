@@ -161,14 +161,14 @@ public class Roles extends Table {
 			rra.create();
 		}
 
-		SecuredObjectAccess securedObjectAccess = new SecuredObjectAccess.CLASS<SecuredObjectAccess>().get();
+		SecuredObjectAccess soa = new SecuredObjectAccess.CLASS<SecuredObjectAccess>().get();
 		RoleSecuredObjectAccess rsoa = new RoleSecuredObjectAccess.CLASS<RoleSecuredObjectAccess>().get();
 
-		securedObjectAccess.read(Arrays.asList(securedObjectAccess.primaryKey()));
+		soa.read(Arrays.asList(soa.primaryKey()));
 
-		while(securedObjectAccess.next()) {
+		while(soa.next()) {
 			rsoa.roleId.get().set(recordId);
-			rsoa.securedObjectAccessId.get().set(requests.recordId());
+			rsoa.soaId.get().set(soa.recordId());
 			rsoa.create();
 		}
 
@@ -213,7 +213,7 @@ public class Roles extends Table {
 
 		Field roleId = rsoa.roleId.get();
 		Field value = rsoa.value.get();
-		Field securedObjectAccessId = rsoa.securedObjectAccessId.get();
+		Field securedObjectAccessId = rsoa.soaId.get();
 
 		rsoa.read(Arrays.asList(roleId, securedObjectAccessId, value));
 		while(rsoa.next()) {

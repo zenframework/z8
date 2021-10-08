@@ -123,13 +123,16 @@ public class ActionFactory {
 	}
 
 	private boolean initializeWithLink(ActionConfig config, String id) {
-		if(id != null && !id.isEmpty()) {
-			ILink link = (ILink)config.query.findFieldById(id);
-			config.query = link.getQuery();
-			config.link = link;
-			return true;
-		}
-		return false;
+		if(id == null || id.isEmpty())
+			return false;
+
+		ILink link = (ILink)config.query.findFieldById(id);
+		if(link == null)
+			return false;
+
+		config.query = link.getQuery();
+		config.link = link;
+		return true;
 	}
 
 	private void initializeWithQuery(ActionConfig config, String id) {

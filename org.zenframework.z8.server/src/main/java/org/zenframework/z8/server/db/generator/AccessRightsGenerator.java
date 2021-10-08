@@ -194,7 +194,7 @@ public class AccessRightsGenerator {
 
 		while(securedObjects.next()) {
 			guid securedObjectId = securedObjects.recordId();
-			rsoa.destroy(new Equ(rsoa.securedObjectAccess.get().securedObjectId.get(), securedObjectId));
+			rsoa.destroy(new Equ(rsoa.soa.get().securedObjectId.get(), securedObjectId));
 			soa.destroy(new Equ(soa.securedObjectId.get(), securedObjectId));
 			securedObjects.destroy(securedObjectId);
 		}
@@ -203,7 +203,7 @@ public class AccessRightsGenerator {
 
 		while(soa.next()) {
 			guid securedObjectAccessId = soa.recordId();
-			rsoa.destroy(new Equ(rsoa.securedObjectAccessId.get(), securedObjectAccessId));
+			rsoa.destroy(new Equ(rsoa.soaId.get(), securedObjectAccessId));
 			soa.destroy(securedObjectAccessId);
 		}
 	}
@@ -214,7 +214,7 @@ public class AccessRightsGenerator {
 		Map<guid, Collection<guid>> roleToSoaKeys = new HashMap<guid, Collection<guid>>();
 
 		Field roleId = rsoa.roleId.get();
-		Field soaId = rsoa.securedObjectAccessId.get();
+		Field soaId = rsoa.soaId.get();
 		rsoa.read(Arrays.asList(roleId, soaId));
 
 		while(rsoa.next()) {
@@ -236,7 +236,7 @@ public class AccessRightsGenerator {
 					continue;
 
 				rsoa.roleId.get().set(role.getId());
-				rsoa.securedObjectAccessId.get().set(key);
+				rsoa.soaId.get().set(key);
 				rsoa.value.get().set(new bool(role.getAccess().get(key)));
 				rsoa.create();
 			}

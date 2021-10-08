@@ -45,7 +45,11 @@ public class Cursor {
 	}
 
 	public boolean next() throws SQLException {
-		return resultSet.next();
+		if(resultSet != null && resultSet.next())
+			return true;
+
+		close();
+		return false;
 	}
 
 	public boolean isAfterLast() throws SQLException {

@@ -1,5 +1,5 @@
 HTMLCanvasElement.prototype.getContext2d = function(width, height) {
-	var devicePixelRatio = window.devicePixelRatio;
+	var devicePixelRatio = Math.max(window.devicePixelRatio, 1);
 
 	this.width = width * devicePixelRatio;
 	this.height = height * devicePixelRatio;

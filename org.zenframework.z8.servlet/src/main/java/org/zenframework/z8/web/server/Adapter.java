@@ -41,7 +41,6 @@ import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
-import org.zenframework.z8.web.utils.ServletUtil;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
@@ -84,6 +83,7 @@ public abstract class Adapter {
 					throw new AccessDeniedException();
 
 				session = login(getLoginParameters(login, request), password);
+
 				if(httpSession != null)
 					httpSession.setAttribute(Json.session.get(), session.getId());
 			} else
@@ -155,6 +155,18 @@ public abstract class Adapter {
 		}
 	}
 
+	protected String extractSchemaName(HttpServletRequest request) {
+		if(!ServerConfig.isMultitenant())
+			return null;
+
+		String serverName = request.getServerName();
+		int index = serverName.indexOf('.');
+		if(index == -1 || index == serverName.lastIndexOf('.') && !serverName.endsWith("localhost"))
+			throw new AccessDeniedException();
+
+		return serverName.substring(0, index);
+	}
+
 	public void start() {
 	}
 
@@ -214,10 +226,10 @@ public abstract class Adapter {
 		}
 	}
 
-	protected static LoginParameters getLoginParameters(String login, HttpServletRequest request) {
+	protected LoginParameters getLoginParameters(String login, HttpServletRequest request) {
 		LoginParameters loginParameters = new LoginParameters(login);
 		loginParameters.setAddress(request.getRemoteAddr());
-		loginParameters.setSchema(ServletUtil.getSchema(request));
+		loginParameters.setSchema(extractSchemaName(request));
 		return loginParameters;
 	}
 
