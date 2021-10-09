@@ -11,7 +11,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
@@ -320,7 +320,7 @@ public class OdaField implements IField {
 	}
 
 	@Override
-	public IAccess access() {
+	public Access access() {
 		throw new UnsupportedOperationException();
 	}
 

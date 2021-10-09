@@ -27,7 +27,6 @@ import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.Domain;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.guid;
@@ -282,7 +281,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		Domains domains = Domains.newInstance();
 		Domain acceptorDomain = domains.getDomain(address);
 
-		IUser user = acceptorDomain != null ? acceptorDomain.getSystemUser() : User.system(Database.get(null));
+		User user = acceptorDomain != null ? acceptorDomain.getSystemUser() : User.system(Database.get(null));
 
 		IRequest currentRequest = ApplicationServer.getRequest();
 		ApplicationServer.setRequest(new Request(new Session("", user)));

@@ -9,7 +9,6 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.HubServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.logs.Trace;
@@ -70,7 +69,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	public IApplicationServer connect(String domain) throws RemoteException {
-		IServerInfo server = findServer(domain);
+		ServerInfo server = findServer(domain);
 		return server != null ? server.getServer() : null;
 	}
 
@@ -89,10 +88,10 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 		return cacheEnabled ? new File(Folders.Base, cache) : null;
 	}
 
-	private IServerInfo findServer(String domain) throws RemoteException {
-		IServerInfo[] servers = getServers();
+	private ServerInfo findServer(String domain) throws RemoteException {
+		ServerInfo[] servers = getServers();
 
-		for(IServerInfo server : servers) {
+		for(ServerInfo server : servers) {
 			if(!ArrayUtils.contains(server.getDomains(), domain))
 				continue;
 

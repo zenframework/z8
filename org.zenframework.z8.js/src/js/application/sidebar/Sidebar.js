@@ -9,7 +9,7 @@ Z8.define('Z8.application.sidebar.Sidebar', {
 	htmlMarkup: function() {
 		this.itemIndex = {};
 
-		this.data = JSON.decode(JSON.encode(User.data));
+		this.entries = JSON.decode(JSON.encode(User.enties));
 
 		var handle = { tag: 'i', cls: 'handle fa fa-angle-right' };
 		var logo = { cls: 'logo' };
@@ -86,7 +86,7 @@ Z8.define('Z8.application.sidebar.Sidebar', {
 
 	onSelectItem: function(item) {
 		this.close();
-		Z8.callback(this.handler, this.scope, item.data);
+		Z8.callback(this.handler, this.scope, item.entry);
 	},
 
 	onFocus: function(event, target) {

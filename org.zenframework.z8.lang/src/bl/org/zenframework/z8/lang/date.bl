@@ -11,8 +11,6 @@ public final class date extends primary {
 	public operator string();
 	public operator sql_date();
 
-	public void operator = (int ticks);
-
 	public date operator + (datespan value);
 	public date operator - (datespan value);
 	public datespan operator - (date value);

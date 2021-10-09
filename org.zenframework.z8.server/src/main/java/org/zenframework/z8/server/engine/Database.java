@@ -19,7 +19,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
-public class Database implements IDatabase, RmiSerializable, Serializable {
+public class Database implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -3409230943645338455L;
 
 	private String schema = null;
@@ -36,10 +36,10 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
 
-	static private Map<IDatabase, Object> locks = new HashMap<IDatabase, Object>();
-	static private Map<String, IDatabase> databases = new HashMap<String, IDatabase>();
+	static private Map<Database, Object> locks = new HashMap<Database, Object>();
+	static private Map<String, Database> databases = new HashMap<String, Database>();
 
-	static public IDatabase get(String scheme) {
+	static public Database get(String scheme) {
 		Database defaultDatabase = new Database(ServerConfig.databaseSchema(), ServerConfig.databaseUser(), ServerConfig.databasePassword(),
 				ServerConfig.databaseConnection(), ServerConfig.databaseDriver(), ServerConfig.databaseCharset());
 
@@ -47,7 +47,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 			defaultDatabase.setSchema(scheme);
 
 		String key = defaultDatabase.key();
-		IDatabase database = databases.get(key);
+		Database database = databases.get(key);
 
 		if(database == null) {
 			databases.put(key, defaultDatabase);
@@ -109,11 +109,11 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return external;
 	}
 
-	public DatabaseVendor vendor() {
+	public DatabaseVendor getVendor() {
 		return vendor;
 	}
 
-	public String schema() {
+	public String getSchema() {
 		return schema;
 	}
 
@@ -121,7 +121,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.schema = schema;
 	}
 
-	public String password() {
+	public String getPassword() {
 		return password;
 	}
 
@@ -129,7 +129,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.password = password;
 	}
 
-	public String user() {
+	public String getUser() {
 		return user;
 	}
 
@@ -137,7 +137,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.user = user;
 	}
 
-	public String connection() {
+	public String getConnection() {
 		return connection;
 	}
 
@@ -145,7 +145,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.connection = connection;
 	}
 
-	public String driver() {
+	public String getDriver() {
 		return driver;
 	}
 
@@ -153,7 +153,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.driver = driver;
 	}
 
-	public encoding charset() {
+	public encoding getCharset() {
 		return charset;
 	}
 
@@ -161,23 +161,23 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.charset = charset;
 	}
 
-	public String tableName(String name) {
-		return vendor.quote(schema()) + "." + vendor.quote(name);
+	public String getTableName(String name) {
+		return vendor.quote(getSchema()) + "." + vendor.quote(name);
 	}
 
 	public boolean tableExists(String name) {
 		String sql = null;
 
-		DatabaseVendor vendor = vendor();
+		DatabaseVendor vendor = getVendor();
 
 		if(vendor == DatabaseVendor.SqlServer) {
-			sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.COLUMNS " + "WHERE TABLE_NAME = '" + name + "' AND " + "TABLE_CATALOG = '" + schema() + "'";
+			sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.COLUMNS " + "WHERE TABLE_NAME = '" + name + "' AND " + "TABLE_CATALOG = '" + getSchema() + "'";
 		} else if(vendor == DatabaseVendor.Postgres) {
-			sql = "SELECT COUNT(table_name) FROM information_schema.tables " + "WHERE table_name = '" + name + "' AND " + "table_schema = '" + schema() + "'";
+			sql = "SELECT COUNT(table_name) FROM information_schema.tables " + "WHERE table_name = '" + name + "' AND " + "table_schema = '" + getSchema() + "'";
 		} else if(vendor == DatabaseVendor.Oracle) {
-			sql = "SELECT COUNT(TABLE_NAME) FROM ALL_TAB_COLUMNS " + "WHERE TABLE_NAME = '" + name + "' AND " + "OWNER = '" + schema() + "'";
+			sql = "SELECT COUNT(TABLE_NAME) FROM ALL_TAB_COLUMNS " + "WHERE TABLE_NAME = '" + name + "' AND " + "OWNER = '" + getSchema() + "'";
 		} else if(vendor == DatabaseVendor.H2) {
-			sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES " + "WHERE TABLE_NAME = '" + name + "' AND " + "	TABLE_SCHEMA = '" + schema() + "'";
+			sql = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES " + "WHERE TABLE_NAME = '" + name + "' AND " + "	TABLE_SCHEMA = '" + getSchema() + "'";
 		}
 
 		Cursor cursor = null;

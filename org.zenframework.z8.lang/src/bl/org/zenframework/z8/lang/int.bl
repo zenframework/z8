@@ -6,6 +6,7 @@ public final class int extends primary {
 	public operator decimal();
 	public operator string();
 	public operator sql_int();
+	public operator date();
 
 	public int operator+();
 	public int operator-();

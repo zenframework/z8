@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EntityAction extends BaseInfo {
 	private List<FieldDescription> parameters;
-	
+
 	public EntityAction(String name, String description) {
 		super(name, description);
 		parameters = new ArrayList<>();
@@ -20,7 +20,7 @@ public class EntityAction extends BaseInfo {
 
 	public String getJson() {
 		JsonArray parameters = new JsonArray();
-		for (FieldDescription parameter : getParameters()) {
+		for(FieldDescription parameter : getParameters()) {
 			JsonObject obj = new JsonObject();
 			obj.put("id", parameter.name);
 			obj.put("value", "");

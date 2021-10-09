@@ -3,12 +3,13 @@ package org.zenframework.z8.server.engine;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.types.datespan;
 
-public class ServerInfo implements IServerInfo {
+public class ServerInfo implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = 5011706173964296365L;
 	private static final long TenMinutes = 10 * datespan.TicksPerMinute;
@@ -34,43 +35,35 @@ public class ServerInfo implements IServerInfo {
 		this.domains = domains;
 	}
 
-	@Override
 	public Proxy getProxy() {
 		return (Proxy)getProxy(server);
 	}
 
-	@Override
 	public IApplicationServer getServer() {
 		return server;
 	}
 
-	@Override
 	public void setServer(IApplicationServer server) {
 		this.server = server;
 		lastChecked = 0;
 	}
 
-	@Override
 	public String getId() {
 		return id;
 	}
 
-	@Override
 	public void setId(String id) {
 		this.id = id;
 	}
 
-	@Override
 	public String[] getDomains() {
 		return domains;
 	}
 
-	@Override
 	public void setDomains(String[] domains) {
 		this.domains = domains;
 	}
 
-	@Override
 	public boolean isAlive() throws RemoteException {
 		if(lastChecked != 0 && System.currentTimeMillis() - lastChecked < TenMinutes)
 			return false;
@@ -90,7 +83,6 @@ public class ServerInfo implements IServerInfo {
 		return false;
 	}
 
-	@Override
 	public boolean isDead() throws RemoteException {
 		return firstFailure != 0 && System.currentTimeMillis() - firstFailure > ThreeDays;
 	}

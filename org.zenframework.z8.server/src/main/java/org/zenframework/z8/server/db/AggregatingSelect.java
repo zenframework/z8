@@ -16,7 +16,7 @@ public class AggregatingSelect extends Select {
 	}
 
 	@Override
-	protected String sql(FormatOptions options) {
+	protected String getSql(FormatOptions options) {
 		setOrderBy(null);
 
 		if(isGrouped()) {
@@ -34,7 +34,7 @@ public class AggregatingSelect extends Select {
 
 		setAggregated(true);
 
-		return super.sql(options);
+		return super.getSql(options);
 	}
 
 	private Collection<Field> getAggregatedFields() {

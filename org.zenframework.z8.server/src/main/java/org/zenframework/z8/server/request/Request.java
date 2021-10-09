@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -16,16 +16,16 @@ public class Request extends IRequest {
 	private Map<string, string> parameters = new RLinkedHashMap<string, string>();
 	private List<file> files = new RCollection<file>();
 
-	private ISession session;
+	private Session session;
 	private IResponse response;
 	private IMonitor monitor;
 
-	public Request(ISession session) {
+	public Request(Session session) {
 		this.session = session;
 		this.monitor = new Monitor();
 	}
 
-	public Request(Map<String, String> parameters, Collection<file> files, ISession session) {
+	public Request(Map<String, String> parameters, Collection<file> files, Session session) {
 		this.session = session;
 		this.monitor = new Monitor();
 		this.response = new Response();
@@ -57,13 +57,8 @@ public class Request extends IRequest {
 	}
 
 	@Override
-	public ISession getSession() {
+	public Session getSession() {
 		return session;
-	}
-
-	@Override
-	public void setSession(ISession session) {
-		this.session = session;
 	}
 
 	@Override
@@ -104,7 +99,7 @@ public class Request extends IRequest {
 
 	@Override
 	public String toString() {
-		return parametersAsString() + ", user=" + session.user().login();
+		return parametersAsString() + ", user=" + session.getUser().getLogin();
 	}
 
 }

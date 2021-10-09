@@ -8,7 +8,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.DmlStatement;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 
 class IndexGenerator {
 	private Table table;
@@ -24,11 +24,11 @@ class IndexGenerator {
 	void run() throws SQLException {
 		Connection connection = ConnectionManager.get();
 
-		IDatabase database = connection.database();
-		DatabaseVendor vendor = database.vendor();
+		Database database = connection.getDatabase();
+		DatabaseVendor vendor = database.getVendor();
 
 		boolean unique = field.unique();
-		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.tableName(table.name()) + " " + formatIndexField(vendor);
+		String sql = "create " + (unique ? "unique " : "") + "index " + vendor.quote((unique ? "Unq" : "Idx") + index + table.name()) + " " + "on " + database.getTableName(table.name()) + " " + formatIndexField(vendor);
 
 		DmlStatement.execute(sql);
 	}
@@ -50,7 +50,7 @@ class IndexGenerator {
 	static void dropIndex(String tableName, String indexName) throws SQLException {
 		Connection connection = ConnectionManager.get();
 
-		switch(connection.vendor()) {
+		switch(connection.getVendor()) {
 		case Postgres:
 		case Oracle:
 		case H2:
@@ -65,13 +65,13 @@ class IndexGenerator {
 	}
 
 	private static void dropIndexOracle(Connection connection, String tableName, String indexName) throws SQLException {
-		IDatabase database = connection.database();
-		String sql = "drop index " + database.tableName(indexName);
+		Database database = connection.getDatabase();
+		String sql = "drop index " + database.getTableName(indexName);
 		DmlStatement.execute(sql);
 	}
 
 	private static void dropIndexSQLServer(Connection connection, String tableName, String indexName) throws SQLException {
-		DatabaseVendor vendor = connection.vendor();
+		DatabaseVendor vendor = connection.getVendor();
 		String sql = "drop index " + vendor.quote(tableName) + "." + vendor.quote(indexName);
 		DmlStatement.execute(sql);
 	}

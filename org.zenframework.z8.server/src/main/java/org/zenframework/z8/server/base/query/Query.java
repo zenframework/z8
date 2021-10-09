@@ -36,7 +36,7 @@ import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -102,9 +102,8 @@ public class Query extends OBJECT {
 
 	protected Select cursor;
 	public ReadLock readLock = ReadLock.None;
-	private boolean transactive = true;
 
-	private IAccess access;
+	private Access access;
 	private Connection connection;
 
 	private Field parentKey = null;
@@ -131,8 +130,8 @@ public class Query extends OBJECT {
 		return this == query;
 	}
 
-	public IAccess access() {
-		return access != null ? access : (access = ApplicationServer.getUser().privileges().getTableAccess(this));
+	public Access access() {
+		return access != null ? access : (access = ApplicationServer.getUser().getPrivileges().getTableAccess(this));
 	}
 
 	private void initFields() {
@@ -253,14 +252,6 @@ public class Query extends OBJECT {
 
 	public void setReadLock(ReadLock readLock) {
 		this.readLock = readLock;
-	}
-
-	public boolean isTransactive() {
-		return transactive;
-	}
-
-	public void setTransactive(boolean transactive) {
-		this.transactive = transactive;
 	}
 
 	public Connection getConnection() {
@@ -392,11 +383,11 @@ public class Query extends OBJECT {
 		return read(fields, -1);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int limit) {
+	public Collection<Field> read(Collection<Field> fields, int limit) {
 		return read(fields, 0, limit);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int start, int limit) {
+	public Collection<Field> read(Collection<Field> fields, int start, int limit) {
 		return read(fields, null, start, limit);
 	}
 
@@ -1171,7 +1162,7 @@ public class Query extends OBJECT {
 
 		writer.writeActions(actions(), this, context);
 		writer.writeReports(reports());
-		writer.writeAccess(access());
+		writer.writeQueryAccess(access());
 
 		writeKeys(writer, selectFields());
 

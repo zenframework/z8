@@ -4,7 +4,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.primary;
 
 public interface IField extends IObject {
@@ -27,7 +27,7 @@ public interface IField extends IObject {
 	public boolean changed();
 
 	public Query owner();
-	public IAccess access();
+	public Access access();
 
 	public boolean isPrimaryKey();
 	public boolean isParentKey();

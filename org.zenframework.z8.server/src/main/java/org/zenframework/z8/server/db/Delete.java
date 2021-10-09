@@ -3,7 +3,7 @@ package org.zenframework.z8.server.db;
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
@@ -12,10 +12,10 @@ public class Delete extends DmlStatement {
 
 	static public Delete create(Query query, guid recordId) {
 		Connection connection = query.getConnection();
-		IDatabase database = connection.database();
-		DatabaseVendor vendor = database.vendor();
+		Database database = connection.getDatabase();
+		DatabaseVendor vendor = database.getVendor();
 
-		String sql = "delete from " + database.tableName(query.name()) + " where " + vendor.quote(query.primaryKey().name()) + "=?";
+		String sql = "delete from " + database.getTableName(query.name()) + " where " + vendor.quote(query.primaryKey().name()) + "=?";
 
 		Delete delete = (Delete)connection.getStatement(sql);
 		return delete != null ? delete.initialize(recordId) : new Delete(query.getConnection(), sql, Integer.MAX_VALUE - query.priority(), recordId);
@@ -39,6 +39,6 @@ public class Delete extends DmlStatement {
 
 	@Override
 	protected void log() {
-		Trace.logEvent(sql() + '\n' + "recordId: " + recordId);
+		Trace.logEvent(getSql() + '\n' + "recordId: " + recordId);
 	}
 }

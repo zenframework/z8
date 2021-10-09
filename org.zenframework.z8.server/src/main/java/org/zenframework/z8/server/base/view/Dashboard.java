@@ -3,9 +3,7 @@ package org.zenframework.z8.server.base.view;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -15,14 +13,10 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
-import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Entry;
-import org.zenframework.z8.server.security.IPrivileges;
-import org.zenframework.z8.server.security.IRole;
-import org.zenframework.z8.server.security.IUser;
-import org.zenframework.z8.server.types.primary;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.string;
 
 public class Dashboard extends RequestTarget {
@@ -32,89 +26,34 @@ public class Dashboard extends RequestTarget {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		boolean isLogin = Json.login.get().equals(ApplicationServer.getRequest().id());
-
 		String newPassword = getParameter(Json.newPassword);
 		String password = getParameter(Json.password);
 		String email = getParameter(Json.email);
 
-		if(isLogin) {
-			if(newPassword != null)
+		if(newPassword != null)
 			changePassword(password, newPassword);
-			else if(email != null)
-				changeEmail(email);
-			else
-				writeLoginInfo(writer);
-		} else {
-			String id = getParameter(Json.menu);
-
-			if(id != null) {
-				Desktop desktop = (Desktop) Loader.getInstance(id);
-
-				writer.startArray(Json.data);
-				writeDesktop(writer, desktop);
-				writer.finishArray();
-			}
-		}
+		else if(email != null)
+			changeEmail(email);
+		else
+			writeLoginInfo(writer);
 	}
 
 	private void changePassword(String password, String newPassword) {
-		IUser user = ApplicationServer.getUser();
+		User user = ApplicationServer.getUser();
 
-		if(!user.password().equals(password))
+		if(!user.getPassword().equals(password))
 			throw new AccessDeniedException();
 
-		Users.changePassword(user.id(), newPassword);
+		Users.changePassword(user.getId(), newPassword);
 	}
 
 	private void changeEmail(String email) {
-		IUser user = ApplicationServer.getUser();
+		User user = ApplicationServer.getUser();
 
-		if(!user.email().equalsIgnoreCase(email)) {
+		if(!user.getEmail().equalsIgnoreCase(email)) {
 			Users users = Users.newInstance();
 			users.email.get().set(new string(email));
-			users.update(user.id());
-		}
-	}
-
-	private Collection<OBJECT.CLASS<OBJECT>> getRunnables(Desktop desktop) {
-		Collection<OBJECT.CLASS<OBJECT>> result = new ArrayList<OBJECT.CLASS<OBJECT>>();
-
-		IPrivileges privileges = ApplicationServer.getUser().privileges();
-
-		for(OBJECT.CLASS<OBJECT> cls : desktop.getRunnables()) {
-			if(privileges.getRequestAccess(cls.classIdKey()).execute())
-				result.add(cls);
-		}
-
-		return result;
-	}
-
-	private void writeDesktopData(JsonWriter writer, Desktop desktop, String displayName) {
-		Collection<OBJECT.CLASS<OBJECT>> runnables = getRunnables(desktop);
-
-		if(runnables.isEmpty())
-			return;
-
-		writer.startObject();
-
-		writer.writeProperty(Json.text, displayName);
-		writer.writeProperty(Json.icon, desktop.icon());
-
-		writer.startArray(Json.items);
-		for(OBJECT.CLASS<OBJECT> cls : runnables)
-			writeData(writer, cls);
-		writer.finishArray();
-
-		writer.finishObject();
-	}
-
-	private void writeDesktop(JsonWriter writer, Desktop desktop) {
-		writeDesktopData(writer, desktop, "");
-
-		for(CLASS<?> cls : desktop.getSubDesktops()) {
-			Desktop subDesktop = (Desktop)cls.get();
-			writeDesktopData(writer, subDesktop, subDesktop.displayName());
+			users.update(user.getId());
 		}
 	}
 
@@ -134,66 +73,34 @@ public class Dashboard extends RequestTarget {
 	}
 
 	protected void writeLoginInfo(JsonWriter writer) {
-		IUser user = ApplicationServer.getUser();
+		User user = ApplicationServer.getUser();
 
-		writer.writeProperty(Json.session, ApplicationServer.getSession().id());
+		writer.writeProperty(Json.session, ApplicationServer.getSession().getId());
 		writer.writeProperty(Json.maxUploadSize, ServerConfig.webServerUploadMax());
 
 		writer.startObject(Json.user);
 
-		writer.writeProperty(Json.id, user.id());
-		writer.writeProperty(Json.login, user.login());
-		writer.writeProperty(Json.administrator, user.id().equals(BuiltinUsers.Administrator.guid()));
-		writer.writeProperty(Json.firstName, user.firstName());
-		writer.writeProperty(Json.middleName, user.middleName());
-		writer.writeProperty(Json.lastName, user.lastName());
-		writer.writeProperty(Json.description, user.description());
-		writer.writeProperty(Json.email, user.email());
-		writer.writeProperty(Json.phone, user.phone());
-		writer.writeProperty(Json.changePassword, user.changePassword());
-		writer.writeProperty(Json.settings, user.settings());
+		writer.writeProperty(Json.id, user.getId());
+		writer.writeProperty(Json.login, user.getLogin());
+		writer.writeProperty(Json.administrator, user.getId().equals(BuiltinUsers.Administrator.guid()));
+		writer.writeProperty(Json.firstName, user.getFirstName());
+		writer.writeProperty(Json.middleName, user.getMiddleName());
+		writer.writeProperty(Json.lastName, user.getLastName());
+		writer.writeProperty(Json.description, user.getDescription());
+		writer.writeProperty(Json.email, user.getEmail());
+		writer.writeProperty(Json.phone, user.getPhone());
+		writer.writeProperty(Json.changePassword, user.getChangePassword());
+		writer.writeProperty(Json.settings, user.getSettings());
 
-		Collection<OBJECT.CLASS<OBJECT>> entries = loadEntries(user.entries());
 		writer.startArray(Json.entries);
-		for(CLASS<?> cls : entries)
-			writeData(writer, cls);
+		for(OBJECT.CLASS<OBJECT> cls : loadEntries(user.getEntries()))
+			cls.writeObject(writer);
 		writer.finishArray();
 
-		writer.startArray(Json.roles);
-		for(IRole role : user.roles()) {
-			writer.startObject();
-			writer.writeProperty(Json.id, role.id());
-			writer.writeProperty(Json.name, role.name());
-			writer.finishObject();
-		}
-		writer.finishArray();
+		writer.writeRoles(user.getRoles());
+		writer.writeParameters(user.getParameters());
+		writer.writeAccess(user.getAccess());
 
-		if(getParameter(Json.experimental) != null) {
-			writer.startArray(Json.data);
-			for(OBJECT.CLASS<OBJECT> cls : entries) {
-				if (cls.instanceOf(Desktop.class)) {
-					writeDesktopData(writer, (Desktop) cls.newInstance(), cls.displayName());
-				} else {
-					writer.startObject();
-					cls.write(writer);
-					writer.finishObject();
-				}
-			}
-			writer.finishArray();
-		}
-
-		writer.startObject(Json.parameters);
-		Map<string, primary> parameters = user.parameters();
-		for(string key : parameters.keySet())
-			writer.writeProperty(key.get(), parameters.get(key));
-		writer.finishObject();
-
-		writer.finishObject();
-	}
-
-	private void writeData(JsonWriter writer, CLASS<?> cls) {
-		writer.startObject();
-		((OBJECT)cls.get()).write(writer);
 		writer.finishObject();
 	}
 }

@@ -18,7 +18,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.BuiltinUsers;
-import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
@@ -123,7 +123,6 @@ public class Users extends Table {
 
 	public Users(IObject container) {
 		super(container);
-		setTransactive(true);
 	}
 
 	@Override
@@ -295,9 +294,9 @@ public class Users extends Table {
 
 	static public void notifyUserChange(guid userId, boolean force) {
 		try {
-			IUser user = ApplicationServer.getUser();
-			if(force || !user.id().equals(userId) && !System.equals(userId) && !Administrator.equals(userId))
-				ServerConfig.authorityCenter().userChanged(userId, user.database().schema());
+			User user = ApplicationServer.getUser();
+			if(force || !user.getId().equals(userId) && !System.equals(userId) && !Administrator.equals(userId))
+				ServerConfig.authorityCenter().userChanged(userId, user.getDatabase().getSchema());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
 		}
@@ -307,6 +306,11 @@ public class Users extends Table {
 		return z8_getParameters(LoginParameters.newInstance(loginParameters), parameters).get();
 	}
 
+/*
+	public boolean getExtraParameters(User user, RLinkedHashMap<string, primary> parameters) {
+		return z8_getParameters(user.getId(), new string(user.getLogin()), parameters).get();
+	}
+*/
 	@SuppressWarnings("rawtypes")
 	public bool z8_getParameters(guid id, string name, RLinkedHashMap parameters) {
 		return bool.True;

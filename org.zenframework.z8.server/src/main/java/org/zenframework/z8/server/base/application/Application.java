@@ -16,7 +16,7 @@ import org.zenframework.z8.server.utils.NumericUtils;
 
 public class Application {
 	static public bool z8_isSystemInstalled() {
-		return new bool(ApplicationServer.getUser().database().isSystemInstalled());
+		return new bool(ApplicationServer.getUser().getDatabase().isSystemInstalled());
 	}
 
 	static public bool z8_isRequest() {

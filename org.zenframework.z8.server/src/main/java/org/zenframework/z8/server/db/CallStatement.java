@@ -11,7 +11,7 @@ public class CallStatement extends Statement {
 	private Collection<primary> parameters;
 
 	static public CallStatement create(Connection connection, String name, Collection<primary> parameters) {
-		String sql = "{ call " + connection.vendor().quote(name) + "(";
+		String sql = "{ call " + connection.getVendor().quote(name) + "(";
 
 		for(int i = 0; i < parameters.size(); i++)
 			sql += (i != 0 ? ", " : "") + "?";
@@ -50,6 +50,6 @@ public class CallStatement extends Statement {
 	}
 
 	private void log() {
-		Trace.logEvent(sql());
+		Trace.logEvent(getSql());
 	}
 }

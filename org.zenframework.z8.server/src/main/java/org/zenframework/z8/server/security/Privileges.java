@@ -3,16 +3,18 @@ package org.zenframework.z8.server.security;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
-public class Privileges implements IPrivileges {
+public class Privileges implements RmiSerializable, Serializable {
 	static private final long serialVersionUID = 8845983028465477335L;
 
 	static public class strings {
@@ -29,82 +31,73 @@ public class Privileges implements IPrivileges {
 		public final static String NoExecuteAccess = Resources.get(strings.NoExecuteAccess);
 	}
 
-	IAccess defaultAccess;
+	Access defaultAccess;
 
-	Map<guid, IAccess> tableAccess;
-	Map<guid, IAccess> fieldAccess;
-	Map<guid, IAccess> requestAccess;
+	Map<guid, Access> tableAccess;
+	Map<guid, Access> fieldAccess;
+	Map<guid, Access> requestAccess;
 
 	public Privileges() {
 	}
 
-	public Privileges(IAccess defaultAccess) {
+	public Privileges(Access defaultAccess) {
 		setDefaultAccess(defaultAccess);
 	}
 
-	@Override
-	public void setDefaultAccess(IAccess defaultAccess) {
+	public void setDefaultAccess(Access defaultAccess) {
 		this.defaultAccess = defaultAccess;
 	}
 
-	@Override
-	public IAccess getTableAccess(Query table) {
+	public Access getTableAccess(Query table) {
 		return getTableAccess(table.key());
 	}
 
-	@Override
-	public IAccess getTableAccess(guid table) {
+	public Access getTableAccess(guid table) {
 		if(tableAccess == null)
 			return defaultAccess;
 
-		IAccess access = tableAccess.get(table);
+		Access access = tableAccess.get(table);
 		return access != null ? access : defaultAccess;
 	}
 
-	@Override
-	public void setTableAccess(guid table, IAccess access) {
+	public void setTableAccess(guid table, Access access) {
 		if(tableAccess == null)
-			tableAccess = new HashMap<guid, IAccess>();
+			tableAccess = new HashMap<guid, Access>();
 		tableAccess.put(table, access);
 	}
 
-	@Override
-	public IAccess getFieldAccess(Field field) {
+	public Access getFieldAccess(Field field) {
 		Query owner = field.owner();
 		return getFieldAccess(owner != null ? owner.key() : null, field.key());
 	}
 
-	@Override
-	public IAccess getFieldAccess(guid table, guid field) {
-		IAccess tableAccess = getTableAccess(table);
+	public Access getFieldAccess(guid table, guid field) {
+		Access tableAccess = getTableAccess(table);
 
 		if(fieldAccess == null)
 			return tableAccess;
 
-		IAccess access = fieldAccess.get(field);
+		Access access = fieldAccess.get(field);
 		return access != null ? tableAccess.and(access) : tableAccess;
 	}
 
-	@Override
-	public void setFieldAccess(guid field, IAccess access) {
+	public void setFieldAccess(guid field, Access access) {
 		if(fieldAccess == null)
-			fieldAccess = new HashMap<guid, IAccess>();
+			fieldAccess = new HashMap<guid, Access>();
 		fieldAccess.put(field, access);
 	}
 
-	@Override
-	public IAccess getRequestAccess(guid request) {
+	public Access getRequestAccess(guid request) {
 		if(requestAccess == null)
 			return defaultAccess;
 
-		IAccess access = requestAccess.get(request);
+		Access access = requestAccess.get(request);
 		return access != null ? access : defaultAccess;
 	}
 
-	@Override
-	public void setRequestAccess(guid request, IAccess access) {
+	public void setRequestAccess(guid request, Access access) {
 		if(requestAccess == null)
-			requestAccess = new HashMap<guid, IAccess>();
+			requestAccess = new HashMap<guid, Access>();
 		requestAccess.put(request, access);
 	}
 
@@ -132,16 +125,9 @@ public class Privileges implements IPrivileges {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
-		defaultAccess = (IAccess)in.readObject();
-		tableAccess = (Map<guid, IAccess>)in.readObject();
-		fieldAccess = (Map<guid, IAccess>)in.readObject();
-		requestAccess = (Map<guid, IAccess>)in.readObject();
-	}
-
-	@Override
-	public String toString() {
-		return "defaults: " + defaultAccess + '\n' + 
-				(tableAccess != null ? tableAccess.toString() : "table access: default") + '\n' +
-				(fieldAccess != null ? fieldAccess.toString() : "field access: default");
+		defaultAccess = (Access)in.readObject();
+		tableAccess = (Map<guid, Access>)in.readObject();
+		fieldAccess = (Map<guid, Access>)in.readObject();
+		requestAccess = (Map<guid, Access>)in.readObject();
 	}
 }

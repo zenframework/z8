@@ -81,17 +81,17 @@ public class Batch {
 	}
 
 	private Data register(Statement statement) {
-		Data newData = getData(statement.sql());
+		Data newData = getData(statement.getSql());
 
 		if(newData != null)
 			return newData;
 
 		newData = new Data(statement);
-		int priority = statement.priority();
+		int priority = statement.getPriority();
 
 		for(int i = 0, size = data.size(); i < size; i++) {
 			Data d = data.get(i);
-			if(d.statement.priority() > priority) {
+			if(d.statement.getPriority() > priority) {
 				data.add(i, newData);
 				return newData;
 			}

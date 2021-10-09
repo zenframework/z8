@@ -69,7 +69,7 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 		Connection connection = null;
 
 		try {
-			connection = ConnectionManager.get().inTransaction() ? Connection.connect(ConnectionManager.database()) : null;
+			connection = ConnectionManager.get().inTransaction() ? Connection.connect(ConnectionManager.getDatabase()) : null;
 
 			Sequences sequences = new Sequences.CLASS<Sequences>().get();
 			sequences.setConnection(connection);

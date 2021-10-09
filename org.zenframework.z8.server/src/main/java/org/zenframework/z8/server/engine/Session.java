@@ -5,18 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
-public class Session implements ISession {
+public class Session implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -6111053710062684661L;
 
 	private String id;
-	private IUser user;
-	private IServerInfo serverInfo;
+	private User user;
+	private ServerInfo serverInfo;
 
 	private long lastAccessTime;
 
@@ -27,49 +27,42 @@ public class Session implements ISession {
 		this("system", User.system(schema));
 	}
 
-	public Session(String id, IUser user) {
+	public Session(String id, User user) {
 		this.id = id;
 		setUser(user);
 	}
 
-	public Session(ISession session) {
-		id = session.id();
-		user = session.user();
+	public Session(Session session) {
+		id = session.getId();
+		user = session.getUser();
 	}
 
-	@Override
-	public String id() {
+	public String getId() {
 		return id;
 	}
 
-	@Override
-	public IUser user() {
+	public User getUser() {
 		return user;
 	}
 
-	@Override
-	public void setUser(IUser user) {
+	public void setUser(User user) {
 		this.user = user;
 		lastAccessTime = System.currentTimeMillis();
 	}
 
-	@Override
-	public IServerInfo getServerInfo() {
+	public ServerInfo getServerInfo() {
 		return serverInfo;
 	}
 
-	@Override
-	public void setServerInfo(IServerInfo serverInfo) {
+	public void setServerInfo(ServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
 	}
 
-	@Override
 	public long getLastAccessTime() {
 		return lastAccessTime;
 	}
 
-	@Override
-	public void access() {
+	public void touch() {
 		lastAccessTime = System.currentTimeMillis();
 	}
 
@@ -108,7 +101,7 @@ public class Session implements ISession {
 
 		id = RmiIO.readString(objects);
 
-		user = (IUser)objects.readObject();
+		user = (User)objects.readObject();
 		serverInfo = (ServerInfo)objects.readObject();
 
 		objects.close();

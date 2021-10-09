@@ -49,7 +49,7 @@ public class EntriesGenerator {
 
 		while(entries.next()) {
 			guid entry = entries.recordId();
-			userEntries.destroy(new Equ(userEntries.entry.get(), entry));
+			userEntries.destroy(new Equ(userEntries.entryId.get(), entry));
 			entries.destroy(entry);
 		}
 

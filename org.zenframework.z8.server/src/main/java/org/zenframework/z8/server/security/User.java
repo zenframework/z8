@@ -5,7 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
@@ -25,8 +31,8 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
-import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
@@ -35,12 +41,12 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
-public class User implements IUser {
+public class User implements RmiSerializable, Serializable {
 	static private final long serialVersionUID = -4955893424674255525L;
 
 	private guid id;
@@ -52,8 +58,8 @@ public class User implements IUser {
 	private String middleName;
 	private String lastName;
 
-	private Collection<IRole> roles;
-	private IPrivileges privileges;
+	private Collection<Role> roles;
+	private Privileges privileges;
 
 	private String description;
 	private String phone;
@@ -62,16 +68,16 @@ public class User implements IUser {
 	private boolean changePassword;
 
 	private String settings;
-	private IDatabase database;
+	private Database database;
 
 	private Collection<Entry> entries = new ArrayList<Entry>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
-	static public IUser system(String scheme) {
+	static public User system(String scheme) {
 		return system(Database.get(scheme));
 	}
 
-	static public IUser system(IDatabase database) {
+	static public User system(Database database) {
 		guid id = BuiltinUsers.System.guid();
 		String login = BuiltinUsers.displayNames.SystemName;
 
@@ -89,7 +95,7 @@ public class User implements IUser {
 		system.settings = "";
 		system.phone = "";
 		system.email = "";
-		system.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
+		system.roles = Arrays.asList(Role.administrator());
 		system.privileges = new Privileges(Access.administrator());
 
 		system.addSystemTools();
@@ -100,125 +106,116 @@ public class User implements IUser {
 	public User() {
 	}
 
-	public User(IDatabase database) {
+	public User(Database database) {
 		this.database = database;
 	}
 
-	@Override
-	public guid id() {
+	public guid getId() {
 		return id;
 	}
 
-	@Override
-	public String login() {
+	public String getLogin() {
 		return login;
 	}
 
-	@Override
-	public String password() {
+	public String getPassword() {
 		return password;
 	}
 
-	@Override
-	public String firstName() {
+	public String getFirstName() {
 		return firstName;
 	}
 
-	@Override
-	public String middleName() {
+	public String getMiddleName() {
 		return middleName;
 	}
 
-	@Override
-	public String lastName() {
+	public String getLastName() {
 		return lastName;
 	}
 
-	@Override
-	public String name() {
+	public String getName() {
 		String name = firstName;
 		return name + (name.isEmpty() ? "" : " ") + lastName;
 	}
 
-	@Override
-	public String fullName() {
+	public String getFullName() {
 		String name = firstName;
 		name += (name.isEmpty() ? "" : " ") + middleName;
 		return name + (name.isEmpty() ? "" : " ") + lastName;
 	}
 
-	@Override
-	public Collection<IRole> roles() {
+	public Collection<Role> getRoles() {
+		if(roles == null)
+			roles = UserRoles.get(id);
 		return roles;
 	}
 
-	@Override
-	public IPrivileges privileges() {
+	public Privileges getPrivileges() {
 		return privileges;
 	}
 
-	@Override
+	public Access getAccess() {
+		Access access = new Access();
+
+		for(Role role : getRoles())
+			access = access.or(role.getAccess());
+
+		return access;
+	}
+
 	public boolean isBuiltinAdministrator() {
 		return id.equals(Users.Administrator) || id.equals(Users.System);
 	}
 
-	@Override
 	public boolean isAdministrator() {
 		if(roles != null) {
-			for(IRole role : roles) {
-				if(role.id().equals(Role.Administrator))
+			for(Role role : roles) {
+				if(role.getId().equals(Role.Administrator))
 					return true;
 			}
 		}
 		return isBuiltinAdministrator();
 	}
 
-	@Override
-	public String description() {
+	public String getDescription() {
 		return description;
 	}
 
-	@Override
-	public String phone() {
+	public String getPhone() {
 		return phone;
 	}
 
-	@Override
-	public String email() {
+	public String getEmail() {
 		return email;
 	}
 
-	@Override
-	public boolean banned() {
+	public boolean getBanned() {
 		return banned;
 	}
 
-	@Override
-	public boolean changePassword() {
+	public boolean getChangePassword() {
 		return changePassword;
 	}
 
-	@Override
-	public Collection<Entry> entries() {
+	public Collection<Entry> getEntries() {
 		return entries;
 	}
 
-	@Override
 	public void setEntries(Collection<Entry> entries) {
 		this.entries = entries;
 	}
 
-	@Override
-	public Map<string, primary> parameters() {
+	public Map<string, primary> getParameters() {
 		return parameters;
 	}
 
-	static public IUser read(guid userId) {
+	static public User read(guid userId) {
 		return userId.isNull() ? null : read(new LoginParameters(userId));
 	}
 
-	static private IUser read(LoginParameters loginParameters) {
-		IDatabase database = ApplicationServer.getDatabase();
+	static private User read(LoginParameters loginParameters) {
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
 
 		boolean isLatestVersion = database.isLatestVersion();
@@ -228,10 +225,10 @@ public class User implements IUser {
 			throw new UserNotFoundException();
 
 		if(isLatestVersion) {
-			user.loadRoles();
+			user.loadPrivileges();
 			user.loadEntries();
 		} else if(user.isAdministrator()) {
-			user.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
+			user.roles = Arrays.asList(Role.administrator());
 			user.privileges = new Privileges(Access.administrator());
 		} else
 			throw new InvalidVersionException();
@@ -244,8 +241,8 @@ public class User implements IUser {
 		return user;
 	}
 
-	public static IUser create(LoginParameters loginParameters) {
-		IDatabase database = ApplicationServer.getDatabase();
+	public static User create(LoginParameters loginParameters) {
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
@@ -259,15 +256,15 @@ public class User implements IUser {
 		return read(loginParameters);
 	}
 
-	static public IUser load(LoginParameters loginParameters, String password) {
-		IDatabase database = ApplicationServer.getDatabase();
+	static public User load(LoginParameters loginParameters, String password) {
+		Database database = ApplicationServer.getDatabase();
 
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = read(loginParameters);
+		User user = read(loginParameters);
 
-		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+		if(password != null && !password.equals(user.getPassword()) /*&& !password.equals(MD5.hex(""))*/ || user.getBanned())
 			throw new AccessDeniedException();
 
 		return user;
@@ -334,43 +331,26 @@ public class User implements IUser {
 		}
 	}
 
-	private Collection<guid> getRoles() {
-		Collection<guid> result = new ArrayList<guid>();
+	private void loadPrivileges() {
+		Access defaultAccess = getAccess();
 
-		for(IRole role : roles)
-			result.add(role.id());
-
-		return result;
-	}
-
-	private IAccess defaultAccess() {
-		IAccess access = new Access();
-
-		for(IRole role : roles)
-			access = access.or(role.access());
-
-		return access;
-	}
-
-	private void loadRoles() {
-		UserRoles userRoles = new UserRoles.CLASS<UserRoles>().get();
-		roles = userRoles.get(id);
-
-		IAccess defaultAccess = defaultAccess();
 		privileges = new Privileges(defaultAccess);
 
-		loadTableAccess(privileges, defaultAccess);
-		loadFieldAccess(privileges, defaultAccess);
-		loadRequestAccess(privileges, defaultAccess);
-
-		/*
-		* Trace.logEvent(privileges);
-		*/
+		loadTablePrivileges(privileges, defaultAccess);
+		loadFieldPrivileges(privileges, defaultAccess);
+		loadRequestPrivileges(privileges, defaultAccess);
 	}
 
-	private void loadTableAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private Collection<guid> getRoleIds() {
+		Collection<guid> ids = new ArrayList<guid>();
+		for(Role role : getRoles())
+			ids.add(role.getId());
+		return ids;
+	}
+
+	private void loadTablePrivileges(Privileges privileges, Access defaultAccess) {
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
-		Field tableId = rta.table.get();
+		Field tableId = rta.tableId.get();
 		Field read = rta.read.get();
 		Field write = rta.write.get();
 		Field create = rta.create.get();
@@ -380,48 +360,48 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(tableId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write, create, copy, destroy);
 
-		SqlToken where = rta.role.get().inVector(getRoles());
+		SqlToken where = rta.roleId.get().inVector(getRoleIds());
 
-		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
-		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
-		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.create()));
-		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.copy()));
-		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.destroy()));
+		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.get(Access.TableRead)));
+		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.get(Access.TableWrite)));
+		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.get(Access.TableCreate)));
+		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.get(Access.TableCopy)));
+		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.get(Access.TableDestroy)));
 		SqlToken having = new Group(Or.fromList(Arrays.asList(notRead, notWrite, notCreate, notCopy, notDestroy)));
 
 		rta.group(fields, groups, where, having);
 		while(rta.next()) {
-			IAccess access = new Access();
-			access.setRead(read.bool().get());
-			access.setWrite(write.bool().get());
-			access.setCreate(create.bool().get());
-			access.setCopy(copy.bool().get());
-			access.setDestroy(destroy.bool().get());
+			Access access = new Access();
+			access.set(Access.TableRead, read.bool().get());
+			access.set(Access.TableWrite, write.bool().get());
+			access.set(Access.TableCreate, create.bool().get());
+			access.set(Access.TableCopy, copy.bool().get());
+			access.set(Access.TableDestroy, destroy.bool().get());
 			privileges.setTableAccess(tableId.guid(), access);
 		}
 	}
 
-	private void loadFieldAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private void loadFieldPrivileges(Privileges privileges, Access defaultAccess) {
 		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
-		Field tableId = rfa.fields.get().table.get();
-		Field fieldId = rfa.field.get();
+		Field tableId = rfa.field.get().tableId.get();
+		Field fieldId = rfa.fieldId.get();
 		Field read = rfa.read.get();
 		Field write = rfa.write.get();
 
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(fieldId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write);
 
-		SqlToken where = rfa.role.get().inVector(getRoles());
+		SqlToken where = rfa.roleId.get().inVector(getRoleIds());
 
 		rfa.group(fields, groups, where);
 
 		while(rfa.next()) {
 			guid table = tableId.guid();
 
-			IAccess tableAccess = privileges.getTableAccess(table);
+			Access tableAccess = privileges.getTableAccess(table);
 
-			boolean tableReadable = tableAccess.read();
-			boolean tableWritable = tableAccess.write();
+			boolean tableReadable = tableAccess.get(Access.TableRead);
+			boolean tableWritable = tableAccess.get(Access.TableWrite);
 
 			boolean readable = read.bool().get();
 			boolean writable = write.bool().get();
@@ -429,30 +409,30 @@ public class User implements IUser {
 			if(tableReadable == readable && tableWritable == writable)
 				continue;
 
-			IAccess access = new Access();
-			access.setRead(readable);
-			access.setWrite(writable);
+			Access access = new Access();
+			access.set(Access.FieldRead, readable);
+			access.set(Access.FieldWrite, writable);
 			privileges.setFieldAccess(fieldId.guid(), access);
 		}
 	}
 
-	private void loadRequestAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private void loadRequestPrivileges(Privileges privileges, Access defaultAccess) {
 		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
-		Field requestId = rra.request.get();
+		Field requestId = rra.requestId.get();
 		Field execute = rra.execute.get();
 
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(requestId));
 		Collection<Field> fields = Arrays.asList(requestId, execute);
 
-		SqlToken where = rra.role.get().inVector(getRoles());
+		SqlToken where = rra.roleId.get().inVector(getRoleIds());
 
-		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.execute()));
+		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.get(Access.RequestExecute)));
 		SqlToken having = new Group(notExecute);
 
 		rra.group(fields, groups, where, having);
 		while(rra.next()) {
-			IAccess access = new Access();
-			access.setExecute(execute.bool().get());
+			Access access = new Access();
+			access.set(Access.RequestExecute, execute.bool().get());
 			privileges.setRequestAccess(requestId.guid(), access);
 		}
 	}
@@ -460,16 +440,16 @@ public class User implements IUser {
 	private void loadEntries() {
 		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
-		Field entry = userEntries.entry.get();
-		Field id = userEntries.entries.get().classId.get();
-		Field name = userEntries.entries.get().name.get();
+		Field entry = userEntries.entryId.get();
+		Field id = userEntries.entry.get().classId.get();
+		Field name = userEntries.entry.get().name.get();
 
 		Collection<Field> fields = Arrays.asList(entry, id, name);
 
 		Field position = userEntries.position.get();
 		Collection<Field> sortFields = Arrays.asList(position);
 
-		SqlToken where = new Equ(userEntries.user.get(), this.id);
+		SqlToken where = new Equ(userEntries.userId.get(), this.id);
 
 		userEntries.read(fields, sortFields, where);
 
@@ -481,23 +461,21 @@ public class User implements IUser {
 		setEntries(entries);
 	}
 
-	@Override
-	public String settings() {
+	public String getSettings() {
 		return settings;
 	}
 
-	@Override
 	public void setSettings(String settings) {
 		this.settings = settings;
 
 		Users.saveSettings(id, settings);
 	}
 
-	public IDatabase database() {
+	public Database getDatabase() {
 		return this.database;
 	}
 
-	public void setDatabase(IDatabase database) {
+	public void setDatabase(Database database) {
 		this.database = database;
 	}
 
@@ -509,8 +487,7 @@ public class User implements IUser {
 		deserialize(in);
 	}
 
-	public static String generateOneTimePassword()
-	{
+	public static String generateOneTimePassword() {
 		String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 		StringBuilder plainPassword = new StringBuilder();
@@ -588,10 +565,10 @@ public class User implements IUser {
 
 		settings = RmiIO.readString(objects);
 
-		database = (IDatabase)objects.readObject();
+		database = (Database)objects.readObject();
 
 		roles = (Collection)objects.readObject();
-		privileges = (IPrivileges)objects.readObject();
+		privileges = (Privileges)objects.readObject();
 		entries = (Collection)objects.readObject();
 		parameters = (RLinkedHashMap)objects.readObject();
 

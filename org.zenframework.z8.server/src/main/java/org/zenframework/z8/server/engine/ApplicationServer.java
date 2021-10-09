@@ -19,7 +19,6 @@ import org.zenframework.z8.server.request.IResponse;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
@@ -45,7 +44,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return currentRequest.get();
 	}
 
-	static public ISession getSession() {
+	static public Session getSession() {
 		return getRequest().getSession();
 	}
 
@@ -53,17 +52,17 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return getRequest().getMonitor();
 	}
 
-	public static IUser getUser() {
-		return getSession().user();
+	public static User getUser() {
+		return getSession().getUser();
 	}
 
-	public static IDatabase getDatabase() {
+	public static Database getDatabase() {
 		IRequest request = getRequest();
-		return request == null && !ServerConfig.isMultitenant() ? Database.get(null) : request.getSession().user().database();
+		return request == null && !ServerConfig.isMultitenant() ? Database.get(null) : request.getSession().getUser().getDatabase();
 	}
 
 	public static String getSchema() {
-		return getDatabase().schema();
+		return getDatabase().getSchema();
 	}
 	
 	public static void setRequest(IRequest request) {
@@ -139,8 +138,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(LoginParameters loginParameters, String password) {
-		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
+	public User user(LoginParameters loginParameters, String password) {
+		setRequest(new Request(new Session(loginParameters.getSchema())));
 
 		try {
 			return User.load(loginParameters, password);
@@ -153,8 +152,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser create(LoginParameters loginParameters) {
-		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
+	public User create(LoginParameters loginParameters) {
+		setRequest(new Request(new Session(loginParameters.getSchema())));
 
 		try {
 			return User.create(loginParameters);
@@ -167,7 +166,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public file download(ISession session, GNode node, file file) throws IOException {
+	public file download(Session session, GNode node, file file) throws IOException {
 		setRequest(new Request(node.getAttributes(), node.getFiles(), session));
 		try {
 			return Files.get(file);
@@ -178,7 +177,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public GNode processRequest(ISession session, GNode node) {
+	public GNode processRequest(Session session, GNode node) {
 		IRequest request = new Request(node.getAttributes(), node.getFiles(), session);
 		IResponse response = request.getResponse();
 

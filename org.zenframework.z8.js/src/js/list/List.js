@@ -880,7 +880,7 @@ Z8.define('Z8.list.List', {
 				item.collapsed = collapsed;
 		}
 	},
-	
+
 	getFields: function() {
 		return this.fields;
 	},

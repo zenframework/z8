@@ -18,7 +18,7 @@ public class DataSchema {
 	public static Map<String, TableDescription> getTables(String tablePattern) throws SQLException {
 		LinkedHashMap<String, TableDescription> tables = new LinkedHashMap<String, TableDescription>();
 
-		switch(ConnectionManager.vendor()) {
+		switch(ConnectionManager.getVendor()) {
 		case Oracle:
 			collectOracleColumns(tables);
 			break;
@@ -67,7 +67,7 @@ public class DataSchema {
 				"CASE WHEN NULLABLE = 'NO' THEN 0 ELSE 1 END, " +
 				"NVL(DATA_DEFAULT, '') " +
 			"FROM ALL_TAB_COLUMNS " +
-			"WHERE OWNER = '" + ConnectionManager.database().schema() + "' " +
+			"WHERE OWNER = '" + ConnectionManager.getDatabase().getSchema() + "' " +
 			"ORDER BY TABLE_NAME, COLUMN_ID";
 
 		Cursor cursor = SelectStatement.cursor(sql);
@@ -92,7 +92,7 @@ public class DataSchema {
 	}
 
 	static private void collectPostgresColumns(Map<String, TableDescription> tables) throws SQLException {
-		DatabaseVendor vendor = ConnectionManager.vendor();
+		DatabaseVendor vendor = ConnectionManager.getVendor();
 		String sql = 
 			"SELECT " + 
 				"table_name, " +
@@ -102,7 +102,7 @@ public class DataSchema {
 				"coalesce(numeric_scale, 0), " + "case when is_nullable = 'NO' then 0 else 1 end, " +
 				"coalesce(column_default, '') " +
 			"FROM information_schema.columns " + 
-			"WHERE table_schema = '" + ConnectionManager.database().schema() + "' " +
+			"WHERE table_schema = '" + ConnectionManager.getDatabase().getSchema() + "' " +
 			"ORDER BY table_name, ordinal_position";
 
 		Cursor cursor = SelectStatement.cursor(sql);
@@ -169,7 +169,7 @@ public class DataSchema {
 	static private Map<String, PrimaryKey> getPrimaryKeys(String tableLike) throws SQLException {
 		String sql;
 
-		switch(ConnectionManager.vendor()) {
+		switch(ConnectionManager.getVendor()) {
 		case Oracle:
 			sql = "SELECT TO_NCHAR(pkCols.CONSTRAINT_NAME)," + "  TO_NCHAR(pkCols.TABLE_NAME)," + "  TO_NCHAR(pkCols.COLUMN_NAME)" + " FROM user_constraints pk," + "  user_cons_columns pkCols" + " WHERE pk.constraint_type = 'P'"
 					+ "  AND pk.CONSTRAINT_NAME     =pkCols.CONSTRAINT_NAME" + "  AND lower(pkCols.TABLE_NAME) LIKE lower('" + tableLike + "')" + " ORDER BY pkCols.TABLE_NAME," + "  pkCols.POSITION";
@@ -181,7 +181,7 @@ public class DataSchema {
 		case Postgres:
 		case H2:
 			sql = "select " + "keys.constraint_name, " + "keys.table_name, " + "cols.column_name " + "from " + "information_schema.table_constraints keys, " + "information_schema.key_column_usage cols " + "where " + "keys.constraint_name = cols.constraint_name and "
-					+ "keys.constraint_type = 'PRIMARY KEY' and " + "keys.constraint_schema = '" + ConnectionManager.database().schema() + "'" + "order by " + "keys.table_name, cols.ordinal_position";
+					+ "keys.constraint_type = 'PRIMARY KEY' and " + "keys.constraint_schema = '" + ConnectionManager.getDatabase().getSchema() + "'" + "order by " + "keys.table_name, cols.ordinal_position";
 			break;
 		default:
 			throw new UnknownDatabaseException();
@@ -211,7 +211,7 @@ public class DataSchema {
 	static private Iterable<Index> getIndices(boolean unique, String tableLike) throws SQLException {
 		String sql;
 
-		switch(ConnectionManager.vendor()) {
+		switch(ConnectionManager.getVendor()) {
 		case Oracle:
 			sql = "SELECT TO_NCHAR(a.INDEX_NAME) INDEX_NAME, TO_NCHAR(a.TABLE_NAME) TABLE_NAME, TO_NCHAR(a.COLUMN_NAME) COLUMN_NAME" + "  FROM user_ind_columns a ," + " (SELECT a.INDEX_NAME" + "    FROM user_indexes a" + "   WHERE UNIQUENESS = '"
 					+ (unique ? "UNIQUE" : "NONUNIQUE") + "'" + " AND lower(a.table_name) LIKE lower('" + tableLike + "')" + " ) b" + " WHERE a.INDEX_NAME = b.INDEX_NAME" + " AND NOT EXISTS" + "  (SELECT 0" + "     FROM user_constraints pk" + "    WHERE pk.constraint_type = 'P'"
@@ -232,7 +232,7 @@ public class DataSchema {
 					"where " +
 						"tables.oid = root.indrelid and indexes.oid = root.indexrelid and owners.oid = tables.relnamespace and tables.oid = columns.attrelid and " +
 						"columns.attnum > 0 and (columns.attnum = ANY(root.indkey) or root.indkey = '0' and root.indexprs is not null) and  tables.relkind = 'r' and " +
-						"root.indisunique = '" + (unique ? "t" : "f") + "' and not root.indisprimary and owners.nspname = '" + ConnectionManager.database().schema() + "' " +
+						"root.indisunique = '" + (unique ? "t" : "f") + "' and not root.indisprimary and owners.nspname = '" + ConnectionManager.getDatabase().getSchema() + "' " +
 					"group by index";
 			break;
 
@@ -269,7 +269,7 @@ public class DataSchema {
 	static private Iterable<ForeignKey> getForeignKeys(String tableLike) throws SQLException {
 		String sql;
 
-		switch(ConnectionManager.vendor()) {
+		switch(ConnectionManager.getVendor()) {
 		case Oracle:
 			sql = "SELECT TO_NCHAR(pk.TABLE_NAME) PK_TABNAME," + " TO_NCHAR(pkCols.COLUMN_NAME) PK_COLNAME ," + " TO_NCHAR(fk.TABLE_NAME) FK_TABNAME      ," + " TO_NCHAR(fkCols.COLUMN_NAME) FK_COLNAME ," + " TO_NCHAR(fk.CONSTRAINT_NAME) CONSTRAINT_NAME" + "  FROM"
 					+ " (SELECT CONSTRAINT_NAME," + "   constraint_type      ," + "   TABLE_NAME           ," + "   R_CONSTRAINT_NAME" + "    FROM user_constraints a" + "   WHERE constraint_type = 'R'" + " AND lower(TABLE_NAME) LIKE lower('" + tableLike + "')"
@@ -285,12 +285,12 @@ public class DataSchema {
 
 		case Postgres:
 			sql = "select " + "pk.table_name, " + "pk.column_name, " + "fk.table_name, " + "fk.column_name, " + "fk.constraint_name " + "from " + "information_schema.key_column_usage fk, " + "information_schema.referential_constraints refc, "
-					+ "information_schema.key_column_usage pk " + "where " + "fk.constraint_name = refc.constraint_name and " + "refc.unique_constraint_name = pk.constraint_name and " + "fk.constraint_schema = '" + ConnectionManager.database().schema() + "'";
+					+ "information_schema.key_column_usage pk " + "where " + "fk.constraint_name = refc.constraint_name and " + "refc.unique_constraint_name = pk.constraint_name and " + "fk.constraint_schema = '" + ConnectionManager.getDatabase().getSchema() + "'";
 			break;
 
 		case H2:
 			sql = "select pktable_name, pkcolumn_name, fktable_name, fkcolumn_name, fk_name from information_schema.cross_references"
-					+ " where fktable_schema = '" + ConnectionManager.database().schema() + "'";
+					+ " where fktable_schema = '" + ConnectionManager.getDatabase().getSchema() + "'";
 			break;
 
 		default:

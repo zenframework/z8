@@ -6,11 +6,11 @@ import org.zenframework.z8.base.table.value.Link;
 [displayName "Права доступа к полям"]
 [native "org.zenframework.z8.server.base.table.system.RoleFieldAccess"]
 public class RoleFieldAccess extends Table {
-	public Roles roles;
-	public Fields fields;
+	public Roles role;
+	public Fields field;
 
-	public Link role = roles;
-	public Link field = fields;
+	public Link roleId = role;
+	public Link fieldId = field;
 
 	[displayName "Чтение"] public BoolField read;
 	[displayName "Изменение"] public BoolField write;

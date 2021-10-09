@@ -95,14 +95,7 @@ Z8.define('Z8.application.viewport.Login', {
 		var password = this.passwordField.getValue() || '';
 		password = Application.hashPassword ? MD5.hex(password) : password;
 
-		var parameters = {
-			request: 'login',
-			login: login,
-			password: password,
-			experimental: true
-		};
-
-		HttpRequest.send(parameters, { fn: callback, scope: this });
+		HttpRequest.send({ request: 'login', login: login, password: password }, { fn: callback, scope: this });
 	},
 
 	onKeyDown: function(event, target) {
@@ -118,13 +111,13 @@ Z8.define('Z8.application.viewport.SSOLogin', {
 
 	initComponent: function() {
 		this.callParent();
-        this.loginButton.text = Z8.$('Login.btn.text');
-        var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: Z8.$('Login.ssoBtn.text'),  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
+		this.loginButton.text = Z8.$('Login.btn.text');
+		var ssoLoginButton = this.ssoLoginButton = new Z8.button.Button({ text: Z8.$('Login.ssoBtn.text'),  cls: 'btn-tool', icon: 'fa-check', handler: this.ssoLogin, scope: this });
 		this.controls.add(ssoLoginButton);
 	},
 
 	ssoLogin: function(button) {
-	    window.location = window.location.origin + '/sso_auth'
+		window.location = window.location.origin + '/sso_auth'
 	},
 });
 

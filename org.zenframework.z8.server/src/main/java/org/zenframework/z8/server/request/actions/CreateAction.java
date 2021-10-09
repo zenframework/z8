@@ -15,6 +15,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
@@ -25,7 +26,7 @@ public class CreateAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		if(!getQuery().access().create())
+		if(!getQuery().access().get(Access.TableCreate))
 			throw new AccessRightsViolationException();
 
 		String jsonData = getRequestParameter(Json.data);

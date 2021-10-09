@@ -101,7 +101,7 @@ public class Generator {
 		for(Table.CLASS<? extends Table> table : tables) {
 			GeneratorAction action;
 
-			DatabaseVendor vendor = ConnectionManager.get().vendor();
+			DatabaseVendor vendor = ConnectionManager.get().getVendor();
 			TableDescription description = existingTables.get(vendor.sqlName(table.name()));
 
 			if(description != null && description.isView())
