@@ -13,7 +13,7 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
-public class Action extends Control implements Runnable, IAction {
+public class Action extends Control implements Runnable {
 	static public class CLASS<T extends Action> extends Control.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -51,8 +51,7 @@ public class Action extends Control implements Runnable, IAction {
 		return (Collection)parameters;
 	}
 
-	@Override
-	public IParameter getParameter(String id) {
+	public Parameter getParameter(String id) {
 		for(Parameter.CLASS<?> cls : parameters) {
 			Parameter parameter = (Parameter)cls.get();
 			if(parameter.id().equals(id))

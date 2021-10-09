@@ -5,7 +5,6 @@ Z8.define('Z8.list.Item', {
 	constructor: function(config) {
 		this.hidden = 0;
 		this.valid = true;
-		this.follow = true;
 		this.collapsed = false;
 
 		Component.prototype.constructor.call(this, config);
@@ -137,7 +136,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getTextCls: function(field, record) {
-		return field.source != null && this.follow ? ' follow' : '';
+		return '';
 	},
 
 	getCheckBoxCls: function(value) {
@@ -437,11 +436,6 @@ Z8.define('Z8.list.Item', {
 			return;
 
 		var index = this.findCellIndex(target);
-
-		var textClick = DOM.isParentOf(this.getTextElement(index), target);
-
-		if(textClick && this.follow && this.followLink(index))
-			return event.stopEvent();
 
 		var list = this.getList();
 

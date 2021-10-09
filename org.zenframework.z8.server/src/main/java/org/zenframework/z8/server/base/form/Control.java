@@ -5,13 +5,11 @@ import java.util.Collection;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
@@ -67,8 +65,6 @@ public class Control extends OBJECT {
 	public GuidField.CLASS<? extends GuidField> dependsOn;
 	public RCollection<Control.CLASS<? extends Control>> dependencies = new RCollection<Control.CLASS<? extends Control>>();
 
-	public Source.CLASS<? extends Source> source = new Source.CLASS<Source>(this);
-
 	public boolean readOnly() {
 		return readOnly != null ? readOnly.get() : false;
 	}
@@ -97,12 +93,6 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.required, required());
 		writer.writeProperty(Json.editable, editable);
 		writer.writeProperty(Json.important, important);
-
-		if(source.get().query != null && ApplicationServer.getUser().getPrivileges().getRequestAccess(source.get().query.classIdKey()).get(Access.RequestExecute)) {
-			writer.startObject(Json.source);
-			source.get().writeMeta(writer, query, context);
-			writer.finishObject();
-		}
 
 		writeDependencies(writer);
 	}

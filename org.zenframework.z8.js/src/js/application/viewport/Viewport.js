@@ -338,7 +338,6 @@ Z8.define('Z8.application.viewport.Viewport', {
 				response.where = params.where;
 				response.filter = params.filter;
 				response.period = params.period;
-				response.sourceFilter = params.sourceFilter;
 
 				var formId = Component.nextId();
 				var formConfig = Z8.apply({ store: response, formId: formId }, config);

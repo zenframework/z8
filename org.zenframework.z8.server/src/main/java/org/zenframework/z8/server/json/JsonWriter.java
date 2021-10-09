@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.action.Action;
-import org.zenframework.z8.server.base.form.action.IAction;
 import org.zenframework.z8.server.base.form.report.IReport;
 import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.query.Query;
@@ -70,8 +69,7 @@ public class JsonWriter {
 		startSeparate();
 	}
 
-	// TODO This must be private
-	public void startSeparate() {
+	private void startSeparate() {
 		if(scopes.size() != 0)
 			scopes.set(scopes.size() - 1, true);
 	}
@@ -414,7 +412,7 @@ public class JsonWriter {
 
 		startArray(Json.actions);
 
-		for(IAction action : actions) {
+		for(Action action : actions) {
 			startObject();
 			action.writeMeta(this, query, context);
 			finishObject();

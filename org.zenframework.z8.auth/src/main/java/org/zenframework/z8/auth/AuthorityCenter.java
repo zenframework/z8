@@ -23,7 +23,6 @@ import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.utils.StringUtils;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -117,7 +116,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		// Что это за херня? Зачем это все? backward compatibility с чем? 
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())
+		if (checkLdapLogin && !LdapAPI.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())
 				&& LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
 			try {
 				user = loginServer.user(loginParameters, null);

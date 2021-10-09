@@ -69,8 +69,6 @@ Z8.define('Z8.form.field.Combobox', {
 		this.triggers = !Z8.isEmpty(this.triggers) ? this.triggers : { icon: ComboBox.ExpandIconCls };
 
 		var triggers = [];
-		if(this.source != null)
-			triggers.push({ icon: 'fa-pencil', tooltip: Z8.$('ComboBox.edit') + this.source.text + '\'', handler: this.editSource, scope: this });
 
 		if(!this.isRequired() && this.clearTrigger !== false)
 			triggers.push({ icon: ComboBox.ClearIconCls, tooltip: Z8.$('ComboBox.clear'), handler: this.clearValue, scope: this });
@@ -692,24 +690,6 @@ Z8.define('Z8.form.field.Combobox', {
 
 	onKeyPress: function(event, target) {
 		this.selectByKey(String.fromCharCode(event.getKey()));
-	},
-
-	editSource: function() {
-		var source = this.source;
-		if (source == null)
-			return;
-		var link = source.link;
-		var value = link != null ? this.record.get(link) : this.value;
-		var filter, sourceFilter;
-		if (value != null && value != guid.Null) {
-			filter = [{ property: 'recordId', value: value }];
-			sourceFilter = {
-				property: !Z8.isEmpty(source.field) ? source.field : this.displayName.lastAfter('.'),
-				value: this.displayValue
-			};
-		}
-		Viewport.open({ filter: filter, sourceFilter: sourceFilter, request: source.request });
-		this.getStore().unload();
 	},
 
 	clearValue: function() {

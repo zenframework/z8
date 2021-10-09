@@ -97,7 +97,7 @@ public class ServerConfig extends Properties {
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
-	
+
 	static final private String LdapCheckLdapLogin = "ldap.checkLdapLogin";
 	static final private String LdapUrl = "ldap.url";
 	static final private String LdapPrincipalName = "ldap.principalName";
@@ -188,9 +188,13 @@ public class ServerConfig extends Properties {
 	static private String ftsConfiguration;
 
 	static public String[] textExtensions; // "txt, xml"
-	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
+	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png,
+											// bmp"
 	static public String[] emailExtensions; // "eml, mime"
-	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
+	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt,
+												// pptx, odt, odp, ods, odf,
+												// odg, wpd, sxw, sxi, sxc, sxd,
+												// stw, vsd"
 
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
@@ -207,16 +211,16 @@ public class ServerConfig extends Properties {
 		try {
 			load(new FileInputStream(configFile));
 		} catch(Throwable e) {
-/*
-			throw new RuntimeException(e);
-*/
-/* >>>>>>>>>>>>>>>>> to remove */
+			/*
+			 * throw new RuntimeException(e);
+			 */
+			/* >>>>>>>>>>>>>>>>> to remove */
 			try {
 				this.loadFromXML(new FileInputStream(new File(workingPath, "project.xml")));
 			} catch(Throwable e1) {
 				throw new RuntimeException(e);
 			}
-/* <<<<<<<<<<<<<<<<< to remove */
+			/* <<<<<<<<<<<<<<<<< to remove */
 		}
 
 		language = getProperty(Language, DefaultLanguage);
@@ -248,7 +252,7 @@ public class ServerConfig extends Properties {
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
 
 		webServerWebapp = new File(getProperty(WebServerWebapp, ".."));
-		if (!webServerWebapp.isAbsolute())
+		if(!webServerWebapp.isAbsolute())
 			webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
 
 		webServerMappings = getProperty(WebServerMappings);
@@ -262,11 +266,8 @@ public class ServerConfig extends Properties {
 
 		webServerGzipPaths = getProperty(WebServerGzipPaths, new String[] { "/*" });
 		webServerGzipMethods = getProperty(WebServerGzipMethods, new String[] { "GET", "POST" });
-		webServerGzipMimeTypes = getProperty(WebServerGzipMimeTypes, new String[] {
-				"text/html", "text/plain", "text/xml", "text/css", "text/javascript", "text/json",
-				"application/javascript", "application/json", "application/octet-stream",
-				"application/x-javascript", "application/xml", "application/xml+xhtml", "image/svg+xml"
-		});
+		webServerGzipMimeTypes = getProperty(WebServerGzipMimeTypes,
+				new String[] { "text/html", "text/plain", "text/xml", "text/css", "text/javascript", "text/json", "application/javascript", "application/json", "application/octet-stream", "application/x-javascript", "application/xml", "application/xml+xhtml", "image/svg+xml" });
 
 		traceSql = getProperty(TraceSql, false);
 		traceSqlConnections = getProperty(TraceSqlConnections, false);
@@ -323,7 +324,7 @@ public class ServerConfig extends Properties {
 	@Override
 	public Set<String> stringPropertyNames() {
 		Set<String> result = new HashSet<String>(super.stringPropertyNames());
-		for (String name : System.getProperties().stringPropertyNames()) {
+		for(String name : System.getProperties().stringPropertyNames()) {
 			if(name.startsWith(Z8SystemPrefix))
 				result.add(name.substring(Z8SystemPrefix.length()));
 		}
@@ -353,7 +354,7 @@ public class ServerConfig extends Properties {
 
 		String[] result = new String[values.length];
 
-		for (int i = 0; i < values.length; i++)
+		for(int i = 0; i < values.length; i++)
 			result[i] = values[i].trim();
 
 		return result;
@@ -386,17 +387,17 @@ public class ServerConfig extends Properties {
 
 	private Map<String, String> filterParameters(String prefix) {
 		Map<String, String> filtered = new HashMap<String, String>();
-		for (String name : stringPropertyNames())
-			if (name.startsWith(prefix))
+		for(String name : stringPropertyNames())
+			if(name.startsWith(prefix))
 				filtered.put(name.substring(prefix.length()), getProperty(name));
 		return filtered;
 	}
 
 	static public Properties getEffectiveProperties() {
 		Properties effective = new Properties(instance);
-		for (Object keyObj : System.getProperties().keySet()) {
-			String key = (String) keyObj;
-			if (key.startsWith(Z8SystemPrefix))
+		for(Object keyObj : System.getProperties().keySet()) {
+			String key = (String)keyObj;
+			if(key.startsWith(Z8SystemPrefix))
 				effective.setProperty(key, System.getProperty(key));
 		}
 		return effective;
@@ -649,9 +650,11 @@ public class ServerConfig extends Properties {
 	static public String searchBase() {
 		return ldapSearchBase;
 	}
+
 	static public String searchUserFilter() {
 		return ldapSearchUserFilter;
 	}
+
 	static public String searchGroupFilter() {
 		return ldapSearchGroupFilter;
 	}
@@ -691,5 +694,4 @@ public class ServerConfig extends Properties {
 			webServer = Rmi.get(IWebServer.class, Rmi.localhost, webServerPort());
 		return webServer;
 	}
-
 }

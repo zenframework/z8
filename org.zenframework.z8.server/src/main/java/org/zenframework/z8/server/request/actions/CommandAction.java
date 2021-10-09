@@ -3,7 +3,7 @@ package org.zenframework.z8.server.request.actions;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.form.action.Action;
-import org.zenframework.z8.server.base.form.action.IParameter;
+import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -57,7 +57,7 @@ public class CommandAction extends RequestAction {
 
 		for(int i = 0; i < parameters.length(); i++) {
 			JsonObject object = parameters.getJsonObject(i);
-			IParameter parameter = action.getParameter(object.getString(Json.id));
+			Parameter parameter = action.getParameter(object.getString(Json.id));
 			parameter.parse(object.has(Json.value) ? object.getString(Json.value) : null);
 		}
 	}

@@ -1682,19 +1682,6 @@ Z8.define('Z8.list.List', {
 		return index != -1 ? this.editors[index] : null;
 	},
 
-	onItemFollowLink: function(item, index) {
-		var field = this.fields[index];
-		var link = field.link;
-		var source = field.source;
-
-		if(source != null || field.type == Type.File) {
-			this.fireEvent('follow', item.record, field);
-			return true;
-		}
-
-		return false;
-	},
-
 	getCurrentEditor: function() {
 		return this.currentEditor || null;
 	},

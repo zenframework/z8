@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.Executable;
-import org.zenframework.z8.server.base.form.action.IParameter;
+import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -76,7 +76,7 @@ public class Job extends RequestTarget {
 			String[] names = JsonObject.getNames(object);
 
 			for (String parameterId : names) {
-				IParameter parameter = executable.getParameter(parameterId);
+				Parameter parameter = executable.getParameter(parameterId);
 				String value = object.getString(parameterId);
 				parameter.parse(value);
 			}

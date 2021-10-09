@@ -209,10 +209,6 @@ abstract public class Field extends Control implements IField {
 		this.path = path;
 	}
 
-	public Collection<ILink> getPath() {
-		return path;
-	}
-
 	public boolean isRightJoined() {
 		return rightJoined;
 	}
