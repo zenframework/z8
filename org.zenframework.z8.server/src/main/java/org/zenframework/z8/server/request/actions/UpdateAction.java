@@ -14,7 +14,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
@@ -51,7 +50,7 @@ public class UpdateAction extends RequestAction {
 
 	private void checkAccess(Collection<Field> fields) {
 		for(Field field : fields) {
-			if(!field.isPrimaryKey() && !field.access().get(Access.FieldWrite))
+			if(!field.isPrimaryKey() && !field.access().getWrite())
 				throw new AccessRightsViolationException();
 		}
 	}

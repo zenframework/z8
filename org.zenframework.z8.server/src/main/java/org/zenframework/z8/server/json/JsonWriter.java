@@ -438,11 +438,11 @@ public class JsonWriter {
 
 	public void writeQueryAccess(Access access) {
 		startObject(Json.access);
-		writeProperty(Json.read, access.get(Access.TableRead));
-		writeProperty(Json.write, access.get(Access.TableWrite));
-		writeProperty(Json.create, access.get(Access.TableCreate));
-		writeProperty(Json.copy, access.get(Access.TableCopy));
-		writeProperty(Json.destroy, access.get(Access.TableDestroy));
+		writeProperty(Json.read, access.getRead());
+		writeProperty(Json.write, access.getWrite());
+		writeProperty(Json.create, access.getCreate());
+		writeProperty(Json.copy, access.getCopy());
+		writeProperty(Json.destroy, access.getDestroy());
 		finishObject();
 	}
 

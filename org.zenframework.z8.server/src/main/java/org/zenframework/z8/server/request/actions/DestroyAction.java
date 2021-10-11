@@ -9,7 +9,6 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.guid;
 
 public class DestroyAction extends RequestAction {
@@ -19,7 +18,7 @@ public class DestroyAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		if(!getQuery().access().get(Access.TableDestroy))
+		if(!getQuery().access().getDestroy())
 			throw new AccessRightsViolationException();
 
 		JsonArray records = new JsonArray(getRequestParameter(Json.data));

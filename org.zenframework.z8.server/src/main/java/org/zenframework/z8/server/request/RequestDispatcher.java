@@ -20,7 +20,6 @@ import org.zenframework.z8.server.request.actions.ActionFactory;
 import org.zenframework.z8.server.request.actions.RequestAction;
 import org.zenframework.z8.server.runtime.IAttributed;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.Privileges;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.guid;
@@ -118,7 +117,7 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} else {
-			if(!ApplicationServer.getUser().getPrivileges().getRequestAccess(guid.create(requestId)).get(Access.RequestExecute))
+			if(!ApplicationServer.getUser().getPrivileges().getRequestAccess(guid.create(requestId)).getExecute())
 				throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
 
 			OBJECT object = Loader.getInstance(requestId);

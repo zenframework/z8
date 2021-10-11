@@ -124,11 +124,11 @@ public class AccessRightsGenerator {
 				rta.roleId.get().set(role.getId());
 				rta.tableId.get().set(key);
 
-				rta.read.get().set(new bool(access.get(Access.TableRead)));
-				rta.write.get().set(new bool(access.get(Access.TableWrite)));
-				rta.create.get().set(new bool(access.get(Access.TableCreate)));
-				rta.copy.get().set(new bool(access.get(Access.TableCopy)));
-				rta.destroy.get().set(new bool(access.get(Access.TableDestroy)));
+				rta.read.get().set(new bool(access.getRead()));
+				rta.write.get().set(new bool(access.getWrite()));
+				rta.create.get().set(new bool(access.getCreate()));
+				rta.copy.get().set(new bool(access.getCopy()));
+				rta.destroy.get().set(new bool(access.getDestroy()));
 				rta.create();
 			}
 		}
@@ -165,7 +165,7 @@ public class AccessRightsGenerator {
 				rra.roleId.get().set(role.getId());
 				rra.requestId.get().set(key);
 
-				rra.execute.get().set(new bool(access.get(Access.RequestExecute)));
+				rra.execute.get().set(new bool(access.getExecute()));
 				rra.create();
 			}
 		}
@@ -281,8 +281,8 @@ public class AccessRightsGenerator {
 				rfa.roleId.get().set(role.getId());
 				rfa.fieldId.get().set(key);
 
-				rfa.read.get().set(new bool(access.get(Access.FieldRead)));
-				rfa.write.get().set(new bool(access.get(Access.FieldWrite)));
+				rfa.read.get().set(new bool(access.getRead()));
+				rfa.write.get().set(new bool(access.getWrite()));
 				rfa.create();
 			}
 		}
