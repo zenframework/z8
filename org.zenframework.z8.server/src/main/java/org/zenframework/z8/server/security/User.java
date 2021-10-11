@@ -359,21 +359,21 @@ public class User implements RmiSerializable, Serializable {
 
 		SqlToken where = rta.roleId.get().inVector(getRoleIds());
 
-		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.get(Access.TableRead)));
-		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.get(Access.TableWrite)));
-		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.get(Access.TableCreate)));
-		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.get(Access.TableCopy)));
-		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.get(Access.TableDestroy)));
+		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.getRead()));
+		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.getWrite()));
+		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.getCreate()));
+		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.getCopy()));
+		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.getDestroy()));
 		SqlToken having = new Group(Or.fromList(Arrays.asList(notRead, notWrite, notCreate, notCopy, notDestroy)));
 
 		rta.group(fields, groups, where, having);
 		while(rta.next()) {
 			Access access = new Access();
-			access.set(Access.TableRead, read.bool().get());
-			access.set(Access.TableWrite, write.bool().get());
-			access.set(Access.TableCreate, create.bool().get());
-			access.set(Access.TableCopy, copy.bool().get());
-			access.set(Access.TableDestroy, destroy.bool().get());
+			access.setRead(read.bool().get());
+			access.setWrite(write.bool().get());
+			access.setCreate(create.bool().get());
+			access.setCopy(copy.bool().get());
+			access.setDestroy(destroy.bool().get());
 			privileges.setTableAccess(tableId.guid(), access);
 		}
 	}
@@ -397,8 +397,8 @@ public class User implements RmiSerializable, Serializable {
 
 			Access tableAccess = privileges.getTableAccess(table);
 
-			boolean tableReadable = tableAccess.get(Access.TableRead);
-			boolean tableWritable = tableAccess.get(Access.TableWrite);
+			boolean tableReadable = tableAccess.getRead();
+			boolean tableWritable = tableAccess.getWrite();
 
 			boolean readable = read.bool().get();
 			boolean writable = write.bool().get();
@@ -407,8 +407,8 @@ public class User implements RmiSerializable, Serializable {
 				continue;
 
 			Access access = new Access();
-			access.set(Access.FieldRead, readable);
-			access.set(Access.FieldWrite, writable);
+			access.setRead(readable);
+			access.setWrite(writable);
 			privileges.setFieldAccess(fieldId.guid(), access);
 		}
 	}
@@ -423,13 +423,13 @@ public class User implements RmiSerializable, Serializable {
 
 		SqlToken where = rra.roleId.get().inVector(getRoleIds());
 
-		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.get(Access.RequestExecute)));
+		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.getExecute()));
 		SqlToken having = new Group(notExecute);
 
 		rra.group(fields, groups, where, having);
 		while(rra.next()) {
 			Access access = new Access();
-			access.set(Access.RequestExecute, execute.bool().get());
+			access.setExecute(execute.bool().get());
 			privileges.setRequestAccess(requestId.guid(), access);
 		}
 	}

@@ -11,7 +11,6 @@ import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.security.Privileges;
 
 public class Desktop extends OBJECT {
@@ -64,7 +63,7 @@ public class Desktop extends OBJECT {
 		Privileges privileges = ApplicationServer.getUser().getPrivileges();
 
 		for(IClass<? extends IObject> cls : members()) {
-			if((cls instanceof Executable.CLASS || cls instanceof Query.CLASS) && privileges.getRequestAccess(cls.classIdKey()).get(Access.RequestExecute))
+			if((cls instanceof Executable.CLASS || cls instanceof Query.CLASS) && privileges.getRequestAccess(cls.classIdKey()).getExecute())
 				result.add((OBJECT.CLASS<OBJECT>)cls);
 		}
 		return result;

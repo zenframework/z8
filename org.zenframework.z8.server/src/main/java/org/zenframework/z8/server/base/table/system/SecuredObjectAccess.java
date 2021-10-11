@@ -27,32 +27,26 @@ public class SecuredObjectAccess extends Table {
 		public final static String Title = "SecuredObjectAccess.title";
 		public final static String Name = "SecuredObjectAccess.name";
 
-		public final static String TableRead = "SecuredObjectAccess.tableRead";
-		public final static String TableWrite = "SecuredObjectAccess.tableWrite";
-		public final static String TableCreate = "SecuredObjectAccess.tableCreate";
-		public final static String TableCopy = "SecuredObjectAccess.tableCopy";
-		public final static String TableDestroy = "SecuredObjectAccess.tableDestroy";
+		public final static String Read = "SecuredObjectAccess.read";
+		public final static String Write = "SecuredObjectAccess.write";
+		public final static String Create = "SecuredObjectAccess.create";
+		public final static String Copy = "SecuredObjectAccess.copy";
+		public final static String Destroy = "SecuredObjectAccess.destroy";
 
-		public final static String FieldRead = "SecuredObjectAccess.fieldRead";
-		public final static String FieldWrite = "SecuredObjectAccess.fieldWrite";
-
-		public final static String RequestExecute = "SecuredObjectAccess.requestExecute";
+		public final static String Execute = "SecuredObjectAccess.execute";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Name = Resources.get(strings.Name);
 
-		public final static String TableRead = Resources.get(strings.TableRead);
-		public final static String TableWrite = Resources.get(strings.TableWrite);
-		public final static String TableCreate = Resources.get(strings.TableCreate);
-		public final static String TableCopy = Resources.get(strings.TableCopy);
-		public final static String TableDestroy = Resources.get(strings.TableDestroy);
+		public final static String Read = Resources.get(strings.Read);
+		public final static String Write = Resources.get(strings.Write);
+		public final static String Create = Resources.get(strings.Create);
+		public final static String Copy = Resources.get(strings.Copy);
+		public final static String Destroy = Resources.get(strings.Destroy);
 
-		public final static String FieldRead = Resources.get(strings.FieldRead);
-		public final static String FieldWrite = Resources.get(strings.FieldWrite);
-
-		public final static String RequestExecute = Resources.get(strings.RequestExecute);
+		public final static String Execute = Resources.get(strings.Execute);
 	}
 
 	public static class CLASS<T extends SecuredObjectAccess> extends Table.CLASS<T> {
@@ -113,16 +107,13 @@ public class SecuredObjectAccess extends Table {
 
 	@Override
 	public void initStaticRecords() {
-		addStaticRecord(Access.TableRead, SecuredObjects.Table, displayNames.TableRead);
-		addStaticRecord(Access.TableWrite, SecuredObjects.Table, displayNames.TableWrite);
-		addStaticRecord(Access.TableCreate, SecuredObjects.Table, displayNames.TableCreate);
-		addStaticRecord(Access.TableCopy, SecuredObjects.Table, displayNames.TableCopy);
-		addStaticRecord(Access.TableDestroy, SecuredObjects.Table, displayNames.TableDestroy);
+		addStaticRecord(Access.Read, SecuredObjects.Database, displayNames.Read);
+		addStaticRecord(Access.Write, SecuredObjects.Database, displayNames.Write);
+		addStaticRecord(Access.Create, SecuredObjects.Database, displayNames.Create);
+		addStaticRecord(Access.Copy, SecuredObjects.Database, displayNames.Copy);
+		addStaticRecord(Access.Destroy, SecuredObjects.Database, displayNames.Destroy);
 
-		addStaticRecord(Access.FieldRead, SecuredObjects.Field, displayNames.FieldRead);
-		addStaticRecord(Access.FieldWrite, SecuredObjects.Field, displayNames.FieldWrite);
-
-		addStaticRecord(Access.RequestExecute, SecuredObjects.Request, displayNames.RequestExecute);
+		addStaticRecord(Access.Execute, SecuredObjects.Request, displayNames.Execute);
 	}
 
 	private void addStaticRecord(guid id, guid securedObjectId, String name) {

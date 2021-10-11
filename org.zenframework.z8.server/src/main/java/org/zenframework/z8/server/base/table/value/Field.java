@@ -454,13 +454,13 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(firstLink.getQuery().sortFields());
 
-			readOnly = hasReadOnlyLinks(path) || !linkField.access().get(Access.FieldWrite) || readOnly();
+			readOnly = hasReadOnlyLinks(path) || !linkField.access().getWrite() || readOnly();
 			required = !readOnly && (hasRequiredLinks(path) || required());
 
 			this.readOnly = new bool(readOnly);
 			this.required = new bool(required);
 		} else {
-			readOnly = readOnly() || hasJoin || isExpression() || !access().get(Access.FieldWrite);
+			readOnly = readOnly() || hasJoin || isExpression() || !access().getWrite();
 			required = !readOnly && required();
 
 			this.readOnly = new bool(readOnly() || readOnly);
@@ -497,7 +497,7 @@ abstract public class Field extends Control implements IField {
 
 	public void writeData(JsonWriter writer) {
 		primary value = get();
-		if((isPrimaryKey() || access().get(Access.FieldRead)) && (!wasNull() || writeNulls))
+		if((isPrimaryKey() || access().getRead()) && (!wasNull() || writeNulls))
 			writer.writeProperty(id(), wasNull() ? getNullValue() : value);
 	}
 

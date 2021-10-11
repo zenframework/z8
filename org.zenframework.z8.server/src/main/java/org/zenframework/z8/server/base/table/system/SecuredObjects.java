@@ -17,8 +17,7 @@ import org.zenframework.z8.server.types.string;
 public class SecuredObjects extends Table {
 	final static public String TableName = "System Secured Objects";
 
-	static public guid Table = new guid("36667015-C370-4153-BB38-2F4C7C25A416");
-	static public guid Field = new guid("D5386544-1E3D-4C52-9B0D-DB9DC14E809F");
+	static public guid Database = new guid("36667015-C370-4153-BB38-2F4C7C25A416");
 	static public guid Request = new guid("CB201467-F8DE-4C0F-9B08-13C3FACF01E1");
 
 	static public class fieldNames {
@@ -28,16 +27,14 @@ public class SecuredObjects extends Table {
 	static public class strings {
 		public final static String Title = "SequredObjects.title";
 		public final static String ClassId = "SequredObjects.classId";
-		public final static String Table = "SequredObjects.table";
-		public final static String Field = "SequredObjects.field";
+		public final static String Database = "SequredObjects.database";
 		public final static String Request = "SequredObjects.request";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
 		public final static String ClassId = Resources.get(strings.ClassId);
-		public final static String Table = Resources.get(strings.Table);
-		public final static String Field = Resources.get(strings.Field);
+		public final static String Database = Resources.get(strings.Database);
 		public final static String Request = Resources.get(strings.Request);
 	}
 	
@@ -90,8 +87,7 @@ public class SecuredObjects extends Table {
 
 	@Override
 	public void initStaticRecords() {
-		addStaticRecord(Table, displayNames.Table);
-		addStaticRecord(Field, displayNames.Field);
+		addStaticRecord(Database, displayNames.Database);
 		addStaticRecord(Request, displayNames.Request);
 	}
 

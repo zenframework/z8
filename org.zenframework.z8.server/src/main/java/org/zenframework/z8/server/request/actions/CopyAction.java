@@ -14,7 +14,6 @@ import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
@@ -24,11 +23,11 @@ public class CopyAction extends RequestAction {
 	}
 
 	private boolean checkAccess(Query query) {
-		if(!query.access().get(Access.TableCopy))
+		if(!query.access().getCopy())
 			throw new AccessRightsViolationException();
 
 		for(Field field : query.getPrimaryFields()) {
-			if(!field.access().get(Access.FieldWrite))
+			if(!field.access().getCopy())
 				throw new AccessRightsViolationException();
 		}
 
