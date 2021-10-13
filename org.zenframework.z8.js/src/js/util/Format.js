@@ -23,6 +23,9 @@ Z8.define('Z8.util.Format', {
 		measures: {},
 
 		numberFormat: function(precision) {
+			if(precision == null)
+				return Format.Number;
+
 			return precision == 0 ? Format.Integer : '0,000.' + String.repeat('0', Math.min(precision, 12));
 		},
 
