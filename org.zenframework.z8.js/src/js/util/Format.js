@@ -22,6 +22,10 @@ Z8.define('Z8.util.Format', {
 		charWidth: null,
 		measures: {},
 
+		numberFormat: function(precision) {
+			return precision == 0 ? Format.Integer : '0,000.' + String.repeat('#', Math.min(precision, 12));
+		},
+
 		list: function() {
 			var result = '';
 
