@@ -76,6 +76,12 @@ public class WebServerHandler extends AbstractHandler {
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType(getContentType(path));
 
+		handle(path, request, response);
+
+		baseRequest.setHandled(true);
+	}
+
+	protected void handle(String path, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		if (isSystemRequest(path))
 			// Z8 request
 			z8Servlet.service(request, response);
@@ -85,8 +91,6 @@ public class WebServerHandler extends AbstractHandler {
 		else
 			// Files or other resources
 			handleResource(path, response);
-
-		baseRequest.setHandled(true);
 	}
 
 	@Override

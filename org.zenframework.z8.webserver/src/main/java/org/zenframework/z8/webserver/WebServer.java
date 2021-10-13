@@ -23,11 +23,12 @@ public class WebServer extends RmiServer implements IWebServer {
 
 	public WebServer() throws RemoteException {
 		super(ServerConfig.webServerPort());
-		configure();
 	}
 
 	@Override
 	public void start() {
+		configure();
+
 		try {
 			server.start();
 		} catch (Exception e) {
