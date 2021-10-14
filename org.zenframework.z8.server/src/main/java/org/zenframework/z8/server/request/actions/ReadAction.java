@@ -786,7 +786,8 @@ public class ReadAction extends RequestAction {
 			return;
 		}
 
-		limit = parentKey != null ? -1 : getRequestParameter(Json.limit, query.limit());
+		int limitParam = getRequestParameter(Json.limit, 0);
+		limit = parentKey != null ? -1 : limitParam > 0 ? limitParam : query.limit();
 		start = getRequestParameter(Json.start, query.start());
 
 		if(getRequestParameter(Json.count, false)) {
