@@ -165,7 +165,77 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
+	
+	@Override
+	public IUser registerUser(LoginParameters loginParameters, String password) throws RemoteException {
+		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
 
+		try {
+			return User.register(loginParameters, password);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+	
+	@Override
+	public IUser verifyUser(String verification, String schema) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.verify(verification);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+	
+	@Override
+	public IUser remindInit(String login, String schema) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.remindInit(login);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public IUser remind(String verification, String schema) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.remind(verification);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+	
+	@Override
+	public IUser changeUserPassword(String verification, String password, String schema) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.changePassword(verification, password);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+	
 	@Override
 	public file download(ISession session, GNode node, file file) throws IOException {
 		setRequest(new Request(node.getAttributes(), node.getFiles(), session));

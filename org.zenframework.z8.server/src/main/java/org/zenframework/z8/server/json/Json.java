@@ -34,6 +34,12 @@ public interface Json {
 	static public string changePassword = new string("changePassword");
 	static public string email = new string("email");
 	static public string phone = new string("phone");
+	static public string register = new string("register");
+	static public string remind = new string("remind");
+	static public string remindInit = new string("remindInit");
+	static public string verify = new string("verify");
+	static public string verification = new string("verification");
+	static public string verificationCode = new string("verificationCode");
 
 	static public string schema = new string("schema");
 	static public string connection = new string("connection");
