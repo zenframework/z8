@@ -12,9 +12,11 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.zenframework.z8.server.config.ServerConfig;
+
 public class Email {
-	private static final String DZ_EMAIL = "";
-	private static final String DZ_PASSWORD = "";
+	private static final String DZ_EMAIL = ServerConfig.emailLogin();
+	private static final String DZ_PASSWORD = ServerConfig.emailPassword();
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 	
 	private static enum STRINGS {
