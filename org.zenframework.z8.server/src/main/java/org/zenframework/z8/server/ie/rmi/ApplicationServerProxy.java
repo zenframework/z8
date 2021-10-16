@@ -75,27 +75,27 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public IUser registerUser(LoginParameters loginParameters, String password) throws RemoteException {
+	public IUser registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IUser verifyUser(String verification, String schema) throws RemoteException {
+	public IUser verifyUser(String verification, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IUser remindInit(String login, String schema) throws RemoteException {
+	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IUser remind(String verification, String schema) throws RemoteException {
+	public IUser remind(String verification, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IUser changeUserPassword(String verification, String password, String schema) throws RemoteException {
+	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 }

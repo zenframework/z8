@@ -271,6 +271,10 @@ public class User implements IUser {
 		users.verification.get().set(user.verification);
 	}
 	
+	private static String getVerificationLink(String host, String hashPrefix, String verification) {
+		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
+	}
+	
 	public static IUser create(LoginParameters loginParameters) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
@@ -288,7 +292,7 @@ public class User implements IUser {
 		return read(loginParameters.setUserId(user.id));
 	}
 	
-	public static IUser register(LoginParameters loginParameters, String password) {
+	public static IUser register(LoginParameters loginParameters, String password, String host) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
 		
@@ -313,11 +317,14 @@ public class User implements IUser {
 		users.password.get().set(user.password); // otherwise password resets to default value after creation
 		users.changePassword.get().set(false);
 		users.update(user.id);
-		Email.send(user.email, Email.TYPE.Registration, user.firstName, verification);
+		Email.send(new Email.Message(Email.TYPE.Registration)
+				.setRecipientAddress(user.email)
+				.setRecipientName(user.firstName)
+				.setButtonLink(getVerificationLink(host, "verify", verification)));
 		return user;
 	}
 	
-	public static IUser verify(String verification) {
+	public static IUser verify(String verification, String host) {
 		Users users = Users.newInstance();
 		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
 			throw new UserNotFoundException();
@@ -335,18 +342,23 @@ public class User implements IUser {
 			String newVerification = User.updateVerification(user, users);
 			users.update(users.recordId());
 			user.banned = true;
-			Email.send(users.email.get().string().get(), Email.TYPE.Registration, users.firstName.get().string().get(), newVerification);
+			Email.send(new Email.Message(Email.TYPE.Registration)
+					.setRecipientAddress(users.email.get().string().get())
+					.setRecipientName(users.firstName.get().string().get())
+					.setButtonLink(getVerificationLink(host, "verify", newVerification)));
 		} else {
 			user.banned = false;
 			users.banned.get().set(user.banned);
 			User.updateVerification("", user, users);
 			users.update(users.recordId());
-			Email.send(users.email.get().string().get(), Email.TYPE.VerificationSuccess, users.firstName.get().string().get(), null);
+			Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
+					.setRecipientAddress(users.email.get().string().get())
+					.setRecipientName(users.firstName.get().string().get()));
 		}
 		return user;
 	}
 	
-	public static IUser remindInit(String login) {
+	public static IUser remindInit(String login, String host) {
 		Users users = Users.newInstance();
 		if (login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
 			throw new UserNotFoundException();
@@ -358,11 +370,14 @@ public class User implements IUser {
 		
 		String verification = User.updateVerification(user, users);
 		users.update(users.recordId());
-		Email.send(users.email.get().string().get(), Email.TYPE.RemindPassword, users.firstName.get().string().get(), verification);
+		Email.send(new Email.Message(Email.TYPE.RemindPassword)
+				.setRecipientAddress(users.email.get().string().get())
+				.setRecipientName(users.firstName.get().string().get())
+				.setButtonLink(getVerificationLink(host, "remind", verification)));
 		return user;
 	}
 	
-	public static IUser remind(String verification) {
+	public static IUser remind(String verification, String host) {
 		Users users = Users.newInstance();
 		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
 			throw new UserNotFoundException();
@@ -380,13 +395,16 @@ public class User implements IUser {
 		if (new date().operatorMore(expirationDate).get()) {
 			String newVerification = User.updateVerification(user, users);
 			users.update(users.recordId());
-			Email.send(users.email.get().string().get(), Email.TYPE.RemindPassword, users.firstName.get().string().get(), newVerification);
+			Email.send(new Email.Message(Email.TYPE.RemindPassword)
+					.setRecipientAddress(users.email.get().string().get())
+					.setRecipientName(users.firstName.get().string().get())
+					.setButtonLink(getVerificationLink(host, "remind", newVerification)));
 		}
 		
 		return user;
 	}
 	
-	public static IUser changePassword(String verification, String password) {
+	public static IUser changePassword(String verification, String password, String host) {
 		Users users = Users.newInstance();
 		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
 			throw new UserNotFoundException();
@@ -404,7 +422,9 @@ public class User implements IUser {
 		users.changePassword.get().set(user.changePassword);
 		users.update(users.recordId());
 		
-		Email.send(users.email.get().string().get(), Email.TYPE.PasswordChanged, users.firstName.get().string().get(), null);
+		Email.send(new Email.Message(Email.TYPE.PasswordChanged)
+				.setRecipientAddress(users.email.get().string().get())
+				.setRecipientName(users.firstName.get().string().get()));
 		
 		return user;
 	}

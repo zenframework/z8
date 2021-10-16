@@ -3,6 +3,8 @@ package org.zenframework.z8.web.server;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.ConnectException;
 import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
@@ -120,6 +122,15 @@ public abstract class Adapter {
 		}
 	}
 	
+	private String getRequestHost(HttpServletRequest request) throws MalformedURLException {
+		URL rURL = new URL(request.getRequestURL().toString());
+		StringBuilder host = new StringBuilder().append(rURL.getProtocol()).append("://").append(rURL.getHost());
+		if (rURL.getPort() != -1)
+			host.append(":").append(rURL.getPort());
+		host.append("/");
+		return host.toString();
+	}
+	
 	/**
 	 * Initiates password remind. 
 	 * If user is not blocked, sets up verification code for password remind.
@@ -133,7 +144,7 @@ public abstract class Adapter {
 	private void remindInit(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String login = parameters.get(Json.login.get());
 		
-		ServerConfig.authorityCenter().remindInit(login, ServletUtil.getSchema(request));
+		ServerConfig.authorityCenter().remindInit(login, ServletUtil.getSchema(request), getRequestHost(request));
 		
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
@@ -149,7 +160,7 @@ public abstract class Adapter {
 	private void remind(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String verificationCode = parameters.get(Json.verificationCode.get());
 		
-		IUser user = ServerConfig.authorityCenter().remind(verificationCode, ServletUtil.getSchema(request));
+		IUser user = ServerConfig.authorityCenter().remind(verificationCode, ServletUtil.getSchema(request), getRequestHost(request));
 		boolean accessed = verificationCode.equals(user.verification());
 		
 		JsonWriter writer = new JsonWriter();
@@ -173,7 +184,7 @@ public abstract class Adapter {
 		String verificationCode = parameters.get(Json.verificationCode.get());
 		String password = parameters.get(Json.password.get());
 		
-		ServerConfig.authorityCenter().changePassword(verificationCode, password, ServletUtil.getSchema(request));
+		ServerConfig.authorityCenter().changePassword(verificationCode, password, ServletUtil.getSchema(request), getRequestHost(request));
 		
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
@@ -189,7 +200,7 @@ public abstract class Adapter {
 	private void verify(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String verificationCode = parameters.get(Json.verificationCode.get());
 		
-		IUser user = ServerConfig.authorityCenter().verify(verificationCode, ServletUtil.getSchema(request));
+		IUser user = ServerConfig.authorityCenter().verify(verificationCode, ServletUtil.getSchema(request), getRequestHost(request));
 		boolean unbanned = !user.banned();
 		
 		JsonWriter writer = new JsonWriter();
@@ -216,7 +227,7 @@ public abstract class Adapter {
 		
 		LoginParameters loginParameters = new LoginParameters(login).setEmail(email).setFirstName(firstName).setLastName(lastName).setSchema(ServletUtil.getSchema(request));
 		
-		ServerConfig.authorityCenter().register(loginParameters, password);
+		ServerConfig.authorityCenter().register(loginParameters, password, getRequestHost(request));
 		
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);

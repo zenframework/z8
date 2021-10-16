@@ -14,11 +14,11 @@ public interface IApplicationServer extends IServer {
 
 	public file download(ISession session, GNode request, file file) throws RemoteException, IOException;
 
-	public IUser registerUser(LoginParameters loginParameters, String password) throws RemoteException;
-	public IUser verifyUser(String verification, String schema) throws RemoteException;
-	public IUser remindInit(String login, String schema) throws RemoteException;
-	public IUser remind(String verification, String schema) throws RemoteException;
-	public IUser changeUserPassword(String verification, String password, String schema) throws RemoteException;
+	public IUser registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException;
+	public IUser verifyUser(String verification, String schema, String requestHost) throws RemoteException;
+	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException;
+	public IUser remind(String verification, String schema, String requestHost) throws RemoteException;
+	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException;
 	public IUser user(LoginParameters loginParameters, String password) throws RemoteException;
 	
 	public IUser create(LoginParameters loginParameters) throws RemoteException;

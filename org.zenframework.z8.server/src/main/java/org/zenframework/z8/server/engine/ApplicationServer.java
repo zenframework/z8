@@ -167,11 +167,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 	
 	@Override
-	public IUser registerUser(LoginParameters loginParameters, String password) throws RemoteException {
+	public IUser registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
 
 		try {
-			return User.register(loginParameters, password);
+			return User.register(loginParameters, password, requestHost);
 		} finally {
 			Scheduler.start(getDatabase());
 
@@ -181,11 +181,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 	
 	@Override
-	public IUser verifyUser(String verification, String schema) throws RemoteException {
+	public IUser verifyUser(String verification, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
 
 		try {
-			return User.verify(verification);
+			return User.verify(verification, requestHost);
 		} finally {
 			Scheduler.start(getDatabase());
 
@@ -195,11 +195,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 	
 	@Override
-	public IUser remindInit(String login, String schema) throws RemoteException {
+	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
 
 		try {
-			return User.remindInit(login);
+			return User.remindInit(login, requestHost);
 		} finally {
 			Scheduler.start(getDatabase());
 
@@ -209,11 +209,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser remind(String verification, String schema) throws RemoteException {
+	public IUser remind(String verification, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
 
 		try {
-			return User.remind(verification);
+			return User.remind(verification, requestHost);
 		} finally {
 			Scheduler.start(getDatabase());
 
@@ -223,11 +223,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 	
 	@Override
-	public IUser changeUserPassword(String verification, String password, String schema) throws RemoteException {
+	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
 
 		try {
-			return User.changePassword(verification, password);
+			return User.changePassword(verification, password, requestHost);
 		} finally {
 			Scheduler.start(getDatabase());
 

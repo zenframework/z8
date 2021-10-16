@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -17,7 +16,12 @@ import org.zenframework.z8.server.config.ServerConfig;
 public class Email {
 	private static final String DZ_EMAIL = ServerConfig.emailLogin();
 	private static final String DZ_PASSWORD = ServerConfig.emailPassword();
+	private static final String DZ_NAME = "Doczilla Pro";
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
+	
+	public static enum TYPE {
+		Registration, VerificationSuccess, RemindPassword, PasswordChanged;
+	}
 	
 	private static enum STRINGS {
 		RegistrationSubjectText("Регистрация"),
@@ -66,33 +70,56 @@ public class Email {
 		return props;
 	}
 	
-	private static MimeMessage getMessage(InternetAddress from, InternetAddress to, TYPE type, String name, String verification) throws MessagingException {
-		MimeMessage message = new MimeMessage(Session.getInstance(props(), auth()));
-		message.setFrom(from);
-		message.setRecipient(Message.RecipientType.TO, to);
-		message.setSubject(type.getMessageSubject());
-		message.setContent(type.getMessageContent(name, verification), CONTENT_TYPE);
-		return message;
-	}
-	
-	public static void send(String recipient, TYPE type, String name, String verification) {
+	public static void send(Message message) {
 		new Thread(() -> {
 			try {
-				InternetAddress from = new InternetAddress(DZ_EMAIL, "Doczilla Pro");
-				InternetAddress to = new InternetAddress(recipient);
-				
-				Transport.send(getMessage(from, to, type, name, verification));
+				Transport.send(message.toMimeMessage());
 			} catch(UnsupportedEncodingException|MessagingException e) {
 				e.printStackTrace(System.out);
 			}
 		}).start();
 	}
 	
-	public static enum TYPE {
-		Registration, VerificationSuccess, RemindPassword, PasswordChanged;
+	/**
+	 * Class for concrete definition of the required data and appearance of email messages.
+	 */
+	public static class Message {
+		
+		private String recipientAddress;
+		private String recipientName;
+		private String buttonLink = null;
+		private TYPE type;
+		
+		public Message(TYPE type) {
+			this.type = type;
+		}
+		
+		public Message setRecipientAddress(String recipientAddress) {
+			this.recipientAddress = recipientAddress;
+			return this;
+		}
+		
+		private String getRecipientAddress() {
+			return recipientAddress;
+		}
+		
+		public Message setRecipientName(String recipientName) {
+			this.recipientName = recipientName;
+			return this;
+		}
+		
+		public Message setType(TYPE type) {
+			this.type = type;
+			return this;
+		}
+		
+		public Message setButtonLink(String link) {
+			this.buttonLink = link;
+			return this;
+		}
 		
 		private String getMessageSubject() {
-			switch (this) {
+			switch (type) {
 			case Registration:
 				return STRINGS.RegistrationSubjectText.get();
 			case RemindPassword:
@@ -105,8 +132,24 @@ public class Email {
 			return "Notification";
 		}
 		
-		private String getMessageContent(String name, String verification) {
-			return start()+head()+body(name, verification)+end();
+		private String getMessageContent() {
+			return new StringBuilder()
+					.append(start())
+					.append(head())
+					.append(body(recipientName, buttonLink))
+					.append(end()).toString();
+		}
+		
+		private MimeMessage toMimeMessage() throws UnsupportedEncodingException, MessagingException {
+			InternetAddress from = new InternetAddress(DZ_EMAIL, DZ_NAME);
+			InternetAddress to = new InternetAddress(getRecipientAddress());
+			
+			MimeMessage mimeMessage = new MimeMessage(Session.getInstance(props(), auth()));
+			mimeMessage.setFrom(from);
+			mimeMessage.setRecipient(javax.mail.Message.RecipientType.TO, to);
+			mimeMessage.setSubject(getMessageSubject());
+			mimeMessage.setContent(getMessageContent(), CONTENT_TYPE);
+			return mimeMessage;
 		}
 		
 		private String start() {
@@ -200,12 +243,12 @@ public class Email {
 			return "</html>";
 		}
 		
-		private String body(String name, String verification) {
-			switch (this) {
+		private String body(String name, String buttonLink) {
+			switch (type) {
 			case Registration:
-				return body(name, STRINGS.RegistrationMessageText.get(), "http://localhost:9080/#verify_"+verification, STRINGS.RegistrationButtonText.get(), null);
+				return body(name, STRINGS.RegistrationMessageText.get(), buttonLink, STRINGS.RegistrationButtonText.get(), null);
 			case RemindPassword:
-				return body(name, STRINGS.RemindPasswordMessage0Text.get(), "http://localhost:9080/#remind_"+verification, STRINGS.RemindPasswordButtonText.get(), STRINGS.RemindPasswordMessage1Text.get());
+				return body(name, STRINGS.RemindPasswordMessage0Text.get(), buttonLink, STRINGS.RemindPasswordButtonText.get(), STRINGS.RemindPasswordMessage1Text.get());
 			case VerificationSuccess:
 				return body(name, STRINGS.VerificationSuccessMessageText.get(), null, null, null);
 			case PasswordChanged:
