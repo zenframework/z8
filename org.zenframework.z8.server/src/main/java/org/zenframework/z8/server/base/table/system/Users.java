@@ -208,7 +208,7 @@ public class Users extends Table {
 		verification.setIndex("verification");
 		
 		verificationModAt.setName(fieldNames.VerificationModAt);
-		verification.setIndex("verificationModAt");
+		verificationModAt.setIndex("verificationModAt");
 	}
 
 	@Override
