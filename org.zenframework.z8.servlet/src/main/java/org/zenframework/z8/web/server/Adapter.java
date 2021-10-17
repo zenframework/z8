@@ -131,15 +131,6 @@ public abstract class Adapter {
 		return host.toString();
 	}
 	
-	/**
-	 * Initiates password remind. 
-	 * If user is not blocked, sets up verification code for password remind.
-	 * @param parameters
-	 * @param request
-	 * @param response
-	 * @throws IOException
-	 * @throws ServletException
-	 */
 	@SuppressWarnings("unchecked")
 	private void remindInit(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String login = parameters.get(Json.login.get());
@@ -224,8 +215,16 @@ public abstract class Adapter {
 		String firstName = parameters.get(Json.firstName.get());
 		String lastName = parameters.get(Json.lastName.get());
 		String password = parameters.get(Json.password.get());
+		String company = parameters.get(Json.company.get());
+		String position = parameters.get(Json.position.get());
 		
-		LoginParameters loginParameters = new LoginParameters(login).setEmail(email).setFirstName(firstName).setLastName(lastName).setSchema(ServletUtil.getSchema(request));
+		LoginParameters loginParameters = new LoginParameters(login)
+				.setEmail(email)
+				.setFirstName(firstName)
+				.setLastName(lastName)
+				.setCompany(company)
+				.setPosition(position)
+				.setSchema(ServletUtil.getSchema(request));
 		
 		ServerConfig.authorityCenter().register(loginParameters, password, getRequestHost(request));
 		

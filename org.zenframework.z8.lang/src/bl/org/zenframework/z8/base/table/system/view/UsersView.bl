@@ -16,6 +16,9 @@ class UsersView extends Users {
 	Section section2;
 	section2.colSpan = 3;
 	
+	Section section3;
+	section3.colSpan = 3;
+	
 	UserEntries userEntries;
 	userEntries.position.editable = true;
 	userEntries.columns = { userEntries.entries.name, userEntries.position };
@@ -56,6 +59,9 @@ class UsersView extends Users {
 	
 	phone.colSpan = 3;
 	email.colSpan = 3;
+	
+	company.colSpan = 3;
+	position.colSpan = 3;
 
 	description.colSpan =12;
 	description.height = 3;
@@ -78,6 +84,11 @@ class UsersView extends Users {
 				 
 				 phone,
 				 email,
+				 section3,
+				 
+				 company,
+				 position,
+				 
 				 description,
 				 rolesListbox,
 				 entriesListbox };

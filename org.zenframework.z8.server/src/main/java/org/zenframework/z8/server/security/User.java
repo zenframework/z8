@@ -61,7 +61,10 @@ public class User implements IUser {
 	private String description;
 	private String phone;
 	private String email;
+	private String company;
+	private String position;
 	private String verification;
+	
 	private boolean banned;
 	private boolean changePassword;
 
@@ -87,6 +90,8 @@ public class User implements IUser {
 		system.firstName = "";
 		system.middleName = "";
 		system.lastName = "";
+		system.company = "";
+		system.position = "";
 		system.banned = false;
 		system.changePassword = false;
 
@@ -154,6 +159,16 @@ public class User implements IUser {
 	@Override
 	public String verification() {
 		return verification;
+	}
+	
+	@Override
+	public String company() {
+		return company;
+	}
+	
+	@Override
+	public String position() {
+		return position;
 	}
 
 	@Override
@@ -300,6 +315,8 @@ public class User implements IUser {
 		user.lastName = loginParameters.getLastName();
 		user.firstName = loginParameters.getFirstName();
 		user.email = loginParameters.getEmail();
+		user.company = loginParameters.getCompany();
+		user.position = loginParameters.getPosition();
 		user.password = password;
 
 		Users users = Users.newInstance();
@@ -311,6 +328,8 @@ public class User implements IUser {
 		users.lastName.get().set(user.lastName);
 		users.firstName.get().set(user.firstName);
 		users.email.get().set(user.email);
+		users.company.get().set(user.company);
+		users.position.get().set(user.position);
 		users.banned.get().set(true);
 		String verification = User.updateVerification(user, users);
 		user.id = users.create();

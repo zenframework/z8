@@ -32,6 +32,8 @@
 	<entry key="Users.company">Организация</entry>
 	<entry key="Users.phone">Телефон</entry>
 	<entry key="Users.email">Email</entry>
+	<entry key="Users.company">Компания</entry>
+	<entry key="Users.position">Должность</entry>
 	<entry key="Users.banned">Заблокирован</entry>
 	<entry key="Users.changePassword">Изменить пароль при следующем входе</entry>
 	<entry key="Users.resetPassword">Сбросить пароль</entry>

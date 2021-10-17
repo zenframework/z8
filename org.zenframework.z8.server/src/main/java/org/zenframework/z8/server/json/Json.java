@@ -40,6 +40,8 @@ public interface Json {
 	static public string verify = new string("verify");
 	static public string verification = new string("verification");
 	static public string verificationCode = new string("verificationCode");
+	static public string company = new string("company");
+	static public string position = new string("position");
 
 	static public string schema = new string("schema");
 	static public string connection = new string("connection");

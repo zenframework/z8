@@ -47,6 +47,8 @@ public class Users extends Table {
 		public final static String Settings = "Settings";
 		public final static String Verification = "Verification";
 		public final static String VerificationModAt = "Verification Modified At";
+		public final static String Company = "Company";
+		public final static String Position = "Position";
 	}
 
 	static public class strings {
@@ -62,6 +64,8 @@ public class Users extends Table {
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
+		public final static String Company = "Users.company";
+		public final static String Position = "Users.position";
 
 		public final static String DefaultName = "Users.name.default";
 	}
@@ -80,6 +84,8 @@ public class Users extends Table {
 		public final static String DefaultName = Resources.get(strings.DefaultName);
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Description = Resources.get(strings.Description);
+		public final static String Company = Resources.get(strings.Company);
+		public final static String Position = Resources.get(strings.Position);
 
 		public final static String SystemName = BuiltinUsers.displayNames.SystemName;
 		public final static String AdministratorName = BuiltinUsers.displayNames.AdministratorName;
@@ -114,6 +120,8 @@ public class Users extends Table {
 	public StringField.CLASS<StringField> lastName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> company = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> position = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> changePassword = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
@@ -142,6 +150,8 @@ public class Users extends Table {
 		objects.add(lastName);
 		objects.add(phone);
 		objects.add(email);
+		objects.add(company);
+		objects.add(position);
 		objects.add(banned);
 		objects.add(changePassword);
 		objects.add(settings);
@@ -190,6 +200,16 @@ public class Users extends Table {
 		email.setIndex("email");
 		email.setDisplayName(displayNames.Email);
 		email.get().length = new integer(128);
+		
+		company.setName(fieldNames.Company);
+		company.setIndex("company");
+		company.setDisplayName(displayNames.Company);
+		company.get().length = new integer(100);
+		
+		position.setName(fieldNames.Position);
+		position.setIndex("position");
+		position.setDisplayName(displayNames.Position);
+		position.get().length = new integer(100);
 
 		banned.setName(fieldNames.Banned);
 		banned.setIndex("banned");

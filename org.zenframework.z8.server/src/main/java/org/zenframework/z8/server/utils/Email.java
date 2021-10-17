@@ -52,8 +52,7 @@ public class Email {
 	private static Authenticator auth() {
 		return new Authenticator() {
 			@Override
-			protected PasswordAuthentication getPasswordAuthentication()
-			{
+			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(DZ_EMAIL, DZ_PASSWORD);
 			}
 		};

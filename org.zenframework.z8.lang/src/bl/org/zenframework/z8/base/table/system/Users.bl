@@ -40,6 +40,14 @@ public class Users extends Table {
 	[name "Email"]
 	[displayName "email"]
 	public StringField email;
+	
+	[name "Company"]
+	[displayName "Компания"]
+	public StringField company;
+	
+	[name "Position"]
+	[displayName "Должность"]
+	public StringField position;
 
 	[name "Banned"]
 	[displayName "Заблокирован"]

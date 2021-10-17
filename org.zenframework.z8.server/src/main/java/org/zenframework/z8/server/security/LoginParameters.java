@@ -11,6 +11,8 @@ public class LoginParameters {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private String company;
+	private String position;
 
 	public LoginParameters() {}
 
@@ -82,6 +84,24 @@ public class LoginParameters {
 	
 	public LoginParameters setEmail(String email) {
 		this.email = email;
+		return this;
+	}
+	
+	public String getCompany() {
+		return company;
+	}
+	
+	public LoginParameters setCompany(String company) {
+		this.company = company;
+		return this;
+	}
+	
+	public String getPosition() {
+		return position;
+	}
+	
+	public LoginParameters setPosition(String position) {
+		this.position = position;
 		return this;
 	}
 }
