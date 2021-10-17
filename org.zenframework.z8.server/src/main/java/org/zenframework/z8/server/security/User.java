@@ -370,9 +370,9 @@ public class User implements IUser {
 			users.banned.get().set(user.banned);
 			User.updateVerification("", user, users);
 			users.update(users.recordId());
-			Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
+			/*Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
 					.setRecipientAddress(users.email.get().string().get())
-					.setRecipientName(users.firstName.get().string().get()));
+					.setRecipientName(users.firstName.get().string().get()));*/
 		}
 		return user;
 	}
@@ -414,6 +414,7 @@ public class User implements IUser {
 		if (new date().operatorMore(expirationDate).get()) {
 			String newVerification = User.updateVerification(user, users);
 			users.update(users.recordId());
+			/* Repeated message with updated link */
 			Email.send(new Email.Message(Email.TYPE.RemindPassword)
 					.setRecipientAddress(users.email.get().string().get())
 					.setRecipientName(users.firstName.get().string().get())
@@ -441,9 +442,9 @@ public class User implements IUser {
 		users.changePassword.get().set(user.changePassword);
 		users.update(users.recordId());
 		
-		Email.send(new Email.Message(Email.TYPE.PasswordChanged)
+		/*Email.send(new Email.Message(Email.TYPE.PasswordChanged)
 				.setRecipientAddress(users.email.get().string().get())
-				.setRecipientName(users.firstName.get().string().get()));
+				.setRecipientName(users.firstName.get().string().get()));*/
 		
 		return user;
 	}
@@ -491,6 +492,8 @@ public class User implements IUser {
 			fields.add(users.settings.get());
 			fields.add(users.phone.get());
 			fields.add(users.email.get());
+			fields.add(users.company.get());
+			fields.add(users.position.get());
 		}
 
 		users.read(fields, where);
@@ -509,7 +512,9 @@ public class User implements IUser {
 		this.settings = users.settings.get().string().get();
 		this.phone = users.phone.get().string().get();
 		this.email = users.email.get().string().get();
-
+		this.company = users.company.get().string().get();
+		this.position = users.position.get().string().get();
+		
 		if(shortInfo)
 			return true;
 
@@ -732,6 +737,9 @@ public class User implements IUser {
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
+		
+		RmiIO.writeString(objects, company);
+		RmiIO.writeString(objects, position);
 
 		RmiIO.writeBoolean(objects, banned);
 		RmiIO.writeBoolean(objects, changePassword);
@@ -771,6 +779,9 @@ public class User implements IUser {
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
+		
+		company = RmiIO.readString(objects);
+		position = RmiIO.readString(objects);
 
 		banned = RmiIO.readBoolean(objects);
 		changePassword = RmiIO.readBoolean(objects);

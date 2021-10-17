@@ -20,22 +20,28 @@ public class Email {
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 	
 	public static enum TYPE {
-		Registration, VerificationSuccess, RemindPassword, PasswordChanged;
+		Registration, RemindPassword,
+		// >>>>>>>>>>>>>>>>>>>>> not in use
+		VerificationSuccess, PasswordChanged;
+		// <<<<<<<<<<<<<<<<<<<<< not in use
 	}
 	
 	private static enum STRINGS {
 		RegistrationSubjectText("Регистрация"),
-		RegistrationMessageText("Добро пожаловать в Doczilla Pro! Для подтверждения Вашего адреса электронной почты, пожалуйста, нажмите на кнопку ниже."),
-		RegistrationButtonText("ПОДТВЕРДИТЬ РЕГИСТРАЦИЮ"),
+		RegistrationMessage0Text(p("Вы успешно зарегистрировались на платформе Doczilla Pro. Теперь вы сможете создавать документы для внешнеэкономической деятельности в несколько кликов и без ошибок!") + p() + p("Начните работу с конструктором документов и откройте для себя мир цифровой трансформации! Чтобы вам было проще, вы можете посмотреть обучающие ролики <a href=\"https://doczilla.pro/ru/academy/\" target=\"_blank\">Doczilla Academy</a>.")),
+		RegistrationMessage1Text(p("Если вы хотите создавать собственные интерактивные шаблоны, мы с удовольствием проведем вам демо полного функционала платформы Doczilla Pro. Для заказа демо напишите пожалуйста на info@doczilla.pro.") + p() + p("Если у вас есть вопросы, мы всегда готовы ответить на них по почте support@doczilla.pro.")),
+		RegistrationButtonText("НАЧАТЬ РАБОТУ"),
 		RemindPasswordSubjectText("Смена пароля"),
-		RemindPasswordMessage0Text("Вы отправили запрос на восстановление доступа к аккаунту в Doczilla Pro. Для продолжения, пожалуйста, нажмите кнопку ниже."),
-		RemindPasswordMessage1Text("Если это письмо попало к Вам по ошибке, пожалуйста, проигнорируйте его и обратитесь к Вашему системному администратору."),
-		RemindPasswordButtonText("СБРОСИТЬ ПАРОЛЬ"),
+		RemindPasswordMessage0Text(p("Здравствуйте, вы запросили смену пароля. Чтобы придумать новый пароль для вашей учетной записи/аккаунта/личного кабинета на сайте, нажмите на кнопку “Сменить пароль” ниже. Если вы не запрашивали смену пароля, проигнорируйте это письмо.")),
+		RemindPasswordMessage1Text(p("Если у вас не получается сменить пароль или остались другие вопросы, мы готовы ответить на них по почте support@doczilla.pro.")),
+		RemindPasswordButtonText("СМЕНИТЬ ПАРОЛЬ"),
+		// >>>>>>>>>>>>>>>>>>>>> not in use
 		VerificationSuccessSubjectText("Аккаунт подтвержден"),
 		VerificationSuccessMessageText("Поздравляем! Ваш аккаунт в Doczilla Pro успешно подтверждён!"),
 		PasswordChangedSubjectText("Пароль был изменен"),
 		PasswordChangedMessage0Text("Пароль от Вашего аккаунта в Doczilla Pro успешно изменен."),
 		PasswordChangedMessage1Text("Если Вы ничего не меняли, пожалуйста, обратитесь к Вашему системному администратору.");
+		// <<<<<<<<<<<<<<<<<<<<< not in use
 		
 		STRINGS(String str) {
 			this.str = str;
@@ -45,6 +51,14 @@ public class Email {
 		
 		private String get() {
 			return this.str;
+		}
+		
+		/* Styled message paragraph */
+		private static String p(String p) {
+			return "<p style=\"font-size: 14px; line-height: 160%; color: #000000;\"><span style=\"font-size: 18px; line-height: 28.8px;\">" + (p == null || p.isEmpty() ? "&nbsp;" : p) + "</span></p>";
+		}
+		private static String p() {
+			return "<p style=\"font-size: 14px; line-height: 160%; color: #000000;\"><span style=\"font-size: 18px; line-height: 28.8px;\">&nbsp;</span></p>";
 		}
 		
 	}
@@ -123,10 +137,12 @@ public class Email {
 				return STRINGS.RegistrationSubjectText.get();
 			case RemindPassword:
 				return STRINGS.RemindPasswordSubjectText.get();
+			// >>>>>>>>>>>>>>>>>>>>> not in use
 			case VerificationSuccess:
 				return STRINGS.VerificationSuccessSubjectText.get();
 			case PasswordChanged:
 				return STRINGS.PasswordChangedSubjectText.get();
+			// <<<<<<<<<<<<<<<<<<<<< not in use
 			}
 			return "Notification";
 		}
@@ -245,13 +261,15 @@ public class Email {
 		private String body(String name, String buttonLink) {
 			switch (type) {
 			case Registration:
-				return body(name, STRINGS.RegistrationMessageText.get(), buttonLink, STRINGS.RegistrationButtonText.get(), null);
+				return body(name, STRINGS.RegistrationMessage0Text.get(), buttonLink, STRINGS.RegistrationButtonText.get(), STRINGS.RegistrationMessage1Text.get());
 			case RemindPassword:
 				return body(name, STRINGS.RemindPasswordMessage0Text.get(), buttonLink, STRINGS.RemindPasswordButtonText.get(), STRINGS.RemindPasswordMessage1Text.get());
+			// >>>>>>>>>>>>>>>>>>>>> not in use
 			case VerificationSuccess:
 				return body(name, STRINGS.VerificationSuccessMessageText.get(), null, null, null);
 			case PasswordChanged:
 				return body(name, STRINGS.PasswordChangedMessage0Text.get(), null, null, STRINGS.PasswordChangedMessage1Text.get());
+			// <<<<<<<<<<<<<<<<<<<<< not in use
 			}
 			return "<body>Notification</body>";
 		}
@@ -317,8 +335,8 @@ public class Email {
 					+ "      <td style=\"overflow-wrap:break-word;word-break:break-word;padding:33px 55px;font-family:'Montserrat',sans-serif;\" align=\"left\">"
 					+ "        "
 					+ "  <div style=\"line-height: 160%; text-align: center; word-wrap: break-word;\">"
-					+ "    <p style=\"font-size: 14px; line-height: 160%;\"><span style=\"font-size: 22px; line-height: 35.2px;\">Здравствуйте, " + name + "!</span></p>"
-					+ "<p style=\"font-size: 14px; line-height: 160%;\"><span style=\"font-size: 18px; line-height: 28.8px;\">" + message0 + "</span></p>"
+					+ "    <p style=\"font-size: 14px; line-height: 160%;\"><span style=\"font-size: 22px; line-height: 35.2px;\">" + (type == TYPE.Registration ? "Поздравляем" : "Здравствуйте") + ", " + name + "!</span></p>"
+					+ message0
 					+ "  </div>"
 					+ "      </td>"
 					+ "    </tr>"
@@ -353,7 +371,7 @@ public class Email {
 								+ "      <td style=\"overflow-wrap:break-word;word-break:break-word;padding:33px 55px;font-family:'Montserrat',sans-serif;\" align=\"left\">"
 								+ "        "
 								+ "  <div style=\"line-height: 160%; text-align: center; word-wrap: break-word;\">"
-								+ "<p style=\"font-size: 14px; line-height: 160%;\"><span style=\"font-size: 18px; line-height: 28.8px;\">" + message1 + "</span></p>"
+								+ message1
 								+ "  </div>"
 								+ "      </td>"
 								+ "    </tr>"
@@ -367,8 +385,7 @@ public class Email {
 					+ "      <td style=\"overflow-wrap:break-word;word-break:break-word;padding:33px 55px 60px;font-family:'Montserrat',sans-serif;\" align=\"left\">"
 					+ "        "
 					+ "  <div style=\"line-height: 160%; text-align: center; word-wrap: break-word;\">"
-					+ "    <p style=\"line-height: 160%; font-size: 14px;\"><span style=\"font-size: 18px; line-height: 28.8px;\">С уважением,</span></p>"
-					+ "<p style=\"line-height: 160%; font-size: 14px;\"><span style=\"font-size: 18px; line-height: 28.8px;\">команда Doczilla</span></p>"
+					+ "<p style=\"line-height: 160%; font-size: 14px;\"><span style=\"font-size: 18px; line-height: 28.8px;\">Команда Doczilla Pro</span></p>"
 					+ "  </div>"
 					+ "      </td>"
 					+ "    </tr>"
