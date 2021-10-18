@@ -20,9 +20,9 @@ public class Email {
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 	
 	public static enum TYPE {
-		Registration, RemindPassword,
+		Registration, RemindPassword, PasswordChanged,
 		// >>>>>>>>>>>>>>>>>>>>> not in use
-		VerificationSuccess, PasswordChanged;
+		VerificationSuccess;
 		// <<<<<<<<<<<<<<<<<<<<< not in use
 	}
 	
@@ -35,12 +35,12 @@ public class Email {
 		RemindPasswordMessage0Text(p("Здравствуйте, вы запросили смену пароля. Чтобы придумать новый пароль для вашей учетной записи/аккаунта/личного кабинета на сайте, нажмите на кнопку “Сменить пароль” ниже. Если вы не запрашивали смену пароля, проигнорируйте это письмо.")),
 		RemindPasswordMessage1Text(p("Если у вас не получается сменить пароль или остались другие вопросы, мы готовы ответить на них по почте support@doczilla.pro.")),
 		RemindPasswordButtonText("СМЕНИТЬ ПАРОЛЬ"),
+		PasswordChangedSubjectText("Пароль был изменен"),
+		PasswordChangedMessage0Text(p("Пароль от Вашего аккаунта в Doczilla Pro успешно изменен.")),
+		PasswordChangedMessage1Text(p("Если Вы ничего не меняли, пожалуйста, обратитесь к Вашему системному администратору.")),
 		// >>>>>>>>>>>>>>>>>>>>> not in use
 		VerificationSuccessSubjectText("Аккаунт подтвержден"),
-		VerificationSuccessMessageText("Поздравляем! Ваш аккаунт в Doczilla Pro успешно подтверждён!"),
-		PasswordChangedSubjectText("Пароль был изменен"),
-		PasswordChangedMessage0Text("Пароль от Вашего аккаунта в Doczilla Pro успешно изменен."),
-		PasswordChangedMessage1Text("Если Вы ничего не меняли, пожалуйста, обратитесь к Вашему системному администратору.");
+		VerificationSuccessMessageText("Поздравляем! Ваш аккаунт в Doczilla Pro успешно подтверждён!");
 		// <<<<<<<<<<<<<<<<<<<<< not in use
 		
 		STRINGS(String str) {
@@ -137,11 +137,11 @@ public class Email {
 				return STRINGS.RegistrationSubjectText.get();
 			case RemindPassword:
 				return STRINGS.RemindPasswordSubjectText.get();
+			case PasswordChanged:
+				return STRINGS.PasswordChangedSubjectText.get();
 			// >>>>>>>>>>>>>>>>>>>>> not in use
 			case VerificationSuccess:
 				return STRINGS.VerificationSuccessSubjectText.get();
-			case PasswordChanged:
-				return STRINGS.PasswordChangedSubjectText.get();
 			// <<<<<<<<<<<<<<<<<<<<< not in use
 			}
 			return "Notification";
@@ -264,11 +264,11 @@ public class Email {
 				return body(name, STRINGS.RegistrationMessage0Text.get(), buttonLink, STRINGS.RegistrationButtonText.get(), STRINGS.RegistrationMessage1Text.get());
 			case RemindPassword:
 				return body(name, STRINGS.RemindPasswordMessage0Text.get(), buttonLink, STRINGS.RemindPasswordButtonText.get(), STRINGS.RemindPasswordMessage1Text.get());
+			case PasswordChanged:
+				return body(name, STRINGS.PasswordChangedMessage0Text.get(), null, null, STRINGS.PasswordChangedMessage1Text.get());
 			// >>>>>>>>>>>>>>>>>>>>> not in use
 			case VerificationSuccess:
 				return body(name, STRINGS.VerificationSuccessMessageText.get(), null, null, null);
-			case PasswordChanged:
-				return body(name, STRINGS.PasswordChangedMessage0Text.get(), null, null, STRINGS.PasswordChangedMessage1Text.get());
 			// <<<<<<<<<<<<<<<<<<<<< not in use
 			}
 			return "<body>Notification</body>";
