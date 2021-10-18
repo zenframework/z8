@@ -44,7 +44,7 @@ import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
-	static private final int verificationTimeHours = 3;
+	static private final int verificationTimeHours = 12;
 
 	private guid id;
 
@@ -442,9 +442,9 @@ public class User implements IUser {
 		users.changePassword.get().set(user.changePassword);
 		users.update(users.recordId());
 		
-		/*Email.send(new Email.Message(Email.TYPE.PasswordChanged)
+		Email.send(new Email.Message(Email.TYPE.PasswordChanged)
 				.setRecipientAddress(users.email.get().string().get())
-				.setRecipientName(users.firstName.get().string().get()));*/
+				.setRecipientName(users.firstName.get().string().get()));
 		
 		return user;
 	}
