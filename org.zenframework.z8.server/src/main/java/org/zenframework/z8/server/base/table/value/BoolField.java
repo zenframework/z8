@@ -65,6 +65,10 @@ public class BoolField extends Field {
 	public sql_bool sql_bool() {
 		return new sql_bool(new SqlField(this));
 	}
+	
+	public void set(boolean value) {
+		set(new bool(value));
+	}
 
 	@Override
 	public bool get() {

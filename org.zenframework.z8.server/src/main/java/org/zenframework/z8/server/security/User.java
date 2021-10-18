@@ -33,15 +33,18 @@ import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.Email;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
+	static private final int verificationTimeHours = 3;
 
 	private guid id;
 
@@ -58,6 +61,10 @@ public class User implements IUser {
 	private String description;
 	private String phone;
 	private String email;
+	private String company;
+	private String position;
+	private String verification;
+	
 	private boolean banned;
 	private boolean changePassword;
 
@@ -83,6 +90,8 @@ public class User implements IUser {
 		system.firstName = "";
 		system.middleName = "";
 		system.lastName = "";
+		system.company = "";
+		system.position = "";
 		system.banned = false;
 		system.changePassword = false;
 
@@ -145,6 +154,21 @@ public class User implements IUser {
 		String name = firstName;
 		name += (name.isEmpty() ? "" : " ") + middleName;
 		return name + (name.isEmpty() ? "" : " ") + lastName;
+	}
+	
+	@Override
+	public String verification() {
+		return verification;
+	}
+	
+	@Override
+	public String company() {
+		return company;
+	}
+	
+	@Override
+	public String position() {
+		return position;
 	}
 
 	@Override
@@ -243,10 +267,33 @@ public class User implements IUser {
 
 		return user;
 	}
+	
+	/**
+	 * Updates `verification` and `verificationModAt` field
+	 * @param user
+	 * @param users
+	 */
+	static private String updateVerification(User user, Users users) {
+		user.verification = Digest.md5(guid.create().toString());
+		users.verificationModAt.get().set(new date());
+		users.verification.get().set(user.verification);
+		return user.verification;
+	}
 
+	static private void updateVerification(String verification, User user, Users users) {
+		user.verification = verification;
+		users.verificationModAt.get().set(new date());
+		users.verification.get().set(user.verification);
+	}
+	
+	private static String getVerificationLink(String host, String hashPrefix, String verification) {
+		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
+	}
+	
 	public static IUser create(LoginParameters loginParameters) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
+		
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 		user.login = loginParameters.getLogin();
@@ -255,8 +302,151 @@ public class User implements IUser {
 		Users users = Users.newInstance();
 		users.name.get().set(loginParameters.getLogin());
 		users.password.get().set(new string(user.password));
-		loginParameters.setId(user.id = users.create());
-		return read(loginParameters);
+		user.id = users.create();
+		
+		return read(loginParameters.setUserId(user.id));
+	}
+	
+	public static IUser register(LoginParameters loginParameters, String password, String host) {
+		IDatabase database = ApplicationServer.getDatabase();
+		User user = new User(database);
+		
+		user.login = loginParameters.getLogin();
+		user.lastName = loginParameters.getLastName();
+		user.firstName = loginParameters.getFirstName();
+		user.email = loginParameters.getEmail();
+		user.company = loginParameters.getCompany();
+		user.position = loginParameters.getPosition();
+		user.password = password;
+
+		Users users = Users.newInstance();
+		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login))) // user already exist
+			throw new UserNotFoundException();
+		
+		users = Users.newInstance();
+		users.name.get().set(user.login);
+		users.lastName.get().set(user.lastName);
+		users.firstName.get().set(user.firstName);
+		users.email.get().set(user.email);
+		users.company.get().set(user.company);
+		users.position.get().set(user.position);
+		users.banned.get().set(true);
+		String verification = User.updateVerification(user, users);
+		user.id = users.create();
+		users.password.get().set(user.password); // otherwise password resets to default value after creation
+		users.changePassword.get().set(false);
+		users.update(user.id);
+		Email.send(new Email.Message(Email.TYPE.Registration)
+				.setRecipientAddress(user.email)
+				.setRecipientName(user.firstName)
+				.setButtonLink(getVerificationLink(host, "verify", verification)));
+		return user;
+	}
+	
+	public static IUser verify(String verification, String host) {
+		Users users = Users.newInstance();
+		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new UserNotFoundException();
+		if (!users.banned.get().bool().get())
+			throw new UserNotFoundException();
+		
+		IDatabase database = ApplicationServer.getDatabase();
+		User user = new User(database);
+		
+		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours);
+		
+		user.login = users.name.get().string().get();
+		
+		if (new date().operatorMore(expirationDate).get()) {
+			String newVerification = User.updateVerification(user, users);
+			users.update(users.recordId());
+			user.banned = true;
+			Email.send(new Email.Message(Email.TYPE.Registration)
+					.setRecipientAddress(users.email.get().string().get())
+					.setRecipientName(users.firstName.get().string().get())
+					.setButtonLink(getVerificationLink(host, "verify", newVerification)));
+		} else {
+			user.banned = false;
+			users.banned.get().set(user.banned);
+			User.updateVerification("", user, users);
+			users.update(users.recordId());
+			/*Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
+					.setRecipientAddress(users.email.get().string().get())
+					.setRecipientName(users.firstName.get().string().get()));*/
+		}
+		return user;
+	}
+	
+	public static IUser remindInit(String login, String host) {
+		Users users = Users.newInstance();
+		if (login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
+			throw new UserNotFoundException();
+		if (users.banned.get().bool().get() || !users.verification.get().string().get().isEmpty())
+			throw new UserNotFoundException();
+		
+		IDatabase database = ApplicationServer.getDatabase();
+		User user = new User(database);
+		
+		String verification = User.updateVerification(user, users);
+		users.update(users.recordId());
+		Email.send(new Email.Message(Email.TYPE.RemindPassword)
+				.setRecipientAddress(users.email.get().string().get())
+				.setRecipientName(users.firstName.get().string().get())
+				.setButtonLink(getVerificationLink(host, "remind", verification)));
+		return user;
+	}
+	
+	public static IUser remind(String verification, String host) {
+		Users users = Users.newInstance();
+		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new UserNotFoundException();
+		if (users.banned.get().bool().get())
+			throw new UserNotFoundException();
+		
+		IDatabase database = ApplicationServer.getDatabase();
+		User user = new User(database);
+		
+		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours); 
+		
+		user.verification = users.verification.get().string().get();
+		user.login = users.name.get().string().get();
+		
+		if (new date().operatorMore(expirationDate).get()) {
+			String newVerification = User.updateVerification(user, users);
+			users.update(users.recordId());
+			/* Repeated message with updated link */
+			Email.send(new Email.Message(Email.TYPE.RemindPassword)
+					.setRecipientAddress(users.email.get().string().get())
+					.setRecipientName(users.firstName.get().string().get())
+					.setButtonLink(getVerificationLink(host, "remind", newVerification)));
+		}
+		
+		return user;
+	}
+	
+	public static IUser changePassword(String verification, String password, String host) {
+		Users users = Users.newInstance();
+		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new UserNotFoundException();
+		if (users.banned.get().bool().get())
+			throw new UserNotFoundException();
+		
+		IDatabase database = ApplicationServer.getDatabase();
+		User user = new User(database);
+		
+		user.password = password;
+		user.changePassword = false;
+		
+		User.updateVerification("", user, users);
+		users.password.get().set(user.password);
+		users.changePassword.get().set(user.changePassword);
+		users.update(users.recordId());
+		
+		/*Email.send(new Email.Message(Email.TYPE.PasswordChanged)
+				.setRecipientAddress(users.email.get().string().get())
+				.setRecipientName(users.firstName.get().string().get()));*/
+		
+		return user;
 	}
 
 	static public IUser load(LoginParameters loginParameters, String password) {
@@ -290,7 +480,7 @@ public class User implements IUser {
 		fields.add(users.name.get());
 		fields.add(users.password.get());
 
-		SqlToken where = (loginParameters.getId() != null) ? new Equ(users.recordId.get(), loginParameters.getId())
+		SqlToken where = (loginParameters.getUserId() != null) ? new Equ(users.recordId.get(), loginParameters.getUserId())
 				: new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
 
 		if(!shortInfo) {
@@ -302,6 +492,8 @@ public class User implements IUser {
 			fields.add(users.settings.get());
 			fields.add(users.phone.get());
 			fields.add(users.email.get());
+			fields.add(users.company.get());
+			fields.add(users.position.get());
 		}
 
 		users.read(fields, where);
@@ -320,11 +512,13 @@ public class User implements IUser {
 		this.settings = users.settings.get().string().get();
 		this.phone = users.phone.get().string().get();
 		this.email = users.email.get().string().get();
-
+		this.company = users.company.get().string().get();
+		this.position = users.position.get().string().get();
+		
 		if(shortInfo)
 			return true;
 
-		loginParameters.setId(this.id);
+		loginParameters.setUserId(this.id);
 
 		try {
 			return users.getExtraParameters(loginParameters, parameters);
@@ -543,6 +737,9 @@ public class User implements IUser {
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
+		
+		RmiIO.writeString(objects, company);
+		RmiIO.writeString(objects, position);
 
 		RmiIO.writeBoolean(objects, banned);
 		RmiIO.writeBoolean(objects, changePassword);
@@ -582,6 +779,9 @@ public class User implements IUser {
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
+		
+		company = RmiIO.readString(objects);
+		position = RmiIO.readString(objects);
 
 		banned = RmiIO.readBoolean(objects);
 		changePassword = RmiIO.readBoolean(objects);

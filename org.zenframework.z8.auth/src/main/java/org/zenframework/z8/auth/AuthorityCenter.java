@@ -101,6 +101,34 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
+	public IUser register(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
+		if(password == null || password.isEmpty())
+			throw new AccessDeniedException();
+		
+		return getServerInfo().getServer().registerUser(loginParameters, password, requestHost);
+	}
+	
+	@Override
+	public IUser verify(String verification, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().verifyUser(verification, schema, requestHost);
+	}
+	
+	@Override
+	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().remindInit(login, schema, requestHost);
+	}
+	
+	@Override
+	public IUser remind(String verification, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().remind(verification, schema, requestHost);
+	}
+	
+	@Override
+	public IUser changePassword(String verification, String password, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().changeUserPassword(verification, password, schema, requestHost);
+	}
+	
+	@Override
 	public ISession login(LoginParameters loginParameters, String password) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
 		IApplicationServer loginServer = serverInfo.getServer();

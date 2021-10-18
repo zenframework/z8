@@ -33,7 +33,7 @@ public class LoginParameters extends OBJECT {
 	}
 
 	public guid z8_userId() {
-		return loginParameters != null ? loginParameters.getId() : null;
+		return loginParameters != null ? loginParameters.getUserId() : null;
 	}
 
 	public string z8_login() {
