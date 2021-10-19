@@ -21,6 +21,7 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -250,8 +251,10 @@ public class Users extends Table {
 	@Override
 	public void onNew() {
 		super.onNew();
-		password.get().set(defaultPassword);
-		changePassword.get().set(bool.True);
+		if(!password.get().changed())
+			password.get().set(defaultPassword);
+		if(!changePassword.get().changed())
+			changePassword.get().set(bool.True);
 	}
 
 	@Override
@@ -264,6 +267,8 @@ public class Users extends Table {
 		StringField name = this.name.get();
 		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.Null))
 			name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
+		if (this.verification.get().changed())
+			this.verificationModAt.get().set(new date());
 	}
 
 	@Override
@@ -278,6 +283,9 @@ public class Users extends Table {
 			if(ban && (System.equals(recordId) || Administrator.equals(recordId)))
 				throw new exception("Builtin users ban state can not be changed");
 		}
+		
+		if (this.verification.get().changed())
+			this.verificationModAt.get().set(new date());
 	}
 
 	@Override

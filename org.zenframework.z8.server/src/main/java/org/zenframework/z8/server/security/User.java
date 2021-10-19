@@ -5,7 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
@@ -16,6 +22,7 @@ import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.crypto.Digest;
+import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -36,8 +43,8 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
-import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.utils.Email;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
@@ -268,24 +275,6 @@ public class User implements IUser {
 		return user;
 	}
 	
-	/**
-	 * Updates `verification` and `verificationModAt` field
-	 * @param user
-	 * @param users
-	 */
-	static private String updateVerification(User user, Users users) {
-		user.verification = Digest.md5(guid.create().toString());
-		users.verificationModAt.get().set(new date());
-		users.verification.get().set(user.verification);
-		return user.verification;
-	}
-
-	static private void updateVerification(String verification, User user, Users users) {
-		user.verification = verification;
-		users.verificationModAt.get().set(new date());
-		users.verification.get().set(user.verification);
-	}
-	
 	private static String getVerificationLink(String host, String hashPrefix, String verification) {
 		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
 	}
@@ -323,6 +312,8 @@ public class User implements IUser {
 		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login))) // user already exist
 			throw new UserNotFoundException();
 		
+		String verification = Digest.md5(guid.create().toString());
+		
 		users = Users.newInstance();
 		users.name.get().set(user.login);
 		users.lastName.get().set(user.lastName);
@@ -331,11 +322,18 @@ public class User implements IUser {
 		users.company.get().set(user.company);
 		users.position.get().set(user.position);
 		users.banned.get().set(true);
-		String verification = User.updateVerification(user, users);
-		user.id = users.create();
-		users.password.get().set(user.password); // otherwise password resets to default value after creation
+		users.password.get().set(user.password);
 		users.changePassword.get().set(false);
-		users.update(user.id);
+		users.verification.get().set(verification);
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+		try {
+			user.id = users.create();
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
 		Email.send(new Email.Message(Email.TYPE.Registration)
 				.setRecipientAddress(user.email)
 				.setRecipientName(user.firstName)
@@ -357,9 +355,11 @@ public class User implements IUser {
 		
 		user.login = users.name.get().string().get();
 		
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
 		if (new date().operatorMore(expirationDate).get()) {
-			String newVerification = User.updateVerification(user, users);
-			users.update(users.recordId());
+			String newVerification = Digest.md5(guid.create().toString());
+			users.verification.get().set(newVerification);
 			user.banned = true;
 			Email.send(new Email.Message(Email.TYPE.Registration)
 					.setRecipientAddress(users.email.get().string().get())
@@ -368,12 +368,20 @@ public class User implements IUser {
 		} else {
 			user.banned = false;
 			users.banned.get().set(user.banned);
-			User.updateVerification("", user, users);
-			users.update(users.recordId());
+			users.verification.get().set("");
 			/*Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
 					.setRecipientAddress(users.email.get().string().get())
 					.setRecipientName(users.firstName.get().string().get()));*/
 		}
+		
+		try {
+			users.update(users.recordId());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+		
 		return user;
 	}
 	
@@ -387,8 +395,18 @@ public class User implements IUser {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
 		
-		String verification = User.updateVerification(user, users);
-		users.update(users.recordId());
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+		
+		String verification = Digest.md5(guid.create().toString());
+		users.verification.get().set(verification);
+		try {
+			users.update(users.recordId());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
 		Email.send(new Email.Message(Email.TYPE.RemindPassword)
 				.setRecipientAddress(users.email.get().string().get())
 				.setRecipientName(users.firstName.get().string().get())
@@ -412,8 +430,19 @@ public class User implements IUser {
 		user.login = users.name.get().string().get();
 		
 		if (new date().operatorMore(expirationDate).get()) {
-			String newVerification = User.updateVerification(user, users);
-			users.update(users.recordId());
+			Connection connection = ConnectionManager.get();
+			connection.beginTransaction();
+
+			String newVerification = Digest.md5(guid.create().toString());
+			users.verification.get().set(newVerification);
+
+			try {
+				users.update(users.recordId());
+				connection.commit();
+			} catch(Throwable e) {
+				connection.rollback();
+				throw new RuntimeException(e);
+			}
 			/* Repeated message with updated link */
 			Email.send(new Email.Message(Email.TYPE.RemindPassword)
 					.setRecipientAddress(users.email.get().string().get())
@@ -437,10 +466,20 @@ public class User implements IUser {
 		user.password = password;
 		user.changePassword = false;
 		
-		User.updateVerification("", user, users);
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+		
+		users.verification.get().set("");
 		users.password.get().set(user.password);
 		users.changePassword.get().set(user.changePassword);
-		users.update(users.recordId());
+		
+		try {
+			users.update(users.recordId());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
 		
 		Email.send(new Email.Message(Email.TYPE.PasswordChanged)
 				.setRecipientAddress(users.email.get().string().get())
