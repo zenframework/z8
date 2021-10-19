@@ -37,7 +37,7 @@ public class Email {
 		RemindPasswordButtonText("СМЕНИТЬ ПАРОЛЬ"),
 		PasswordChangedSubjectText("Пароль был изменен"),
 		PasswordChangedMessage0Text(p("Пароль от Вашего аккаунта в Doczilla Pro успешно изменен.")),
-		PasswordChangedMessage1Text(p("Если Вы ничего не меняли, пожалуйста, обратитесь к Вашему системному администратору.")),
+		PasswordChangedMessage1Text(p("Если Вы ничего не меняли, пожалуйста, обратитесь в техническую поддержку.")),
 		// >>>>>>>>>>>>>>>>>>>>> not in use
 		VerificationSuccessSubjectText("Аккаунт подтвержден"),
 		VerificationSuccessMessageText("Поздравляем! Ваш аккаунт в Doczilla Pro успешно подтверждён!");
