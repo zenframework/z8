@@ -7,6 +7,4 @@ public class exception {
 	public operator string();
 
 	virtual public string getMessage();
-
-	public string getStackTrace();
 }
