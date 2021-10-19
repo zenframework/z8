@@ -99,9 +99,7 @@ Z8.define('Z8.list.Item', {
 
 		var record = this.record;
 
-		var iconCls = this.getIconCls();
-		if(iconCls != null)
-			icons.push({ tag: 'i', cls: iconCls.join(' '), html: String.htmlText() });
+		icons.push({ tag: 'i', cls: this.getIconCls().join(' '), html: String.htmlText() });
 
 		if(record != null) {
 			var fields = list.getFields();
@@ -301,7 +299,7 @@ Z8.define('Z8.list.Item', {
 
 	getIconCls: function() {
 		var icon = this.getIcon();
-		return icon != null ? DOM.parseCls(icon).add(['fa', 'fa-fw', 'icon']) : null;
+		return String.isEmpty(icon) ? ['icon empty'] : DOM.parseCls(icon).add(['fa', 'fa-fw', 'icon']);
 	},
 
 	setEnabled: function(enabled) {
