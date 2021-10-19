@@ -84,15 +84,15 @@ public abstract class Adapter {
 			String sessionId = getParameter(Json.session.get(), parameters, httpSession);
 			String serverId = parameters.get(Json.server.get());
 
-			if(isChangePassword && sessionId == null)
+			if(isChangePassword)
 				changePassword(parameters, request, response);
-			else if(isRemindInit && sessionId == null)
+			else if(isRemindInit)
 				remindInit(parameters, request, response);
-			else if(isRemind && sessionId == null)
+			else if(isRemind)
 				remind(parameters, request, response);
-			else if(isVerification && sessionId == null)
+			else if(isVerification)
 				verify(parameters, request, response);
-			else if(isRegistration && sessionId == null)
+			else if(isRegistration)
 				register(parameters, request, response);
 			else {
 				if(isLogin && sessionId == null)

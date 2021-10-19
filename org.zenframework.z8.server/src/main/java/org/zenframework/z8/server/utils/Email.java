@@ -57,6 +57,8 @@ public class Email {
 		private static String p(String p) {
 			return "<p style=\"font-size: 14px; line-height: 160%; color: #000000;\"><span style=\"font-size: 18px; line-height: 28.8px;\">" + (p == null || p.isEmpty() ? "&nbsp;" : p) + "</span></p>";
 		}
+		
+		/* Empty paragraph used as visual delimiter between two paragraphs */
 		private static String p() {
 			return "<p style=\"font-size: 14px; line-height: 160%; color: #000000;\"><span style=\"font-size: 18px; line-height: 28.8px;\">&nbsp;</span></p>";
 		}
