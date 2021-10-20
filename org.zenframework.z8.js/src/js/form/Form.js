@@ -170,7 +170,9 @@ Z8.define('Z8.form.Form', {
 			controls.push(tab);
 		}
 
-		var tabControl = new Z8.form.Tabs({ name: tabControl.name, controls: controls, actions: tabControl.actions, colSpan: tabControl.colSpan, readOnly: tabControl.readOnly, flex: tabControl.flex, height: tabControl.height, defaultTabIndex: tabControl.defaultTabIndex });
+		var config = { name: tabControl.name, controls: controls, actions: tabControl.actions, colSpan: tabControl.colSpan, readOnly: tabControl.readOnly, flex: tabControl.flex, height: tabControl.height, defaultTabIndex: tabControl.defaultTabIndex };
+		var cls = Application.getSubclass(tabControl.ui);
+		var tabControl = cls != null ? Z8.create(cls, config) : new Z8.form.Tabs(config);
 
 		this.addField(tabControl);
 
