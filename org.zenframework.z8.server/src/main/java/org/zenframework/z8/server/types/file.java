@@ -35,6 +35,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -728,7 +729,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void z8_delete() {
-		FileUtils.deleteQuietly(toFile());
+		delete(toFile(), false);
+	}
+
+	public void z8_delete(bool recursively) {
+		delete(toFile(), recursively.get());
 	}
 
 	public file z8_zip(file fileOrDirectory) {
@@ -763,4 +768,17 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return createTempFile(prefix.get(), ext.get());
 	}
 
+	static private void delete(File file, boolean recursively) {
+		if (recursively && file.isDirectory()) {
+			for (File child : file.listFiles())
+				delete(child, recursively);
+		}
+
+		if (file.exists() && !file.delete())
+			throw new RuntimeException(Resources.format("Exception.fileCanNotBeDeleted", file.getName()));
+	}
+
+	static public void main(String[] args) {
+		delete(new File("/opt/prog/_/6"), false);
+	}
 }

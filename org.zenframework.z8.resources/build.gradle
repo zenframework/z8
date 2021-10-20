@@ -4,23 +4,23 @@ configurations.default.attributes {
 	attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, 'web'))
 }
 
-task assembleZip(type: Zip, group: 'Build') {
+task assembleResources(type: Zip, group: 'Build') {
+	description "Assemble resources archive ${archiveName} into ${relativePath(destinationDir)}"
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
 	from("${projectDir}/src") {
 		includeEmptyDirs = false
 	}
-	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
-assemble.dependsOn assembleZip
+assemble.dependsOn assembleResources
 
-artifacts.add('default', assembleZip) {
-	builtBy assembleZip
+artifacts.add('default', assembleResources) {
+	builtBy assembleResources
 }
 
 publishing.publications {
 	maven(MavenPublication) {
-		artifact source: assembleZip, extension: 'zip'
+		artifact source: assembleResources, extension: 'zip'
 	}
 }

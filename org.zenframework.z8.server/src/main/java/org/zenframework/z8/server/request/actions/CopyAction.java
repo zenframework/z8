@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.request.actions;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +13,7 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 
@@ -39,24 +40,36 @@ public class CopyAction extends RequestAction {
 
 		checkAccess(query);
 
-		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.values));
-		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.data));
+		JsonArray records = new JsonArray(getRequestParameter(Json.data));
 
-		guid recordId = getRecordIdParameter();
+		if(records.isEmpty())
+			throw new RuntimeException("CopyAction - bad data parameter");
 
 		Connection connection = ConnectionManager.get();
 
 		try {
 			connection.beginTransaction();
-			query.onCopyAction(recordId);
-			recordId = run(query, recordId);
+			Collection<guid> recordIds = copy(records, getRecordIds(), query);
 			connection.commit();
+
+			writeFormFields(writer, query, recordIds);
 		} catch(Throwable e) {
 			connection.rollback();
 			throw new RuntimeException(e);
 		}
+	}
 
-		writeFormFields(writer, query, Arrays.asList(recordId));
+	private Collection<guid> copy(JsonArray records, Collection<guid> recordIds, Query query) {
+		int index = 0;
+		Collection<guid> result = new ArrayList<guid>();
+
+		for(guid recordId : recordIds) {
+			QueryUtils.setFieldValues(getContextQuery(), records.getJsonObject(index++));
+			query.onCopyAction(recordId);
+			result.add(run(query, recordId));
+		}
+
+		return result;
 	}
 
 	static private boolean canCopy(Field field) {

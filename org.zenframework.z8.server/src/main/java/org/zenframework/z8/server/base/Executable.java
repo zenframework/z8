@@ -6,11 +6,16 @@ import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.security.User;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
@@ -29,6 +34,7 @@ public class Executable extends Action {
 	}
 
 	private IRequest request;
+	private ISession defaultSession;
 
 	public Executable(IObject container) {
 		super(container);
@@ -79,13 +85,33 @@ public class Executable extends Action {
 		z8_execute(parameters);
 	}
 
-	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
+	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {}
+
+	protected void switchUser(guid user) {
+		if (!defaultSession.user().isBuiltinAdministrator())
+			throw new AccessDeniedException();
+		if (!request.getSession().user().id().equals(user))
+			request.setSession(new Session("", User.read(user)));
+	}
+
+	protected void z8_switchUser(guid user) {
+		switchUser(user);
+	}
+
+	protected void resetUser() {
+		if (request.getSession() != defaultSession)
+			request.setSession(defaultSession);
+	}
+
+	protected void z8_resetUser() {
+		resetUser();
 	}
 
 	@Override
 	public void run() {
 		ApplicationServer.setRequest(request);
 
+		defaultSession = request.getSession();
 		Connection connection = null;
 
 		try {
@@ -102,6 +128,8 @@ public class Executable extends Action {
 			if(connection != null)
 				connection.rollback();
 			getMonitor().error(e);
+		} finally {
+			resetUser();
 		}
 	}
 

@@ -331,14 +331,17 @@ Date.prototype.toISOString = function() {
 
 	var offset = '';
 	if(zoneOffset != 0) {
-		var zoneHours = Math.floor(zoneOffset / 60);
-		var zoneMinutes = zoneOffset % 60;
+		var zoneHours = Math.floor(Math.abs(zoneOffset) / 60);
+		var zoneMinutes = Math.abs(zoneOffset) % 60;
 		offset = (zoneOffset >= 0 ? '+' : '-') +
 			(zoneHours < 10 ? '0' : '') + zoneHours + ':' +
 			(zoneMinutes < 10 ? '0' : '') + zoneMinutes;
 	}
 
-	return String.padLeft(year, 4, '0') + '-' +
+	var extendedFormat = year < 0 || year > 9999;
+	var sign = extendedFormat ? (year < 0 ? '-' : '+') : '';
+
+	return sign + String.padLeft(year, extendedFormat ? 6 : 4, '0') + '-' +
 		(month < 10 ? '0' : '') + month + '-' +
 		(day < 10 ? '0' : '') + day + 'T' +
 		(hours < 10 ? '0' : '') + hours + ':' +

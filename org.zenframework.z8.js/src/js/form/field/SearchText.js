@@ -1,5 +1,6 @@
 Z8.define('Z8.form.field.SearchText', {
 	extend: 'Z8.form.field.Text',
+	shortClassName: 'SearchTextBox',
 
 	triggers: { icon: '' },
 
@@ -41,7 +42,7 @@ Z8.define('Z8.form.field.SearchText', {
 			return;
 
 		if(this.confirm) {
-			trigger.setIcon(this.searchPending || this.lastSearchValue == '' ? this.searchIcon : this.clearIcon);
+			trigger.setIcon(this.searchPending || this.lastSearchValue.isEmpty() ? this.searchIcon : this.clearIcon);
 			trigger.setEnabled(this.searchPending || this.lastSearchValue != '');
 		} else
 			trigger.setIcon(this.clearIcon);
@@ -87,7 +88,7 @@ Z8.define('Z8.form.field.SearchText', {
 
 		this.setValue('');
 
-		if(this.searchPending && this.lastSearchValue == '') {
+		if(this.searchPending && this.lastSearchValue.isEmpty()) {
 			this.searchPending = false;
 			this.updateTrigger();
 		} else

@@ -4,7 +4,11 @@ import org.zenframework.z8.base.form.action.Parameter;
 [native "org.zenframework.z8.server.base.Executable"]
 [executable]
 public class Executable extends Action {
+	virtual protected void execute();
 	virtual protected void execute(Parameter[] parameters);
+
+	protected void switchUser(guid user);
+	protected void resetUser();
 
 	protected void progress(int workPercent);
 

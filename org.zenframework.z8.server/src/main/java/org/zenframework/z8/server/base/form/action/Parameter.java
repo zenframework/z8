@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.form.action;
 
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -36,9 +37,11 @@ public class Parameter extends OBJECT implements IParameter {
 	}
 
 	public string text = new string();
+	public ParameterSource.CLASS<? extends ParameterSource> source = null;
 
 	protected FieldType type = FieldType.None;
 	protected Object value = new string(); // primary or RCollection<primary>
+	protected bool visible = bool.True;
 
 	public Parameter(IObject container) {
 		super(container);
@@ -116,6 +119,7 @@ public class Parameter extends OBJECT implements IParameter {
 		writer.writeProperty(Json.id, text);
 		writer.writeProperty(Json.text, text);
 		writer.writeProperty(Json.type, getType().toString());
+		writer.writeProperty(Json.visible, visible);
 
 		if(value instanceof RCollection) {
 			writer.startArray(Json.value);
@@ -124,6 +128,15 @@ public class Parameter extends OBJECT implements IParameter {
 			writer.finishArray();
 		} else
 			writer.writeProperty(Json.value, (primary)value);
+		
+		writer.startObject(Json.field);
+		writer.writeProperty(Json.header, text);
+		if(source != null) {
+			source.get().writeMeta(writer);
+		} else {
+			writer.writeProperty(Json.type, getType().toString());
+		}
+		writer.finishObject();
 	}
 
 	public bool bool() {
@@ -153,18 +166,45 @@ public class Parameter extends OBJECT implements IParameter {
 	public string string() {
 		return (string)value;
 	}
-
-	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value) {
+	
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value, bool visible) {
 		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
 		parameter.get().text = name;
 		parameter.get().value = value;
+		parameter.get().visible = visible;
+		return parameter;
+	}
+
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value) {
+		return z8_create(name, value, bool.True);
+	}
+	
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, primary value, ParameterSource.CLASS<? extends ParameterSource> source) {
+		 Parameter.CLASS<? extends Parameter> parameter = z8_create(name, value);
+		 parameter.get().source = source;
+		 return parameter;
+	}
+	
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, FieldType type, bool visible) {
+		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
+		parameter.get().text = name;
+		parameter.get().type = type;
+		parameter.get().visible = visible;
 		return parameter;
 	}
 
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, FieldType type) {
-		Parameter.CLASS<Parameter> parameter = new Parameter.CLASS<Parameter>();
-		parameter.get().text = name;
-		parameter.get().type = type;
+		return z8_create(name, type, bool.True);
+	}
+	
+	static public Parameter.CLASS<? extends Parameter> z8_create(string name, ParameterSource.CLASS<? extends ParameterSource> source) {
+		FieldType type = FieldType.Guid;
+		Field vf = source.get().getValueField();
+		if(vf != null)
+			type = vf.type();
+		
+		Parameter.CLASS<? extends Parameter> parameter = z8_create(name, type);
+		parameter.get().source = source;
 		return parameter;
 	}
 }

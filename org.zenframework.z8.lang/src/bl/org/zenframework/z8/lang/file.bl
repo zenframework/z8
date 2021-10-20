@@ -43,6 +43,7 @@ public class file extends primary {
 	public file append(string content, encoding charset);
 
 	public void delete(); 
+	public void delete(bool recursively); 
 
 	public file zip(file fileOrDirectory); 
 	public file unzip(file directory); 

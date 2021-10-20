@@ -5,6 +5,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Delete;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -20,12 +21,10 @@ public class DestroyAction extends RequestAction {
 		if(!getQuery().access().destroy())
 			throw new AccessRightsViolationException();
 
-		String jsonData = getDataParameter();
+		JsonArray records = new JsonArray(getRequestParameter(Json.data));
 
-		if(jsonData.charAt(0) != '[')
-			jsonData = "[" + jsonData + "]";
-
-		JsonArray records = new JsonArray(jsonData);
+		if(records.isEmpty())
+			throw new RuntimeException("DestroyAction - bad data parameter"); 
 
 		Connection connection = ConnectionManager.get();
 
@@ -59,7 +58,7 @@ public class DestroyAction extends RequestAction {
 
 		if(!guid.Null.equals(id)) {
 			query.beforeDestroy(id);
-			result = new Delete(query, id).execute();
+			result = Delete.create(query, id).execute();
 			query.afterDestroy(id);
 		}
 

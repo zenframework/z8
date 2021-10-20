@@ -7,7 +7,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.Statement;
+import org.zenframework.z8.server.db.DmlStatement;
 import org.zenframework.z8.server.engine.IDatabase;
 
 class PrimaryKeyGenerator {
@@ -28,6 +28,6 @@ class PrimaryKeyGenerator {
 		DatabaseVendor vendor = database.vendor();
 
 		String sql = "ALTER TABLE " + database.tableName(table.name()) + " ADD PRIMARY KEY(" + vendor.quote(primaryKey.name()) + ")";
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 }

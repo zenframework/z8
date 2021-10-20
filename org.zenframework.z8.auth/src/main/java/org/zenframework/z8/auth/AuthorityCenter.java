@@ -1,13 +1,8 @@
 package org.zenframework.z8.auth;
 
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.util.Collection;
-
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.crypto.MD5;
+import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.*;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
@@ -15,9 +10,15 @@ import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.StringUtils;
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.rmi.RemoteException;
+import java.util.Collection;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -100,7 +101,35 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession login(String login, String password, String scheme) throws RemoteException {
+	public IUser register(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
+		if(password == null || password.isEmpty())
+			throw new AccessDeniedException();
+		
+		return getServerInfo().getServer().registerUser(loginParameters, password, requestHost);
+	}
+	
+	@Override
+	public IUser verify(String verification, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().verifyUser(verification, schema, requestHost);
+	}
+	
+	@Override
+	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().remindInit(login, schema, requestHost);
+	}
+	
+	@Override
+	public IUser remind(String verification, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().remind(verification, schema, requestHost);
+	}
+	
+	@Override
+	public IUser changePassword(String verification, String password, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().changeUserPassword(verification, password, schema, requestHost);
+	}
+	
+	@Override
+	public ISession login(LoginParameters loginParameters, String password) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
 		IApplicationServer loginServer = serverInfo.getServer();
 
@@ -110,17 +139,22 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		IUser user;
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, login) && LdapAPI.isUserExist(new LdapAPI.Connection(), login)) {
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())
+				&& LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
 			try {
-				user = loginServer.user(login, null, scheme);
+				user = loginServer.user(loginParameters, null);
 			} catch (UserNotFoundException e) {
 				if (ldapUsersCreateOnSuccessfulLogin)
-					user = loginServer.create(login, scheme);
+					user = loginServer.create(loginParameters);
 				else
 					throw new AccessDeniedException();
 			}
 		} else {
-			user = loginServer.user(login, clientHashPassword ? password : MD5.hex(password), scheme);
+			try {
+				user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
+			} catch (UserNotFoundException ignored) {
+				throw new AccessDeniedException();
+			}
 		}
 
 		ISession session = sessionManager.create(user);
@@ -129,20 +163,20 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public ISession trustedLogin(String login, String scheme, boolean createIfNotExist) throws RemoteException {
+	public ISession trustedLogin(LoginParameters loginParameters, boolean createIfNotExist) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
 		try {
-			return login0(serverInfo, login, scheme);
+			return login0(serverInfo, loginParameters);
 		} catch (UserNotFoundException e) {
 			if (!createIfNotExist)
 				throw e;
-			serverInfo.getServer().create(login, scheme);
-			return login0(serverInfo, login, scheme);
+			serverInfo.getServer().create(loginParameters);
+			return login0(serverInfo, loginParameters);
 		}
 	}
 
-	private ISession login0(IServerInfo serverInfo, String login, String scheme) throws RemoteException {
-		IUser user = serverInfo.getServer().user(login, null, scheme);
+	private ISession login0(IServerInfo serverInfo, LoginParameters loginParameters) throws RemoteException {
+		IUser user = serverInfo.getServer().user(loginParameters, null);
 		ISession session = sessionManager.create(user);
 		session.setServerInfo(serverInfo);
 		return session;

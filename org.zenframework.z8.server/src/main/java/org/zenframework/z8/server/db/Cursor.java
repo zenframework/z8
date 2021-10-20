@@ -31,10 +31,10 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class Cursor {
-	private IStatement statement;
+	private SelectStatement statement;
 	private ResultSet resultSet;
 
-	public Cursor(IStatement statement) throws SQLException {
+	public Cursor(SelectStatement statement) throws SQLException {
 		this.statement = statement;
 		this.resultSet = statement.executeQuery();
 	}

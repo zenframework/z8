@@ -49,6 +49,10 @@ Z8.define('Z8.data.Batch', {
 		this.execute('update', records, callback, options);
 	},
 
+	copy: function(records, callback, options) {
+		this.execute('copy', records, callback, options);
+	},
+
 	destroy: function(records, callback, options) {
 		this.execute('destroy', records, callback, options);
 	},

@@ -83,7 +83,7 @@ public class StringField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public string get() {
 		return z8_get();
 	}
 

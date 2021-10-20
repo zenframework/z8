@@ -1,0 +1,19 @@
+
+[native "org.zenframework.z8.justintime.table.SourcesView"]
+public class SourcesView extends Source {
+
+	parent.name.colSpan = 3;
+
+	shortName.colSpan = 2;
+
+	source.colSpan = 6;
+	source.flex = 1;
+
+	colCount = 6;
+
+	names = { name };
+	controls = { parent.name, shortName, source, description };
+	columns = { parent.name, shortName, errors, warnings };
+	extraFields = { icon };
+
+}

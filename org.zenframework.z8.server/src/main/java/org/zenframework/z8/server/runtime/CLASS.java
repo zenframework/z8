@@ -35,18 +35,10 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	private Object[] closure;
 
-	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
-		List<T> result = new ArrayList<T>();
-
-		if(collection != null) {
-			for(org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
-				result.add((T)(cls.get()));
-		}
-
-		return result;
+	public CLASS(IObject container) {
+		this.container = container;
 	}
 
-	
 	@Override
 	public Map<String, String> getAttributes() {
 		return attributes;
@@ -75,10 +67,6 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	@Override
 	public void removeAttribute(String key) {
 		attributes.remove(key);
-	}
-
-	public CLASS(IObject container) {
-		this.container = container;
 	}
 
 	@Override
@@ -204,6 +192,15 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	public Object newObject(IObject container) {
 		return null;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T extends CLASS> T clone(IObject container) {
+		try {
+			return (T) getClass().getConstructor(IObject.class).newInstance(container);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -402,4 +399,14 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		writer.writeProperty(Json.url, url());
 	}
 
+	static public <T extends IObject> List<T> asList(Collection<? extends org.zenframework.z8.server.runtime.CLASS<? extends T>> collection) {
+		List<T> result = new ArrayList<T>();
+
+		if(collection != null) {
+			for(org.zenframework.z8.server.runtime.CLASS<? extends T> cls : collection)
+				result.add((T)(cls.get()));
+		}
+
+		return result;
+	}
 }

@@ -14,6 +14,7 @@ public class TransportQueueView extends TransportQueue {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(TransportQueueView.class);
+			setAttribute(SystemTool, Integer.toString(800));
 		}
 
 		@Override

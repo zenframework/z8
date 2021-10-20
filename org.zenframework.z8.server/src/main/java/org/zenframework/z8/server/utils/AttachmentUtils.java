@@ -30,7 +30,7 @@ public class AttachmentUtils {
 			return path;
 
 		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get());
-		return FileConverter.convertToPdf(path, convertedFile, parameters);
+		return FileConverter.convert(path, convertedFile, parameters);
 	}
 
 	static public int getPageCount(file file) {

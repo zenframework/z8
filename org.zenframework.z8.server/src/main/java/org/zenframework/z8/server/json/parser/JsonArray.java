@@ -119,7 +119,7 @@ public class JsonArray extends ArrayList<Object> {
 	 */
 
 	public JsonArray(String source) throws JsonException {
-		this(new JsonTokener(source == null || source.isEmpty() ? "[]" : source));
+		this(new JsonTokener(source == null || source.isEmpty() ? "[]" : (source.charAt(0) != '[' ? '[' + source + ']' : source)));
 	}
 
 	/**

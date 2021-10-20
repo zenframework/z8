@@ -1,4 +1,6 @@
 Z8.define('Z8.util.DelayedTask', {
+	shortClassName: 'DelayedTask',
+
 	delay: function(interval, fn, scope/*, params */) {
 		this.cancel();
 

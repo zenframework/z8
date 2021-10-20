@@ -14,7 +14,6 @@ import org.zenframework.z8.server.types.sql.sql_binary;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class binary extends primary {
-
 	private static final long serialVersionUID = -6993940737401994151L;
 
 	private InputStream stream;
@@ -52,25 +51,23 @@ public class binary extends primary {
 	}
 
 	private void set(binary binary) {
-		if (this.stream != binary.stream) {
-			close();
-			this.stream = binary.stream;
-		}
+		this.set(binary.stream);
 	}
 
 	private void set(File file) {
 		try {
 			set(new FileInputStream(file));
-		} catch (FileNotFoundException e) {
+		} catch(FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private void set(InputStream stream) {
-		if (this.stream != stream) {
-			close();
-			this.stream = stream;
-		}
+		if(this.stream == stream)
+			return;
+
+		close();
+		this.stream = stream;
 	}
 
 	public InputStream get() {
@@ -80,19 +77,19 @@ public class binary extends primary {
 	public byte[] toByteArray() {
 		try {
 			return IOUtils.read(get());
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private void close() {
 		try {
-			if (stream != null) {
+			if(stream != null)
 				stream.close();
-				stream = null;
-			}
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new exception(e);
+		} finally {
+			stream = null;
 		}
 	}
 
@@ -103,7 +100,7 @@ public class binary extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor dbtype) {
-		switch (dbtype) {
+		switch(dbtype) {
 		case Postgres:
 		case Oracle:
 			return "null";
@@ -155,5 +152,4 @@ public class binary extends primary {
 	public static binary z8_zip(file fileOrDirectory) {
 		return zip(fileOrDirectory.toFile());
 	}
-
 }

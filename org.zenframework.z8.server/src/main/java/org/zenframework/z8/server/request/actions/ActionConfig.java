@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.request.actions;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -23,7 +24,8 @@ public class ActionConfig {
 	public Collection<Field> sortFields;
 	public Collection<Field> groupFields;
 	public Collection<Field> groupBy;
-	public Collection<guid> recordIds = null;
+
+	private Collection<guid> recordIds = new ArrayList<guid>();
 
 	private Map<string, string> requestParameters = new HashMap<string, string>();
 
@@ -34,8 +36,7 @@ public class ActionConfig {
 
 	public ActionConfig(Map<string, string> requestParameters) {
 		this.requestParameters = requestParameters;
-		guid recordId = getRecordId();
-		this.recordIds = recordId != null ? Arrays.asList(recordId) : null;
+		this.recordIds = this.getGuidCollection(Json.recordId);
 	}
 
 	public ActionConfig(Query query) {
@@ -43,13 +44,18 @@ public class ActionConfig {
 	}
 
 	public ActionConfig(Query query, Collection<Field> fields) {
-		this(query, fields, null);
+		this(query);
+		this.fields = fields;
 	}
 
 	public ActionConfig(Query query, Collection<Field> fields, Collection<guid> recordIds) {
 		this(query);
 		this.fields = fields;
 		this.recordIds = recordIds;
+	}
+
+	public boolean isRequest() {
+		return !requestParameters.isEmpty();
 	}
 
 	public Map<string, string> requestParameters() {
@@ -66,11 +72,26 @@ public class ActionConfig {
 		return recordId != null ? new guid(recordId) : null;
 	}
 
+	public Collection<guid> getRecordIds() {
+		return this.recordIds;
+	}
+
 	public guid getGuid(string key) {
 		return new guid(requestParameter(key));
 	}
 
 	public boolean getBoolean(string key) {
 		return new bool(requestParameter(key)).get();
+	}
+
+	public Collection<guid> getGuidCollection(string key) {
+		Collection<guid> guids = new ArrayList<guid>();
+
+		JsonArray jsonArray = new JsonArray(requestParameter(key));
+
+		for(int index = 0; index < jsonArray.length(); index++)
+			guids.add(new guid(jsonArray.getString(index)));
+
+		return guids;
 	}
 }

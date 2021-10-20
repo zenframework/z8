@@ -40,7 +40,7 @@ public class StringExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public string get() {
 		return z8_get();
 	}
 

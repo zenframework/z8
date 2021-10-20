@@ -393,7 +393,7 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	clearFilter: function() {
-		if(this.lastQuery == '')
+		if(this.lastQuery.isEmpty())
 			return;
 
 		this.queryTask.cancel();

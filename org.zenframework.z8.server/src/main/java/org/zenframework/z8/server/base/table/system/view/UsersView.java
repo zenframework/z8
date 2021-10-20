@@ -17,6 +17,7 @@ public class UsersView extends Users {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(UsersView.class);
+			setAttribute(SystemTool, Integer.toString(100));
 		}
 
 		@Override
@@ -32,6 +33,7 @@ public class UsersView extends Users {
 	private UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
 
 	private Section.CLASS<Section> section2 = new Section.CLASS<Section>(this);
+	private Section.CLASS<Section> section3 = new Section.CLASS<Section>(this);
 
 	private ResetPasswordAction.CLASS<ResetPasswordAction> resetPassword = new ResetPasswordAction.CLASS<ResetPasswordAction>(this);
 
@@ -46,6 +48,7 @@ public class UsersView extends Users {
 		objects.add(resetPassword);
 
 		objects.add(section2);
+		objects.add(section3);
 
 		objects.add(userEntries);
 		objects.add(userRoles);
@@ -59,6 +62,7 @@ public class UsersView extends Users {
 		userRoles.setIndex("userRoles");
 
 		section2.setIndex("section2");
+		section3.setIndex("section3");
 		resetPassword.setIndex("resetPassword");
 
 		colCount = new integer(12);
@@ -111,6 +115,10 @@ public class UsersView extends Users {
 
 		phone.get().colSpan = new integer(3);
 		email.get().colSpan = new integer(3);
+		section3.get().colSpan = new integer(6);
+		
+		company.get().colSpan = new integer(3);
+		position.get().colSpan = new integer(3);
 
 		description.get().colSpan = new integer(12);
 		description.get().height = new integer(3);
@@ -130,6 +138,11 @@ public class UsersView extends Users {
 
 		registerControl(phone);
 		registerControl(email);
+		registerControl(section3);
+		
+		registerControl(company);
+		registerControl(position);
+		
 		registerControl(description);
 		registerControl(rolesListbox);
 		registerControl(entriesListbox);

@@ -82,10 +82,11 @@ public abstract class IRequest {
 	}
 
 	abstract public IResponse getResponse();
+	abstract public void setResponse(IResponse response);
 
 	abstract public ISession getSession();
+	abstract public void setSession(ISession session);
 
 	abstract public IMonitor getMonitor();
-
 	abstract public void setMonitor(IMonitor monitor);
 }

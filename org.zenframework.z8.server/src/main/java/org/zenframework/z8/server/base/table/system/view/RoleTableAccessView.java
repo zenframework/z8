@@ -15,6 +15,7 @@ public class RoleTableAccessView extends Roles {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(RoleTableAccessView.class);
+			setAttribute(SystemTool, Integer.toString(200));
 		}
 
 		@Override

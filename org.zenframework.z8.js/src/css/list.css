@@ -73,6 +73,10 @@
 	text-align: center;
 }
 
+.list .item>.column>.cell>.icon.empty {
+	display: none;
+}
+
 .list .item>.column>.cell>.text,
 .list .total>.column>.cell>.text {
 	display: inline-block;

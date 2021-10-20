@@ -23,6 +23,7 @@ public class AuthorityCenterView extends HubServerView {
 			super(container);
 			setJavaClass(AuthorityCenterView.class);
 			setDisplayName(displayNames.Title);
+			setAttribute(SystemTool, Integer.toString(10000));
 		}
 
 		@Override

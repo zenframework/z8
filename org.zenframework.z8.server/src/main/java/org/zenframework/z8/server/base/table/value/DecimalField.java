@@ -75,7 +75,7 @@ public class DecimalField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public decimal get() {
 		return z8_get();
 	}
 

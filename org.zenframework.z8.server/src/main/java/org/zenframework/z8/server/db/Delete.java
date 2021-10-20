@@ -3,43 +3,42 @@ package org.zenframework.z8.server.db;
 import java.sql.SQLException;
 
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
-public class Delete extends Statement {
+public class Delete extends DmlStatement {
 	private guid recordId;
-	private Query query;
 
-	public Delete(Query query, guid recordId) {
-		super(query.getConnection());
+	static public Delete create(Query query, guid recordId) {
+		Connection connection = query.getConnection();
+		IDatabase database = connection.database();
+		DatabaseVendor vendor = database.vendor();
 
-		if(recordId == null)
-			throw new RuntimeException("Delete: recordId == null");
+		String sql = "delete from " + database.tableName(query.name()) + " where " + vendor.quote(query.primaryKey().name()) + "=?";
 
-		this.query = query; 
+		Delete delete = (Delete)connection.getStatement(sql);
+		return delete != null ? delete.initialize(recordId) : new Delete(query.getConnection(), sql, Integer.MAX_VALUE - query.priority(), recordId);
+	}
+
+	private Delete(Connection connection, String sql, int priority, guid recordId) {
+		super(connection, sql, priority);
+		initialize(recordId);
+	}
+
+	private Delete initialize(guid recordId) {
 		this.recordId = recordId;
-
-		sql = "delete from " + database().tableName(query.name()) + 
-				" where " + vendor().quote(query.primaryKey().name()) + "=?";
+		return this;
 	}
 
 	@Override
-	public void prepare(String sql, int priority) throws SQLException {
-		super.prepare(sql, priority);
+	public void prepare() throws SQLException {
+		super.prepare();
 		set(1, FieldType.Guid, recordId);
 	}
 
-	public int execute() {
-		try {
-			prepare(sql, Integer.MAX_VALUE - query.priority());
-			return executeUpdate();
-		} catch(Throwable e) {
-			Trace.logEvent(sql());
-			Trace.logEvent("recordId: " + recordId);
-			Trace.logError(e);
-			throw new RuntimeException(e);
-		} finally {
-			close();
-		}
+	@Override
+	protected void log() {
+		Trace.logEvent(sql() + '\n' + "recordId: " + recordId);
 	}
 }
