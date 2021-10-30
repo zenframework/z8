@@ -15,7 +15,7 @@ import org.zenframework.z8.server.types.file;
 public class AttachmentUtils {
 
 	static public File getPreview(file file, Map<String, String> parameters) throws IOException {
-		String ext = FileConverter.getExtension(file.baseName());
+		String ext = file.extension();
 		if (!FileConverter.isConvertableToPdf(ext))
 			return null;
 		
