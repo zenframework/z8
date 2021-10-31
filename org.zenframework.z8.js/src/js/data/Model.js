@@ -140,6 +140,10 @@ Z8.define('Z8.data.Model', {
 		return left == right;
 	},
 
+	getData: function() {
+		return this.data;
+	},
+
 	getFields: function() {
 		return this.fields;
 	},

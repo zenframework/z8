@@ -127,6 +127,10 @@ public class binary extends primary {
 		file.unzip(get(), directory.getAbsoluteFile());
 	}
 
+	public static binary zip(file fileOrDirectory) {
+		return zip(fileOrDirectory.toFile());
+	}
+
 	public static binary zip(File fileOrDirectory) {
 		file temp = file.createTempFile(FilenameUtils.getBaseName(fileOrDirectory.getName()), ".zip");
 		temp.zip(fileOrDirectory);
