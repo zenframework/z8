@@ -9,7 +9,7 @@ Z8.define('Z8.application.sidebar.Sidebar', {
 	htmlMarkup: function() {
 		this.itemIndex = {};
 
-		this.entries = JSON.decode(JSON.encode(User.enties));
+		this.entries = JSON.decode(JSON.encode(User.entries));
 
 		var handle = { tag: 'i', cls: 'handle fa fa-angle-right' };
 		var logo = { cls: 'logo' };
