@@ -6,6 +6,11 @@ import org.zenframework.z8.server.db.sql.expressions.Add;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
+import org.zenframework.z8.server.db.sql.fts.Fts;
+import org.zenframework.z8.server.db.sql.fts.TsLike;
+import org.zenframework.z8.server.db.sql.fts.TsQuery;
+import org.zenframework.z8.server.db.sql.fts.TsRank;
+import org.zenframework.z8.server.db.sql.fts.TsVector;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
@@ -167,6 +172,26 @@ public class sql_string extends sql_primary {
 	public sql_integer z8_count() {
 		return new sql_integer(new Count(this));
 	}
+	
+	/* *** FTS *** */
+
+	public sql_bool z8_ftsLike(sql_string query) {
+		return z8_ftsLike(query, new Fts.CLASS<Fts>(null));
+	}
+
+	public sql_bool z8_ftsLike(sql_string query, Fts.CLASS<? extends Fts> config) {
+		return new sql_bool(new TsLike(new TsVector(this, config.get()), new TsQuery(query, config.get())));
+	}
+
+	public sql_decimal z8_ftsRank(sql_string query) {
+		return z8_ftsRank(query, new Fts.CLASS<Fts>(null));
+	}
+
+	public sql_decimal z8_ftsRank(sql_string query, Fts.CLASS<? extends Fts> config) {
+		return new sql_decimal(new TsRank(new TsVector(this, config.get()), new TsQuery(query, config.get()), config.get()));
+	}
+	
+	/* *** Operators *** */
 
 	public sql_string operatorPriority() {
 		return new sql_string(new Group(this));

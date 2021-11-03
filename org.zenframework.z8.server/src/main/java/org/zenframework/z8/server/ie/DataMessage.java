@@ -1,13 +1,10 @@
 package org.zenframework.z8.server.ie;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.table.value.Field;

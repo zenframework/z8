@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.fts.Fts;
 [primary "org.zenframework.z8.server.types.sql.sql_string"]
 
 final class sql_string extends sql_primary {
@@ -51,4 +52,9 @@ final class sql_string extends sql_primary {
 	public sql_string substring(sql_int position, sql_int count);
 
 	public sql_string reverse();
+	
+	public sql_bool ftsLike(sql_string query);
+	public sql_bool ftsLike(sql_string query, Fts fts);
+	public sql_decimal ftsRank(sql_string query);
+	public sql_decimal ftsRank(sql_string query, Fts fts);
 }

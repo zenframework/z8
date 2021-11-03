@@ -54,6 +54,8 @@ public class ServerConfig extends Properties {
 	static public String OfficeExtensions = "file.converter.office";
 
 	static private String OfficeHome = "office.home";
+	
+	static final private String FtsConfiguration = "fts.configuration";
 
 	static private File workingPath;
 
@@ -88,6 +90,8 @@ public class ServerConfig extends Properties {
 	static private String officeHome;
 
 	static private Database database;
+	
+	static private String ftsConfiguration;
 
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
@@ -144,6 +148,8 @@ public class ServerConfig extends Properties {
 		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "rtf", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
+		
+		ftsConfiguration = getProperty(FtsConfiguration, "russian");
 
 		instance = this;
 	}
@@ -339,6 +345,10 @@ public class ServerConfig extends Properties {
 
 	static public String officeHome() {
 		return officeHome;
+	}
+	
+	static public String ftsConfiguration() {
+		return ftsConfiguration;
 	}
 
 	static public Database database() {

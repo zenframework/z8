@@ -190,6 +190,10 @@ public class Table extends TableBase {
 	public Field fullTextField() {
 		return fullText.get();
 	}
+	
+	public StringField.CLASS<? extends StringField> z8_fullTextField() {
+		return fullText;
+	}
 
 	@Override
 	public int fullTextLength() {

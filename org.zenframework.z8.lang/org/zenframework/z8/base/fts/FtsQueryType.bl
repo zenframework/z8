@@ -1,0 +1,6 @@
+[native "org.zenframework.z8.server.db.sql.fts.FtsQueryType"]
+public enum FtsQueryType {
+	Query,
+	Plain,
+	Phrase
+}
