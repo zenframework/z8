@@ -84,4 +84,8 @@ public class SqlField extends SqlToken {
 	public FieldType type() {
 		return field.type();
 	}
+	
+	public Aggregation aggregation() {
+		return field.aggregation;
+	}
 }

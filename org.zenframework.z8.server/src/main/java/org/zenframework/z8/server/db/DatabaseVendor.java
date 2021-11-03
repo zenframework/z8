@@ -3,12 +3,14 @@ package org.zenframework.z8.server.db;
 public enum DatabaseVendor {
     Oracle(names.Oracle),
     SqlServer(names.SqlServer),
-    Postgres(names.Postgres);
+    Postgres(names.Postgres),
+	H2(names.H2);
 
     class names {
         static protected final String Oracle = "Oracle";
         static protected final String SqlServer = "SqlServer";
         static protected final String Postgres = "Postgres";
+        static protected final String H2 = "H2";
     }
 
     private String fName = null;

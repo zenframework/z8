@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.GuidField;
@@ -36,4 +37,6 @@ class Table extends TableBase {
 	modifiedBy.readOnly = true;
 
 	public [displayName "Архив"] BoolField archive;
+	
+	virtual protected StringField fullTextField();
 }

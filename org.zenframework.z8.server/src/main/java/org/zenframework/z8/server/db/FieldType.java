@@ -1,10 +1,11 @@
 package org.zenframework.z8.server.db;
 
-import org.zenframework.z8.server.exceptions.db.UnknownDataTypeException;
-
 import java.sql.Types;
 
+import org.zenframework.z8.server.exceptions.db.UnknownDataTypeException;
+
 public enum FieldType {
+	Attachments(DataTypes.Attachments),
 	None(DataTypes.None),
 	Guid(DataTypes.Guid),
 	Boolean(DataTypes.Boolean),
@@ -20,6 +21,7 @@ public enum FieldType {
 	Null(DataTypes.Null);
 
 	class DataTypes {
+		static protected final String Attachments = "attachments";
 		static protected final String None = "none";
 		static protected final String Guid = "guid";
 		static protected final String Boolean = "boolean";
