@@ -196,12 +196,12 @@ Z8.define('Z8.form.Tabs', {
 		this.updateTabsActiveState();
 	},
 
-	add: function(tab) {
-		this.controls.add(tab);
+	add: function(tab, index) {
+		this.controls.insert(tab, index);
 
 		var tag = this.initializeTab(tab).getTabTag();
-		this.header.add(tag);
-		this.body.add(tab);
+		this.header.add(tag, index);
+		this.body.add(tab, index);
 	},
 
 	remove: function (tab) {
