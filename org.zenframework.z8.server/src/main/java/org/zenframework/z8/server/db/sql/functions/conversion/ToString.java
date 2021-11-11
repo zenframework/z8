@@ -46,15 +46,13 @@ public class ToString extends SqlToken {
 			}
 
 		case Postgres:
-			if (type == FieldType.Guid)
+			if(type == FieldType.Guid)
 				return new GuidToString(value).format(vendor, options);
-			if (type == FieldType.Date || type == FieldType.Datetime)
+			if(type == FieldType.Date || type == FieldType.Datetime)
 				return new DateToString(value).format(vendor, options);
-			if (type == FieldType.Attachments || type == FieldType.File || type == FieldType.Text)
+			if(type == FieldType.Attachments || type == FieldType.File || type == FieldType.Text)
 				return "CONVERT_FROM(" + value.format(vendor, options) + ", 'UTF8')";
-			if (type == FieldType.Integer || type == FieldType.Decimal
-					|| value instanceof SqlField && (((SqlField) value).aggregation() == Aggregation.Array
-							|| ((SqlField) value).aggregation() == Aggregation.Distinct))
+			if(type == FieldType.Integer || type == FieldType.Decimal || value instanceof SqlField && ((SqlField)value).aggregation() == Aggregation.Array)
 				return "(" + value.format(vendor, options) + ")::text";
 			return value.format(vendor, options);
 

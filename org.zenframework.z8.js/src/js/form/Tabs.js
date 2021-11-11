@@ -36,7 +36,7 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	getTabs: function() {
-		return this.controls || [];
+		return this.controls;
 	},
 
 	getTab: function(index) {
@@ -197,8 +197,6 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	add: function(tab, index) {
-		this.controls.insert(tab, index);
-
 		var tag = this.initializeTab(tab).getTabTag();
 		this.header.add(tag, index);
 		this.body.add(tab, index);
@@ -213,8 +211,6 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	clearTabs: function () {
-		this.controls = [];
-
 		this.header.removeAll();
 		this.body.removeAll();
 	},
