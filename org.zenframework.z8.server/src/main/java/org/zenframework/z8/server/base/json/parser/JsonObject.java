@@ -97,7 +97,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public string z8_getString(string name) {
-		return new string(object.getString(name));
+		return object.has(name) ? new string(object.getString(name)) : null;
 	}
 
 	public string z8_getString(JsonPath.CLASS<? extends JsonPath> path) {
@@ -105,7 +105,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public integer z8_getInt(string name) {
-		return new integer(object.getInt(name));
+		return object.has(name) ? new integer(object.getInt(name)) : null;
 	}
 
 	public integer z8_getInt(JsonPath.CLASS<? extends JsonPath> path) {
@@ -113,7 +113,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public decimal z8_getDecimal(string name) {
-		return new decimal(object.getDouble(name));
+		return object.has(name) ? new decimal(object.getDouble(name)) : null;
 	}
 
 	public decimal z8_getDecimal(JsonPath.CLASS<? extends JsonPath> path) {
@@ -121,7 +121,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public bool z8_getBool(string name) {
-		return new bool(object.getBoolean(name));
+		return object.has(name) ? new bool(object.getBoolean(name)) : null;
 	}
 
 	public bool z8_getBool(JsonPath.CLASS<? extends JsonPath> path) {

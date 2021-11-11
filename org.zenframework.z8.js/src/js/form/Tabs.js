@@ -10,6 +10,13 @@ Z8.define('Z8.form.Tabs', {
 		return Container.prototype.getCls.call(this).pushIf('tabs', this.flex ? 'flex' : '');
 	},
 
+	constructor: function (config) {
+		config = config || {};
+		this.controls = config.controls || [];
+
+		Container.prototype.constructor.call(this, config);
+	},
+
 	initComponent: function() {
 		Container.prototype.initComponent.call(this);
 
@@ -29,7 +36,7 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	getTabs: function() {
-		return this.controls || [];
+		return this.controls;
 	},
 
 	getTab: function(index) {
@@ -189,10 +196,23 @@ Z8.define('Z8.form.Tabs', {
 		this.updateTabsActiveState();
 	},
 
-	add: function(tab) {
+	add: function(tab, index) {
 		var tag = this.initializeTab(tab).getTabTag();
-		this.header.add(tag);
-		this.body.add(tab);
+		this.header.add(tag, index);
+		this.body.add(tab, index);
+	},
+
+	remove: function (tab) {
+		this.controls.remove(tab);
+
+		var tag = tab.getTabTag();
+		this.header.remove(tag);
+		this.body.remove(tab);
+	},
+
+	clearTabs: function () {
+		this.header.removeAll();
+		this.body.removeAll();
 	},
 
 	updateTabsActiveState: function() {

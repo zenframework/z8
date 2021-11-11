@@ -126,7 +126,7 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		if(id == null) {
 			id = "";
 
-			IObject owner = getOwner() != null ? getOwner() : getContainer();
+			IObject owner = getOwner();/* != null ? getOwner() : getContainer();*/
 
 			if(owner != null) {
 				id = owner.getCLASS().get().id();

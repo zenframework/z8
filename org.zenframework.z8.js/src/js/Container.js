@@ -111,7 +111,7 @@ Z8.define('Z8.Container', {
 
 	removeAll: function() {
 		Component.destroy(this.items);
-		this.items = [];
+		this.items.length = 0;
 		return this;
 	},
 

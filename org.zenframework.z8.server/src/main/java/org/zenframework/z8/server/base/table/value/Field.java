@@ -248,10 +248,10 @@ abstract public class Field extends Control implements IField {
 	}
 
 	protected boolean isArray() {
-		return cursor != null && cursor.isGrouped() && (aggregation == Aggregation.Array || aggregation == Aggregation.Distinct);
+		return cursor != null && cursor.isGrouped() && aggregation == Aggregation.Array;
 	}
 	protected primary read() throws SQLException {
-		if(cursor.isGrouped() && (aggregation == Aggregation.Array || aggregation == Aggregation.Distinct))
+		if(cursor.isGrouped() && aggregation == Aggregation.Array)
 			return cursor.get(this, FieldType.String);
 		return cursor.get(this);
 	}
