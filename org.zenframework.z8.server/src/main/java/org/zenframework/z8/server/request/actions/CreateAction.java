@@ -69,7 +69,7 @@ public class CreateAction extends RequestAction {
 
 			query.onNew();
 
-			for(String fieldId : JsonObject.getNames(record)) {
+			for(String fieldId : record.getNames()) {
 				Field field = fieldsMap.get(fieldId);
 
 				if(field == null) {

@@ -68,7 +68,7 @@ public class UpdateAction extends RequestAction {
 			Collection<Field> ownerFields = new ArrayList<Field>();
 			Collection<Field> queryFields = new ArrayList<Field>();
 
-			for(String fieldId : JsonObject.getNames(record)) {
+			for(String fieldId : record.getNames()) {
 				Field field = contextQuery.findFieldById(fieldId);
 
 				if(field != null) {

@@ -104,7 +104,7 @@ public class QueryUtils {
 		if(record == null)
 			return;
 
-		for(String fieldId : JsonObject.getNames(record)) {
+		for(String fieldId : record.getNames()) {
 			Field field = query.findFieldById(fieldId);
 			if(field != null && field.type() != FieldType.Binary)
 				QueryUtils.setFieldValue(field, record.getString(fieldId), null);

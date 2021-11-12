@@ -83,11 +83,8 @@ public class JsonObject extends OBJECT {
 	public RCollection<string> z8_getNames() {
 		RCollection<string> result = new RCollection<string>();
 
-		String[] names = org.zenframework.z8.server.json.parser.JsonObject.getNames(object);
-
-		for(String name : names) {
+		for(String name : object.getNames())
 			result.add(new string(name));
-		}
 
 		return result;
 	}
@@ -97,11 +94,12 @@ public class JsonObject extends OBJECT {
 	}
 
 	public string z8_getString(string name) {
-		return object.has(name) ? new string(object.getString(name)) : null;
+		String value = object.getString(name);
+		return value != null ? new string(value) : null;
 	}
 
 	public string z8_getString(JsonPath.CLASS<? extends JsonPath> path) {
-		return (string) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (string)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public integer z8_getInt(string name) {
@@ -109,7 +107,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public integer z8_getInt(JsonPath.CLASS<? extends JsonPath> path) {
-		return (integer) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (integer)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public decimal z8_getDecimal(string name) {
@@ -117,15 +115,15 @@ public class JsonObject extends OBJECT {
 	}
 
 	public decimal z8_getDecimal(JsonPath.CLASS<? extends JsonPath> path) {
-		return (decimal) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (decimal)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public bool z8_getBool(string name) {
-		return object.has(name) ? new bool(object.getBoolean(name)) : null;
+		return object.getBool(name);
 	}
 
 	public bool z8_getBool(JsonPath.CLASS<? extends JsonPath> path) {
-		return (bool) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (bool)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public guid z8_getGuid(string name) {
@@ -133,15 +131,16 @@ public class JsonObject extends OBJECT {
 	}
 
 	public guid z8_getGuid(JsonPath.CLASS<? extends JsonPath> path) {
-		return (guid) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (guid)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public date z8_getDate(string name) {
-		return date.z8_parse(z8_getString(name));
+		String value = object.getString(name);
+		return value != null ? new date(value) : null;
 	}
 
 	public date z8_getDate(JsonPath.CLASS<? extends JsonPath> path) {
-		return (date) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (date)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
@@ -153,7 +152,7 @@ public class JsonObject extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(JsonPath.CLASS<? extends JsonPath> path) {
-		return (JsonArray.CLASS<? extends JsonArray>) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (JsonArray.CLASS<? extends JsonArray>)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(string name) {
@@ -165,7 +164,7 @@ public class JsonObject extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(JsonPath.CLASS<? extends JsonPath> path) {
-		return (JsonObject.CLASS<? extends JsonObject>) JsonUtils.wrap(path.get().get().evaluate(object));
+		return (JsonObject.CLASS<? extends JsonObject>)JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -218,7 +217,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public static JsonObject.CLASS<JsonObject> z8_parse(string source) {
-		return getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get()));
+		return source != null ? getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get())) : null;
 	}
 
 	@SuppressWarnings("rawtypes")

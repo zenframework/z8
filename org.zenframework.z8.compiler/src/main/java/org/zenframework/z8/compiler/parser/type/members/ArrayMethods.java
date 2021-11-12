@@ -35,6 +35,12 @@ public class ArrayMethods {
 			// bool isEmpty()
 			methods.add(new Method(new VariableType(compilationUnit, booleanType), "isEmpty", null));
 
+			// TYPE first()
+			methods.add(new Method(value, "first", null));
+
+			// TYPE last()
+			methods.add(new Method(value, "last", null));
+
 			// bool contains(TYPE element)
 			methods.add(new Method(new VariableType(compilationUnit, booleanType), "contains",
 					new Variable[] { new Variable(value, "element") }));
@@ -50,12 +56,12 @@ public class ArrayMethods {
 			// void clear()
 			methods.add(new Method(new VariableType(compilationUnit, voidType), "clear", null));
 
-			// void add(TYPE element)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "add",
+			// TYPE[] add(TYPE element)
+			methods.add(new Method(variableType, "add",
 					new Variable[] { new Variable(value, "element") }));
 
-			// void add(int index, TYPE element)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "add",
+			// TYPE[] add(int index, TYPE element)
+			methods.add(new Method(variableType, "add",
 					new Variable[] { new Variable(new VariableType(compilationUnit, integerType), "index"), new Variable(value, "element") }));
 
 			// void set(int index, TYPE element)

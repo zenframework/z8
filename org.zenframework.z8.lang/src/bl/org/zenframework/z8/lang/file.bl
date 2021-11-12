@@ -30,6 +30,7 @@ public class file extends primary {
 	public string fileName();
 	public string extension();
 	public date lastModified();
+	public int length();
 
 	public string read();
 	public string read(encoding charset);
