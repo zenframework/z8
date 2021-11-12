@@ -46,7 +46,7 @@ public class Job extends RequestTarget {
 	public void writeResponse(JsonWriter writer) {
 		setParameters();
 
-		if (!scheduled()) {
+		if(!scheduled()) {
 			thread = new Thread(executable, executable.displayName());
 			thread.start();
 
@@ -67,19 +67,14 @@ public class Job extends RequestTarget {
 	private void setParameters() {
 		String data = getParameter(Json.parameters);
 
-		if (data == null)
+		if(data == null)
 			return;
 
 		JsonObject object = new JsonObject(data);
 
-		if (object != null) {
-			String[] names = JsonObject.getNames(object);
-
-			for (String parameterId : names) {
-				IParameter parameter = executable.getParameter(parameterId);
-				String value = object.getString(parameterId);
-				parameter.parse(value);
-			}
+		for(String parameterId : object.getNames()) {
+			IParameter parameter = executable.getParameter(parameterId);
+			parameter.parse(object.getString(parameterId));
 		}
 	}
 

@@ -168,6 +168,14 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		return new bool(size() == 0);
 	}
 
+	public TYPE z8_first() {
+		return get(0);
+	}
+
+	public TYPE z8_last() {
+		return get(size() - 1);
+	}
+
 	public bool z8_contains(TYPE element) {
 		return new bool(contains(element));
 	}
@@ -200,12 +208,14 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		clear();
 	}
 
-	public void z8_add(TYPE element) {
+	public RCollection<TYPE> z8_add(TYPE element) {
 		add(element);
+		return this;
 	}
 
-	public void z8_add(integer index, TYPE element) {
+	public RCollection<TYPE> z8_add(integer index, TYPE element) {
 		add(index.getInt(), element);
+		return this;
 	}
 
 	public void z8_set(integer index, TYPE element) {

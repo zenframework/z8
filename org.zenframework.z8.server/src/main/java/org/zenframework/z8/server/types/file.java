@@ -667,6 +667,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new string(extension());
 	}
 
+	public integer z8_length() {
+		return new integer(toFile().length());
+	}
+
 	public string z8_folder() {
 		return new string(folder());
 	}
