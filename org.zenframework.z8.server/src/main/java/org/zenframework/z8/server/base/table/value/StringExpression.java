@@ -6,6 +6,7 @@ import org.zenframework.z8.server.db.sql.fts.Fts;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class StringExpression extends Expression {
@@ -61,5 +62,9 @@ public class StringExpression extends Expression {
 	public StringExpression.CLASS<? extends StringExpression> operatorAssign(sql_string expression) {
 		setExpression(expression);
 		return (StringExpression.CLASS<?>)this.getCLASS();
+	}
+
+	public sql_bool z8_isEmpty() {
+		return sql_string().z8_isEmpty();
 	}
 }
