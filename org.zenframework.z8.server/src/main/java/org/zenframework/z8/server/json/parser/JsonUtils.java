@@ -63,7 +63,7 @@ public class JsonUtils {
 	}
 
 	public static Object wrap(Object o) {
-		if (o == null)
+		if(o == null)
 			return null;
 		else if(o instanceof primary)
 			return (primary)o;

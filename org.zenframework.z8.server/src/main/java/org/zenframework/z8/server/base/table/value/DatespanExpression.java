@@ -22,6 +22,7 @@ public class DatespanExpression extends Expression {
 
 	public DatespanExpression(IObject container) {
 		super(container);
+		aggregation = Aggregation.Sum;
 
 		setDefault(new datespan());
 	}
