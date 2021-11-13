@@ -1,13 +1,8 @@
 import org.zenframework.z8.base.table.Table;
-import org.zenframework.z8.base.table.value.StringField;
 
 [name "System Secured Objects"]
-[displayName "Группы безопасности"]
+[displayName "Защищаемые объекты"]
 [native "org.zenframework.z8.server.base.table.system.SecuredObjects"]
 public class SecuredObjects extends Table {
 	name.length = 256;
-
-	[displayName "Системное имя"]
-	public StringField classId;
-	classId.length = 1024;
 }
