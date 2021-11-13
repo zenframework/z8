@@ -18,4 +18,6 @@ public class StringExpression extends Expression {
 	virtual protected sql_string expression();
 
 	public void setExpression(sql_string expression);
+
+	public sql_bool isEmpty();
 }
