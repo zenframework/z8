@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -26,14 +25,12 @@ public class SecuredObjects extends Table {
 
 	static public class strings {
 		public final static String Title = "SequredObjects.title";
-		public final static String ClassId = "SequredObjects.classId";
 		public final static String Database = "SequredObjects.database";
 		public final static String Request = "SequredObjects.request";
 	}
 
 	static public class displayNames {
 		public final static String Title = Resources.get(strings.Title);
-		public final static String ClassId = Resources.get(strings.ClassId);
 		public final static String Database = Resources.get(strings.Database);
 		public final static String Request = Resources.get(strings.Request);
 	}
@@ -60,8 +57,6 @@ public class SecuredObjects extends Table {
 		return (SecuredObjects)Runtime.instance().getTableByName(SecuredObjects.TableName).newInstance();
 	}
 
-	public StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
-
 	public SecuredObjects(IObject container) {
 		super(container);
 	}
@@ -69,18 +64,11 @@ public class SecuredObjects extends Table {
 	@Override
 	public void initMembers() {
 		super.initMembers();
-
-		objects.add(classId);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
-
-		classId.setIndex("classId");
-		classId.setName(fieldNames.ClassId);
-		classId.setDisplayName(displayNames.ClassId);
-		classId.get().length = new integer(1024);
 
 		name.get().length = new integer(256);
 	}

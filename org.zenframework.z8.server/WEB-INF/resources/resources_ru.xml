@@ -80,6 +80,25 @@
 	<entry key="Fields.displayName">Заголовок</entry>
 	<entry key="Fields.type">Тип данных</entry>
 
+	<!-- SecuredObjects -->
+	<entry key="SecuredObjects.title">Защищаемые объекты</entry>
+	<entry key="SecuredObjects.database">База данных</entry>
+	<entry key="SecuredObjects.request">Запросы</entry>
+
+	<!-- SecuredObjectAccess -->
+	<entry key="SequredObjectAccess.title">Права доступа к защищаемым объектам</entry>
+	<entry key="SequredObjectAccess.name">Право доступа</entry>
+	<entry key="SecuredObjectAccess.read">Чтение</entry>
+	<entry key="SecuredObjectAccess.write">Изменение</entry>
+	<entry key="SecuredObjectAccess.create">Создание</entry>
+	<entry key="SecuredObjectAccess.copy">Копирование</entry>
+	<entry key="SecuredObjectAccess.destroy">Удаление</entry>
+	<entry key="SecuredObjectAccess.execute">Исполнение</entry>
+
+	<!-- RoleSecuredObjectAccess -->
+	<entry key="RoleSecuredObjectAccess.title">Права доступа к защищаемым объектам</entry>
+	<entry key="RoleSecuredObjectAccess.value">Доступ</entry>
+
 	<!-- UserRoles -->
 	<entry key="UserRoles.title">Роли пользователя</entry>
 

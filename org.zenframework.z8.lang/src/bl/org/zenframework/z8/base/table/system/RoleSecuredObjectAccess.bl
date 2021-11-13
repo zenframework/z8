@@ -3,7 +3,7 @@ import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.Link;
 
 [name "System Role Secured Object Access"]
-[displayName "Права доступа к запросам"]
+[displayName "Права доступа к защищаемым объектам"]
 [native "org.zenframework.z8.server.base.table.system.RoleSecuredObjectAccess"]
 public class RoleSecuredObjectAccess extends Table {
 	public Roles role;
