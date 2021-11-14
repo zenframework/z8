@@ -16,10 +16,18 @@ public class Update extends DmlStatement {
 	private guid recordId;
 
 	static public Update create(Query query, Collection<Field> fields, guid recordId) {
+		if(recordId == null)
+			throw new NullPointerException();
 		return create(query, fields, recordId, null);
 	}
 
-	static public Update create(Query query, Collection<Field> fields, guid recordId, sql_bool where) {
+	static public Update create(Query query, Collection<Field> fields, sql_bool where) {
+		if(where == null)
+			throw new NullPointerException();
+		return create(query, fields, null, where);
+	}
+
+	static private Update create(Query query, Collection<Field> fields, guid recordId, sql_bool where) {
 		Connection connection = query.getConnection();
 		Database database = connection.getDatabase();
 		DatabaseVendor vendor = database.getVendor();
