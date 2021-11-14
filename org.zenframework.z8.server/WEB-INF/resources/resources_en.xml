@@ -86,8 +86,8 @@
 	<entry key="SecuredObjects.request">Requests</entry>
 
 	<!-- SecuredObjectAccess -->
-	<entry key="SequredObjectAccess.title">Secured object access rights</entry>
-	<entry key="SequredObjectAccess.name">Access right</entry>
+	<entry key="SecuredObjectAccess.title">Secured object access rights</entry>
+	<entry key="SecuredObjectAccess.name">Access right</entry>
 	<entry key="SecuredObjectAccess.read">Read</entry>
 	<entry key="SecuredObjectAccess.write">Write</entry>
 	<entry key="SecuredObjectAccess.create">Create</entry>

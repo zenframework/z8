@@ -224,12 +224,12 @@ public class RoleView extends Roles {
 		securedObjectTab.get().colCount = new integer(2);
 		securedObjectTab.get().controls.add(securedObjects);
 		securedObjectTab.get().controls.add(securedObjectAccess);
-		securedObjectTab.setDisplayName(RoleSecuredObjectAccess.displayNames.Title);
+		securedObjectTab.setDisplayName(SecuredObjects.displayNames.Title);
 
 		tabs.setIndex("tabs");
+		tabs.get().tabs.add(securedObjectTab);
 		tabs.get().tabs.add(databaseTab);
 		tabs.get().tabs.add(requestTab);
-		tabs.get().tabs.add(securedObjectTab);
 		tabs.get().flex = new integer(1);
 
 		registerControl(name);

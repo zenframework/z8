@@ -86,8 +86,8 @@
 	<entry key="SecuredObjects.request">Запросы</entry>
 
 	<!-- SecuredObjectAccess -->
-	<entry key="SequredObjectAccess.title">Права доступа к защищаемым объектам</entry>
-	<entry key="SequredObjectAccess.name">Право доступа</entry>
+	<entry key="SecuredObjectAccess.title">Права доступа к защищаемым объектам</entry>
+	<entry key="SecuredObjectAccess.name">Право доступа</entry>
 	<entry key="SecuredObjectAccess.read">Чтение</entry>
 	<entry key="SecuredObjectAccess.write">Изменение</entry>
 	<entry key="SecuredObjectAccess.create">Создание</entry>
