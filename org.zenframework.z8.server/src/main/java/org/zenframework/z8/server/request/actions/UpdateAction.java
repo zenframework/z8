@@ -146,21 +146,20 @@ public class UpdateAction extends RequestAction {
 	static public int run(Query query, guid recordId, boolean resetChangedFields) {
 		int result = 0;
 
-		if(recordId == null || !recordId.equals(guid.Null)) {
-			if(recordId != null)
-				query.beforeUpdate(recordId);
+		if(recordId == null ||recordId.equals(guid.Null))
+			return result;
 
-			Collection<Field> changedFields = query.getChangedFields();
+		query.beforeUpdate(recordId);
 
-			result = changedFields.isEmpty() ? 0 : query.executeUpdate(recordId);
+		Collection<Field> changedFields = query.getChangedFields();
 
-			if(recordId != null)
-				query.afterUpdate(recordId);
+		result = changedFields.isEmpty() ? 0 : query.executeUpdate(recordId);
 
-			if(resetChangedFields) {
-				for(Field field : changedFields)
-					field.reset();
-			}
+		query.afterUpdate(recordId);
+
+		if(resetChangedFields) {
+			for(Field field : changedFields)
+				field.reset();
 		}
 
 		return result;
