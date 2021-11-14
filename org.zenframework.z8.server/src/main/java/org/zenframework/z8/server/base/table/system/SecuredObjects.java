@@ -24,9 +24,9 @@ public class SecuredObjects extends Table {
 	}
 
 	static public class strings {
-		public final static String Title = "SequredObjects.title";
-		public final static String Database = "SequredObjects.database";
-		public final static String Request = "SequredObjects.request";
+		public final static String Title = "SecuredObjects.title";
+		public final static String Database = "SecuredObjects.database";
+		public final static String Request = "SecuredObjects.request";
 	}
 
 	static public class displayNames {
