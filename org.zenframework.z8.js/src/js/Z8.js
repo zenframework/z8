@@ -67,7 +67,7 @@ var Z8 = {
 		var baseCls = null;
 
 		if(extend != null) {
-			baseCls = Z8.classes[extend];
+			baseCls = String.isString(extend) ? Z8.classes[extend] : extend;
 			if(baseCls == null)
 				throw 'Superclass not found: "' + extend + '"'; 
 		} else
