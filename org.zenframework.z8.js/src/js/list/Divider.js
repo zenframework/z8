@@ -1,5 +1,6 @@
 Z8.define('Z8.list.Divider', {
 	extend: 'Z8.Component',
+	shortClassName: 'ListDivider',
 
 	cls: 'divider',
 	enabled: false,
