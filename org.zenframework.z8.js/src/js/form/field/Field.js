@@ -6,14 +6,13 @@ Z8.define('Z8.form.field.Field', {
 	autoSave: false,
 	instantAutoSave: false,
 
-	updatingDependencies: 0,
-	suspendCheckChange: 0,
-
 	valid: true,
 
 	initField: function() {
+		this.updatingDependencies = 0;
+		this.suspendCheckChange = this.autoSave ? 1 : 0;
+
 		this.initValue(this.value);
-		this.setAutoSave(this.autoSave);
 	},
 
 	initValue: function(value, displayValue) {
@@ -94,11 +93,12 @@ Z8.define('Z8.form.field.Field', {
 	},
 
 	setAutoSave: function(autoSave) {
-		if(this.autoSave != autoSave) {
-			this.autoSave = autoSave;
-			if(!this.instantAutoSave)
-				this.suspendCheckChange += autoSave ? 1 : -1;
-		}
+		if((this.autoSave ^ autoSave) == 0)
+			return;
+
+		this.autoSave = autoSave;
+		if(!this.instantAutoSave)
+			this.suspendCheckChange += autoSave ? 1 : -1;
 	},
 
 	initEvents: function() {
