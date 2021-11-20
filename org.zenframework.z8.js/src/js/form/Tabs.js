@@ -180,7 +180,7 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	setActive: function(active) {
-		if(this.isActive() == active)
+		if((this.isActive() ^ active) == 0)
 			return;
 
 		Component.prototype.setActive.call(this, active); /* Component.prototype not Container.prototype */ 

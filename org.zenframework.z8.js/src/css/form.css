@@ -35,7 +35,6 @@
 	background-color: #fff;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;
 }
 
 .fieldset>.legend>.fa {
@@ -49,6 +48,7 @@
 .fieldset>.row>.cell.action {
 	justify-content: center;
 	align-items: flex-start;
+	overflow: visible;
 }
 
 .fieldset>.row:not(:last-child)>.cell>.tabs,
