@@ -86,6 +86,15 @@ Z8.define('Z8.Component', {
 		return this;
 	},
 
+	getIcon: function() {
+		return this.icon;
+	},
+
+	setIcon: function(icon) {
+		this.icon = icon;
+		return this;
+	},
+
 	isEnabled: function() {
 		return this.enabled;
 	},

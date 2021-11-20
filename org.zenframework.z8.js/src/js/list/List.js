@@ -742,23 +742,21 @@ Z8.define('Z8.list.List', {
 		return items;
 	},
 
+	createField: function(field) {
+		if(!String.isString(field))
+			return field;
+
+		var store = this.getStore();
+		return (store != null ? store.getField(field) : null) || { name: field, header: field };
+	},
+
 	createFields: function(fields) {
-		if(fields == null)
-			return [];
+		var result = [];
 
-		if(String.isString(fields))
-			return [{ name: fields, header: fields }];
+		for(var field of Array.asArray(fields || []))
+			result.push(this.createField(field));
 
-		if(Array.isArray(fields)) {
-			var result = [];
-			for(var i = 0, length = fields.length; i < length; i++) {
-				var field = fields[i];
-				result.push(String.isString(field) ? { name: field } : field);
-			}
-			return result;
-		}
-
-		return [fields];
+		return result;
 	},
 
 	setRecords: function(records) {

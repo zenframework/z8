@@ -36,7 +36,6 @@
 	max-width: calc(100% - 7em);
 	margin-left: 1.78571429em;
 	padding-top: .64285714em;
-	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	float: left;
