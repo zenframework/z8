@@ -83,8 +83,12 @@ public class sql_string extends sql_primary {
 		return isEmpty();
 	}
 
-	public sql_integer z8_length() {
+	public sql_integer length() {
 		return new sql_integer(new Length(this));
+	}
+
+	public sql_integer z8_length() {
+		return length();
 	}
 
 	public sql_bool z8_contains(sql_string pattern) {

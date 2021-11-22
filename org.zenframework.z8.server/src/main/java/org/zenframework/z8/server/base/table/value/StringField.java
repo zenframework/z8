@@ -13,6 +13,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
+import org.zenframework.z8.server.types.sql.sql_integer;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class StringField extends Field {
@@ -109,6 +110,10 @@ public class StringField extends Field {
 	}
 
 	public sql_bool z8_isEmpty() {
-		return sql_string().z8_isEmpty();
+		return sql_string().isEmpty();
+	}
+
+	public sql_integer z8_length() {
+		return sql_string().length();
 	}
 }

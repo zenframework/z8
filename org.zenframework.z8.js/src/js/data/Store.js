@@ -717,8 +717,8 @@ Z8.define('Z8.data.Store', {
 		this.fireEvent('load', this, this.getRecords(), true);
 	},
 
-	sortRecords: function() {
-		var sorters = this.getSorter();
+	sortRecords: function(sorters) {
+		sorters = sorters || this.getSorter();
 
 		if(sorters.length == 0)
 			return;
