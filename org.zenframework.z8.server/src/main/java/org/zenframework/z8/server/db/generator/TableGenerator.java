@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -53,7 +52,6 @@ import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -155,61 +153,9 @@ public class TableGenerator {
 
 		for(Map<IField, primary> record : table().getStaticRecords())
 			createStaticRecord(record);
-
-//		repairTable();
 	}
 
-	@SuppressWarnings("unused")
-	private void repairTable() {
-		Connection connection = getConnection();
-
-		if(table instanceof TreeTable) {
-			try {
-				connection.beginTransaction();
-
-				Field parentKey = table.parentKey();
-				table.read(Arrays.asList(table.parentKey()));
-
-				while(table.next()) {
-					parentKey.set(parentKey.guid());
-					table.update(table.recordId());
-				}
-
-				connection.commit();
-			} catch(Throwable e) {
-				connection.rollback();
-				throw new RuntimeException(e);
-			}
-		}
-
-		Collection<Field> attachments = table.attachments();
-		if(attachments.isEmpty())
-			return;
-
-		try {
-			connection.beginTransaction();
-
-			table.read(attachments);
-
-			while(table.next()) {
-				for(Field field : attachments) {
-					String json = field.string().get();
-					if(!json.isEmpty()) {
-						Collection<file> files = file.parse(json);
-						field.set(new string(file.toJson(files)));
-					}
-				}
-				table.update(table.recordId());
-			}
-
-			connection.commit();
-		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
-		}
-	}
-
-	GeneratorAction checkAlter() {
+	private GeneratorAction checkAlter() {
 		GeneratorAction result = GeneratorAction.None;
 
 		dbFields.clear();
@@ -226,8 +172,6 @@ public class TableGenerator {
 
 			if(column == null) {
 				dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
-				// result = GeneratorAction.Alter;
-				// continue;
 				result = GeneratorAction.Recreate;
 				break;
 			}

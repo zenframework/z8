@@ -99,21 +99,16 @@ public class Generator {
 		List<TableGenerator> generators = new ArrayList<TableGenerator>();
 
 		for(Table.CLASS<? extends Table> table : tables) {
-			GeneratorAction action;
-
 			DatabaseVendor vendor = ConnectionManager.get().getVendor();
 			TableDescription description = existingTables.get(vendor.sqlName(table.name()));
 
 			if(description != null && description.isView())
 				continue;
 
-			if(description != null) {
-				action = GeneratorAction.Alter;
-				generators.add(new TableGenerator(table, action, description, logger));
-			} else {
-				action = GeneratorAction.Create;
-				generators.add(new TableGenerator(table, action, new TableDescription(table.name(), false), logger));
-			}
+			if(description != null)
+				generators.add(new TableGenerator(table, GeneratorAction.Alter, description, logger));
+			else
+				generators.add(new TableGenerator(table, GeneratorAction.Create, new TableDescription(table.name(), false), logger));
 		}
 
 		return generators;

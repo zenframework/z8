@@ -21,4 +21,5 @@ public class StringField extends Field {
 	public StringField operator = (string value);
 
 	public sql_bool isEmpty();
+	public sql_int length();
 }
