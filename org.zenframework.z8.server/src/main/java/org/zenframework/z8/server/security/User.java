@@ -22,6 +22,7 @@ import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.crypto.Digest;
+import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -39,15 +40,18 @@ import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
+import org.zenframework.z8.server.utils.Email;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
 public class User implements RmiSerializable, Serializable {
 	static private final long serialVersionUID = -4955893424674255525L;
+	static private final int verificationTimeHours = 12;
 
 	private guid id;
 
@@ -64,6 +68,8 @@ public class User implements RmiSerializable, Serializable {
 	private String description;
 	private String phone;
 	private String email;
+	private String verification;
+
 	private boolean banned;
 	private boolean changePassword;
 
@@ -143,6 +149,10 @@ public class User implements RmiSerializable, Serializable {
 		String name = firstName;
 		name += (name.isEmpty() ? "" : " ") + middleName;
 		return name + (name.isEmpty() ? "" : " ") + lastName;
+	}
+
+	public String verification() {
+		return verification;
 	}
 
 	public Collection<Role> getRoles() {
@@ -241,9 +251,14 @@ public class User implements RmiSerializable, Serializable {
 		return user;
 	}
 
+	private static String getVerificationLink(String host, String hashPrefix, String verification) {
+		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
+	}
+
 	public static User create(LoginParameters loginParameters) {
 		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
+
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 		user.login = loginParameters.getLogin();
@@ -252,8 +267,188 @@ public class User implements RmiSerializable, Serializable {
 		Users users = Users.newInstance();
 		users.name.get().set(loginParameters.getLogin());
 		users.password.get().set(new string(user.password));
-		loginParameters.setId(user.id = users.create());
-		return read(loginParameters);
+		user.id = users.create();
+
+		return read(loginParameters.setUserId(user.id));
+	}
+
+	public static User register(LoginParameters loginParameters, String password, String host) {
+		Database database = ApplicationServer.getDatabase();
+		User user = new User(database);
+
+		user.login = loginParameters.getLogin();
+		user.lastName = loginParameters.getLastName();
+		user.firstName = loginParameters.getFirstName();
+		user.email = loginParameters.getEmail();
+		user.password = password;
+
+		Users users = Users.newInstance();
+		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login))) // user
+																										// already
+																										// exist
+			throw new UserNotFoundException();
+
+		String verification = Digest.md5(guid.create().toString());
+
+		users = Users.newInstance();
+		users.name.get().set(user.login);
+		users.lastName.get().set(user.lastName);
+		users.firstName.get().set(user.firstName);
+		users.email.get().set(user.email);
+		users.banned.get().set(true);
+		users.password.get().set(user.password);
+		users.changePassword.get().set(false);
+		users.verification.get().set(verification);
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+		try {
+			user.id = users.create();
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+		Email.send(new Email.Message(Email.TYPE.Registration).setRecipientAddress(user.email).setRecipientName(user.firstName).setButtonLink(getVerificationLink(host, "verify", verification)));
+		return user;
+	}
+
+	public static User verify(String verification, String host) {
+		Users users = Users.newInstance();
+		if(verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new UserNotFoundException();
+		if(!users.banned.get().bool().get())
+			throw new UserNotFoundException();
+
+		Database database = ApplicationServer.getDatabase();
+		User user = new User(database);
+
+		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours);
+
+		user.login = users.name.get().string().get();
+
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+		if(new date().operatorMore(expirationDate).get()) {
+			String newVerification = Digest.md5(guid.create().toString());
+			users.verification.get().set(newVerification);
+			user.banned = true;
+			Email.send(new Email.Message(Email.TYPE.Registration).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()).setButtonLink(getVerificationLink(host, "verify", newVerification)));
+		} else {
+			user.banned = false;
+			users.banned.get().set(user.banned);
+			users.verification.get().set("");
+			/*
+			 * Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
+			 * .setRecipientAddress(users.email.get().string().get())
+			 * .setRecipientName(users.firstName.get().string().get()));
+			 */
+		}
+
+		try {
+			users.update(users.recordId());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+
+		return user;
+	}
+
+	public static User remindInit(String login, String host) {
+		Users users = Users.newInstance();
+		if(login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
+			throw new UserNotFoundException();
+		if(users.banned.get().bool().get() || !users.verification.get().string().get().isEmpty())
+			throw new UserNotFoundException();
+
+		Database database = ApplicationServer.getDatabase();
+		User user = new User(database);
+
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+
+		String verification = Digest.md5(guid.create().toString());
+		users.verification.get().set(verification);
+		try {
+			users.update(users.recordId());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+		Email.send(new Email.Message(Email.TYPE.RemindPassword).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()).setButtonLink(getVerificationLink(host, "remind", verification)));
+		return user;
+	}
+
+	public static User remind(String verification, String host) {
+		Users users = Users.newInstance();
+		if(verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new UserNotFoundException();
+		if(users.banned.get().bool().get())
+			throw new UserNotFoundException();
+
+		Database database = ApplicationServer.getDatabase();
+		User user = new User(database);
+
+		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours);
+
+		user.verification = users.verification.get().string().get();
+		user.login = users.name.get().string().get();
+
+		if(new date().operatorMore(expirationDate).get()) {
+			Connection connection = ConnectionManager.get();
+			connection.beginTransaction();
+
+			String newVerification = Digest.md5(guid.create().toString());
+			users.verification.get().set(newVerification);
+
+			try {
+				users.update(users.recordId());
+				connection.commit();
+			} catch(Throwable e) {
+				connection.rollback();
+				throw new RuntimeException(e);
+			}
+			/* Repeated message with updated link */
+			Email.send(new Email.Message(Email.TYPE.RemindPassword).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()).setButtonLink(getVerificationLink(host, "remind", newVerification)));
+		}
+
+		return user;
+	}
+
+	public static User changePassword(String verification, String password, String host) {
+		Users users = Users.newInstance();
+		if(verification == null || verification.isEmpty()
+				|| !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new UserNotFoundException();
+		if(users.banned.get().bool().get())
+			throw new UserNotFoundException();
+
+		Database database = ApplicationServer.getDatabase();
+		User user = new User(database);
+
+		user.password = password;
+		user.changePassword = false;
+
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+
+		users.verification.get().set("");
+		users.password.get().set(user.password);
+		users.changePassword.get().set(user.changePassword);
+
+		try {
+			users.update(users.recordId());
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
+		}
+
+		Email.send(new Email.Message(Email.TYPE.PasswordChanged).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()));
+
+		return user;
 	}
 
 	static public User load(LoginParameters loginParameters, String password) {
@@ -264,7 +459,8 @@ public class User implements RmiSerializable, Serializable {
 
 		User user = read(loginParameters);
 
-		if(password != null && !password.equals(user.getPassword()) /*&& !password.equals(MD5.hex(""))*/ || user.getBanned())
+		if(password != null && !password.equals(user.getPassword())
+				/* && !password.equals(MD5.hex("")) */ || user.getBanned())
 			throw new AccessDeniedException();
 
 		return user;
@@ -287,8 +483,7 @@ public class User implements RmiSerializable, Serializable {
 		fields.add(users.name.get());
 		fields.add(users.password.get());
 
-		SqlToken where = (loginParameters.getId() != null) ? new Equ(users.recordId.get(), loginParameters.getId())
-				: new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
+		SqlToken where = (loginParameters.getUserId() != null) ? new Equ(users.recordId.get(), loginParameters.getUserId()) : new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
@@ -321,7 +516,7 @@ public class User implements RmiSerializable, Serializable {
 		if(shortInfo)
 			return true;
 
-		loginParameters.setId(this.id);
+		loginParameters.setUserId(this.id);
 
 		try {
 			return users.getExtraParameters(loginParameters, parameters);
@@ -493,8 +688,8 @@ public class User implements RmiSerializable, Serializable {
 		StringBuilder plainPassword = new StringBuilder();
 
 		Random rnd = new Random();
-		while (plainPassword.length() <= 6) {
-			int index = (int) (rnd.nextFloat() * saltChars.length());
+		while(plainPassword.length() <= 6) {
+			int index = (int)(rnd.nextFloat() * saltChars.length());
 			plainPassword.append(saltChars.charAt(index));
 		}
 

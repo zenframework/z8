@@ -37,7 +37,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			instance = new ApplicationServer();
 			instance.start();
 		}
-		return instance;	
+		return instance;
 	}
 
 	static public IRequest getRequest() {
@@ -64,7 +64,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static String getSchema() {
 		return getDatabase().getSchema();
 	}
-	
+
 	public static void setRequest(IRequest request) {
 		if(request != null)
 			currentRequest.set(request);
@@ -79,7 +79,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static void restoreEventsLevel() {
 		getRequest().restoreEventsLevel();
 	}
-	
+
 	public static EventsLevel eventsLevel() {
 		return getRequest().eventsLevel();
 	}
@@ -157,6 +157,76 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		try {
 			return User.create(loginParameters);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public User registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
+		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
+
+		try {
+			return User.register(loginParameters, password, requestHost);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public User verifyUser(String verification, String schema, String requestHost) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.verify(verification, requestHost);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public User remindInit(String login, String schema, String requestHost) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.remindInit(login, requestHost);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public User remind(String verification, String schema, String requestHost) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.remind(verification, requestHost);
+		} finally {
+			Scheduler.start(getDatabase());
+
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public User changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
+		setRequest(new Request(new Session(schema)));
+
+		try {
+			return User.changePassword(verification, password, requestHost);
 		} finally {
 			Scheduler.start(getDatabase());
 

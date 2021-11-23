@@ -14,8 +14,15 @@ public interface IApplicationServer extends IServer {
 
 	public file download(Session session, GNode request, file file) throws RemoteException, IOException;
 
+	public User registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException;
+	public User verifyUser(String verification, String schema, String requestHost) throws RemoteException;
+	public User remindInit(String login, String schema, String requestHost) throws RemoteException;
+	public User remind(String verification, String schema, String requestHost) throws RemoteException;
+	public User changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException;
+
 	public User user(LoginParameters loginParameters, String password) throws RemoteException;
 	public User create(LoginParameters loginParameters) throws RemoteException;
+	
 
 	public String[] domains() throws RemoteException;
 

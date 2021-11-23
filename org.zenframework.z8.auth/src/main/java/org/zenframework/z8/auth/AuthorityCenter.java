@@ -74,7 +74,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		Trace.logEvent("Authority Center JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 
-		if (!ldapUrl.isEmpty())
+		if(!ldapUrl.isEmpty())
 			Trace.logEvent("Authority Center uses LDAP: " + ldapUrl);
 	}
 
@@ -105,6 +105,34 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
+	public User register(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
+		if(password == null || password.isEmpty())
+			throw new AccessDeniedException();
+
+		return getServerInfo().getServer().registerUser(loginParameters, password, requestHost);
+	}
+
+	@Override
+	public User verify(String verification, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().verifyUser(verification, schema, requestHost);
+	}
+
+	@Override
+	public User remindInit(String login, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().remindInit(login, schema, requestHost);
+	}
+
+	@Override
+	public User remind(String verification, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().remind(verification, schema, requestHost);
+	}
+
+	@Override
+	public User changePassword(String verification, String password, String schema, String requestHost) throws RemoteException {
+		return getServerInfo().getServer().changeUserPassword(verification, password, schema, requestHost);
+	}
+
+	@Override
 	public Session login(LoginParameters loginParameters, String password) throws RemoteException {
 		ServerInfo serverInfo = getServerInfo();
 		IApplicationServer loginServer = serverInfo.getServer();
@@ -113,15 +141,15 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			password = "";
 
 		User user;
-		// Что это за херня? Зачем это все? backward compatibility с чем? 
+		// Что это за херня? Зачем это все? backward compatibility с чем?
 		// backward compatibility
-		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !LdapAPI.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())
-				&& LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
+		// if ldap flag is true and login is not in the ignore list and login is
+		// checked
+		if(checkLdapLogin && !LdapAPI.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin()) && LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
 			try {
 				user = loginServer.user(loginParameters, null);
-			} catch (UserNotFoundException e) {
-				if (ldapUsersCreateOnSuccessfulLogin)
+			} catch(UserNotFoundException e) {
+				if(ldapUsersCreateOnSuccessfulLogin)
 					user = loginServer.create(loginParameters);
 				else
 					throw new AccessDeniedException();
@@ -129,7 +157,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		} else {
 			try {
 				user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
-			} catch (UserNotFoundException ignored) {
+			} catch(UserNotFoundException ignored) {
 				throw new AccessDeniedException();
 			}
 		}
@@ -145,8 +173,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		// A это что? UserNotFoundException - серьезно?
 		try {
 			return login0(serverInfo, loginParameters);
-		} catch (UserNotFoundException e) {
-			if (!createIfNotExist)
+		} catch(UserNotFoundException e) {
+			if(!createIfNotExist)
 				throw e;
 			serverInfo.getServer().create(loginParameters);
 			return login0(serverInfo, loginParameters);

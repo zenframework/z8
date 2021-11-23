@@ -199,14 +199,14 @@ Z8.define('Z8.util.Format', {
 						code += 'var parts = formatted.split(".");';
 						code += 'formatted = parts[0];';
 					}
-	
+
 					code += 'if(absVal >= 1000) {';
 						code += 'var thousandSeparator = Format.ThousandSeparator;';
 						code += 'var thousands = [];';
 						code += 'for(var i = 0, j = formatted.length, n = formatted.length % 3 || 3; i < j; i += n) thousands[thousands.length] = formatted.substr(i, n = i == 0 ? n : 3);';
 						code += 'formatted = thousands.join(thousandSeparator);';
 					code += '}';
-	
+
 					if(precision)
 						code += 'formatted += Format.DecimalSeparator + String.padRight(parts[1] || "0",' + precision + ', "0").substring(0, ' + precision +');';
 				}

@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.security.LoginParameters;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
@@ -20,6 +21,7 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -44,6 +46,8 @@ public class Users extends Table {
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
 		public final static String Settings = "Settings";
+		public final static String Verification = "Verification";
+		public final static String VerificationModAt = "Verification Modified At";
 	}
 
 	static public class strings {
@@ -114,7 +118,10 @@ public class Users extends Table {
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> changePassword = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
-
+	public StringField.CLASS<StringField> verification = new StringField.CLASS<StringField>(this);
+	public DatetimeField.CLASS<DatetimeField> verificationModAt = new DatetimeField.CLASS<DatetimeField>(this);
+	
+	
 	private boolean notifyBlock = false;
 
 	public Users() {
@@ -138,6 +145,8 @@ public class Users extends Table {
 		objects.add(banned);
 		objects.add(changePassword);
 		objects.add(settings);
+		objects.add(verification);
+		objects.add(verificationModAt);
 	}
 
 	@Override
@@ -193,6 +202,13 @@ public class Users extends Table {
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
+		
+		verification.setName(fieldNames.Verification);
+		verification.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
+		verification.setIndex("verification");
+		
+		verificationModAt.setName(fieldNames.VerificationModAt);
+		verificationModAt.setIndex("verificationModAt");
 	}
 
 	@Override
@@ -214,8 +230,10 @@ public class Users extends Table {
 	@Override
 	public void onNew() {
 		super.onNew();
-		password.get().set(defaultPassword);
-		changePassword.get().set(bool.True);
+		if(!password.get().changed())
+			password.get().set(defaultPassword);
+		if(!changePassword.get().changed())
+			changePassword.get().set(bool.True);
 	}
 
 	@Override
@@ -228,6 +246,8 @@ public class Users extends Table {
 		StringField name = this.name.get();
 		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.Null))
 			name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
+		if (this.verification.get().changed())
+			this.verificationModAt.get().set(new date());
 	}
 
 	@Override
@@ -242,6 +262,9 @@ public class Users extends Table {
 			if(ban && (System.equals(recordId) || Administrator.equals(recordId)))
 				throw new exception("Builtin users ban state can not be changed");
 		}
+		
+		if (this.verification.get().changed())
+			this.verificationModAt.get().set(new date());
 	}
 
 	@Override

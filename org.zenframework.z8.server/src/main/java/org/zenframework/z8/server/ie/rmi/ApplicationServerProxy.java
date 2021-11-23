@@ -73,4 +73,29 @@ public class ApplicationServerProxy implements IApplicationServer {
 	public String[] domains() throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public User registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public User verifyUser(String verification, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public User remindInit(String login, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public User remind(String verification, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public User changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
 }
