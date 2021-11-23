@@ -13,7 +13,6 @@
 	align-items: stretch;
 	flex: 1;
 	padding-left: .14285714em;
-	overflow-y: auto;
 }
 
 .navigator>.body>.list,

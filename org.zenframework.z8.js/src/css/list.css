@@ -4,13 +4,14 @@
 	align-items: stretch;
 	list-style: none;
 	text-align: left;
-	overflow-x: hidden;
-	overflow-y: hidden;
 }
 
-.list>.scroller.headers {
-	overflow-x: hidden;
-	overflow-y: hidden;
+.list>.scroller {
+	position: relative;
+}
+
+.list>.scroller>* {
+	overflow: hidden;
 }
 
 .list>.scroller.items {
@@ -18,27 +19,18 @@
 	flex: 1;
 }
 
-.list.columns>.scroller.items {
+.list.columns>.scroller.items,
+.list.columns>.scroller.totals {
 	overflow-x: auto;
 }
 
 .list.columns.totals>.scroller.items {
-	overflow-x: hidden !important;
-}
-
-.list.columns>.scroller.totals {
-	overflow-x: auto;
-	overflow-y: hidden;
+	overflow-x: hidden;
 }
 
 .list table {
 	cursor: default;
 	width: 100%;
-}
-
-.list .divider {
-	overflow-x: hidden;
-	overflow-y: hidden;
 }
 
 .list .column {
@@ -48,8 +40,6 @@
 .list .header>.column>.text,
 .list .item>.column>.cell>.text,
 .list .total>.column>.cell>.text {
-	overflow-x: hidden;
-	overflow-y: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -67,7 +57,6 @@
 	display: flex;
 	flex-direction: row;
 }
-
 
 .list .number>.column>.cell {
 	text-align: center;
@@ -117,8 +106,6 @@
 .list .item>.column.lock>.cell>.text,
 .list .item>.column.boolean>.cell>.text {
 	cursor: pointer;
-	overflow-x: visible;
-	overflow-y: visible;
 }
 
 .list .item.active>.column:first-child:before {
@@ -196,9 +183,6 @@
 }
 
 .dropdown-list.list>.scroller.items {
-	overflow-y: auto;
-	overflow-x: auto;
-	position: relative;
 	height: 100%;
 }
 
@@ -212,8 +196,6 @@
 }
 
 .dropdown-list.list .item {
-	overflow-x: hidden;
-	overflow-y: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -222,12 +204,6 @@
 	left: 0;
 	z-index: 1000;
 	float: left;
-}
-
-.dropdown-menu.list>.scroller.items {
-	overflow-x: hidden;
-	overflow-y: auto;
-	position: relative;
 }
 
 .dropdown-menu.list table {

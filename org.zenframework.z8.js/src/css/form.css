@@ -4,8 +4,11 @@
 	padding-right: 1.07142857em;
 	margin: 0;
 	overflow-y: auto;
-	overflow-x: hidden;
 	border: none;
+}
+
+.form.fieldset>* {
+	overflow-y: hidden;
 }
 
 .fieldset {
@@ -113,6 +116,5 @@
 .fieldset>.row>.cell>.control-group>.box>.textarea.control,
 .fieldset>.row>.cell>.control-group>.box>.html.control {
 	padding: .14285714em;
-	overflow-x: hidden;
-	overflow-y: hidden;
+	overflow: hidden;
 }
