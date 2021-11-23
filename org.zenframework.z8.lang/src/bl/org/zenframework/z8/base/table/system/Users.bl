@@ -18,18 +18,18 @@ public class Users extends Table {
 
 	[displayName "Описание"] description;
 
-	[name "First Name"] 
-	[displayName "Имя"] 
+	[name "First Name"]
+	[displayName "Имя"]
 	public StringField firstName;
 	firstName.length = 100;
 
-	[name "Middle Name"] 
-	[displayName "Отчество"] 
+	[name "Middle Name"]
+	[displayName "Отчество"]
 	public StringField middleName;
 	middleName.length = 100;
 
-	[name "Last Name"] 
-	[displayName "Фамилия"] 
+	[name "Last Name"]
+	[displayName "Фамилия"]
 	public StringField lastName;
 	lastName.length = 100;
 
@@ -40,14 +40,6 @@ public class Users extends Table {
 	[name "Email"]
 	[displayName "email"]
 	public StringField email;
-	
-	[name "Company"]
-	[displayName "Компания"]
-	public StringField company;
-	
-	[name "Position"]
-	[displayName "Должность"]
-	public StringField position;
 
 	[name "Banned"]
 	[displayName "Заблокирован"]
