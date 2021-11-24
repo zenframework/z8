@@ -94,21 +94,9 @@ Z8.define('Z8.application.form.Navigator', {
 	completeRender: function() {
 		this.callParent();
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
-
-		if(Viewport.sourceCode != null) {
-			Viewport.sourceCode.owner = this.sourceCodeButton;
-			Viewport.sourceCode.on('show', this.onSourceCodeShow, this);
-			Viewport.sourceCode.on('hide', this.onSourceCodeHide, this);
-		}
 	},
 
 	onDestroy: function() {
-		if(Viewport.sourceCode != null) {
-			Viewport.sourceCode.un('show', this.onSourceCodeShow, this);
-			Viewport.sourceCode.un('hide', this.onSourceCodeHide, this);
-			Viewport.sourceCode.owner = null;
-		}
-
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
 		this.callParent();
@@ -160,13 +148,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createToolbar: function() {
-		var buttons = this.createTools();
-
-		var sourceCode = this.sourceCodeButton = this.createSourceCodeButton();
-		if(sourceCode != null)
-			buttons.add({ cls: 'flex-1' }).add(sourceCode);
-
-		return new Z8.toolbar.Toolbar({ items: buttons });
+		return new Z8.toolbar.Toolbar({ items: this.createTools() });
 	},
 
 	createTools: function() {
@@ -356,25 +338,6 @@ Z8.define('Z8.application.form.Navigator', {
 		return new Z8.button.Button({ icon: 'fa-print', tooltip: Z8.$('Navigator.printDocuments'), menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
 
-	createSourceCodeButton: function() {
-		if(Viewport.sourceCode == null)
-			return null;
-
-		return new Z8.button.Button({ success: true, icon: 'fa-code', toggled: false, toggleHandler: this.toggleSourceCode, scope: this });
-	},
-
-	onSourceCodeShow: function() {
-		if(this.sourceCodeButton != null)
-			this.sourceCodeButton.setToggled(true, true);
-	},
-
-	onSourceCodeHide: function() {
-		if(this.sourceCodeButton != null) {
-			this.sourceCodeButton.setToggled(false, true);
-			this.focus();
-		}
-	},
-
 	getListboxConfig: function() {
 		var names = this.getNames();
 		var quickFilters = this.getQuickFilterFields();
@@ -438,7 +401,7 @@ Z8.define('Z8.application.form.Navigator', {
 			var controls = this.form.getFields();
 			for(var i = 0, length = controls.length; i < length; i++) {
 				var field = controls[i].field;
-				if(field != null && !field.isListbox && !field.isContainer && !field.isFieldset && !field.isGeometry)
+				if(field != null && !field.isListbox && !field.isContainer && !field.isFieldset)
 					columns.push(field);
 			}
 		}
@@ -561,10 +524,6 @@ Z8.define('Z8.application.form.Navigator', {
 
 		this.presentation = 'table';
 		this.focus();
-	},
-
-	toggleSourceCode: function(button, toggled) {
-		Viewport.showSourceCode(toggled);
 	},
 
 	onSearch: function(search, value) {

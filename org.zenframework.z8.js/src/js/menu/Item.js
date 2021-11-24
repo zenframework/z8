@@ -2,7 +2,7 @@ Z8.define('Z8.menu.Item', {
 	extend: 'ListItem',
 	shortClassName: 'MenuItem',
 
-	icon: 'fa-circle transparent',
+	icon: '',
 
 	getCls: function() {
 		return ListItem.prototype.getCls.call(this).pushIf('menu');

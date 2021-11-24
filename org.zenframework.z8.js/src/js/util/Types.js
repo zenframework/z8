@@ -47,7 +47,6 @@ Z8.define('Z8.server.type', {
 		File: 'file',
 		Files: 'attachments',
 		Float: 'float',
-		Geometry: 'geometry',
 		Guid: 'guid',
 		Integer: 'int',
 		Json: 'json',

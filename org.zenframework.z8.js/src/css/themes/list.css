@@ -1,8 +1,6 @@
 .list {
 	display: flex;
 	flex-direction: column;
-	align-items: stretch;
-	list-style: none;
 	text-align: left;
 }
 
@@ -130,7 +128,6 @@
 .list .item>.column>.control-group>.box>.textarea.control {
 	overflow-y: hidden;
 	white-space: normal;
-	min-height: 0;
 }
 
 .list .item>.column>.control-group>.label {
@@ -175,11 +172,12 @@
 	cursor: not-allowed
 }
 
-.dropdown-list.list {
+.dropdown-list.list,
+.dropdown-menu.list {
 	top: 100%;
 	left: 0;
 	z-index: 1000;
-	float: left;
+	position: fixed;
 }
 
 .dropdown-list.list>.scroller.items {
@@ -190,20 +188,8 @@
 	top: 0;
 }
 
-.dropdown-list.list,
-.dropdown-menu.list {
-	position: fixed;
-}
-
 .dropdown-list.list .item {
 	text-overflow: ellipsis;
-}
-
-.dropdown-menu.list {
-	top: 100%;
-	left: 0;
-	z-index: 1000;
-	float: left;
 }
 
 .dropdown-menu.list table {

@@ -76,7 +76,6 @@ Z8.define('Z8.query.Store', {
 			periodProperty: config.periodKey,
 			filesProperty: config.attachmentsKey,
 			iconProperty: fields.iconProperty,
-			sourceCode: config.sourceCode,
 
 			fields: fields.data,
 			names: fields.names,

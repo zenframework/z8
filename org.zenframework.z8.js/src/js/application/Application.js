@@ -9,26 +9,11 @@ Z8.define('Z8.application.Application', {
 
 	viewportCls: null,
 	userCls: null,
-	sourceCode: true,
 
 	listbox: {
 		locks: true,
 		checks: true,
 		collapsed: true
-	},
-
-	geometry: {
-		layers: [{
-			cls: 'Image',
-			sourceCls: 'ImageWMS',
-			name: '',
-			url: 'https://revoltsoft.ru/geoserver/wms',
-			serverType: 'geoserver',
-			params: { 'LAYERS': 'ar:egko', 'VERSION': '1.1.1', 'SRS': 'EPSG:96872', 'TRANSPARENT': 'true' },
-			projection: 'EPSG:96872'
-		}],
-		overlays: [],
-		projection: 'EPSG:96872'
 	},
 
 	subclasses: {

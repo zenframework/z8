@@ -39,7 +39,7 @@ Z8.define('Z8.application.viewport.Login', {
 		this.loginField.focus();
 	},
 
-	show: function(show) {
+/*	show: function(show) {
 		if(show !== false && this.isVisible()) {
 			this.focus();
 			return;
@@ -67,7 +67,7 @@ Z8.define('Z8.application.viewport.Login', {
 
 		this.passwordField.setValue('');
 		this.fireEvent('hide', this);
-	},
+	},*/
 
 	login: function(button) {
 		button.setBusy(true);

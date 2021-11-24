@@ -74,10 +74,6 @@ Z8.define('Z8.data.Store', {
 		return this.isRemote() ? this.getModel().prototype.getName() : null;
 	},
 
-	getSourceCodeLocation: function() {
-		return this.isRemote() ? this.getModel().prototype.getSourceCodeLocation() : null;
-	},
-
 	isLocal: function() {
 		return this.getModel().prototype.isLocal();
 	},

@@ -3,7 +3,6 @@ package org.zenframework.z8.server.security;
 import org.zenframework.z8.server.types.guid;
 
 public class LoginParameters {
-
 	private guid userId;
 	private String login;
 	private String address;

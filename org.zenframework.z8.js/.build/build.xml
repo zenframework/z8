@@ -6,22 +6,6 @@
 	<target name="minimize css+js">
 		<mkdir dir="target/css"/>
 
-		<!-- base css -->
-		<loadfile property="css.base.buildorder" srcFile="src/css/.base.buildorder"/>
-		<concat destfile="target/debug/css/org.zenframework.z8.base.css" encoding="UTF-8" fixlastline="yes">
-			<filelist dir="src/css" files="${css.base.buildorder}"/>
-		</concat>
-
-		<exec dir="." executable="java">
-			<arg line="-jar ${yuicompressor} target/css/org.zenframework.z8.base.css target/debug/css/org.zenframework.z8.base.css"/>
-		</exec>
-
-		<!--
-			yuicompressor breaks css 'calc(point + point)' rule by removing spaces around '+' (while '-' stays intact). 
-			The next line fixes it.
-		 -->
-		<replaceregexp file="target/css/org.zenframework.z8.css" match="(calc\([\d|\.]+[^+]*)(\+)" replace="\1 \2 " flags="g"/>
-
 		<!-- css -->
 		<loadfile property="css.buildorder" srcFile="src/css/.buildorder"/>
 		<concat destfile="target/debug/css/org.zenframework.z8.css" encoding="UTF-8" fixlastline="yes">
@@ -53,15 +37,6 @@
 
 		<exec dir="." executable="java">
 			<arg line="-jar ${closure} target/org.zenframework.z8.js target/debug/org.zenframework.z8.js"/>
-		</exec>
-
-		<loadfile property="js.util.buildorder" srcFile="src/js/.util.buildorder"/>
-		<concat destfile="target/debug/org.zenframework.z8.utils.js" encoding="UTF-8" fixlastline="yes">
-			<filelist dir="src/js" files="${js.util.buildorder}"/>
-		</concat>
-
-		<exec dir="." executable="java">
-			<arg line="-jar ${closure} target/org.zenframework.z8.utils.js target/debug/org.zenframework.z8.utils.js"/>
 		</exec>
 	</target>
 </project>

@@ -283,9 +283,7 @@ public class User implements RmiSerializable, Serializable {
 		user.password = password;
 
 		Users users = Users.newInstance();
-		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login))) // user
-																										// already
-																										// exist
+		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login)))
 			throw new UserNotFoundException();
 
 		String verification = Digest.md5(guid.create().toString());

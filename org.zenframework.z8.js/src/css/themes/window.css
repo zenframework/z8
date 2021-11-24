@@ -1,26 +1,17 @@
-.window-mask,
-.window-aligner {
+.window-mask {
 	position: absolute;
 	z-index: 9999;
 	left: 0;
 	top: 0;
 	right: 0;
 	bottom: 0;
-}
-
-.window-mask {
-	background-color: #fff;
-	opacity: 0/*.5*/;
-}
-
-.window-aligner {
 	display: flex;
 	align-items: center;
-	justify-content: center;	
+	justify-content: center;
+	background: none;
 }
 
 .window {
-	position: absolute;
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;

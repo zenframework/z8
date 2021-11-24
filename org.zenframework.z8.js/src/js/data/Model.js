@@ -90,10 +90,6 @@ Z8.define('Z8.data.Model', {
 		return this.name || this.$className;
 	},
 
-	getSourceCodeLocation: function() {
-		return this.sourceCode || this.name || this.$className;
-	},
-
 	isLocal: function() {
 		return this.local === true;
 	},
