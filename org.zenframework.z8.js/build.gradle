@@ -53,13 +53,11 @@ task concatCss(type: ConcatTask) {
 task concatFontsCss(type: ConcatTask) {
 	source = file("${projectDir}/src/css")
 	output = file("${buildDir}/web/css/revolt.fonts.css")
-	buildorder = '.fonts.buildorder'
 }
 
 task concatBaseCss(type: ConcatTask) {
 	source = file("${projectDir}/src/css")
 	output = file("${buildDir}/web/css/revolt.base.css")
-	buildorder = '.base.buildorder'
 }
 
 task concatJs(type: ConcatTask) {
@@ -70,7 +68,6 @@ task concatJs(type: ConcatTask) {
 task concatUtilJs(type: ConcatTask) {
 	source = file("${projectDir}/src/js")
 	output = file("${buildDir}/web/revolt.util.js")
-	buildorder = '.util.buildorder'
 }
 
 task concatServerJs(type: ConcatTask) {
