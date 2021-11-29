@@ -8,10 +8,6 @@
 	position: relative;
 }
 
-.list>.scroller>* {
-	overflow: hidden;
-}
-
 .list>.scroller.items {
 	overflow-y: auto;
 	flex: 1;

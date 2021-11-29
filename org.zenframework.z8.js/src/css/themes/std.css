@@ -31,7 +31,7 @@ body {
 
 body * {
 	line-height: inherit;
-	overflow: inherit;
+	overflow: hidden;
 }
 
 *:focus {

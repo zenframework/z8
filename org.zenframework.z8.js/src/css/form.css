@@ -1,14 +1,11 @@
 .form.fieldset {
+	display: block;
+	overflow-y: auto;
 	padding-top: 1.07142857em;
 	padding-left: 1.07142857em;
 	padding-right: 1.07142857em;
 	margin: 0;
-	overflow-y: auto;
 	border: none;
-}
-
-.form.fieldset>* {
-	overflow-y: hidden;
 }
 
 .fieldset {
