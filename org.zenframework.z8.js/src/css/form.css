@@ -1,5 +1,7 @@
 .form.fieldset {
+/*
 	display: block;
+*/
 	overflow-y: auto;
 	padding-top: 1.07142857em;
 	padding-left: 1.07142857em;
