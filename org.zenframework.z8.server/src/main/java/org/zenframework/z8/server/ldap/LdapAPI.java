@@ -20,7 +20,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 
 public class LdapAPI implements Closeable {
@@ -72,45 +71,39 @@ public class LdapAPI implements Closeable {
 	public static LdapUser getUser(Connection connection, String login) {
 		try(LdapAPI activeDirectory = new LdapAPI(connection)) {
 			return activeDirectory.searchUser(ServerConfig.searchBase(), String.format(ServerConfig.searchUserFilter(), login));
-		} catch(NamingException e) {
-			ApplicationServer.getMonitor().error(e);
-			return null;
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public static LdapUser getUser(Connection connection, String searchBase, String searchFilter) {
 		try(LdapAPI activeDirectory = new LdapAPI(connection)) {
 			return activeDirectory.searchUser(searchBase, searchFilter);
-		} catch(NamingException e) {
-			ApplicationServer.getMonitor().error(e);
-			return null;
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public static List<LdapUser> getUsers(Connection connection, String searchBase, String searchFilter) {
 		try(LdapAPI activeDirectory = new LdapAPI(connection)) {
 			return activeDirectory.users(searchBase, searchFilter);
-		} catch(NamingException e) {
-			ApplicationServer.getMonitor().error(e);
-			return new ArrayList<>();
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public static List<Map<String, String>> getGroups(Connection connection, String searchBase, String searchFilter) {
 		try(LdapAPI activeDirectory = new LdapAPI(connection)) {
 			return activeDirectory.groups(searchBase, searchFilter);
-		} catch(NamingException e) {
-			ApplicationServer.getMonitor().error(e);
-			return new ArrayList<>();
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public static boolean isUserExist(Connection connection, String login) {
-		LdapUser ldapUser = LdapAPI.getUser(connection, login);
-		if(ldapUser != null && ldapUser.isLocked()) {
+		if(LdapAPI.getUser(connection, login).isLocked())
 			throw new AccessDeniedException();
-		}
-		return ldapUser != null;
+		return true;
 	}
 
 	private LdapUser searchUser(String searchBase, String searchFilter) throws NamingException {
@@ -120,15 +113,10 @@ public class LdapAPI implements Closeable {
 
 		NamingEnumeration<SearchResult> namingEnumeration = connection.context.search(searchBase, searchFilter, controls);
 
-		if(namingEnumeration.hasMore()) {
-			Attributes attributes = namingEnumeration.next().getAttributes();
-			LdapUser ldapUser = extractUser(attributes);
-			ldapUser.getParameters().putAll(extractLdapParameters(attributes));
-			return ldapUser;
-		} else {
-			ApplicationServer.getMonitor().info(String.format("Active directory returned empty result. Query details: %s", searchFilter));
-			return null;
-		}
+		if(namingEnumeration.hasMore())
+			return extractUser(namingEnumeration.next().getAttributes());
+
+		throw new AccessDeniedException();
 	}
 
 	private List<LdapUser> users(String searchBase, String searchFilter) throws NamingException {
@@ -138,12 +126,9 @@ public class LdapAPI implements Closeable {
 		NamingEnumeration<SearchResult> namingEnumeration = connection.context.search(searchBase, searchFilter, controls);
 
 		List<LdapUser> result = new ArrayList<>();
-		while(namingEnumeration.hasMore()) {
-			Attributes attributes = namingEnumeration.next().getAttributes();
-			LdapUser ldapUser = extractUser(attributes);
-			ldapUser.getParameters().putAll(extractLdapParameters(attributes));
-			result.add(ldapUser);
-		}
+		while(namingEnumeration.hasMore())
+			result.add(extractUser(namingEnumeration.next().getAttributes()));
+
 		return result;
 	}
 
@@ -167,10 +152,10 @@ public class LdapAPI implements Closeable {
 		Boolean locked = Boolean.FALSE;
 		if(ldapTimeStamp > 0) {
 			Date accountExpiredDate = LdapAPI.ldap2Date(ldapTimeStamp);
-			if(accountExpiredDate.before(new Date())) {
+			if(accountExpiredDate.before(new Date()))
 				locked = Boolean.TRUE;
-			}
 		}
+
 		ldapUser.setLocked(locked);
 		ldapUser.getParameters().put(LdapAPI.ldapParametersPrefix + "parameters", Boolean.TRUE.toString());
 		ldapUser.getParameters().put(LdapAPI.ldapParametersPrefix + "locked", locked.toString());
@@ -183,6 +168,9 @@ public class LdapAPI implements Closeable {
 			}
 			ldapUser.setMemberOf(groupNames);
 		}
+
+		ldapUser.getParameters().putAll(extractLdapParameters(attributes));
+
 		return ldapUser;
 	}
 
@@ -192,29 +180,24 @@ public class LdapAPI implements Closeable {
 		while(keyNamesEnum.hasMore()) {
 			String keyName = keyNamesEnum.next();
 			Attribute attribute = attributes.get(keyName);
-			// grab only single attrs
-			if(attribute.size() == 1) {
+			if(attribute.size() == 1)
 				parameters.put(LdapAPI.ldapParametersPrefix + keyName, LdapAPI.getAttributeValue(attribute));
-			}
 		}
 		return parameters;
 	}
 
 	private static String getAttributeValue(Attribute attribute) {
-		if(attribute == null) {
+		if(attribute == null)
 			return null;
-		} else {
-			try {
-				return attribute.get() instanceof String ? (String)attribute.get() : null;
-			} catch(Exception ignored) {
-				ApplicationServer.getMonitor().info(String.format("Failed to extract value from: %s", attribute.getID()));
-				return null;
-			}
+
+		try {
+			return attribute.get() instanceof String ? (String)attribute.get() : null;
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	private static Date ldap2Date(long ldapTimeStamp) {
-		;
 		return new Date(ldapTimeStamp / 10000 - +11644473600000L);
 	}
 

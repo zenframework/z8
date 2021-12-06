@@ -15,7 +15,6 @@ import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
-import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
@@ -148,18 +147,14 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		if(checkLdapLogin && !LdapAPI.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin()) && LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
 			try {
 				user = loginServer.user(loginParameters, null);
-			} catch(UserNotFoundException e) {
+			} catch(AccessDeniedException e) {
 				if(ldapUsersCreateOnSuccessfulLogin)
 					user = loginServer.create(loginParameters);
 				else
 					throw new AccessDeniedException();
 			}
 		} else {
-			try {
-				user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
-			} catch(UserNotFoundException ignored) {
-				throw new AccessDeniedException();
-			}
+			user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
 		}
 
 		Session session = sessionManager.create(user);
@@ -173,7 +168,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		// A это что? UserNotFoundException - серьезно?
 		try {
 			return login0(serverInfo, loginParameters);
-		} catch(UserNotFoundException e) {
+		} catch(AccessDeniedException e) {
 			if(!createIfNotExist)
 				throw e;
 			serverInfo.getServer().create(loginParameters);

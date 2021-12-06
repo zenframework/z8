@@ -36,10 +36,11 @@ public class SingleSignOnAdapter extends Adapter {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}
-		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
+
 		Session session;
+
 		try {
-			session = ServerConfig.authorityCenter().trustedLogin(getLoginParameters(login, request), true);
+			session = ServerConfig.authorityCenter().trustedLogin(getLoginParameters(principalName.split("@")[0], request), true);
 		} catch (AccessDeniedException e) {
 			httpSession.invalidate();
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

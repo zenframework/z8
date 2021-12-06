@@ -36,9 +36,9 @@ public class DefaultAction extends ReadAction {
 		writer.writeGroup(config.groupFields);
 
 		if(requestParameters.get(Json.start) == null)
-			requestParameters.put(Json.start, new string(query.start()));
+			requestParameters.put(Json.start, new string(DefaultStart));
 		if(requestParameters.get(Json.limit) == null)
-			requestParameters.put(Json.limit, new string(query.limit()));
+			requestParameters.put(Json.limit, new string(DefaultLimit));
 
 		super.writeResponse(writer);
 	}

@@ -36,7 +36,6 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
-import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -232,7 +231,7 @@ public class User implements RmiSerializable, Serializable {
 
 		boolean exists = user.readInfo(loginParameters, !isLatestVersion);
 		if(!exists)
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		if(isLatestVersion) {
 			user.loadPrivileges();
@@ -284,7 +283,7 @@ public class User implements RmiSerializable, Serializable {
 
 		Users users = Users.newInstance();
 		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login)))
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		String verification = Digest.md5(guid.create().toString());
 
@@ -312,10 +311,12 @@ public class User implements RmiSerializable, Serializable {
 
 	public static User verify(String verification, String host) {
 		Users users = Users.newInstance();
+
 		if(verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
+
 		if(!users.banned.get().bool().get())
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
@@ -356,9 +357,10 @@ public class User implements RmiSerializable, Serializable {
 	public static User remindInit(String login, String host) {
 		Users users = Users.newInstance();
 		if(login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
+
 		if(users.banned.get().bool().get() || !users.verification.get().string().get().isEmpty())
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
@@ -382,9 +384,10 @@ public class User implements RmiSerializable, Serializable {
 	public static User remind(String verification, String host) {
 		Users users = Users.newInstance();
 		if(verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
+
 		if(users.banned.get().bool().get())
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
@@ -419,9 +422,9 @@ public class User implements RmiSerializable, Serializable {
 		Users users = Users.newInstance();
 		if(verification == null || verification.isEmpty()
 				|| !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 		if(users.banned.get().bool().get())
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);

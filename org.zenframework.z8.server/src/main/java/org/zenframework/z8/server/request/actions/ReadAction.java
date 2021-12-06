@@ -50,6 +50,9 @@ import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class ReadAction extends RequestAction {
+	static public int DefaultStart = 0;
+	static public int DefaultLimit = 200;
+
 	static private final Collection<Field> emptyFieldList = new ArrayList<Field>();
 
 	private Map<Field, Collection<Query>> fieldToQueries = new LinkedHashMap<Field, Collection<Query>>();
@@ -68,7 +71,7 @@ public class ReadAction extends RequestAction {
 	private Collection<SqlToken> groupFilters = new LinkedHashSet<SqlToken>();
 	private Collection<Field> groupFilterFields = new LinkedHashSet<Field>();
 
-	private int start = Query.DefaultStart;
+	private int start = DefaultStart;
 	private int limit = -1;
 
 	private int totalCount = 0;
@@ -649,7 +652,7 @@ public class ReadAction extends RequestAction {
 			select.setGroupBy(Arrays.asList(groupField));
 		}
 
-		Select frame = new FramedSelect(select, Query.DefaultStart, Query.DefaultLimit);
+		Select frame = new FramedSelect(select, DefaultStart, DefaultLimit);
 
 		frame.aggregate();
 
@@ -776,9 +779,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void writeData(JsonWriter writer) throws Throwable {
-		Query query = getQuery();
-
-		if(!(query instanceof Table))
+		if(!(getQuery() instanceof Table))
 			return;
 
 		if(getRequestParameter(Json.totals, false)) {
@@ -786,8 +787,8 @@ public class ReadAction extends RequestAction {
 			return;
 		}
 
-		limit = parentKey != null ? -1 : getRequestParameter(Json.limit, query.limit());
-		start = getRequestParameter(Json.start, query.start());
+		limit = parentKey != null ? -1 : getRequestParameter(Json.limit, DefaultLimit);
+		start = getRequestParameter(Json.start, DefaultStart);
 
 		if(getRequestParameter(Json.count, false)) {
 			totalCount = writeCount(writer);

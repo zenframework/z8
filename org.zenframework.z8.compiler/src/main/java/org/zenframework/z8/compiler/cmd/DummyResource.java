@@ -328,7 +328,7 @@ public class DummyResource implements IResource {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Class adapter) {
 		throw new UnsupportedOperationException();
 	}
@@ -418,9 +418,8 @@ public class DummyResource implements IResource {
 		throw new UnsupportedOperationException();
 	}
 
-	// @Override
+	@Override
 	public void accept(IResourceProxyVisitor arg0, int arg1, int arg2) throws CoreException {
 		throw new UnsupportedOperationException();
 	}
-
 }
