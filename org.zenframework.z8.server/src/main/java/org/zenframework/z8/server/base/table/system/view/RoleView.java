@@ -11,6 +11,9 @@ import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.SecuredObjectAccess;
 import org.zenframework.z8.server.base.table.system.SecuredObjects;
+import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.sql.expressions.And;
+import org.zenframework.z8.server.db.sql.expressions.NotEqu;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
@@ -186,6 +189,9 @@ public class RoleView extends Roles {
 		/* SecuredObjects */
 		RoleSecuredObjectAccess rso = this.rso.get();
 		rso.groupBy.add(rso.soa.get().securedObjectId);
+
+		Field securedObjectId = rso.soa.get().securedObjectId.get();
+		rso.setWhere(new And(new NotEqu(securedObjectId, SecuredObjects.Database), new NotEqu(securedObjectId, SecuredObjects.Request)));
 
 		securedObjects.setIndex("securedObjects");
 		securedObjects.setDisplayName(SecuredObjects.displayNames.Title);
