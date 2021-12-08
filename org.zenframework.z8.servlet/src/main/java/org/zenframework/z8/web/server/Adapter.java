@@ -28,7 +28,7 @@ import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
-import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.ServerUnavailableException;
 import org.zenframework.z8.server.json.Json;
@@ -37,14 +37,13 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.LoginParameters;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
-import org.zenframework.z8.web.utils.ServletUtil;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
@@ -67,7 +66,7 @@ public abstract class Adapter {
 		HttpSession httpSession = useContainerSession ? request.getSession() : null;
 
 		try {
-			ISession session = null;
+			Session session = null;
 
 			Map<String, String> parameters = new HashMap<String, String>();
 			List<file> files = new ArrayList<file>();
@@ -99,10 +98,10 @@ public abstract class Adapter {
 					session = login(parameters, request, session, httpSession);
 				else
 					session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
-	
+
 				if(session == null)
 					throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
-	
+
 				service(session, parameters, files, request, response);
 			}
 		} catch(AccessDeniedException e) {
@@ -121,90 +120,90 @@ public abstract class Adapter {
 			}
 		}
 	}
-	
+
 	private String getRequestHost(HttpServletRequest request) throws MalformedURLException {
 		URL rURL = new URL(request.getRequestURL().toString());
 		StringBuilder host = new StringBuilder().append(rURL.getProtocol()).append("://").append(rURL.getHost());
-		if (rURL.getPort() != -1)
+		if(rURL.getPort() != -1)
 			host.append(":").append(rURL.getPort());
 		host.append("/");
 		return host.toString();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void remindInit(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String login = parameters.get(Json.login.get());
-		
-		ServerConfig.authorityCenter().remindInit(login, ServletUtil.getSchema(request), getRequestHost(request));
-		
+
+		ServerConfig.authorityCenter().remindInit(login, extractSchemaName(request), getRequestHost(request));
+
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
 		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();
-		
+
 		writeResponse(response, writer.toString());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void remind(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String verificationCode = parameters.get(Json.verificationCode.get());
-		
-		IUser user = ServerConfig.authorityCenter().remind(verificationCode, ServletUtil.getSchema(request), getRequestHost(request));
+
+		User user = ServerConfig.authorityCenter().remind(verificationCode, extractSchemaName(request), getRequestHost(request));
 		boolean accessed = verificationCode.equals(user.verification());
-		
+
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
 		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.startObject();
-		if (accessed)
+		if(accessed)
 			writer.writeProperty(Json.verification, user.verification());
-		writer.writeProperty(Json.login, user.login());
+		writer.writeProperty(Json.login, user.getLogin());
 		writer.writeProperty(Json.success, accessed);
 		writer.finishObject();
 		writer.finishArray();
 		writer.finishResponse();
-		
+
 		writeResponse(response, writer.toString());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void changePassword(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String verificationCode = parameters.get(Json.verificationCode.get());
 		String password = parameters.get(Json.password.get());
-		
-		ServerConfig.authorityCenter().changePassword(verificationCode, password, ServletUtil.getSchema(request), getRequestHost(request));
-		
+
+		ServerConfig.authorityCenter().changePassword(verificationCode, password, extractSchemaName(request), getRequestHost(request));
+
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
 		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();
-		
+
 		writeResponse(response, writer.toString());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void verify(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String verificationCode = parameters.get(Json.verificationCode.get());
-		
-		IUser user = ServerConfig.authorityCenter().verify(verificationCode, ServletUtil.getSchema(request), getRequestHost(request));
-		boolean unbanned = !user.banned();
-		
+
+		User user = ServerConfig.authorityCenter().verify(verificationCode, extractSchemaName(request), getRequestHost(request));
+		boolean unbanned = !user.getBanned();
+
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
 		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.startObject();
-		writer.writeProperty(Json.login, user.login());
+		writer.writeProperty(Json.login, user.getLogin());
 		writer.writeProperty(Json.success, unbanned);
 		writer.finishObject();
 		writer.finishArray();
 		writer.finishResponse();
-		
+
 		writeResponse(response, writer.toString());
 	}
 
@@ -217,28 +216,22 @@ public abstract class Adapter {
 		String password = parameters.get(Json.password.get());
 		String company = parameters.get(Json.company.get());
 		String position = parameters.get(Json.position.get());
-		
-		LoginParameters loginParameters = new LoginParameters(login)
-				.setEmail(email)
-				.setFirstName(firstName)
-				.setLastName(lastName)
-				.setCompany(company)
-				.setPosition(position)
-				.setSchema(ServletUtil.getSchema(request));
-		
+
+		LoginParameters loginParameters = new LoginParameters(login).setEmail(email).setFirstName(firstName).setLastName(lastName).setCompany(company).setPosition(position).setSchema(extractSchemaName(request));
+
 		ServerConfig.authorityCenter().register(loginParameters, password, getRequestHost(request));
-		
+
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
 		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();
-		
+
 		writeResponse(response, writer.toString());
 	}
-	
-	private ISession login(Map<String, String> parameters, HttpServletRequest request, ISession session, HttpSession httpSession) throws IOException, ServletException {
+
+	private Session login(Map<String, String> parameters, HttpServletRequest request, Session session, HttpSession httpSession) throws IOException, ServletException {
 		String login = parameters.get(Json.login.get());
 		String password = parameters.get(Json.password.get());
 
@@ -247,15 +240,15 @@ public abstract class Adapter {
 
 		session = login(getLoginParameters(login, request), password);
 		if(httpSession != null)
-			httpSession.setAttribute(Json.session.get(), session.id());
+			httpSession.setAttribute(Json.session.get(), session.getId());
 		return session;
 	}
 
-	protected ISession login(LoginParameters loginParameters, String password) throws IOException, ServletException {
+	protected Session login(LoginParameters loginParameters, String password) throws IOException, ServletException {
 		return ServerConfig.authorityCenter().login(loginParameters, password);
 	}
 
-	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
+	protected Session authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
 		return sessionId != null ? ServerConfig.authorityCenter().server(sessionId, serverId) : null;
 	}
 
@@ -296,6 +289,18 @@ public abstract class Adapter {
 		}
 	}
 
+	protected String extractSchemaName(HttpServletRequest request) {
+		if(!ServerConfig.isMultitenant())
+			return null;
+
+		String serverName = request.getServerName();
+		int index = serverName.indexOf('.');
+		if(index == -1 || index == serverName.lastIndexOf('.') && !serverName.endsWith("localhost"))
+			throw new AccessDeniedException();
+
+		return serverName.substring(0, index);
+	}
+
 	public void start() {
 	}
 
@@ -304,7 +309,7 @@ public abstract class Adapter {
 
 	abstract public boolean canHandleRequest(HttpServletRequest request);
 
-	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(Session session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		GNode node = new GNode(parameters, files);
 
 		IApplicationServer server = session.getServerInfo().getServer();
@@ -355,10 +360,10 @@ public abstract class Adapter {
 		}
 	}
 
-	protected static LoginParameters getLoginParameters(String login, HttpServletRequest request) {
+	protected LoginParameters getLoginParameters(String login, HttpServletRequest request) {
 		LoginParameters loginParameters = new LoginParameters(login);
 		loginParameters.setAddress(request.getRemoteAddr());
-		loginParameters.setSchema(ServletUtil.getSchema(request));
+		loginParameters.setSchema(extractSchemaName(request));
 		return loginParameters;
 	}
 

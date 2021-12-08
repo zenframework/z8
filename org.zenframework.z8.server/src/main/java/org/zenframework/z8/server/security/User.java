@@ -5,10 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,11 +32,10 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
-import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
-import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -49,7 +48,7 @@ import org.zenframework.z8.server.utils.Email;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 
-public class User implements IUser {
+public class User implements RmiSerializable, Serializable {
 	static private final long serialVersionUID = -4955893424674255525L;
 	static private final int verificationTimeHours = 12;
 
@@ -62,30 +61,28 @@ public class User implements IUser {
 	private String middleName;
 	private String lastName;
 
-	private Collection<IRole> roles;
-	private IPrivileges privileges;
+	private Collection<Role> roles;
+	private Privileges privileges;
 
 	private String description;
 	private String phone;
 	private String email;
-	private String company;
-	private String position;
 	private String verification;
-	
+
 	private boolean banned;
 	private boolean changePassword;
 
 	private String settings;
-	private IDatabase database;
+	private Database database;
 
 	private Collection<Entry> entries = new ArrayList<Entry>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
-	static public IUser system(String scheme) {
+	static public User system(String scheme) {
 		return system(Database.get(scheme));
 	}
 
-	static public IUser system(IDatabase database) {
+	static public User system(Database database) {
 		guid id = BuiltinUsers.System.guid();
 		String login = BuiltinUsers.displayNames.SystemName;
 
@@ -97,15 +94,13 @@ public class User implements IUser {
 		system.firstName = "";
 		system.middleName = "";
 		system.lastName = "";
-		system.company = "";
-		system.position = "";
 		system.banned = false;
 		system.changePassword = false;
 
 		system.settings = "";
 		system.phone = "";
 		system.email = "";
-		system.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
+		system.roles = Arrays.asList(Role.administrator());
 		system.privileges = new Privileges(Access.administrator());
 
 		system.addSystemTools();
@@ -116,153 +111,133 @@ public class User implements IUser {
 	public User() {
 	}
 
-	public User(IDatabase database) {
+	public User(Database database) {
 		this.database = database;
 	}
 
-	@Override
-	public guid id() {
+	public guid getId() {
 		return id;
 	}
 
-	@Override
-	public String login() {
+	public String getLogin() {
 		return login;
 	}
 
-	@Override
-	public String password() {
+	public String getPassword() {
 		return password;
 	}
 
-	@Override
-	public String firstName() {
+	public String getFirstName() {
 		return firstName;
 	}
 
-	@Override
-	public String middleName() {
+	public String getMiddleName() {
 		return middleName;
 	}
 
-	@Override
-	public String lastName() {
+	public String getLastName() {
 		return lastName;
 	}
 
-	@Override
-	public String name() {
+	public String getName() {
 		String name = firstName;
 		return name + (name.isEmpty() ? "" : " ") + lastName;
 	}
 
-	@Override
-	public String fullName() {
+	public String getFullName() {
 		String name = firstName;
 		name += (name.isEmpty() ? "" : " ") + middleName;
 		return name + (name.isEmpty() ? "" : " ") + lastName;
 	}
-	
-	@Override
+
 	public String verification() {
 		return verification;
 	}
-	
-	@Override
-	public String company() {
-		return company;
-	}
-	
-	@Override
-	public String position() {
-		return position;
-	}
 
-	@Override
-	public Collection<IRole> roles() {
+	public Collection<Role> getRoles() {
+		if(roles == null)
+			roles = UserRoles.get(id);
 		return roles;
 	}
 
-	@Override
-	public IPrivileges privileges() {
+	public Privileges getPrivileges() {
 		return privileges;
 	}
 
-	@Override
+	public Access getAccess() {
+		Access access = new Access();
+
+		for(Role role : getRoles())
+			access = access.or(role.getAccess());
+
+		return access;
+	}
+
 	public boolean isBuiltinAdministrator() {
 		return id.equals(Users.Administrator) || id.equals(Users.System);
 	}
 
-	@Override
 	public boolean isAdministrator() {
 		if(roles != null) {
-			for(IRole role : roles) {
-				if(role.id().equals(Role.Administrator))
+			for(Role role : roles) {
+				if(role.getId().equals(Role.Administrator))
 					return true;
 			}
 		}
 		return isBuiltinAdministrator();
 	}
 
-	@Override
-	public String description() {
+	public String getDescription() {
 		return description;
 	}
 
-	@Override
-	public String phone() {
+	public String getPhone() {
 		return phone;
 	}
 
-	@Override
-	public String email() {
+	public String getEmail() {
 		return email;
 	}
 
-	@Override
-	public boolean banned() {
+	public boolean getBanned() {
 		return banned;
 	}
 
-	@Override
-	public boolean changePassword() {
+	public boolean getChangePassword() {
 		return changePassword;
 	}
 
-	@Override
-	public Collection<Entry> entries() {
+	public Collection<Entry> getEntries() {
 		return entries;
 	}
 
-	@Override
 	public void setEntries(Collection<Entry> entries) {
 		this.entries = entries;
 	}
 
-	@Override
-	public Map<string, primary> parameters() {
+	public Map<string, primary> getParameters() {
 		return parameters;
 	}
 
-	static public IUser read(guid userId) {
+	static public User read(guid userId) {
 		return userId.isNull() ? null : read(new LoginParameters(userId));
 	}
 
-	static private IUser read(LoginParameters loginParameters) {
-		IDatabase database = ApplicationServer.getDatabase();
+	static private User read(LoginParameters loginParameters) {
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
 
 		boolean isLatestVersion = database.isLatestVersion();
 
 		boolean exists = user.readInfo(loginParameters, !isLatestVersion);
 		if(!exists)
-			throw new UserNotFoundException();
+			throw new AccessDeniedException();
 
 		if(isLatestVersion) {
-			user.loadRoles();
+			user.loadPrivileges();
 			user.loadEntries();
 		} else if(user.isAdministrator()) {
-			user.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
+			user.roles = Arrays.asList(Role.administrator());
 			user.privileges = new Privileges(Access.administrator());
 		} else
 			throw new InvalidVersionException();
@@ -274,15 +249,15 @@ public class User implements IUser {
 
 		return user;
 	}
-	
+
 	private static String getVerificationLink(String host, String hashPrefix, String verification) {
 		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
 	}
-	
-	public static IUser create(LoginParameters loginParameters) {
-		IDatabase database = ApplicationServer.getDatabase();
+
+	public static User create(LoginParameters loginParameters) {
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 		user.login = loginParameters.getLogin();
@@ -292,35 +267,31 @@ public class User implements IUser {
 		users.name.get().set(loginParameters.getLogin());
 		users.password.get().set(new string(user.password));
 		user.id = users.create();
-		
+
 		return read(loginParameters.setUserId(user.id));
 	}
-	
-	public static IUser register(LoginParameters loginParameters, String password, String host) {
-		IDatabase database = ApplicationServer.getDatabase();
+
+	public static User register(LoginParameters loginParameters, String password, String host) {
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		user.login = loginParameters.getLogin();
 		user.lastName = loginParameters.getLastName();
 		user.firstName = loginParameters.getFirstName();
 		user.email = loginParameters.getEmail();
-		user.company = loginParameters.getCompany();
-		user.position = loginParameters.getPosition();
 		user.password = password;
 
 		Users users = Users.newInstance();
-		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login))) // user already exist
-			throw new UserNotFoundException();
-		
+		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login)))
+			throw new AccessDeniedException();
+
 		String verification = Digest.md5(guid.create().toString());
-		
+
 		users = Users.newInstance();
 		users.name.get().set(user.login);
 		users.lastName.get().set(user.lastName);
 		users.firstName.get().set(user.firstName);
 		users.email.get().set(user.email);
-		users.company.get().set(user.company);
-		users.position.get().set(user.position);
 		users.banned.get().set(true);
 		users.password.get().set(user.password);
 		users.changePassword.get().set(false);
@@ -334,46 +305,44 @@ public class User implements IUser {
 			connection.rollback();
 			throw new RuntimeException(e);
 		}
-		Email.send(new Email.Message(Email.TYPE.Registration)
-				.setRecipientAddress(user.email)
-				.setRecipientName(user.firstName)
-				.setButtonLink(getVerificationLink(host, "verify", verification)));
+		Email.send(new Email.Message(Email.TYPE.Registration).setRecipientAddress(user.email).setRecipientName(user.firstName).setButtonLink(getVerificationLink(host, "verify", verification)));
 		return user;
 	}
-	
-	public static IUser verify(String verification, String host) {
+
+	public static User verify(String verification, String host) {
 		Users users = Users.newInstance();
-		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
-			throw new UserNotFoundException();
-		if (!users.banned.get().bool().get())
-			throw new UserNotFoundException();
-		
-		IDatabase database = ApplicationServer.getDatabase();
+
+		if(verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new AccessDeniedException();
+
+		if(!users.banned.get().bool().get())
+			throw new AccessDeniedException();
+
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours);
-		
+
 		user.login = users.name.get().string().get();
-		
+
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction();
-		if (new date().operatorMore(expirationDate).get()) {
+		if(new date().operatorMore(expirationDate).get()) {
 			String newVerification = Digest.md5(guid.create().toString());
 			users.verification.get().set(newVerification);
 			user.banned = true;
-			Email.send(new Email.Message(Email.TYPE.Registration)
-					.setRecipientAddress(users.email.get().string().get())
-					.setRecipientName(users.firstName.get().string().get())
-					.setButtonLink(getVerificationLink(host, "verify", newVerification)));
+			Email.send(new Email.Message(Email.TYPE.Registration).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()).setButtonLink(getVerificationLink(host, "verify", newVerification)));
 		} else {
 			user.banned = false;
 			users.banned.get().set(user.banned);
 			users.verification.get().set("");
-			/*Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
-					.setRecipientAddress(users.email.get().string().get())
-					.setRecipientName(users.firstName.get().string().get()));*/
+			/*
+			 * Email.send(new Email.Message(Email.TYPE.VerificationSuccess)
+			 * .setRecipientAddress(users.email.get().string().get())
+			 * .setRecipientName(users.firstName.get().string().get()));
+			 */
 		}
-		
+
 		try {
 			users.update(users.recordId());
 			connection.commit();
@@ -381,23 +350,24 @@ public class User implements IUser {
 			connection.rollback();
 			throw new RuntimeException(e);
 		}
-		
+
 		return user;
 	}
-	
-	public static IUser remindInit(String login, String host) {
+
+	public static User remindInit(String login, String host) {
 		Users users = Users.newInstance();
-		if (login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
-			throw new UserNotFoundException();
-		if (users.banned.get().bool().get() || !users.verification.get().string().get().isEmpty())
-			throw new UserNotFoundException();
-		
-		IDatabase database = ApplicationServer.getDatabase();
+		if(login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
+			throw new AccessDeniedException();
+
+		if(users.banned.get().bool().get() || !users.verification.get().string().get().isEmpty())
+			throw new AccessDeniedException();
+
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction();
-		
+
 		String verification = Digest.md5(guid.create().toString());
 		users.verification.get().set(verification);
 		try {
@@ -407,29 +377,27 @@ public class User implements IUser {
 			connection.rollback();
 			throw new RuntimeException(e);
 		}
-		Email.send(new Email.Message(Email.TYPE.RemindPassword)
-				.setRecipientAddress(users.email.get().string().get())
-				.setRecipientName(users.firstName.get().string().get())
-				.setButtonLink(getVerificationLink(host, "remind", verification)));
+		Email.send(new Email.Message(Email.TYPE.RemindPassword).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()).setButtonLink(getVerificationLink(host, "remind", verification)));
 		return user;
 	}
-	
-	public static IUser remind(String verification, String host) {
+
+	public static User remind(String verification, String host) {
 		Users users = Users.newInstance();
-		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
-			throw new UserNotFoundException();
-		if (users.banned.get().bool().get())
-			throw new UserNotFoundException();
-		
-		IDatabase database = ApplicationServer.getDatabase();
+		if(verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new AccessDeniedException();
+
+		if(users.banned.get().bool().get())
+			throw new AccessDeniedException();
+
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
-		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours); 
-		
+
+		date expirationDate = new date(users.verificationModAt.get().toString()).addHour(verificationTimeHours);
+
 		user.verification = users.verification.get().string().get();
 		user.login = users.name.get().string().get();
-		
-		if (new date().operatorMore(expirationDate).get()) {
+
+		if(new date().operatorMore(expirationDate).get()) {
 			Connection connection = ConnectionManager.get();
 			connection.beginTransaction();
 
@@ -444,35 +412,33 @@ public class User implements IUser {
 				throw new RuntimeException(e);
 			}
 			/* Repeated message with updated link */
-			Email.send(new Email.Message(Email.TYPE.RemindPassword)
-					.setRecipientAddress(users.email.get().string().get())
-					.setRecipientName(users.firstName.get().string().get())
-					.setButtonLink(getVerificationLink(host, "remind", newVerification)));
+			Email.send(new Email.Message(Email.TYPE.RemindPassword).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()).setButtonLink(getVerificationLink(host, "remind", newVerification)));
 		}
-		
+
 		return user;
 	}
-	
-	public static IUser changePassword(String verification, String password, String host) {
+
+	public static User changePassword(String verification, String password, String host) {
 		Users users = Users.newInstance();
-		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
-			throw new UserNotFoundException();
-		if (users.banned.get().bool().get())
-			throw new UserNotFoundException();
-		
-		IDatabase database = ApplicationServer.getDatabase();
+		if(verification == null || verification.isEmpty()
+				|| !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
+			throw new AccessDeniedException();
+		if(users.banned.get().bool().get())
+			throw new AccessDeniedException();
+
+		Database database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		user.password = password;
 		user.changePassword = false;
-		
+
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction();
-		
+
 		users.verification.get().set("");
 		users.password.get().set(user.password);
 		users.changePassword.get().set(user.changePassword);
-		
+
 		try {
 			users.update(users.recordId());
 			connection.commit();
@@ -480,23 +446,22 @@ public class User implements IUser {
 			connection.rollback();
 			throw new RuntimeException(e);
 		}
-		
-		Email.send(new Email.Message(Email.TYPE.PasswordChanged)
-				.setRecipientAddress(users.email.get().string().get())
-				.setRecipientName(users.firstName.get().string().get()));
-		
+
+		Email.send(new Email.Message(Email.TYPE.PasswordChanged).setRecipientAddress(users.email.get().string().get()).setRecipientName(users.firstName.get().string().get()));
+
 		return user;
 	}
 
-	static public IUser load(LoginParameters loginParameters, String password) {
-		IDatabase database = ApplicationServer.getDatabase();
+	static public User load(LoginParameters loginParameters, String password) {
+		Database database = ApplicationServer.getDatabase();
 
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = read(loginParameters);
+		User user = read(loginParameters);
 
-		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+		if(password != null && !password.equals(user.getPassword())
+				/* && !password.equals(MD5.hex("")) */ || user.getBanned())
 			throw new AccessDeniedException();
 
 		return user;
@@ -519,8 +484,7 @@ public class User implements IUser {
 		fields.add(users.name.get());
 		fields.add(users.password.get());
 
-		SqlToken where = (loginParameters.getUserId() != null) ? new Equ(users.recordId.get(), loginParameters.getUserId())
-				: new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
+		SqlToken where = (loginParameters.getUserId() != null) ? new Equ(users.recordId.get(), loginParameters.getUserId()) : new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
@@ -531,8 +495,6 @@ public class User implements IUser {
 			fields.add(users.settings.get());
 			fields.add(users.phone.get());
 			fields.add(users.email.get());
-			fields.add(users.company.get());
-			fields.add(users.position.get());
 		}
 
 		users.read(fields, where);
@@ -551,9 +513,7 @@ public class User implements IUser {
 		this.settings = users.settings.get().string().get();
 		this.phone = users.phone.get().string().get();
 		this.email = users.email.get().string().get();
-		this.company = users.company.get().string().get();
-		this.position = users.position.get().string().get();
-		
+
 		if(shortInfo)
 			return true;
 
@@ -567,43 +527,26 @@ public class User implements IUser {
 		}
 	}
 
-	private Collection<guid> getRoles() {
-		Collection<guid> result = new ArrayList<guid>();
+	private void loadPrivileges() {
+		Access defaultAccess = getAccess();
 
-		for(IRole role : roles)
-			result.add(role.id());
-
-		return result;
-	}
-
-	private IAccess defaultAccess() {
-		IAccess access = new Access();
-
-		for(IRole role : roles)
-			access = access.or(role.access());
-
-		return access;
-	}
-
-	private void loadRoles() {
-		UserRoles userRoles = new UserRoles.CLASS<UserRoles>().get();
-		roles = userRoles.get(id);
-
-		IAccess defaultAccess = defaultAccess();
 		privileges = new Privileges(defaultAccess);
 
-		loadTableAccess(privileges, defaultAccess);
-		loadFieldAccess(privileges, defaultAccess);
-		loadRequestAccess(privileges, defaultAccess);
-
-		/*
-		* Trace.logEvent(privileges);
-		*/
+		loadTablePrivileges(privileges, defaultAccess);
+		loadFieldPrivileges(privileges, defaultAccess);
+		loadRequestPrivileges(privileges, defaultAccess);
 	}
 
-	private void loadTableAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private Collection<guid> getRoleIds() {
+		Collection<guid> ids = new ArrayList<guid>();
+		for(Role role : getRoles())
+			ids.add(role.getId());
+		return ids;
+	}
+
+	private void loadTablePrivileges(Privileges privileges, Access defaultAccess) {
 		RoleTableAccess rta = new RoleTableAccess.CLASS<RoleTableAccess>().get();
-		Field tableId = rta.table.get();
+		Field tableId = rta.tableId.get();
 		Field read = rta.read.get();
 		Field write = rta.write.get();
 		Field create = rta.create.get();
@@ -613,18 +556,18 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(tableId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write, create, copy, destroy);
 
-		SqlToken where = rta.role.get().inVector(getRoles());
+		SqlToken where = rta.roleId.get().inVector(getRoleIds());
 
-		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
-		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
-		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.create()));
-		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.copy()));
-		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.destroy()));
+		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.getRead()));
+		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.getWrite()));
+		SqlToken notCreate = new NotEqu(create, new sql_bool(defaultAccess.getCreate()));
+		SqlToken notCopy = new NotEqu(copy, new sql_bool(defaultAccess.getCopy()));
+		SqlToken notDestroy = new NotEqu(destroy, new sql_bool(defaultAccess.getDestroy()));
 		SqlToken having = new Group(Or.fromList(Arrays.asList(notRead, notWrite, notCreate, notCopy, notDestroy)));
 
 		rta.group(fields, groups, where, having);
 		while(rta.next()) {
-			IAccess access = new Access();
+			Access access = new Access();
 			access.setRead(read.bool().get());
 			access.setWrite(write.bool().get());
 			access.setCreate(create.bool().get());
@@ -634,27 +577,27 @@ public class User implements IUser {
 		}
 	}
 
-	private void loadFieldAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private void loadFieldPrivileges(Privileges privileges, Access defaultAccess) {
 		RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
-		Field tableId = rfa.fields.get().table.get();
-		Field fieldId = rfa.field.get();
+		Field tableId = rfa.field.get().tableId.get();
+		Field fieldId = rfa.fieldId.get();
 		Field read = rfa.read.get();
 		Field write = rfa.write.get();
 
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(fieldId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write);
 
-		SqlToken where = rfa.role.get().inVector(getRoles());
+		SqlToken where = rfa.roleId.get().inVector(getRoleIds());
 
 		rfa.group(fields, groups, where);
 
 		while(rfa.next()) {
 			guid table = tableId.guid();
 
-			IAccess tableAccess = privileges.getTableAccess(table);
+			Access tableAccess = privileges.getTableAccess(table);
 
-			boolean tableReadable = tableAccess.read();
-			boolean tableWritable = tableAccess.write();
+			boolean tableReadable = tableAccess.getRead();
+			boolean tableWritable = tableAccess.getWrite();
 
 			boolean readable = read.bool().get();
 			boolean writable = write.bool().get();
@@ -662,29 +605,29 @@ public class User implements IUser {
 			if(tableReadable == readable && tableWritable == writable)
 				continue;
 
-			IAccess access = new Access();
+			Access access = new Access();
 			access.setRead(readable);
 			access.setWrite(writable);
 			privileges.setFieldAccess(fieldId.guid(), access);
 		}
 	}
 
-	private void loadRequestAccess(IPrivileges privileges, IAccess defaultAccess) {
+	private void loadRequestPrivileges(Privileges privileges, Access defaultAccess) {
 		RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
-		Field requestId = rra.request.get();
+		Field requestId = rra.requestId.get();
 		Field execute = rra.execute.get();
 
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(requestId));
 		Collection<Field> fields = Arrays.asList(requestId, execute);
 
-		SqlToken where = rra.role.get().inVector(getRoles());
+		SqlToken where = rra.roleId.get().inVector(getRoleIds());
 
-		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.execute()));
+		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.getExecute()));
 		SqlToken having = new Group(notExecute);
 
 		rra.group(fields, groups, where, having);
 		while(rra.next()) {
-			IAccess access = new Access();
+			Access access = new Access();
 			access.setExecute(execute.bool().get());
 			privileges.setRequestAccess(requestId.guid(), access);
 		}
@@ -693,16 +636,16 @@ public class User implements IUser {
 	private void loadEntries() {
 		UserEntries userEntries = new UserEntries.CLASS<UserEntries>().get();
 
-		Field entry = userEntries.entry.get();
-		Field id = userEntries.entries.get().classId.get();
-		Field name = userEntries.entries.get().name.get();
+		Field entry = userEntries.entryId.get();
+		Field id = userEntries.entry.get().classId.get();
+		Field name = userEntries.entry.get().name.get();
 
 		Collection<Field> fields = Arrays.asList(entry, id, name);
 
 		Field position = userEntries.position.get();
 		Collection<Field> sortFields = Arrays.asList(position);
 
-		SqlToken where = new Equ(userEntries.user.get(), this.id);
+		SqlToken where = new Equ(userEntries.userId.get(), this.id);
 
 		userEntries.read(fields, sortFields, where);
 
@@ -714,23 +657,21 @@ public class User implements IUser {
 		setEntries(entries);
 	}
 
-	@Override
-	public String settings() {
+	public String getSettings() {
 		return settings;
 	}
 
-	@Override
 	public void setSettings(String settings) {
 		this.settings = settings;
 
 		Users.saveSettings(id, settings);
 	}
 
-	public IDatabase database() {
+	public Database getDatabase() {
 		return this.database;
 	}
 
-	public void setDatabase(IDatabase database) {
+	public void setDatabase(Database database) {
 		this.database = database;
 	}
 
@@ -742,15 +683,14 @@ public class User implements IUser {
 		deserialize(in);
 	}
 
-	public static String generateOneTimePassword()
-	{
+	public static String generateOneTimePassword() {
 		String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 		StringBuilder plainPassword = new StringBuilder();
 
 		Random rnd = new Random();
-		while (plainPassword.length() <= 6) {
-			int index = (int) (rnd.nextFloat() * saltChars.length());
+		while(plainPassword.length() <= 6) {
+			int index = (int)(rnd.nextFloat() * saltChars.length());
 			plainPassword.append(saltChars.charAt(index));
 		}
 
@@ -776,9 +716,6 @@ public class User implements IUser {
 		RmiIO.writeString(objects, description);
 		RmiIO.writeString(objects, phone);
 		RmiIO.writeString(objects, email);
-		
-		RmiIO.writeString(objects, company);
-		RmiIO.writeString(objects, position);
 
 		RmiIO.writeBoolean(objects, banned);
 		RmiIO.writeBoolean(objects, changePassword);
@@ -818,19 +755,16 @@ public class User implements IUser {
 		description = RmiIO.readString(objects);
 		phone = RmiIO.readString(objects);
 		email = RmiIO.readString(objects);
-		
-		company = RmiIO.readString(objects);
-		position = RmiIO.readString(objects);
 
 		banned = RmiIO.readBoolean(objects);
 		changePassword = RmiIO.readBoolean(objects);
 
 		settings = RmiIO.readString(objects);
 
-		database = (IDatabase)objects.readObject();
+		database = (Database)objects.readObject();
 
 		roles = (Collection)objects.readObject();
-		privileges = (IPrivileges)objects.readObject();
+		privileges = (Privileges)objects.readObject();
 		entries = (Collection)objects.readObject();
 		parameters = (RLinkedHashMap)objects.readObject();
 

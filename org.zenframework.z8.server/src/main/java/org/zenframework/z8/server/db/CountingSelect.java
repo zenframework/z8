@@ -14,7 +14,7 @@ public class CountingSelect extends Select {
 	}
 
 	@Override
-	protected String sql(FormatOptions options) {
+	protected String getSql(FormatOptions options) {
 		setFields(null);
 		setOrderBy(null);
 
@@ -29,7 +29,7 @@ public class CountingSelect extends Select {
 			setGroupBy(null);
 		}
 
-		return super.sql(options);
+		return super.getSql(options);
 	}
 
 	public int count() {

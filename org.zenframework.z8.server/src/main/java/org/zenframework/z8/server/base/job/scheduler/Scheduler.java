@@ -17,7 +17,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.MaintenanceJob;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.ie.ExchangeJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
@@ -26,11 +26,11 @@ import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
-	private static Map<IDatabase, Scheduler> schedulers = new HashMap<IDatabase, Scheduler>();
+	private static Map<Database, Scheduler> schedulers = new HashMap<Database, Scheduler>();
 	private static boolean destroying = false;
 	private static Object mutex = new Object();
 
-	private IDatabase database;
+	private Database database;
 	private Thread thread = null;
 
 	private boolean suspended = false;
@@ -41,7 +41,7 @@ public class Scheduler implements Runnable {
 	private List<ScheduledJob> systemJobs = new ArrayList<ScheduledJob>();
 	private Collection<Thread> threads = new ArrayList<Thread>();
 
-	static public Scheduler get(IDatabase database) {
+	static public Scheduler get(Database database) {
 		Scheduler scheduler = schedulers.get(database);
 
 		if(scheduler == null) {
@@ -51,7 +51,7 @@ public class Scheduler implements Runnable {
 		return scheduler;
 	}
 
-	static public void start(IDatabase database) {
+	static public void start(Database database) {
 		if(destroying || !ServerConfig.isSchedulerEnabled())
 			return;
 
@@ -61,7 +61,7 @@ public class Scheduler implements Runnable {
 		}
 	}
 
-	static public void resume(IDatabase database) {
+	static public void resume(Database database) {
 		if(destroying || !ServerConfig.isSchedulerEnabled())
 			return;
 
@@ -73,7 +73,7 @@ public class Scheduler implements Runnable {
 		start(database);
 	}
 
-	static public void suspend(IDatabase database) {
+	static public void suspend(Database database) {
 		if(destroying || !ServerConfig.isSchedulerEnabled())
 			return;
 
@@ -85,7 +85,7 @@ public class Scheduler implements Runnable {
 		stop(database);
 	}
 
-	static public void stop(IDatabase database) {
+	static public void stop(Database database) {
 		if(destroying || !ServerConfig.isSchedulerEnabled())
 			return;
 
@@ -98,7 +98,7 @@ public class Scheduler implements Runnable {
 		scheduler.stop();
 	}
 
-	static public synchronized void reset(IDatabase database) {
+	static public synchronized void reset(Database database) {
 		if(destroying || !ServerConfig.isSchedulerEnabled())
 			return;
 
@@ -108,7 +108,7 @@ public class Scheduler implements Runnable {
 		}
 	}
 
-	static public boolean register(IDatabase database, Thread thread) {
+	static public boolean register(Database database, Thread thread) {
 		if(destroying)
 			return false;
 
@@ -120,7 +120,7 @@ public class Scheduler implements Runnable {
 		return true;
 	}
 
-	static public boolean unregister(IDatabase database, Thread thread) {
+	static public boolean unregister(Database database, Thread thread) {
 		if(destroying)
 			return false;
 
@@ -141,7 +141,7 @@ public class Scheduler implements Runnable {
 		schedulers.clear();
 	}
 
-	private Scheduler(IDatabase database) {
+	private Scheduler(Database database) {
 		this.database = database;
 	}
 
@@ -149,7 +149,7 @@ public class Scheduler implements Runnable {
 		if(suspended || thread != null || !database.isSystemInstalled() || !database.isLatestVersion())
 			return;
 
-		thread = new Thread(this, database.schema() + " scheduler");
+		thread = new Thread(this, database.getSchema() + " scheduler");
 		thread.start();
 	}
 
@@ -175,7 +175,7 @@ public class Scheduler implements Runnable {
 
 	@Override
 	public void run() {
-		ApplicationServer.setRequest(new Request(new Session(database.schema())));
+		ApplicationServer.setRequest(new Request(new Session(database.getSchema())));
 
 		while(thread != null) {
 			initializeJobs();
@@ -242,14 +242,14 @@ public class Scheduler implements Runnable {
 
 		ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
 
-		GuidField user = scheduledJobs.user.get();
+		GuidField user = scheduledJobs.userId.get();
 		StringField cron = scheduledJobs.cron.get();
 		DatetimeField lastStart = scheduledJobs.lastStart.get();
 		DatetimeField nextStart = scheduledJobs.nextStart.get();
 		BoolField active = scheduledJobs.active.get();
 		BoolField logErrorsOnly = scheduledJobs.logErrorsOnly.get();
-		StringField classId = scheduledJobs.jobs.get().classId.get();
-		StringField name = scheduledJobs.jobs.get().name.get();
+		StringField classId = scheduledJobs.job.get().classId.get();
+		StringField name = scheduledJobs.job.get().name.get();
 
 		Collection<Field> fields = Arrays.asList(user, cron, lastStart, nextStart, active, logErrorsOnly, classId, name);
 

@@ -56,11 +56,11 @@ public class UserEntries extends Table {
 		}
 	}
 
-	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
-	public Entries.CLASS<Entries> entries = new Entries.CLASS<Entries>(this);
+	public Users.CLASS<Users> user = new Users.CLASS<Users>(this);
+	public Entries.CLASS<Entries> entry = new Entries.CLASS<Entries>(this);
 
-	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
-	public Link.CLASS<Link> entry = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> userId = new Link.CLASS<Link>(this);
+	public Link.CLASS<Link> entryId = new Link.CLASS<Link>(this);
 
 	public IntegerField.CLASS<? extends IntegerField> position = new IntegerField.CLASS<IntegerField>(this);
 
@@ -74,34 +74,34 @@ public class UserEntries extends Table {
 
 	@Override
 	public void constructor1() {
-		user.get(IClass.Constructor1).operatorAssign(users);
-		entry.get(IClass.Constructor1).operatorAssign(entries);
+		userId.get(IClass.Constructor1).operatorAssign(user);
+		entryId.get(IClass.Constructor1).operatorAssign(entry);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(user);
-		objects.add(entry);
+		objects.add(userId);
+		objects.add(entryId);
 		objects.add(position);
 
-		objects.add(users);
-		objects.add(entries);
+		objects.add(user);
+		objects.add(entry);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
 
-		users.setIndex("users");
-		entries.setIndex("entries");
-
-		user.setName(fieldNames.User);
 		user.setIndex("user");
-
-		entry.setName(fieldNames.Entry);
 		entry.setIndex("entry");
+
+		userId.setName(fieldNames.User);
+		userId.setIndex("userId");
+
+		entryId.setName(fieldNames.Entry);
+		entryId.setIndex("entryId");
 
 		position.setName(fieldNames.Position);
 		position.setIndex("position");
@@ -114,16 +114,16 @@ public class UserEntries extends Table {
 	public void initStaticRecords() {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(user.get(), BuiltinUsers.Administrator.guid());
-			record.put(entry.get(), SystemTools.Id);
+			record.put(userId.get(), BuiltinUsers.Administrator.guid());
+			record.put(entryId.get(), SystemTools.Id);
 			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(Administrator, record);
 		}
 
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
-			record.put(user.get(), BuiltinUsers.System.guid());
-			record.put(entry.get(), SystemTools.Id);
+			record.put(userId.get(), BuiltinUsers.System.guid());
+			record.put(entryId.get(), SystemTools.Id);
 			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(System, record);
 		}

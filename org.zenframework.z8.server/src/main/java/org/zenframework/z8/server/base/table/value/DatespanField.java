@@ -25,6 +25,7 @@ public class DatespanField extends Field {
 	public DatespanField(IObject _container) {
 		super(_container);
 		setDefault(new datespan());
+		aggregation = Aggregation.Sum;
 	}
 
 	public datespan z8_getDefault() {

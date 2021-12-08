@@ -50,7 +50,7 @@ public class UpdateAction extends RequestAction {
 
 	private void checkAccess(Collection<Field> fields) {
 		for(Field field : fields) {
-			if(!field.isPrimaryKey() && !field.access().write())
+			if(!field.isPrimaryKey() && !field.access().getWrite())
 				throw new AccessRightsViolationException();
 		}
 	}
@@ -68,7 +68,7 @@ public class UpdateAction extends RequestAction {
 			Collection<Field> ownerFields = new ArrayList<Field>();
 			Collection<Field> queryFields = new ArrayList<Field>();
 
-			for(String fieldId : JsonObject.getNames(record)) {
+			for(String fieldId : record.getNames()) {
 				Field field = contextQuery.findFieldById(fieldId);
 
 				if(field != null) {
@@ -146,21 +146,20 @@ public class UpdateAction extends RequestAction {
 	static public int run(Query query, guid recordId, boolean resetChangedFields) {
 		int result = 0;
 
-		if(recordId == null || !recordId.equals(guid.Null)) {
-			if(recordId != null)
-				query.beforeUpdate(recordId);
+		if(recordId == null ||recordId.equals(guid.Null))
+			return result;
 
-			Collection<Field> changedFields = query.getChangedFields();
+		query.beforeUpdate(recordId);
 
-			result = changedFields.isEmpty() ? 0 : query.executeUpdate(recordId);
+		Collection<Field> changedFields = query.getChangedFields();
 
-			if(recordId != null)
-				query.afterUpdate(recordId);
+		result = changedFields.isEmpty() ? 0 : query.executeUpdate(recordId);
 
-			if(resetChangedFields) {
-				for(Field field : changedFields)
-					field.reset();
-			}
+		query.afterUpdate(recordId);
+
+		if(resetChangedFields) {
+			for(Field field : changedFields)
+				field.reset();
 		}
 
 		return result;

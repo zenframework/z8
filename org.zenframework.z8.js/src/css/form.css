@@ -1,10 +1,12 @@
 .form.fieldset {
+/*
+	display: block;
+*/
+	overflow-y: auto;
 	padding-top: 1.07142857em;
 	padding-left: 1.07142857em;
 	padding-right: 1.07142857em;
 	margin: 0;
-	overflow-y: auto;
-	overflow-x: hidden;
 	border: none;
 }
 
@@ -35,7 +37,6 @@
 	background-color: #fff;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;
 }
 
 .fieldset>.legend>.fa {
@@ -49,6 +50,7 @@
 .fieldset>.row>.cell.action {
 	justify-content: center;
 	align-items: flex-start;
+	overflow: visible;
 }
 
 .fieldset>.row:not(:last-child)>.cell>.tabs,
@@ -113,6 +115,4 @@
 .fieldset>.row>.cell>.control-group>.box>.textarea.control,
 .fieldset>.row>.cell>.control-group>.box>.html.control {
 	padding: .14285714em;
-	overflow-x: auto;
-	overflow-y: auto;
 }

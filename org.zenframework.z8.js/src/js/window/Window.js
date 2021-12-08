@@ -65,17 +65,10 @@ Z8.define('Z8.window.Window', {
 
 		this.isOpen = true;
 
-		if(this.getDom() == null) {
-			var body = Viewport.getBody();
-			body.items.push(this);
-
-			this.mask = DOM.append(body, { cls: 'window-mask' });
-			this.aligner = DOM.append(body, { cls: 'window-aligner' });
-			this.render(this.aligner);
-		} else {
+		if(this.getDom() == null)
+			this.render(this.mask = DOM.append(Viewport, { cls: 'window-mask' }));
+		else
 			DOM.removeCls(this.mask, 'display-none');
-			DOM.removeCls(this.aligner, 'display-none');
-		}
 
 		DOM.on(Viewport, 'mouseDown', this.monitorOuterClick, this);
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
@@ -97,20 +90,13 @@ Z8.define('Z8.window.Window', {
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
 		if(this.autoDestroy) {
-			var body = Viewport.getBody();
-			body.items.remove(this);
-
-			DOM.remove(this.aligner);
 			DOM.remove(this.mask);
-
-			this.aligner = this.mask = null;
+			this.mask = null;
 
 			if(!this.destroying)
 				this.destroy();
-		} else {
+		} else
 			DOM.addCls(this.mask, 'display-none');
-			DOM.addCls(this.aligner, 'display-none');
-		}
 	},
 
 	monitorOuterClick: function(event) {

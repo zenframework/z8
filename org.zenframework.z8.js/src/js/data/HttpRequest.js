@@ -41,6 +41,11 @@ Z8.define('Z8.data.HttpRequest', {
 			return location.origin + path + '/' + url;
 		},
 
+		parseUrlParameters: function(url) {
+			return new URL(document.location).searchParams;
+//			for(var key of urlSearchParams.keys())
+		},
+
 		send: function(params, callback, type, info) {
 			new HttpRequest().send(params, callback, type, info);
 		},

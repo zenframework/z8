@@ -5,7 +5,6 @@ Z8.define('Z8.list.Item', {
 	constructor: function(config) {
 		this.hidden = 0;
 		this.valid = true;
-		this.follow = true;
 		this.collapsed = false;
 
 		Component.prototype.constructor.call(this, config);
@@ -109,7 +108,6 @@ Z8.define('Z8.list.Item', {
 				var field = fields[i];
 				var text = this.renderText(field, record.get(field.name));
 
-
 				text = this.textMarkup(text, DOM.parseCls(this.getTextCls(field, record)).pushIf('text').join(' '), field);
 				var cell = { cls: this.getCellCls(field, record).join(' '), cn: i == 0 ? icons.add(text) : text };
 
@@ -135,7 +133,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	getTextCls: function(field, record) {
-		return field.source != null && this.follow ? ' follow' : '';
+		return '';
 	},
 
 	getCheckBoxCls: function(value) {
@@ -411,7 +409,7 @@ Z8.define('Z8.list.Item', {
 	},
 
 	updateText: function(index, field) {
-		var field = field || this.getFieldByIndex(index);
+		field = field || this.getFieldByIndex(index);
 		this.setText(index, this.renderText(field, this.record.get(field.name)));
 	},
 
@@ -436,14 +434,16 @@ Z8.define('Z8.list.Item', {
 
 		var index = this.findCellIndex(target);
 
-		var textClick = DOM.isParentOf(this.getTextElement(index), target);
-
-		if(textClick && this.follow && this.followLink(index))
-			return event.stopEvent();
-
 		var list = this.getList();
 
-		if(list.getFocused() && !list.isEditing() && event.button == 0 /* Primary button */ && this.canStartEdit(target) && this.startEdit(index, 300))
+		if(!list.getFocused() || list.isEditing() || event.button != 0 /* Primary button */)
+			return;
+
+		var field = this.getFieldByIndex(index);
+		if(field == null || field.clickToEdit === false)
+			return;
+
+		if(this.canStartEdit(target) && this.startEdit(index, 300))
 			event.stopEvent();
 	},
 

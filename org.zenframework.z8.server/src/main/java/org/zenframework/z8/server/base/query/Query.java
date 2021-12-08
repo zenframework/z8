@@ -36,7 +36,7 @@ import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -45,9 +45,6 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Query extends OBJECT {
-	static public int DefaultStart = 0;
-	static public int DefaultLimit = 200;
-
 	static public class strings {
 		public final static String ReadError = "Query.readError";
 	}
@@ -71,7 +68,6 @@ public class Query extends OBJECT {
 
 	public Field.CLASS<? extends Field> period;
 
-	public integer limit = null;
 	public bool totals = bool.False;
 
 	public RCollection<Control.CLASS<? extends Control>> controls = new RCollection<Control.CLASS<? extends Control>>();
@@ -102,9 +98,8 @@ public class Query extends OBJECT {
 
 	protected Select cursor;
 	public ReadLock readLock = ReadLock.None;
-	private boolean transactive = true;
 
-	private IAccess access;
+	private Access access;
 	private Connection connection;
 
 	private Field parentKey = null;
@@ -131,8 +126,8 @@ public class Query extends OBJECT {
 		return this == query;
 	}
 
-	public IAccess access() {
-		return access != null ? access : (access = ApplicationServer.getUser().privileges().getTableAccess(this));
+	public Access access() {
+		return access != null ? access : (access = ApplicationServer.getUser().getPrivileges().getTableAccess(this));
 	}
 
 	private void initFields() {
@@ -253,14 +248,6 @@ public class Query extends OBJECT {
 
 	public void setReadLock(ReadLock readLock) {
 		this.readLock = readLock;
-	}
-
-	public boolean isTransactive() {
-		return transactive;
-	}
-
-	public void setTransactive(boolean transactive) {
-		this.transactive = transactive;
 	}
 
 	public Connection getConnection() {
@@ -392,11 +379,11 @@ public class Query extends OBJECT {
 		return read(fields, -1);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int limit) {
+	public Collection<Field> read(Collection<Field> fields, int limit) {
 		return read(fields, 0, limit);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int start, int limit) {
+	public Collection<Field> read(Collection<Field> fields, int start, int limit) {
 		return read(fields, null, start, limit);
 	}
 
@@ -956,14 +943,6 @@ public class Query extends OBJECT {
 		return alias;
 	}
 
-	public int limit() {
-		return limit == null ? DefaultLimit : limit.getInt();
-	}
-
-	public int start() {
-		return DefaultStart;
-	}
-
 	@Override
 	public String toString() {
 		return id();
@@ -1171,13 +1150,12 @@ public class Query extends OBJECT {
 
 		writer.writeActions(actions(), this, context);
 		writer.writeReports(reports());
-		writer.writeAccess(access());
+		writer.writeQueryAccess(access());
 
 		writeKeys(writer, selectFields());
 
 		writer.writeProperty(Json.readOnly, isGrouped() || readOnly());
 
-		writer.writeProperty(Json.limit, limit);
 		writer.writeProperty(Json.totals, totals);
 		writer.writeProperty(Json.colCount, colCount);
 	}

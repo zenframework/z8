@@ -385,12 +385,6 @@ Z8.define('Z8.form.field.Listbox', {
 		}
 
 		if(store.hasReadAccess()) {
-			if(this.source != null) {
-				var edit = new Z8.button.Button({ icon: 'fa-pencil', tooltip: Z8.$('Listbox.edit') + this.source.text + '\'', handler: this.onEdit, scope: this });
-				this.setEditTool(edit);
-				tools.push(edit);
-			};
-
 			var refresh = new Z8.button.Button({ icon: 'fa-refresh', tooltip: Z8.$('Listbox.refresh'), handler: this.onRefresh, scope: this });
 			tools.push(refresh);
 			this.setRefreshTool(refresh);
@@ -493,7 +487,6 @@ Z8.define('Z8.form.field.Listbox', {
 		var list = this.list = this.createList();
 		list.on('select', this.onSelect, this);
 		list.on('check', this.onCheck, this);
-		list.on('follow', this.onFollow, this);
 		list.on('contentChange', this.onContentChange, this);
 		list.on('itemEditorChange', this.onItemEditorChange, this);
 		list.on('itemEdit', this.onItemEdit, this);
@@ -549,25 +542,6 @@ Z8.define('Z8.form.field.Listbox', {
 			this.selectTask = new Z8.util.DelayedTask();
 
 		this.selectTask.delay(50, this.updateDependencies, this, record);
-	},
-
-	onFollow: function(record, field) {
-		var source = field.source;
-
-		if(source != null) {
-			var link = source.link || (field.link ? field.link.owner : null);
-
-			var params = {
-				request: source.request,
-				where: { property: 'recordId', value: link != null ? record.get(link) : record.id }
-			};
-
-			Viewport.open(params, false, { oneRecord: true, sourceLink: link, title: record.get(field.name) });
-		} else if(field.type == Type.File) {
-			var file = record.get(field.name);
-			if(!Z8.isEmpty(file))
-				DOM.download(file[0].path, file[0].id);
-		}
 	},
 
 	onContentChange: function() {
@@ -1131,10 +1105,6 @@ Z8.define('Z8.form.field.Listbox', {
 			records.push(items[i].record);
 
 		this.fireEvent('check', this, records, checked);
-	},
-
-	onEdit: function(button) {
-		Viewport.open(this.source.request);
 	},
 
 	onQuickFilter: function(button, toggled) {

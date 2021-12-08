@@ -33,7 +33,7 @@ public class Domain {
 		return address;
 	}
 
-	public IUser getSystemUser() {
+	public User getSystemUser() {
 		return user.isNull() ? system().getSystemUser() : User.read(user);
 	}
 

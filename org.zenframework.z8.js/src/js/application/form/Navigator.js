@@ -9,13 +9,8 @@ Z8.define('Z8.application.form.Navigator', {
 	initComponent: function() {
 		var store = this.store;
 
-		if (store.sourceFilter != null)
-			this.sourceFilter = store.sourceFilter;
-
 		if(!store.isStore)
 			store = this.store = new Z8.query.Store(store);
-
-		store.on('recordChange', this.onStoreRecordChange, this);
 
 		this.icon = store.form.icon;
 		this.presentation = store.form.presentation || 'form';
@@ -99,30 +94,9 @@ Z8.define('Z8.application.form.Navigator', {
 	completeRender: function() {
 		this.callParent();
 		DOM.on(this, 'keyDown', this.onKeyDown, this);
-
-		if(Viewport.sourceCode != null) {
-			Viewport.sourceCode.owner = this.sourceCodeButton;
-			Viewport.sourceCode.on('show', this.onSourceCodeShow, this);
-			Viewport.sourceCode.on('hide', this.onSourceCodeHide, this);
-		}
-
-		if (this.sourceFilter != null) {
-			var quickFilter = this.findQuickFilter(this.sourceFilter.property);
-			if (quickFilter != null) {
-				quickFilter.setValue(this.sourceFilter.value);
-				quickFilter.lastSearchValue = ' ';
-				quickFilter.updateTrigger();
-			}
-		}
 	},
 
 	onDestroy: function() {
-		if(Viewport.sourceCode != null) {
-			Viewport.sourceCode.un('show', this.onSourceCodeShow, this);
-			Viewport.sourceCode.un('hide', this.onSourceCodeHide, this);
-			Viewport.sourceCode.owner = null;
-		}
-
 		DOM.un(this, 'keyDown', this.onKeyDown, this);
 
 		this.callParent();
@@ -154,39 +128,6 @@ Z8.define('Z8.application.form.Navigator', {
 		return listbox;
 	},
 
-	onStoreRecordChange: function(store, record, modified) {
-		this.onRecordChange(record, modified);
-
-		if(!this.oneRecord)
-			return;
-
-		var forms = Viewport.forms;
-		var index = forms.indexOf(this);
-
-		var form = forms[index - 1];
-		if(!(form instanceof Z8.application.form.Navigator))
-			return;
-
-		var field = this.sourceLink;
-		var id = record.id;
-
-		var store = form.getStore();
-		var records = store.getRecords();
-		var toReload = [];
-
-		for(var i = 0, length = records.length; i < length; i++) {
-			var record = records[i];
-			if(field != null && record.get(field) == id || record.id == id)
-				toReload.add(record);
-		}
-
-		if(toReload.length < 10) {
-			for(var i = 0, length = toReload.length; i < length; i++)
-				toReload[i].reload();
-		} else
-			store.load();
-	},
-
 	onRecordChange: function(record, modified) {
 	},
 
@@ -207,13 +148,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createToolbar: function() {
-		var buttons = this.createTools();
-
-		var sourceCode = this.sourceCodeButton = this.createSourceCodeButton();
-		if(sourceCode != null)
-			buttons.add({ cls: 'flex-1' }).add(sourceCode);
-
-		return new Z8.toolbar.Toolbar({ items: buttons });
+		return new Z8.toolbar.Toolbar({ items: this.createTools() });
 	},
 
 	createTools: function() {
@@ -321,18 +256,6 @@ Z8.define('Z8.application.form.Navigator', {
 		return new Z8.form.field.SearchText(config);
 	},
 
-	findQuickFilter: function(field) {
-		var quickFilters = this.quickFilters;
-		if (quickFilters == null)
-			return null;
-		for (var i = 0; i < quickFilters.length; i++) {
-			var quickFilter = quickFilters[i];
-			if (quickFilter.field.name == field)
-				return quickFilter;
-		}
-		return null;
-	},
-
 	createFilterButton: function() {
 		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFilterFields() });
 		filter.on('filter', this.onFilter, this);
@@ -415,25 +338,6 @@ Z8.define('Z8.application.form.Navigator', {
 		return new Z8.button.Button({ icon: 'fa-print', tooltip: Z8.$('Navigator.printDocuments'), menu: menu, handler: this.onMenuButtonClick, scope: this });
 	},
 
-	createSourceCodeButton: function() {
-		if(Viewport.sourceCode == null)
-			return null;
-
-		return new Z8.button.Button({ success: true, icon: 'fa-code', toggled: false, toggleHandler: this.toggleSourceCode, scope: this });
-	},
-
-	onSourceCodeShow: function() {
-		if(this.sourceCodeButton != null)
-			this.sourceCodeButton.setToggled(true, true);
-	},
-
-	onSourceCodeHide: function() {
-		if(this.sourceCodeButton != null) {
-			this.sourceCodeButton.setToggled(false, true);
-			this.focus();
-		}
-	},
-
 	getListboxConfig: function() {
 		var names = this.getNames();
 		var quickFilters = this.getQuickFilterFields();
@@ -497,7 +401,7 @@ Z8.define('Z8.application.form.Navigator', {
 			var controls = this.form.getFields();
 			for(var i = 0, length = controls.length; i < length; i++) {
 				var field = controls[i].field;
-				if(field != null && !field.isListbox && !field.isContainer && !field.isFieldset && !field.isGeometry)
+				if(field != null && !field.isListbox && !field.isContainer && !field.isFieldset)
 					columns.push(field);
 			}
 		}
@@ -620,10 +524,6 @@ Z8.define('Z8.application.form.Navigator', {
 
 		this.presentation = 'table';
 		this.focus();
-	},
-
-	toggleSourceCode: function(button, toggled) {
-		Viewport.showSourceCode(toggled);
 	},
 
 	onSearch: function(search, value) {
@@ -796,41 +696,12 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onAction: function(menu, item) {
-		var action = item.action;
-
-		if(!Z8.isEmpty(action.parameters))
-			this.requestActionParameters(menu, item);
-		else
-			this.runAction(menu, item);
-	},
-
-	requestActionParameters: function(menu, item) {
-		var handler = function(action) { this.runAction(menu, item, ActionUtil.getParameters(action)) };
-		var action = item.action;
-
-		if(ActionUtil.hasVisibleParameters(action)) {
-			var window = ActionUtil.getParametersWindow(action, handler, this);
-			window.open();
-		} else {
-			handler.call(this, action);
-		}
-	},
-
-	runAction: function(menu, item, parameters) {
 		this.actionsButton.setBusy(true);
 
 		var action = item.action;
 		var records = this.getSelectedIds();
 
-		var params = {
-			request: action.request,
-			action: 'action',
-			name: action.name,
-			records: records
-		};
-
-		if (parameters)
-			params.parameters = parameters;
+		var params = { request: action.request, action: 'action', name: action.name, records: records };
 
 		var callback = function(response, success) {
 			this.onActionComplete(action, this.getChecked(), response, success);

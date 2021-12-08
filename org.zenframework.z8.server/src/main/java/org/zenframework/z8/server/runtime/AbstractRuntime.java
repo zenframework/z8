@@ -249,5 +249,4 @@ public abstract class AbstractRuntime implements IRuntime {
 		for(OBJECT.CLASS<? extends OBJECT> systemTool : runtime.systemTools())
 			addSystemTool(systemTool);
 	}
-
 }

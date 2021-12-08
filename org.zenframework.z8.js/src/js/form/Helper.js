@@ -17,7 +17,7 @@ Z8.define('Z8.form.Helper', {
 			}
 
 			var label = field.label !== false ? { text: field.header || field.text, icon: field.icon, align: 'top' } : false;
-			var config = { label: label, placeholder: field.header || field.text, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: field.readOnly, editable: field.editable, required: field.required, enterOnce: field.enterOnce, source: field.source, length: field.length };
+			var config = { label: label, placeholder: field.header || field.text, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: field.readOnly, editable: field.editable, required: field.required, enterOnce: field.enterOnce, length: field.length };
 
 			if(field.displayName != null)
 				config.displayName = field.displayName;
@@ -87,9 +87,6 @@ Z8.define('Z8.form.Helper', {
 
 			if(type == Type.String)
 				return cls != null ? Z8.create(cls, config) : new TextBox(config);
-
-			if(type == Type.Geometry)
-				return cls != null ? Z8.create(cls, config) : new Z8.form.field.Geometry(config);
 
 			if(type == Type.Text) {
 				config.minHeight = Ems.unitsToEms(field.height);

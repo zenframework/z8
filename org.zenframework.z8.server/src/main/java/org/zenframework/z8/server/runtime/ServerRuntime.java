@@ -9,10 +9,13 @@ import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.Requests;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
+import org.zenframework.z8.server.base.table.system.RoleSecuredObjectAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.ScheduledJobLogs;
 import org.zenframework.z8.server.base.table.system.ScheduledJobs;
+import org.zenframework.z8.server.base.table.system.SecuredObjectAccess;
+import org.zenframework.z8.server.base.table.system.SecuredObjects;
 import org.zenframework.z8.server.base.table.system.Sequences;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.SystemTools;
@@ -24,7 +27,7 @@ import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.system.view.DomainsView;
 import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.JobsView;
-import org.zenframework.z8.server.base.table.system.view.RoleTableAccessView;
+import org.zenframework.z8.server.base.table.system.view.RoleView;
 import org.zenframework.z8.server.base.table.system.view.SequencesView;
 import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
@@ -41,10 +44,13 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new Tables.CLASS<Tables>(null));
 		addTable(new Fields.CLASS<Fields>(null));
 		addTable(new Requests.CLASS<Requests>(null));
+		addTable(new SecuredObjects.CLASS<SecuredObjects>(null));
+		addTable(new SecuredObjectAccess.CLASS<SecuredObjectAccess>(null));
 
 		addTable(new RoleTableAccess.CLASS<RoleTableAccess>(null));
 		addTable(new RoleFieldAccess.CLASS<RoleFieldAccess>(null));
 		addTable(new RoleRequestAccess.CLASS<RoleRequestAccess>(null));
+		addTable(new RoleSecuredObjectAccess.CLASS<RoleSecuredObjectAccess>(null));
 
 		addTable(new UserRoles.CLASS<UserRoles>(null));
 
@@ -67,7 +73,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
 
 		addSystemTool(new UsersView.CLASS<UsersView>(null));
-		addSystemTool(new RoleTableAccessView.CLASS<RoleTableAccessView>(null));
+		addSystemTool(new RoleView.CLASS<RoleView>(null));
 		addSystemTool(new JobsView.CLASS<JobsView>(null));
 		addSystemTool(new TablesView.CLASS<TablesView>(null));
 		addSystemTool(new SequencesView.CLASS<SequencesView>(null));

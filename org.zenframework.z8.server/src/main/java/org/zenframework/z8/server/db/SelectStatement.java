@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 
 public class SelectStatement extends Statement {
 	private Cursor cursor = null;
@@ -41,7 +41,7 @@ public class SelectStatement extends Statement {
 		return cursor(ConnectionManager.get(), sql);
 	}
 
-	public static Cursor cursor(IDatabase database, String sql) throws SQLException {
+	public static Cursor cursor(Database database, String sql) throws SQLException {
 		return cursor(ConnectionManager.get(database), sql);
 	}
 

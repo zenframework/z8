@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
@@ -16,6 +17,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 
 public class Table extends TableBase {
 	static public class fieldNames {
@@ -148,7 +150,7 @@ public class Table extends TableBase {
 	public void beforeCreate(guid recordId) {
 		if(ApplicationServer.systemEventsEnabled()) {
 			createdAt.get().set(new date());
-			createdBy.get().set(ApplicationServer.getUser().id());
+			createdBy.get().set(ApplicationServer.getUser().getId());
 		}
 
 		super.beforeCreate(recordId);
@@ -158,7 +160,7 @@ public class Table extends TableBase {
 	public void beforeUpdate(guid recordId) {
 		if(ApplicationServer.systemEventsEnabled()) {
 			modifiedAt.get().set(new date());
-			modifiedBy.get().set(ApplicationServer.getUser().id());
+			modifiedBy.get().set(ApplicationServer.getUser().getId());
 		}
 
 		super.beforeUpdate(recordId);
@@ -179,12 +181,12 @@ public class Table extends TableBase {
 
 		for(Field field : getPrimaryFields())
 			result += field.controlSum();
-/*
+
 		for(Map<IField, primary> record : getStaticRecords()) {
 			for(primary value : record.values())
 				result += Math.abs(value.hashCode());
 		}
-*/
+
 		return Math.abs(Integer.toString(result).hashCode());
 	}
 

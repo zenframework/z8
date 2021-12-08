@@ -3,9 +3,11 @@ package org.zenframework.z8.server.db.generator;
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.EventsLevel;
-import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -44,6 +46,32 @@ public class SchemaGenerator extends Executable {
 		super.execute();
 	}
 
+	private void beforeStart() {
+		Connection connection = ConnectionManager.get();
+
+		try {
+			connection.beginTransaction();
+			z8_beforeStart();
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw e;
+		}
+	}
+
+	private void afterFinish() {
+		Connection connection = ConnectionManager.get();
+
+		try {
+			connection.beginTransaction();
+			z8_afterFinish();
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw e;
+		}
+	}
+
 	public void z8_beforeStart() {
 	}
 
@@ -53,7 +81,7 @@ public class SchemaGenerator extends Executable {
 	@Override
 	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 		ILogger logger = new Logger();
-		IDatabase database = ApplicationServer.getDatabase();
+		Database database = ApplicationServer.getDatabase();
 
 		try {
 			Scheduler.suspend(database);
@@ -61,11 +89,11 @@ public class SchemaGenerator extends Executable {
 
 			ApplicationServer.setEventsLevel(EventsLevel.SYSTEM);
 
-			z8_beforeStart();
+			beforeStart();
 
 			new Generator(logger).run();
 
-			z8_afterFinish();
+			afterFinish();
 		} catch(Throwable e) {
 			logger.error(e);
 		} finally {

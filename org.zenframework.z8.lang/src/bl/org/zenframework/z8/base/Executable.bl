@@ -7,9 +7,6 @@ public class Executable extends Action {
 	virtual protected void execute();
 	virtual protected void execute(Parameter[] parameters);
 
-	protected void switchUser(guid user);
-	protected void resetUser();
-
 	protected void progress(int workPercent);
 
 	protected void info(string text);

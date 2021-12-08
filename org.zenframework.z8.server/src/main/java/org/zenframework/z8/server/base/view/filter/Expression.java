@@ -146,6 +146,10 @@ public class Expression implements IFilter {
 			case GT:
 			case GE:
 				return new Rel(field, operation, new date(value).sql_date());
+			case IsEmpty:
+				return new Rel(field, Operation.Eq, date.Min.sql_date());
+			case IsNotEmpty:
+				return new Rel(field, Operation.NotEq, date.Min.sql_date());
 			case Yesterday:
 				return new Rel(field, Operation.Eq, new date().addDay(-1).sql_date());
 			case Today:

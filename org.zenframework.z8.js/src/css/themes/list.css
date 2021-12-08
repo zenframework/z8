@@ -1,0 +1,222 @@
+.list {
+	display: flex;
+	flex-direction: column;
+	text-align: left;
+}
+
+.list>.scroller {
+	position: relative;
+}
+
+.list>.scroller.items {
+	overflow-y: auto;
+	flex: 1;
+}
+
+.list.columns>.scroller.items,
+.list.columns>.scroller.totals {
+	overflow-x: auto;
+}
+
+.list.columns.totals>.scroller.items {
+	overflow-x: hidden;
+}
+
+.list table {
+	cursor: default;
+	width: 100%;
+}
+
+.list .column {
+	position: relative;
+}
+
+.list .header>.column>.text,
+.list .item>.column>.cell>.text,
+.list .total>.column>.cell>.text {
+	text-overflow: ellipsis;
+}
+
+.list .total>.column>.cell>.text {
+	white-space: nowrap;
+}
+
+.list .header>.column>.text {
+	float: left;
+	max-width: 100%;
+}
+
+.list .item>.column>.cell,
+.list .total>.column>.cell {
+	display: flex;
+	flex-direction: row;
+}
+
+.list .number>.column>.cell {
+	text-align: center;
+}
+
+.list .item>.column>.cell>.icon.empty {
+	display: none;
+}
+
+.list .item>.column>.cell>.text,
+.list .total>.column>.cell>.text {
+	display: inline-block;
+	flex: 1;
+}
+
+.list .item>.column.file>.cell>.text,
+.list .item>.column>.cell>.text.follow {
+	cursor: pointer;
+}
+
+.list .item>.column.int>.cell,
+.list .total>.column.int>.cell,
+.list .item>.column.float>.cell,
+.list .total>.column.float>.cell,
+.list .item>.column.date>.cell,
+.list .total>.column.date>.cell,
+.list .item>.column.datetime>.cell,
+.list .total>.column.datetime>.cell {
+	white-space: nowrap;
+}
+
+.list .item>.column.int:first-child>.cell,
+.list .item>.column.float:first-child>.cell,
+.list .item>.column.date:first-child>.cell,
+.list .item>.column.datetime:first-child>.cell {
+	flex-direction: row;
+}
+
+.list .item>.column.boolean>.cell,
+.list .item>.column.check>.cell,
+.list .item>.column.lock>.cell {
+	flex-direction: column;
+	align-items: center;
+}
+
+.list .item>.column.check>.cell>.text,
+.list .item>.column.lock>.cell>.text,
+.list .item>.column.boolean>.cell>.text {
+	cursor: pointer;
+}
+
+.list .item.active>.column:first-child:before {
+	content: ' ';
+	position: absolute;
+	top: 0;
+	width: 2px;
+	left: 0;
+	bottom: 0;
+	z-index: 2;
+}
+
+.list .item>.column>.control-group {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: absolute;
+	z-index: 1;
+}
+
+.list .item>.column>.control-group>.box>.textarea.control {
+	overflow-y: hidden;
+	white-space: normal;
+}
+
+.list .item>.column>.control-group>.label {
+	display: none;
+}
+
+.list .header>.column {
+	cursor: pointer;
+}
+
+.list .header>.column.icon {
+	cursor: pointer;
+}
+
+.list .item:not(.no-children)>.column>.cell>.collapser {
+	cursor: pointer;
+}
+
+.list .header>.column>.resize-handle-left,
+.list .header>.column>.resize-handle-right {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	cursor: col-resize;
+}
+
+.list .header>.column>.resize-handle-left {
+	left: 0;
+}
+
+.list .header>.column>.resize-handle-right {
+	right: 0;
+}
+
+.list .header>.column.first:first-child>.resize-handle-left {
+	display: none;
+}
+
+.list .item.disabled:hover>.column,
+.list .item.disabled>.column {
+	cursor: not-allowed
+}
+
+.dropdown-list.list,
+.dropdown-menu.list {
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	position: fixed;
+}
+
+.dropdown-list.list>.scroller.items {
+	height: 100%;
+}
+
+.dropdown-list.list.columns>.scroller.items {
+	top: 0;
+}
+
+.dropdown-list.list .item {
+	text-overflow: ellipsis;
+}
+
+.dropdown-menu.list table {
+	table-layout: auto;
+}
+
+.dropdown-menu.list .item>.column>.cell>.text {
+	position: relative;
+	white-space: nowrap;
+	flex: 1;
+}
+
+.dropdown-menu.list .item>.column>.cell>.text.shortcuts {
+	display: flex;
+}
+
+.dropdown-menu.list .item>.column>.cell>.text>.shortcut {
+	text-align: right;
+	flex: 1;
+}
+
+.list.control {
+	height: auto;
+}
+
+.column-resizer-mask {
+	cursor: col-resize;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1000000;
+}

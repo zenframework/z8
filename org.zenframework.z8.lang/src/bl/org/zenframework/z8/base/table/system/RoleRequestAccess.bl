@@ -6,11 +6,11 @@ import org.zenframework.z8.base.table.value.Link;
 [displayName "Права доступа к запросам"]
 [native "org.zenframework.z8.server.base.table.system.RoleRequestAccess"]
 public class RoleRequestAccess extends Table {
-	public Roles roles;
-	public Requests requests;
+	public Roles role;
+	public Requests request;
 
-	public Link role = roles;
-	public Link request = requests;
+	public Link roleId = role;
+	public Link requestId = request;
 
 	[displayName "Исполнение"] public BoolField execute;
 }

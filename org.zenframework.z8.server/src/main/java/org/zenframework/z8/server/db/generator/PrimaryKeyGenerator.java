@@ -8,7 +8,7 @@ import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.DmlStatement;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 
 class PrimaryKeyGenerator {
 	private Table table = null;
@@ -24,10 +24,10 @@ class PrimaryKeyGenerator {
 			return;
 
 		Connection connection = ConnectionManager.get();
-		IDatabase database = connection.database();
-		DatabaseVendor vendor = database.vendor();
+		Database database = connection.getDatabase();
+		DatabaseVendor vendor = database.getVendor();
 
-		String sql = "ALTER TABLE " + database.tableName(table.name()) + " ADD PRIMARY KEY(" + vendor.quote(primaryKey.name()) + ")";
+		String sql = "ALTER TABLE " + database.getTableName(table.name()) + " ADD PRIMARY KEY(" + vendor.quote(primaryKey.name()) + ")";
 		DmlStatement.execute(sql);
 	}
 }

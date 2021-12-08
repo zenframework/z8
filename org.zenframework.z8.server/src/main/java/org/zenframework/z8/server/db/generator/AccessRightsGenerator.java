@@ -1,7 +1,9 @@
 package org.zenframework.z8.server.db.generator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -11,10 +13,14 @@ import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.Requests;
 import org.zenframework.z8.server.base.table.system.RoleFieldAccess;
 import org.zenframework.z8.server.base.table.system.RoleRequestAccess;
+import org.zenframework.z8.server.base.table.system.RoleSecuredObjectAccess;
 import org.zenframework.z8.server.base.table.system.RoleTableAccess;
 import org.zenframework.z8.server.base.table.system.Roles;
+import org.zenframework.z8.server.base.table.system.SecuredObjectAccess;
+import org.zenframework.z8.server.base.table.system.SecuredObjects;
 import org.zenframework.z8.server.base.table.system.Tables;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.FieldType;
@@ -22,11 +28,12 @@ import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.security.IAccess;
-import org.zenframework.z8.server.security.IRole;
+import org.zenframework.z8.server.security.Access;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class AccessRightsGenerator {
@@ -38,9 +45,14 @@ public class AccessRightsGenerator {
 	private RoleFieldAccess rfa = new RoleFieldAccess.CLASS<RoleFieldAccess>().get();
 	private RoleRequestAccess rra = new RoleRequestAccess.CLASS<RoleRequestAccess>().get();
 
+	private SecuredObjects securedObjects = SecuredObjects.newInstance();
+	private SecuredObjectAccess soa = SecuredObjectAccess.newInstance();
+	private RoleSecuredObjectAccess rsoa = new RoleSecuredObjectAccess.CLASS<RoleSecuredObjectAccess>().get();
+
 	private Collection<guid> tableKeys = new HashSet<guid>();
 	private Collection<guid> requestKeys = new HashSet<guid>();
-	private Collection<IRole> roles = null;
+
+	private Collection<Role> roles = null;
 
 	@SuppressWarnings("unused")
 	private ILogger logger;
@@ -63,6 +75,9 @@ public class AccessRightsGenerator {
 			clearRequests();
 			createRequests();
 
+			clearSecuredObjects();
+			createSecuredObjects();
+
 			connection.commit();
 		} catch(Throwable e) {
 			connection.rollback();
@@ -77,9 +92,9 @@ public class AccessRightsGenerator {
 
 		while(tables.next()) {
 			guid tableId = tables.recordId();
-			rta.destroy(new Equ(rta.table.get(), tableId));
-			rfa.destroy(new Equ(rfa.fields.get().table.get(), tableId));
-			fields.destroy(new Equ(fields.table.get(), tableId));
+			rta.destroy(new Equ(rta.tableId.get(), tableId));
+			rfa.destroy(new Equ(rfa.field.get().tableId.get(), tableId));
+			fields.destroy(new Equ(fields.tableId.get(), tableId));
 			tables.destroy(tableId);
 		}
 	}
@@ -103,17 +118,17 @@ public class AccessRightsGenerator {
 
 			createFields(table);
 
-			for(IRole role : getRoles()) {
-				IAccess access = role.access();
+			for(Role role : getRoles()) {
+				Access access = role.getAccess();
 
-				rta.role.get().set(role.id());
-				rta.table.get().set(key);
+				rta.roleId.get().set(role.getId());
+				rta.tableId.get().set(key);
 
-				rta.read.get().set(new bool(access.read()));
-				rta.write.get().set(new bool(access.write()));
-				rta.create.get().set(new bool(access.create()));
-				rta.copy.get().set(new bool(access.copy()));
-				rta.destroy.get().set(new bool(access.destroy()));
+				rta.read.get().set(new bool(access.getRead()));
+				rta.write.get().set(new bool(access.getWrite()));
+				rta.create.get().set(new bool(access.getCreate()));
+				rta.copy.get().set(new bool(access.getCopy()));
+				rta.destroy.get().set(new bool(access.getDestroy()));
 				rta.create();
 			}
 		}
@@ -124,7 +139,7 @@ public class AccessRightsGenerator {
 
 		while(requests.next()) {
 			guid requestId = requests.recordId();
-			rra.destroy(new Equ(rra.request.get(), requestId));
+			rra.destroy(new Equ(rra.requestId.get(), requestId));
 			requests.destroy(requestId);
 		}
 	}
@@ -144,14 +159,86 @@ public class AccessRightsGenerator {
 			setRequestProperties(request);
 			requests.create(key);
 
-			for(IRole role : getRoles()) {
-				IAccess access = role.access();
+			for(Role role : getRoles()) {
+				Access access = role.getAccess();
 
-				rra.role.get().set(role.id());
-				rra.request.get().set(key);
+				rra.roleId.get().set(role.getId());
+				rra.requestId.get().set(key);
 
-				rra.execute.get().set(new bool(access.execute()));
+				rra.execute.get().set(new bool(access.getExecute()));
 				rra.create();
+			}
+		}
+	}
+
+	private Collection<guid> securedObjectKeys() {
+		Collection<guid> keys = new ArrayList<guid>();
+
+		for(Map<IField, primary> record : securedObjects.getStaticRecords())
+			keys.add((guid)record.get(securedObjects.primaryKey()));
+
+		return keys;
+	}
+
+	private Collection<guid> securedObjectAccessKeys() {
+		Collection<guid> keys = new ArrayList<guid>();
+
+		for(Map<IField, primary> record : soa.getStaticRecords())
+			keys.add((guid)record.get(soa.primaryKey()));
+
+		return keys;
+	}
+
+	private void clearSecuredObjects() {
+		securedObjects.read(Arrays.asList(securedObjects.primaryKey()), securedObjects.primaryKey().notInVector(securedObjectKeys()));
+
+		while(securedObjects.next()) {
+			guid securedObjectId = securedObjects.recordId();
+			rsoa.destroy(new Equ(rsoa.soa.get().securedObjectId.get(), securedObjectId));
+			soa.destroy(new Equ(soa.securedObjectId.get(), securedObjectId));
+			securedObjects.destroy(securedObjectId);
+		}
+
+		soa.read(Arrays.asList(soa.primaryKey()), soa.primaryKey().notInVector(securedObjectAccessKeys()));
+
+		while(soa.next()) {
+			guid securedObjectAccessId = soa.recordId();
+			rsoa.destroy(new Equ(rsoa.soaId.get(), securedObjectAccessId));
+			soa.destroy(securedObjectAccessId);
+		}
+	}
+
+	private void createSecuredObjects() {
+		Collection<guid> soaKeys = securedObjectAccessKeys();
+
+		Map<guid, Collection<guid>> roleToSoaKeys = new HashMap<guid, Collection<guid>>();
+
+		Field roleId = rsoa.roleId.get();
+		Field soaId = rsoa.soaId.get();
+		rsoa.read(Arrays.asList(roleId, soaId));
+
+		while(rsoa.next()) {
+			Collection<guid> keys = roleToSoaKeys.get(roleId.guid());
+
+			if(keys == null) {
+				keys = new ArrayList<guid>();
+				roleToSoaKeys.put(roleId.guid(), keys);
+			}
+
+			keys.add(soaId.guid());
+		}
+
+		for(guid key : soaKeys) {
+			for(Role role : getRoles()) {
+				Collection<guid> keys = roleToSoaKeys.get(role.getId());
+
+				if(keys != null && keys.contains(key))
+					continue;
+
+				rsoa.roleId.get().set(role.getId());
+				rsoa.soaId.get().set(key);
+				rsoa.value.get().set(new bool(role.getAccess().get(key)));
+				rsoa.create();
 			}
 		}
 	}
@@ -161,11 +248,11 @@ public class AccessRightsGenerator {
 		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
 		fields.read(Arrays.asList(fields.primaryKey()),
-				new And(new Equ(fields.table.get(), table.key()), fields.primaryKey().notInVector(fieldKeys)));
+				new And(new Equ(fields.tableId.get(), table.key()), fields.primaryKey().notInVector(fieldKeys)));
 
 		while(fields.next()) {
 			guid fieldId = fields.recordId();
-			rfa.destroy(new Equ(rfa.field.get(), fieldId));
+			rfa.destroy(new Equ(rfa.fieldId.get(), fieldId));
 			fields.destroy(fieldId);
 		}
 
@@ -188,14 +275,14 @@ public class AccessRightsGenerator {
 		for(guid key : fieldKeys) {
 			setFieldProperties(fieldsMap.get(key), table.key());
 			fields.create(key);
-			for(IRole role : getRoles()) {
-				IAccess access = role.access();
+			for(Role role : getRoles()) {
+				Access access = role.getAccess();
 
-				rfa.role.get().set(role.id());
-				rfa.field.get().set(key);
+				rfa.roleId.get().set(role.getId());
+				rfa.fieldId.get().set(key);
 
-				rfa.read.get().set(new bool(access.read()));
-				rfa.write.get().set(new bool(access.write()));
+				rfa.read.get().set(new bool(access.getRead()));
+				rfa.write.get().set(new bool(access.getWrite()));
 				rfa.create();
 			}
 		}
@@ -210,7 +297,7 @@ public class AccessRightsGenerator {
 	}
 
 	private void setFieldProperties(Field field, guid tableKey) {
-		fields.table.get().set(tableKey);
+		fields.tableId.get().set(tableKey);
 		fields.name.get().set(new string(field.name()));
 		fields.displayName.get().set(new string(displayName(field)));
 		fields.description.get().set(new string(field.description()));
@@ -225,11 +312,9 @@ public class AccessRightsGenerator {
 		requests.lock.get().set(RecordLock.Full);
 	}
 
-	private Collection<IRole> getRoles() {
-		if(roles == null) {
-			Roles rolesTable = new Roles.CLASS<Roles>(null).get();
-			roles = rolesTable.get();
-		}
+	private Collection<Role> getRoles() {
+		if(roles == null)
+			roles = Roles.get().values();
 		return roles;
 	}
 

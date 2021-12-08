@@ -45,7 +45,11 @@ public class Cursor {
 	}
 
 	public boolean next() throws SQLException {
-		return resultSet.next();
+		if(resultSet != null && resultSet.next())
+			return true;
+
+		close();
+		return false;
 	}
 
 	public boolean isAfterLast() throws SQLException {
@@ -153,7 +157,7 @@ public class Cursor {
 	private guid getGuid(int position, Field field) throws SQLException {
 		Object value = null;
 
-		if(statement.vendor() == DatabaseVendor.Postgres)
+		if(statement.getVendor() == DatabaseVendor.Postgres)
 			value = resultSet.getObject(position);
 		else
 			value = resultSet.getString(position);
@@ -187,7 +191,7 @@ public class Cursor {
 		boolean wasNull = value == null || wasNull();
 		field.setWasNull(wasNull);
 
-		return !wasNull ? (value instanceof String ? new string((String)value) : new string((byte[])value, statement.charset())) : new string();
+		return !wasNull ? (value instanceof String ? new string((String)value) : new string((byte[])value, statement.getCharset())) : new string();
 	}
 
 	public string getText(int position) throws SQLException {

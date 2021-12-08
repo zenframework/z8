@@ -18,7 +18,7 @@ public class DestroyAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		if(!getQuery().access().destroy())
+		if(!getQuery().access().getDestroy())
 			throw new AccessRightsViolationException();
 
 		JsonArray records = new JsonArray(getRequestParameter(Json.data));

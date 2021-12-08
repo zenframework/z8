@@ -53,7 +53,7 @@ public class ActionReport extends Action {
 	@SuppressWarnings("rawtypes")
 	public void z8_execute(guid record, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		Report report = this.report.get();
-		Parameter parameter = (Parameter)getParameter(Json.format.get());
+		Parameter parameter = getParameter(Json.format.get());
 		report.format = parameter != null ? parameter.string() : Report.Pdf;
 		ApplicationServer.getMonitor().print(report.run(record));
 	}

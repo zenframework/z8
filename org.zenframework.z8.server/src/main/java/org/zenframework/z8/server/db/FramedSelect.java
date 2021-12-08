@@ -21,12 +21,12 @@ public class FramedSelect extends Select {
 	}
 
 	@Override
-	protected String sql(FormatOptions options) {
-		DatabaseVendor vendor = database().vendor();
+	protected String getSql(FormatOptions options) {
+		DatabaseVendor vendor = getDatabase().getVendor();
 
 		if(vendor == DatabaseVendor.Oracle) {
 			if(limit <= 0 && start == 0)
-				return super.sql(options);
+				return super.getSql(options);
 
 			Field rowNum = new Expression(new SqlStringToken("ROWNUM", FieldType.Integer), FieldType.Integer);
 
@@ -53,15 +53,15 @@ public class FramedSelect extends Select {
 				setHaving(null);
 			}
 
-			return super.sql(options);
+			return super.getSql(options);
 		} else if(vendor == DatabaseVendor.Postgres) {
-			String sql = super.sql(options);
+			String sql = super.getSql(options);
 
 			sql += "\nlimit " + (limit > 0 ? limit : "all") + " offset " + start;
 			return sql;
 		} else if(vendor == DatabaseVendor.H2) {
 			options.disableReadLock();
-			String sql = super.sql(options);
+			String sql = super.getSql(options);
 			if (limit > 0)
 				sql += "\nlimit " + (limit > 0 ? limit : "all") + " offset " + start;
 			options.enableReadLock();

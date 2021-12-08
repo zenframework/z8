@@ -90,10 +90,6 @@ Z8.define('Z8.data.Model', {
 		return this.name || this.$className;
 	},
 
-	getSourceCodeLocation: function() {
-		return this.sourceCode || this.name || this.$className;
-	},
-
 	isLocal: function() {
 		return this.local === true;
 	},
@@ -140,12 +136,17 @@ Z8.define('Z8.data.Model', {
 		return left == right;
 	},
 
+	getData: function() {
+		return this.data;
+	},
+
 	getFields: function() {
-		return this.fields;
+		return this.fields || [];
 	},
 
 	getField: function(name) {
-		return this.fields[this.getOrdinals()[name]];
+		var fields = this.getFields();
+		return fields != null ? fields[this.getOrdinals()[name]] : null;
 	},
 
 	getLinks: function() {
@@ -169,7 +170,7 @@ Z8.define('Z8.data.Model', {
 	},
 
 	getRequestFields: function() {
-		return this.requestFields;
+		return this.requestFields || this.getFields();
 	},
 
 	getValueFor: function() {
@@ -240,13 +241,12 @@ Z8.define('Z8.data.Model', {
 	},
 
 	getOrdinals: function() {
-		if(this.ordinals != null)
-			return this.ordinals;
+		if(this.self.ordinals != null)
+			return this.self.ordinals;
 
-		var ordinals = this.self.ordinals = {};
-		var fields = this.fields;
-		for(var i = 0, length = fields.length; i < length; i++)
-			ordinals[fields[i].name] = i;
+		var ordinals = this.self.ordinals = {}, index = 0;
+		for(var field of this.getFields())
+			ordinals[field.name] = index++;
 
 		return ordinals;
 	},

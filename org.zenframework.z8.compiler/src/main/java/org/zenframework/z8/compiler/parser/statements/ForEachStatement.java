@@ -123,7 +123,10 @@ public class ForEachStatement extends LanguageElement implements IStatement {
 		if(!variableType.isArray())
 			codeGenerator.append('(' + BuiltinNative.Array + '<' +  variableType.getDeclaringJavaName() + '>' + ')');
 
+		codeGenerator.append("(");
 		array.getCode(codeGenerator);
+		codeGenerator.append(")");
+
 		codeGenerator.append(")");
 		codeGenerator.breakLine();
 

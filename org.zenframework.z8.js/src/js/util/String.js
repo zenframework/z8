@@ -70,9 +70,3 @@ String.prototype.firstCharToLower = function() {
 String.prototype.ellipsis = function(length) {
 	return this.length > length ? this.substring(0, length) + '...' : this;
 };
-
-String.prototype.lastAfter = function(searchValue) {
-	var index = this.lastIndexOf(searchValue);
-	return index >= 0 ? this.substring(searchValue.length) : this;
-};
-

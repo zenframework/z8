@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.form.Control;
 import org.zenframework.z8.server.base.form.action.Action;
-import org.zenframework.z8.server.base.form.action.IAction;
 import org.zenframework.z8.server.base.form.report.IReport;
 import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.query.Query;
@@ -18,12 +18,14 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.Access;
+import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.geometry;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -67,8 +69,7 @@ public class JsonWriter {
 		startSeparate();
 	}
 
-	// TODO This must be private
-	public void startSeparate() {
+	private void startSeparate() {
 		if(scopes.size() != 0)
 			scopes.set(scopes.size() - 1, true);
 	}
@@ -411,7 +412,7 @@ public class JsonWriter {
 
 		startArray(Json.actions);
 
-		for(IAction action : actions) {
+		for(Action action : actions) {
 			startObject();
 			action.writeMeta(this, query, context);
 			finishObject();
@@ -435,13 +436,38 @@ public class JsonWriter {
 		finishArray();
 	}
 
-	public void writeAccess(IAccess access) {
+	public void writeQueryAccess(Access access) {
 		startObject(Json.access);
-		writeProperty(Json.read, access.read());
-		writeProperty(Json.write, access.write());
-		writeProperty(Json.create, access.create());
-		writeProperty(Json.copy, access.copy());
-		writeProperty(Json.destroy, access.destroy());
+		writeProperty(Json.read, access.getRead());
+		writeProperty(Json.write, access.getWrite());
+		writeProperty(Json.create, access.getCreate());
+		writeProperty(Json.copy, access.getCopy());
+		writeProperty(Json.destroy, access.getDestroy());
+		finishObject();
+	}
+
+	public void writeRoles(Collection<Role> roles) {
+		startArray(Json.roles);
+		for(Role role : roles) {
+			startObject();
+			writeProperty(Json.id, role.getId());
+			writeProperty(Json.name, role.getName());
+			finishObject();
+		}
+		finishArray();
+	}
+
+	public void writeAccess(Access access) {
+		startArray(Json.access);
+		for(guid accessKey : access.getKeys())
+			write(accessKey);
+		finishArray();
+	}
+
+	public void writeParameters(Map<string, primary> parameters) {
+		startObject(Json.parameters);
+		for(string key : parameters.keySet())
+			writeProperty(key.get(), parameters.get(key));
 		finishObject();
 	}
 

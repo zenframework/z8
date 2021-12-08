@@ -1,0 +1,8 @@
+import org.zenframework.z8.base.table.Table;
+
+[name "System Secured Objects"]
+[displayName "Защищаемые объекты"]
+[native "org.zenframework.z8.server.base.table.system.SecuredObjects"]
+public class SecuredObjects extends Table {
+	name.length = 256;
+}

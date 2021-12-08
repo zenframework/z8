@@ -2,15 +2,15 @@ package org.zenframework.z8.server.db;
 
 import java.util.Locale;
 
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 
 public class ConnectionSavePoint {
 	private Locale locale;
 
-	static public ConnectionSavePoint create(IDatabase database) {
+	static public ConnectionSavePoint create(Database database) {
 		ConnectionSavePoint savePoint = new ConnectionSavePoint();
 
-		if(database.vendor() == DatabaseVendor.Oracle) {
+		if(database.getVendor() == DatabaseVendor.Oracle) {
 			savePoint.locale = Locale.getDefault();
 			Locale.setDefault(Locale.US);
 		}

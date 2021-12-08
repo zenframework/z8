@@ -22,7 +22,7 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.IAccess;
+import org.zenframework.z8.server.security.Access;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
@@ -92,7 +92,7 @@ abstract public class Field extends Control implements IField {
 
 	public int position = -1;
 
-	private IAccess access;
+	private Access access;
 
 	private bool isPrimaryKey;
 	private bool isParentKey;
@@ -159,8 +159,8 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
-	public IAccess access() {
-		return access != null ? access : (access = ApplicationServer.getUser().privileges().getFieldAccess(this));
+	public Access access() {
+		return access != null ? access : (access = ApplicationServer.getUser().getPrivileges().getFieldAccess(this));
 	}
 
 	public final void setCursor(Select cursor) {
@@ -209,10 +209,6 @@ abstract public class Field extends Control implements IField {
 		this.path = path;
 	}
 
-	public Collection<ILink> getPath() {
-		return path;
-	}
-
 	public boolean isRightJoined() {
 		return rightJoined;
 	}
@@ -248,10 +244,10 @@ abstract public class Field extends Control implements IField {
 	}
 
 	protected boolean isArray() {
-		return cursor != null && cursor.isGrouped() && (aggregation == Aggregation.Array || aggregation == Aggregation.Distinct);
+		return cursor != null && cursor.isGrouped() && aggregation == Aggregation.Array;
 	}
 	protected primary read() throws SQLException {
-		if(cursor.isGrouped() && (aggregation == Aggregation.Array || aggregation == Aggregation.Distinct))
+		if(cursor.isGrouped() && aggregation == Aggregation.Array)
 			return cursor.get(this, FieldType.String);
 		return cursor.get(this);
 	}
@@ -454,13 +450,13 @@ abstract public class Field extends Control implements IField {
 
 			writer.writeSort(firstLink.getQuery().sortFields());
 
-			readOnly = hasReadOnlyLinks(path) || !linkField.access().write() || readOnly();
+			readOnly = hasReadOnlyLinks(path) || !linkField.access().getWrite() || readOnly();
 			required = !readOnly && (hasRequiredLinks(path) || required());
 
 			this.readOnly = new bool(readOnly);
 			this.required = new bool(required);
 		} else {
-			readOnly = readOnly() || hasJoin || isExpression() || !access().write();
+			readOnly = readOnly() || hasJoin || isExpression() || !access().getWrite();
 			required = !readOnly && required();
 
 			this.readOnly = new bool(readOnly() || readOnly);
@@ -497,7 +493,7 @@ abstract public class Field extends Control implements IField {
 
 	public void writeData(JsonWriter writer) {
 		primary value = get();
-		if((isPrimaryKey() || access().read()) && (!wasNull() || writeNulls))
+		if((isPrimaryKey() || access().getRead()) && (!wasNull() || writeNulls))
 			writer.writeProperty(id(), wasNull() ? getNullValue() : value);
 	}
 

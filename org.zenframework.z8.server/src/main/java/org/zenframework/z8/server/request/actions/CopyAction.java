@@ -23,11 +23,11 @@ public class CopyAction extends RequestAction {
 	}
 
 	private boolean checkAccess(Query query) {
-		if(!query.access().copy())
+		if(!query.access().getCopy())
 			throw new AccessRightsViolationException();
 
 		for(Field field : query.getPrimaryFields()) {
-			if(!field.access().write())
+			if(!field.access().getCopy())
 				throw new AccessRightsViolationException();
 		}
 

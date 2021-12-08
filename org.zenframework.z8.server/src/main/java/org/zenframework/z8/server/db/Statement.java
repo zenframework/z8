@@ -11,7 +11,7 @@ import java.sql.Types;
 
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.TimestampField;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
@@ -46,27 +46,27 @@ public abstract class Statement {
 		return sql.hashCode();
 	}
 
-	public Connection connection() {
+	public Connection getConnection() {
 		return connection;
 	}
 
-	public IDatabase database() {
-		return connection().database();
+	public Database getDatabase() {
+		return getConnection().getDatabase();
 	}
 
-	public DatabaseVendor vendor() {
-		return connection().vendor();
+	public DatabaseVendor getVendor() {
+		return getConnection().getVendor();
 	}
 
-	public encoding charset() {
-		return connection().charset();
+	public encoding getCharset() {
+		return getConnection().getCharset();
 	}
 
-	public String sql() {
+	public String getSql() {
 		return sql;
 	}
 
-	public int priority() {
+	public int getPriority() {
 		return priority;
 	}
 
@@ -136,7 +136,7 @@ public abstract class Statement {
 	}
 
 	protected void setBoolean(int position, bool value) throws SQLException {
-		switch(vendor()) {
+		switch(getVendor()) {
 		case Postgres:
 			preparedStatement().setInt(position, value.get() ? 1 : 0);
 			break;
@@ -175,7 +175,7 @@ public abstract class Statement {
 	}
 
 	protected void setGuid(int position, guid value) throws SQLException {
-		switch(vendor()) {
+		switch(getVendor()) {
 		case Oracle: {
 			byte[] b = new BigInteger(value.toString(false), 16).toByteArray();
 
@@ -213,7 +213,7 @@ public abstract class Statement {
 	}
 
 	protected void setText(int position, string value) throws SQLException {
-		setBinary(position, new binary(value.getBytes(charset())));
+		setBinary(position, new binary(value.getBytes(getCharset())));
 	}
 
 	private boolean processNull(int position, primary value) throws SQLException {

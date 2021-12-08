@@ -1,0 +1,38 @@
+.window-mask {
+	position: absolute;
+	z-index: 9999;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: none;
+}
+
+.window {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.window>.header {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.window>.body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.window>.footer {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}

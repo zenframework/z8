@@ -7,14 +7,14 @@ import org.zenframework.z8.base.table.value.Link;
 public class UserEntries extends Table {
 	readOnly = true;
 
-	public Users users;
-	public Entries entries;
+	public Users user;
+	public Entries entry;
 
 	[name "UserId"]
-	public Link user = users;
+	public Link userId = user;
 
 	[name "EntryId"]
-	public Link entry = entries;
+	public Link entryId= entry;
 
 	[name "Position"]
 	public IntField position;

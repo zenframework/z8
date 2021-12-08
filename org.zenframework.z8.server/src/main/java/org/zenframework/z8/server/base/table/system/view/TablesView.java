@@ -50,7 +50,7 @@ public class TablesView extends Tables {
 		fields.readOnly = bool.True;
 
 		fieldsListbox.get().query = this.fields;
-		fieldsListbox.get().link = fields.table;
+		fieldsListbox.get().link = fields.tableId;
 		fieldsListbox.get().sortFields.add(fields.position);
 
 		fields.columns.add(fields.name);

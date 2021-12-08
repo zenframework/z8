@@ -13,7 +13,7 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -134,10 +134,10 @@ public class AttachmentProcessor extends OBJECT {
 	}
 
 	private void setUser(file file) {
-		IUser user = ApplicationServer.getUser();
-		String name = user.name();
-		file.author = new string(name + (name.isEmpty() ? "" : " - ") + user.login());
-		file.user = user.id();
+		User user = ApplicationServer.getUser();
+		String name = user.getName();
+		file.author = new string(name + (name.isEmpty() ? "" : " - ") + user.getLogin());
+		file.user = user.getId();
 	}
 
 	public int getTotalPageCount(guid recordId) {

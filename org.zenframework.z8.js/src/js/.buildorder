@@ -36,7 +36,6 @@ data/field/Integer.js
 data/field/Json.js
 data/field/File.js
 data/field/Files.js
-data/IdNameModel.js
 Component.js
 Container.js
 button/Button.js
@@ -44,7 +43,6 @@ button/Trigger.js
 button/Tool.js
 button/File.js
 button/Group.js
-button/GeometryTools.js
 calendar/Markup.js
 calendar/Calendar.js
 calendar/Dropdown.js
@@ -85,13 +83,10 @@ form/field/Date.js
 form/field/SearchText.js
 form/field/SearchCombobox.js
 form/field/Filter.js
-form/field/Geometry.js
 form/action/Action.js
 form/action/Report.js
 form/action/Group.js
 form/Fieldset.js
-form/action/ActionUtil.js
-form/action/params/Editor.js
 form/Form.js
 form/Helper.js
 form/Tab.js
@@ -109,13 +104,9 @@ filter/expression/Expression.js
 filter/Button.js
 filter/Editor.js
 filter/Dialog.js
-application/sidebar/Item.js
-application/sidebar/Menu.js
-application/sidebar/Sidebar.js
 application/viewport/Login.js
 application/viewport/PopupMessages.js
 application/viewport/Form.js
-application/viewport/SourceCode.js
 application/viewport/Viewport.js
 application/User.js
 application/Application.js

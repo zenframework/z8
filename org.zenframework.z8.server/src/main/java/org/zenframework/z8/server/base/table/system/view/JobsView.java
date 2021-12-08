@@ -62,7 +62,7 @@ public class JobsView extends ScheduledJobs {
 		logsListbox.setDisplayName(ScheduledJobLogs.displayNames.Title);
 
 		logsListbox.get().query = logs;
-		logsListbox.get().link = logs.get().scheduledJob;
+		logsListbox.get().link = logs.get().scheduledJobId;
 		logsListbox.get().colSpan = new integer(12);
 		logsListbox.get().flex = new integer(1);
 
@@ -81,8 +81,8 @@ public class JobsView extends ScheduledJobs {
 
 		nextStart.get().readOnly = bool.True;
 
-		jobs.get().name.get().colSpan = new integer(4);
-		users.get().name.get().colSpan = new integer(2);
+		job.get().name.get().colSpan = new integer(4);
+		user.get().name.get().colSpan = new integer(2);
 		cron.get().colSpan = new integer(2);
 		active.get().colSpan = new integer(2);
 		logErrorsOnly.get().colSpan = new integer(2);
@@ -90,11 +90,11 @@ public class JobsView extends ScheduledJobs {
 		lastStart.get().colSpan = new integer(2);
 		nextStart.get().colSpan = new integer(2);
 
-		jobs.get().name.setDisplayName(displayNames.Job);
-		users.get().name.setDisplayName(displayNames.User);
+		job.get().name.setDisplayName(displayNames.Job);
+		user.get().name.setDisplayName(displayNames.User);
 
-		registerControl(jobs.get().name);
-		registerControl(users.get().name);
+		registerControl(job.get().name);
+		registerControl(user.get().name);
 		registerControl(cron);
 		registerControl(active);
 		registerControl(logErrorsOnly);
@@ -102,9 +102,9 @@ public class JobsView extends ScheduledJobs {
 		registerControl(nextStart);
 		registerControl(logsListbox);
 
-		names.add(jobs.get().name);
-		names.add(users.get().name);
+		names.add(job.get().name);
+		names.add(user.get().name);
 
-		sortFields.add(jobs.get().name);
+		sortFields.add(job.get().name);
 	}
 }

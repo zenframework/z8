@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.Executable;
-import org.zenframework.z8.server.base.form.action.IParameter;
+import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -46,7 +46,7 @@ public class Job extends RequestTarget {
 	public void writeResponse(JsonWriter writer) {
 		setParameters();
 
-		if (!scheduled()) {
+		if(!scheduled()) {
 			thread = new Thread(executable, executable.displayName());
 			thread.start();
 
@@ -67,19 +67,14 @@ public class Job extends RequestTarget {
 	private void setParameters() {
 		String data = getParameter(Json.parameters);
 
-		if (data == null)
+		if(data == null)
 			return;
 
 		JsonObject object = new JsonObject(data);
 
-		if (object != null) {
-			String[] names = JsonObject.getNames(object);
-
-			for (String parameterId : names) {
-				IParameter parameter = executable.getParameter(parameterId);
-				String value = object.getString(parameterId);
-				parameter.parse(value);
-			}
+		for(String parameterId : object.getNames()) {
+			Parameter parameter = executable.getParameter(parameterId);
+			parameter.parse(object.getString(parameterId));
 		}
 	}
 

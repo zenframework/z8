@@ -38,7 +38,6 @@ Z8.define('Z8.query.Store', {
 			config.link = (isComboBox && link != null) ? link.name : null;
 			config.query = query.name;
 			config.totals = isListBox ? query.totals : false;
-			config.limit = query.limit || 200;
 			config.sort = (isListBox || isComboBox) ? query.sort : null;
 			config.values = field.values;
 			config.access = query.access;
@@ -76,7 +75,6 @@ Z8.define('Z8.query.Store', {
 			periodProperty: config.periodKey,
 			filesProperty: config.attachmentsKey,
 			iconProperty: fields.iconProperty,
-			sourceCode: config.sourceCode,
 
 			fields: fields.data,
 			names: fields.names,

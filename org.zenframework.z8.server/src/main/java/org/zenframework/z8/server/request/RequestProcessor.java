@@ -68,7 +68,7 @@ public class RequestProcessor {
 			writer.put(Json.type, "event");
 			writer.put(Json.retry, id);
 			writer.put(Json.server, ApplicationServer.id);
-			writer.put(Json.session, request.getSession().id());
+			writer.put(Json.session, request.getSession().getId());
 			response.setContent(writer.toString());
 		} else {
 			requests.remove(id);

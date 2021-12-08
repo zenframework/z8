@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.engine.ApplicationServer;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.runtime.ComplexRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
@@ -84,8 +84,8 @@ public class DynamicRuntime extends ComplexRuntime {
 	}
 
 	public void unloadDynamic() {
-		IDatabase database = ApplicationServer.getDatabase();
-		String schema = database.schema();
+		Database database = ApplicationServer.getDatabase();
+		String schema = database.getSchema();
 		try {
 			Scheduler.suspend(database);
 			synchronized (dynamics) {

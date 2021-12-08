@@ -37,6 +37,4 @@ public class Control extends Object {
 	public GuidField dependency;
 	public GuidField dependsOn;
 	public Control[] dependencies;
-
-	public Source source;
 }

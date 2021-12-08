@@ -14,7 +14,7 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.primary;
 
@@ -70,12 +70,12 @@ public class Select {
 		return connection != null ? connection : ConnectionManager.get();
 	}
 
-	public IDatabase database() {
-		return getConnection().database();
+	public Database getDatabase() {
+		return getConnection().getDatabase();
 	}
 
-	public DatabaseVendor vendor() {
-		return database().vendor();
+	public DatabaseVendor getVendor() {
+		return getDatabase().getVendor();
 	}
 
 	public Collection<Field> getFields() {
@@ -152,7 +152,7 @@ public class Select {
 		return isAggregated;
 	}
 
-	protected String sql(FormatOptions options) {
+	protected String getSql(FormatOptions options) {
 		String from = formatFrom(options);
 		boolean isGrouped = isGrouped();
 
@@ -192,7 +192,7 @@ public class Select {
 
 		readLock = '\n' + rootQuery.getReadLock().toString();
 
-		DatabaseVendor vendor = vendor();
+		DatabaseVendor vendor = getVendor();
 		if(vendor == DatabaseVendor.Postgres || vendor == DatabaseVendor.H2)
 			readLock += " of " + rootQuery.getAlias();
 
@@ -236,7 +236,7 @@ public class Select {
 		if(fields.isEmpty())
 			return "\n\tcount(0)" + " as " + getFieldAlias(0);
 
-		DatabaseVendor vendor = vendor();
+		DatabaseVendor vendor = getVendor();
 		String result = "";
 
 		int index = 0;
@@ -248,13 +248,13 @@ public class Select {
 	}
 
 	private String queryName(Query query) {
-		IDatabase database = database();
-		DatabaseVendor vendor = vendor();
-		return query != null ? database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias() : "";
+		Database database = getDatabase();
+		DatabaseVendor vendor = getVendor();
+		return query != null ? database.getTableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias() : "";
 	}
 
 	private String emptyFrom() {
-		switch(vendor()){
+		switch(getVendor()){
 		case Postgres:
 			return "";
 		case Oracle:
@@ -267,7 +267,7 @@ public class Select {
 	protected String formatFrom(FormatOptions options) {
 		String join = "";
 
-		String root = select != null ? "(" + select.sql(options) + ") " + select.getAlias() : null;
+		String root = select != null ? "(" + select.getSql(options) + ") " + select.getAlias() : null;
 
 		for(ILink link : links) {
 			Query query = link.getQuery();
@@ -275,7 +275,7 @@ public class Select {
 
 			if(name != null) {
 				options.disableAggregation();
-				join += "\n\t" + link.getJoinType() + " join " + queryName(query) + " on " + link.on().format(vendor(), options, true);
+				join += "\n\t" + link.getJoinType() + " join " + queryName(query) + " on " + link.on().format(getVendor(), options, true);
 				options.enableAggregation();
 			}
 		}
@@ -290,7 +290,7 @@ public class Select {
 		if(where == null)
 			return "";
 
-		return "\n" + "where" + "\n\t" + where.format(vendor(), options, true);
+		return "\n" + "where" + "\n\t" + where.format(getVendor(), options, true);
 	}
 
 	private String formatOrderBy(FormatOptions options) {
@@ -299,7 +299,7 @@ public class Select {
 		options.setOrderBy(true);
 
 		for(Field field : orderBy)
-			result += (result.isEmpty() ? "" : ", ") + new SqlField(field).format(vendor(), options) + " " + field.sortDirection;
+			result += (result.isEmpty() ? "" : ", ") + new SqlField(field).format(getVendor(), options) + " " + field.sortDirection;
 
 		options.setOrderBy(false);
 
@@ -310,7 +310,7 @@ public class Select {
 		String result = "";
 
 		for(Field field : groupBy)
-			result += (result.isEmpty() ? "" : ", ") + getFieldName(field, vendor(), options);
+			result += (result.isEmpty() ? "" : ", ") + getFieldName(field, getVendor(), options);
 
 		return result.isEmpty() ? "" : ("\ngroup by\n\t" + result);
 	}
@@ -319,7 +319,7 @@ public class Select {
 		if(having == null)
 			return "";
 
-		return "\n" + "having" + "\n\t" + having.format(vendor(), options, true);
+		return "\n" + "having" + "\n\t" + having.format(getVendor(), options, true);
 	}
 
 	public void aggregate() {
@@ -331,7 +331,7 @@ public class Select {
 	}
 
 	public void open() {
-		String sql = sql(new FormatOptions());
+		String sql = getSql(new FormatOptions());
 
 		boolean traceSql = ServerConfig.traceSql();
 		long startAt = traceSql ? System.currentTimeMillis() : 0;

@@ -8,8 +8,8 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
@@ -127,7 +127,7 @@ abstract public class HubServerView extends Query {
 		JsonArray data = new JsonArray();
 
 		try {
-			for(IServerInfo server : getServers()) {
+			for(ServerInfo server : getServers()) {
 				JsonObject object = new JsonObject();
 				object.put(recordId.id(), getUrl(server));
 				object.put(serverId.id(), server.getId());
@@ -144,10 +144,10 @@ abstract public class HubServerView extends Query {
 		}
 	}
 
-	abstract protected IServerInfo[] getServers() throws Throwable;
-	abstract protected void unregister(IServerInfo server) throws Throwable;
+	abstract protected ServerInfo[] getServers() throws Throwable;
+	abstract protected void unregister(ServerInfo server) throws Throwable;
 
-	private String getDomains(IServerInfo server) {
+	private String getDomains(ServerInfo server) {
 		String[] domains = server.getDomains();
 
 		if(domains == null)
@@ -157,17 +157,17 @@ abstract public class HubServerView extends Query {
 		return result.substring(1, result.length() - 1);
 	}
 
-	private String getHost(IServerInfo server) {
+	private String getHost(ServerInfo server) {
 		Proxy proxy = server.getProxy();
 		return proxy != null ? ProxyUtils.getHost(proxy) : Rmi.localhost;
 	}
 
-	private int getPort(IServerInfo server) {
+	private int getPort(ServerInfo server) {
 		Proxy proxy = server.getProxy();
 		return proxy != null ? ProxyUtils.getPort(proxy) : 0;
 	}
 
-	private String getUrl(IServerInfo server) {
+	private String getUrl(ServerInfo server) {
 		return getHost(server) + ":" + getPort(server);
 	}
 }

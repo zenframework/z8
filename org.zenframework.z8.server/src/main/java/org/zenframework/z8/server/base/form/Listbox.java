@@ -83,7 +83,7 @@ public class Listbox extends Control {
 		if(periodKey != null)
 			writer.writeProperty(Json.periodKey, periodKey.id());
 
-		writer.writeAccess(query.access());
+		writer.writeQueryAccess(query.access());
 
 		if(!this.readOnly())
 			writer.writeProperty(Json.lockKey, query.lockKey().id());
@@ -93,7 +93,6 @@ public class Listbox extends Control {
 			writer.writeProperty(Json.parentKey, parentKey.id());
 
 		writer.writeProperty(Json.totals, query.totals);
-		writer.writeProperty(Json.limit, query.limit);
 		writer.writeProperty(Json.text, query.displayName());
 
 		Collection<Field> fields = query.fields();

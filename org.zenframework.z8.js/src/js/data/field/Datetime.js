@@ -7,7 +7,7 @@ Z8.define('Z8.data.field.Datetime', {
 	compare: function(left, right) {
 		if(Date.isDate(left) && Date.isDate(right))
 			return left.getTime() - right.getTime();
-		return left == right ? 0 : -1;
+		return left == right ? 0 : (left == null ? -1 : 1);
 	},
 
 	convert: function(value) {

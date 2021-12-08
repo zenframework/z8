@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Roles;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -25,15 +24,15 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerExpression;
 import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.TextExpression;
-import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.CountingSelect;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.db.DmlStatement;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Select;
-import org.zenframework.z8.server.db.DmlStatement;
+import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
@@ -45,7 +44,7 @@ import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
-import org.zenframework.z8.server.engine.IDatabase;
+import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.exceptions.db.ObjectAlreadyExistException;
 import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.resources.Resources;
@@ -53,7 +52,6 @@ import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.Role;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.date;
-import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -97,16 +95,16 @@ public class TableGenerator {
 		return action;
 	}
 
-	private Connection connection() {
+	private Connection getConnection() {
 		return ConnectionManager.get();
 	}
 
-	private IDatabase database() {
-		return connection().database();
+	private Database getDatabase() {
+		return getConnection().getDatabase();
 	}
 
-	private DatabaseVendor vendor() {
-		return connection().vendor();
+	private DatabaseVendor getVendor() {
+		return getConnection().getVendor();
 	}
 
 	public void create() {
@@ -130,7 +128,7 @@ public class TableGenerator {
 				throw new UnsupportedOperationException();
 			}
 		} catch(SQLException e) {
-			logger.error(e, Resources.format("Generator.createTableError", displayName(), "[" + connection().schema() + "]." + name(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.createTableError", displayName(), "[" + getConnection().getSchema() + "]." + name(), ErrorUtils.getMessage(e)));
 		} finally {
 			this.table = null;
 
@@ -155,61 +153,9 @@ public class TableGenerator {
 
 		for(Map<IField, primary> record : table().getStaticRecords())
 			createStaticRecord(record);
-
-//		repairTable();
 	}
 
-	@SuppressWarnings("unused")
-	private void repairTable() {
-		Connection connection = connection();
-
-		if(table instanceof TreeTable) {
-			try {
-				connection.beginTransaction();
-
-				Field parentKey = table.parentKey();
-				table.read(Arrays.asList(table.parentKey()));
-
-				while(table.next()) {
-					parentKey.set(parentKey.guid());
-					table.update(table.recordId());
-				}
-
-				connection.commit();
-			} catch(Throwable e) {
-				connection.rollback();
-				throw new RuntimeException(e);
-			}
-		}
-
-		Collection<Field> attachments = table.attachments();
-		if(attachments.isEmpty())
-			return;
-
-		try {
-			connection.beginTransaction();
-
-			table.read(attachments);
-
-			while(table.next()) {
-				for(Field field : attachments) {
-					String json = field.string().get();
-					if(!json.isEmpty()) {
-						Collection<file> files = file.parse(json);
-						field.set(new string(file.toJson(files)));
-					}
-				}
-				table.update(table.recordId());
-			}
-
-			connection.commit();
-		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
-		}
-	}
-
-	GeneratorAction checkAlter() {
+	private GeneratorAction checkAlter() {
 		GeneratorAction result = GeneratorAction.None;
 
 		dbFields.clear();
@@ -219,15 +165,13 @@ public class TableGenerator {
 
 		dbFieldsAlter = new LinkedList<ColumnDescAlter>();
 
-		DatabaseVendor vendor = vendor();
+		DatabaseVendor vendor = getVendor();
 
 		for(Field field : table().getPrimaryFields()) {
 			ColumnDescGen column = dbFields.get(vendor.sqlName(field.name()));
 
 			if(column == null) {
 				dbFieldsAlter.add(new ColumnDescAlter(field, FieldAction.Create, true));
-				// result = GeneratorAction.Alter;
-				// continue;
 				result = GeneratorAction.Recreate;
 				break;
 			}
@@ -322,19 +266,19 @@ public class TableGenerator {
 		String sql = null;
 
 		Connection connection = ConnectionManager.get();
-		IDatabase database = connection.database();
-		DatabaseVendor vendor = connection.vendor();
+		Database database = connection.getDatabase();
+		DatabaseVendor vendor = connection.getVendor();
 
 		switch(vendor) {
 		case Oracle:
-			sql = "alter table " + database.tableName(oldTableName) + " rename  to " + vendor.quote(newTableName);
+			sql = "alter table " + database.getTableName(oldTableName) + " rename  to " + vendor.quote(newTableName);
 			break;
 		case SqlServer:
-			sql = "sp_rename " + database.tableName(oldTableName) + ", " + vendor.quote(newTableName);
+			sql = "sp_rename " + database.getTableName(oldTableName) + ", " + vendor.quote(newTableName);
 			break;
 		case Postgres:
 		case H2:
-			sql = "alter table " + database.tableName(oldTableName) + " rename to " + vendor.quote(newTableName);
+			sql = "alter table " + database.getTableName(oldTableName) + " rename to " + vendor.quote(newTableName);
 			break;
 		default:
 			throw new UnsupportedOperationException();
@@ -359,7 +303,7 @@ public class TableGenerator {
 	}
 
 	private String getFieldForCreate(Field field) {
-		DatabaseVendor vendor = vendor();
+		DatabaseVendor vendor = getVendor();
 		String result = vendor.quote(field.name()) + ' ' + field.sqlType(vendor);
 
 		result += " default " + formatDefaultValue(vendor, field);
@@ -372,18 +316,18 @@ public class TableGenerator {
 	}
 
 	private String getFieldForAlter(Field field) {
-		DatabaseVendor vendor = connection().vendor();
+		DatabaseVendor vendor = getConnection().getVendor();
 		return vendor.quote(field.name()) + " " + field.sqlType(vendor);
 	}
 
 	private void alterTable() throws SQLException {
 		boolean bAdd = false, bModify = false;
 
-		IDatabase database = database();
-		DatabaseVendor vendor = vendor();
+		Database database = getDatabase();
+		DatabaseVendor vendor = getVendor();
 
-		String addColumnSql = "alter table " + database.tableName(table().name());
-		String modifyColumnSql = "alter table " + database.tableName(table().name());
+		String addColumnSql = "alter table " + database.getTableName(table().name());
+		String modifyColumnSql = "alter table " + database.getTableName(table().name());
 
 		switch(vendor) {
 		case Postgres:
@@ -429,7 +373,7 @@ public class TableGenerator {
 					if(vendor == DatabaseVendor.Oracle || vendor == DatabaseVendor.Postgres) {
 						modifyColumnSql += ", ";
 					} else if(vendor == DatabaseVendor.SqlServer) {
-						modifyColumnSql += " alter table " + database.tableName(table().name()) + " alter column ";
+						modifyColumnSql += " alter table " + database.getTableName(table().name()) + " alter column ";
 					}
 				}
 				modifyColumnSql += getFieldForAlter(fld.field);
@@ -461,13 +405,13 @@ public class TableGenerator {
 		String defaultValue = getDefault(table().name(), fld.field.name());
 
 		if((defaultValue != null) && (defaultValue.length() > 0)) {
-			String sql = "alter table " + database().tableName(table().name()) + " drop constraint " + vendor().quote(defaultValue);
+			String sql = "alter table " + getDatabase().getTableName(table().name()) + " drop constraint " + getVendor().quote(defaultValue);
 			DmlStatement.execute(sql);
 		}
 
-		defaultValue = formatDefaultValue(vendor(), fld.field);
+		defaultValue = formatDefaultValue(getVendor(), fld.field);
 
-		String sql = "alter table " + database().tableName(table().name()) + " add constraint " + vendor().quote("DF_" + table().name() + fld.field.name()) + " default " + defaultValue + " for " + vendor().quote(fld.field.name());
+		String sql = "alter table " + getDatabase().getTableName(table().name()) + " add constraint " + getVendor().quote("DF_" + table().name() + fld.field.name()) + " default " + defaultValue + " for " + getVendor().quote(fld.field.name());
 		DmlStatement.execute(sql);
 	}
 
@@ -482,12 +426,12 @@ public class TableGenerator {
 
 		String name = "" + Math.abs(tableName.hashCode());
 
-		Connection connection = connection();
+		Connection connection = getConnection();
 
 		try {
 			connection.beginTransaction();
 			createTable(name);
-			if (connection.vendor() == DatabaseVendor.H2)
+			if (connection.getVendor() == DatabaseVendor.H2)
 				connection.flush();
 			moveData(name);
 			dropTable(table().name());
@@ -500,7 +444,7 @@ public class TableGenerator {
 	}
 
 	private void createTable(String name) throws SQLException {
-		String sql = "create table " + database().tableName(name) + " (";
+		String sql = "create table " + getDatabase().getTableName(name) + " (";
 
 		boolean first =  true;
 		Collection<Field> fields = table().getPrimaryFields();
@@ -520,7 +464,7 @@ public class TableGenerator {
 			new PrimaryKeyGenerator(table()).run();
 		} catch(ObjectAlreadyExistException e) {
 		} catch(SQLException e) {
-			logger.error(e, Resources.format("Generator.createUniqueIndexError", displayName(), "[" + connection().schema() + "]." + name(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.createUniqueIndexError", displayName(), "[" + getConnection().getSchema() + "]." + name(), ErrorUtils.getMessage(e)));
 		} finally {
 			this.table = null;
 		}
@@ -617,9 +561,7 @@ public class TableGenerator {
 					if(isUsers && (field == users.password.get() || field == users.name.get() || field == users.description.get()))
 						continue;
 
-					if(isRoles && (field == roles.name.get() || field == roles.description.get() || 
-							field == roles.read.get() || field == roles.write.get() || field == roles.create.get() ||
-							field == roles.copy.get() || field == roles.destroy.get() || field == roles.execute.get()))
+					if(isRoles && (field == roles.name.get() || field == roles.description.get()))
 						continue;
 
 					primary value = record.get(field);
@@ -651,8 +593,8 @@ public class TableGenerator {
 		String targetFields = "";
 		String sourceFields = "";
 
-		IDatabase database = database();
-		DatabaseVendor vendor = vendor();
+		Database database = getDatabase();
+		DatabaseVendor vendor = getVendor();
 		boolean postgres = vendor == DatabaseVendor.Postgres || vendor == DatabaseVendor.H2;
 		boolean oracle = vendor == DatabaseVendor.Oracle;
 
@@ -694,8 +636,8 @@ public class TableGenerator {
 		options.enableAggregation();
 
 		if(!targetFields.isEmpty()) {
-			String sql = "insert into " + database.tableName(dstTableName) + " (" + targetFields + ")";
-			sql += " select " + sourceFields + " from " + database.tableName(table().name()) + (vendor == DatabaseVendor.SqlServer ? " as " : "") + table().getAlias();
+			String sql = "insert into " + database.getTableName(dstTableName) + " (" + targetFields + ")";
+			sql += " select " + sourceFields + " from " + database.getTableName(table().name()) + (vendor == DatabaseVendor.SqlServer ? " as " : "") + table().getAlias();
 
 			DmlStatement.execute(sql);
 		}
@@ -734,14 +676,14 @@ public class TableGenerator {
 
 	static void dropTable(String tableName) throws SQLException {
 		Connection connection = ConnectionManager.get();
-		IDatabase database = connection.database();
+		Database database = connection.getDatabase();
 
-		String sql = "drop table " + database.tableName(tableName);
+		String sql = "drop table " + database.getTableName(tableName);
 		DmlStatement.execute(sql);
 	}
 
 	public String getDefault(String tableName, String fieldName) throws SQLException {
-		String sql = "select so.name from sysobjects so, sysobjects so2, syscolumns sc where sc.name = '" + fieldName + "' and sc.id = so2.id and so2.name = " + database().tableName(tableName) + " and so.id = sc.cdefault and so.xtype = 'D'";
+		String sql = "select so.name from sysobjects so, sysobjects so2, syscolumns sc where sc.name = '" + fieldName + "' and sc.id = so2.id and so2.name = " + getDatabase().getTableName(tableName) + " and so.id = sc.cdefault and so.xtype = 'D'";
 
 		Cursor cursor = SelectStatement.cursor(sql);
 

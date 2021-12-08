@@ -86,25 +86,44 @@
 	<entry key="Fields.displayName">Title</entry>
 	<entry key="Fields.type">Data type</entry>
 
+	<!-- SecuredObjects -->
+	<entry key="SecuredObjects.title">Secured objects</entry>
+	<entry key="SecuredObjects.database">Database</entry>
+	<entry key="SecuredObjects.request">Requests</entry>
+
+	<!-- SecuredObjectAccess -->
+	<entry key="SecuredObjectAccess.title">Secured object access rights</entry>
+	<entry key="SecuredObjectAccess.name">Access right</entry>
+	<entry key="SecuredObjectAccess.read">Read</entry>
+	<entry key="SecuredObjectAccess.write">Write</entry>
+	<entry key="SecuredObjectAccess.create">Create</entry>
+	<entry key="SecuredObjectAccess.copy">Copy</entry>
+	<entry key="SecuredObjectAccess.destroy">Destroy</entry>
+	<entry key="SecuredObjectAccess.execute">Execute</entry>
+
+	<!-- RoleSecuredObjectAccess -->
+	<entry key="RoleSecuredObjectAccess.title">Secured object access rights</entry>
+	<entry key="RoleSecuredObjectAccess.value">Access</entry>
+
 	<!-- UserRoles -->
 	<entry key="UserRoles.title">User roles</entry>
 
 	<!-- RoleTableAccess -->
 	<entry key="RoleTableAccess.title">Tables</entry>
-	<entry key="RoleTableAccess.read">Reading</entry>
-	<entry key="RoleTableAccess.write">Writing</entry>
-	<entry key="RoleTableAccess.create">Creating</entry>
-	<entry key="RoleTableAccess.copy">Copying</entry>
-	<entry key="RoleTableAccess.destroy">Removing</entry>
+	<entry key="RoleTableAccess.read">Read</entry>
+	<entry key="RoleTableAccess.write">Write</entry>
+	<entry key="RoleTableAccess.create">Create</entry>
+	<entry key="RoleTableAccess.copy">Copy</entry>
+	<entry key="RoleTableAccess.destroy">Destroy</entry>
 
 	<!-- RoleFieldAccess -->
 	<entry key="RoleFieldAccess.title">Fields</entry>
-	<entry key="RoleFieldAccess.read">Reading</entry>
-	<entry key="RoleFieldAccess.write">Writing</entry>
+	<entry key="RoleFieldAccess.read">Read</entry>
+	<entry key="RoleFieldAccess.write">Write</entry>
 
 	<!-- RoleRequestAccess -->
 	<entry key="RoleRequestAccess.title">Requests</entry>
-	<entry key="RoleRequestAccess.execute">Execution</entry>
+	<entry key="RoleRequestAccess.execute">Execute</entry>
 
 	<!-- Privileges -->
 	<entry key="Privileges.noReadAccess">You do not have read permission to this data</entry>
