@@ -131,6 +131,8 @@ Z8.define('Z8.button.Button', {
 
 		if(this.trigger)
 			this.trigger.setEnabled(enabled);
+
+		return this;
 	},
 
 	getButtonTypeCls: function() {
@@ -170,14 +172,20 @@ Z8.define('Z8.button.Button', {
 		return cls;
 	},
 
+	getIcon: function() {
+		return this.icon;
+	},
+
 	setIcon: function(cls) {
 		this.iconCls = cls;
 		DOM.setCls(this.icon, this.getIconCls());
+		return this;
 	},
 
 	setActiveIcon: function(cls) {
 		this.activeIconCls = cls;
 		DOM.setCls(this.icon, this.getIconCls());
+		return this;
 	},
 
 	setPrimary: function(primary) {
@@ -186,6 +194,7 @@ Z8.define('Z8.button.Button', {
 
 		if(this.trigger)
 			this.trigger.setPrimary(primary);
+		return this;
 	},
 
 	setTabIndex: function(tabIndex) {
@@ -206,11 +215,13 @@ Z8.define('Z8.button.Button', {
 		DOM.setValue(this.textElement, String.htmlText(text));
 		DOM.setTitle(this.textElement, text);
 		DOM.setCls(this.button, this.getButtonCls());
+		return this;
 	},
 
 	setTooltip: function(tooltip) {
 		this.tooltip = tooltip || '';
 		DOM.setAttribute(this.button, 'title', tooltip);
+		return this;
 	},
 
 	isRadio: function() {
@@ -233,11 +244,12 @@ Z8.define('Z8.button.Button', {
 			this.container.onRadioToggle(this, toggled);
 
 		if(silent)
-			return;
+			return this;
 
 		Z8.callback(this.toggleHandler, this.scope, this, toggled);
 
 		this.fireEvent('toggle', this, toggled);
+		return this;
 	},
 
 	isBusy: function() {
@@ -260,7 +272,7 @@ Z8.define('Z8.button.Button', {
 			};
 
 			if(delay != 0) {
-				this.setBusyTask = this.setBusyTask || new Z8.util.DelayedTask();
+				this.setBusyTask = this.setBusyTask || new DelayedTask();
 				this.setBusyTask.delay(delay || 1000, callback, this);
 			} else
 				callback.call(this);

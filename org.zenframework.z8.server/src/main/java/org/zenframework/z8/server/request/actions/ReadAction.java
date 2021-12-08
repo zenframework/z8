@@ -122,7 +122,7 @@ public class ReadAction extends RequestAction {
 	protected void initialize() {
 		beforeRead();
 
-		ActionConfig parameters = config();
+		ActionConfig parameters = getConfig();
 
 		Query query = getQuery();
 
@@ -172,32 +172,32 @@ public class ReadAction extends RequestAction {
 
 		Field primaryKey = query.primaryKey();
 
-		Collection<guid> recordIds = config().recordIds;
+		Collection<guid> recordIds = getConfig().getRecordIds();
 		addFilter(primaryKey, recordIds, Operation.Eq);
 
 		for(Field field : notNullFields)
 			addNullRecordFilter(field);
 
-		if(recordIds == null) {
+		if(recordIds.isEmpty()) {
 //			collectFilters();
 
 			Collection<String> lookupFields = getLookupFields();
 			if(lookupFields.size() != 0)
-				addLikeFilter(lookupFields, getLookupParameter());
+				addLikeFilter(lookupFields, getRequestParameter(Json.lookup));
 
-			Filter filter = new Filter(getFilterParameter(), query);
+			Filter filter = new Filter(getRequestParameter(Json.filter), query);
 			addFilter(filter.where());
 
-			Filter where = new Filter(getWhereParameter(), query);
+			Filter where = new Filter(getRequestParameter(Json.where), query);
 			addFilter(where.where());
 
-			Filter quickFilter = new Filter(getQuickFilterParameter(), query);
+			Filter quickFilter = new Filter(getRequestParameter(Json.quickFilter), query);
 			addFilter(quickFilter.where());
 
-			Period period = new Period(query.periodKey(), getPeriodParameter());
+			Period period = new Period(query.periodKey(), getRequestParameter(Json.period));
 			addFilter(period.where());
 
-			Filter having = new Filter(getHavingParameter(), query);
+			Filter having = new Filter(getRequestParameter(Json.having), query);
 			addGroupFilter(having.where());
 
 			addFilter(query.scope());
@@ -209,7 +209,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void collectQueryFilters() {
-		if(config().recordIds == null)
+		if(getConfig().getRecordIds().isEmpty())
 			collectFilters();
 	}
 
@@ -519,7 +519,7 @@ public class ReadAction extends RequestAction {
 	}
 
 	private SqlToken getFilter(Field field, Collection<guid> value, Operation operation) {
-		if(field == null || value == null)
+		if(field == null || value == null || value.isEmpty())
 			return null;
 		return value.size() == 1 ? getFilter(field, value.iterator().next(), operation) : field.inVector(value);
 	}
@@ -572,7 +572,7 @@ public class ReadAction extends RequestAction {
 
 	public Select getCursor() {
 		try {
-			Select cursor = this.limit > 0 ? frame() : cursor();
+			Select cursor = limit > 0 ? frame() : cursor();
 			cursor.open();
 
 			return cursor;
@@ -743,6 +743,9 @@ public class ReadAction extends RequestAction {
 
 		QueryUtils.setFieldValues(getContextQuery(), getRequestParameter(Json.values));
 
+		if(isRequest())
+			query.onReadAction();
+
 		query.beforeRead();
 
 		initFilters();
@@ -778,15 +781,16 @@ public class ReadAction extends RequestAction {
 		if(!(query instanceof Table))
 			return;
 
-		if(getTotalsParameter()) {
+		if(getRequestParameter(Json.totals, false)) {
 			writeTotals(writer);
 			return;
 		}
 
-		limit = parentKey != null ? -1 : getRequestParameter(Json.limit, query.limit());
+		int limitParam = getRequestParameter(Json.limit, 0);
+		limit = parentKey != null ? -1 : limitParam > 0 ? limitParam : query.limit();
 		start = getRequestParameter(Json.start, query.start());
 
-		if(getCountParameter()) {
+		if(getRequestParameter(Json.count, false)) {
 			totalCount = writeCount(writer);
 
 			if(totalCount == 0 || start <= totalCount)

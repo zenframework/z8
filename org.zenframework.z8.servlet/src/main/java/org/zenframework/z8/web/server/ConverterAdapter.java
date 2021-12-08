@@ -87,8 +87,8 @@ public class ConverterAdapter extends Adapter {
 			if (FileConverter.isConvertableToPdf(ext)) {
 				response.addHeader("Content-Type", "application/pdf");
 				if (!FileConverter.isPdfExtension(ext)) {
-					File convertedFile = new File(Folders.Base, Folders.Cache + '/' + relativePath + '.' + FileConverter.PDF_EXTENSION);
-					absolutePath = FileConverter.convertToPdf(absolutePath, convertedFile, parameters);
+					File convertedFile = new File(Folders.Base, Folders.Cache + '/' + relativePath + '.' + FileConverter.PDF);
+					absolutePath = FileConverter.convert(absolutePath, convertedFile, parameters);
 				}
 			} else {
 				response.addHeader("Content-Type", getContentType(absolutePath));

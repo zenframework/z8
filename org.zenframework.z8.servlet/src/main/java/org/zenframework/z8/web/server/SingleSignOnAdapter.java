@@ -1,20 +1,18 @@
 package org.zenframework.z8.web.server;
 
-import org.zenframework.z8.server.config.ServerConfig;
+import java.io.IOException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.web.servlet.Servlet;
-import org.zenframework.z8.web.utils.ServletUtil;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 /**
  * User authorization through kerberos protocol
@@ -44,7 +42,7 @@ public class SingleSignOnAdapter extends Adapter {
 		String login = principalName.contains("@") ? principalName.split("@")[0] : principalName;
 		ISession session;
 		try {
-			session = ServerConfig.authorityCenter().trustedLogin(login, ServletUtil.getSchema(request), true);
+			session = ServerConfig.authorityCenter().trustedLogin(getLoginParameters(login, request), true);
 		} catch (AccessDeniedException e) {
 			httpSession.invalidate();
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

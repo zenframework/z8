@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment></comment>
+
+	<!-- bool -->
+	<entry key="bool.true">yes</entry>
+	<entry key="bool.false">no</entry>
+
+	<!-- Field -->
+	<entry key="Field.readException">Reading error field {0}</entry>
+
+	<!-- Query -->
+	<entry key="Query.readError">Reading error database</entry>
+
+	<!-- Table -->
+	<entry key="Table.id">Code</entry>
+	<entry key="Table.description">Description</entry>
+
+	<!-- Settings -->
+	<entry key="Settings.title">System properties</entry>
+	<entry key="Settings.name">Property</entry>
+	<entry key="Settings.value">Value</entry>
+
+	<!-- Users -->
+	<entry key="Users.title">Users</entry>
+	<entry key="Users.login">Login</entry>
+	<entry key="Users.firstName">First name</entry>
+	<entry key="Users.middleName">Middle name</entry>
+	<entry key="Users.lastName">Last name</entry>
+	<entry key="Users.description">Description</entry>
+	<entry key="Users.company">Company</entry>
+	<entry key="Users.phone">Phone number</entry>
+	<entry key="Users.email">Email</entry>
+	<entry key="Users.company">Company</entry>
+	<entry key="Users.position">Position</entry>
+	<entry key="Users.banned">Locked</entry>
+	<entry key="Users.changePassword">Change password at next login</entry>
+	<entry key="Users.resetPassword">Reset password</entry>
+	<entry key="Users.settings">Settings</entry>
+	<entry key="Users.isGroup">Is group</entry>
+
+	<entry key="Users.name.default">User</entry>
+
+	<entry key="Users.error.builtinBannedChanged">Builtin users ban state can not be changed</entry>
+	<entry key="Users.error.builtinIsGroupChanged">Builtin users can not be changed to groups</entry>
+
+	<!-- Domains -->
+	<entry key="Domains.title">Domains</entry>
+	<entry key="Domains.name">Name</entry>
+	<entry key="Domains.address">Address</entry>
+	<entry key="Domains.user">System user</entry>
+	<entry key="Domains.user.description">System user (description)</entry>
+	<entry key="Domains.owner">Owner</entry>
+	<entry key="Domains.address.default">Domain</entry>
+
+	<!-- MessageQueue -->
+	<entry key="MessagesQueue.title">Message Queue</entry>
+	<entry key="MessagesQueue.name">Message</entry>
+	<entry key="MessagesQueue.description">Description</entry>
+	<entry key="MessagesQueue.sender">Sender</entry>
+	<entry key="MessagesQueue.address">Recipient</entry>
+	<entry key="MessagesQueue.ordinal">Number</entry>
+	<entry key="MessagesQueue.processing">Processing</entry>
+
+	<!-- TransportQueue -->
+	<entry key="TransportQueue.title">Transport Queue</entry>
+	<entry key="TransportQueue.name">Message</entry>
+	<entry key="TransportQueue.description">Description</entry>
+	<entry key="TransportQueue.sender">Sender</entry>
+	<entry key="TransportQueue.address">Recipient</entry>
+	<entry key="TransportQueue.result">Result</entry>
+	<entry key="TransportQueue.ordinal">Number</entry>
+	<entry key="TransportQueue.processed">Procsssed</entry>
+	<entry key="TransportQueue.bytesTransferred">Sent, B</entry>
+
+	<!-- Tables -->
+	<entry key="Tables.title">Tables</entry>
+	<entry key="Tables.classId">System name</entry>
+	<entry key="Tables.name">DB name</entry>
+	<entry key="Tables.displayName">Title</entry>
+
+	<!-- Fields -->
+	<entry key="Fields.title">Fields</entry>
+	<entry key="Fields.classId">System field</entry>
+	<entry key="Fields.displayName">Title</entry>
+	<entry key="Fields.type">Data type</entry>
+
+	<!-- UserRoles -->
+	<entry key="UserRoles.title">User roles</entry>
+
+	<!-- RoleTableAccess -->
+	<entry key="RoleTableAccess.title">Tables</entry>
+	<entry key="RoleTableAccess.read">Reading</entry>
+	<entry key="RoleTableAccess.write">Writing</entry>
+	<entry key="RoleTableAccess.create">Creating</entry>
+	<entry key="RoleTableAccess.copy">Copying</entry>
+	<entry key="RoleTableAccess.destroy">Removing</entry>
+
+	<!-- RoleFieldAccess -->
+	<entry key="RoleFieldAccess.title">Fields</entry>
+	<entry key="RoleFieldAccess.read">Reading</entry>
+	<entry key="RoleFieldAccess.write">Writing</entry>
+
+	<!-- RoleRequestAccess -->
+	<entry key="RoleRequestAccess.title">Requests</entry>
+	<entry key="RoleRequestAccess.execute">Execution</entry>
+
+	<!-- Privileges -->
+	<entry key="Privileges.noReadAccess">You do not have read permission to this data</entry>
+	<entry key="Privileges.noWriteAccess">You do not have write permission to this data</entry>
+	<entry key="Privileges.noDestroyAccess">You do not have remove permission to this data</entry>
+	<entry key="Privileges.noExecuteAccess">You do not have execution permission to this data</entry>
+
+	<!-- Files -->
+	<entry key="Files.title">Files</entry>
+	<entry key="Files.name">File name</entry>
+	<entry key="Files.path">File path in the cache</entry>
+	<entry key="Files.size">File size</entry>
+	<entry key="Files.time">Creation date</entry>
+	<entry key="Files.lastModified">Modification date</entry>
+	<entry key="Files.extension">Type</entry>
+
+	<entry key="Preview.unsupportedFileFormat">Cannot view the content of file {0}: format is not supported.</entry>
+
+	<!-- FilesView -->
+	<entry key="FilesView.attachment">Attachment</entry>
+
+	<!-- Entries -->
+	<entry key="Entries.title">Entries</entry>
+	<entry key="Entries.classId">System name</entry>
+	<entry key="Entries.name">Name</entry>
+
+	<!-- UserEntries -->
+	<entry key="UserEntries.title">User entries</entry>
+	<entry key="UserEntries.position">Position</entry>
+
+	<!-- HubServerView -->
+	<entry key="HubServerView.id">Id</entry>
+	<entry key="HubServerView.host">Application server host</entry>
+	<entry key="HubServerView.port">Port</entry>
+	<entry key="HubServerView.active">Up</entry>
+	<entry key="HubServerView.serverId">Server Id</entry>
+	<entry key="HubServerView.domains">Domains</entry>
+	<entry key="HubServerView.unregister">Remove</entry>
+
+	<!-- AuthorityCenterView -->
+	<entry key="AuthorityCenterView.title">Authority center</entry>
+
+	<!-- InterconnectionCenterView -->
+	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
+
+	<!-- Roles -->
+	<entry key="Roles.title">Security groups</entry>
+	<entry key="Roles.name">Group</entry>
+	<entry key="Roles.read">Reading</entry>
+	<entry key="Roles.write">Writing</entry>
+	<entry key="Roles.create">Creating</entry>
+	<entry key="Roles.copy">Copying</entry>
+	<entry key="Roles.destroy">Removing</entry>
+	<entry key="Roles.execute">Run jobs</entry>
+
+	<!-- Jobs -->
+	<entry key="Jobs.title">Jobs</entry>
+	<entry key="Jobs.classId">System name</entry>
+
+	<!-- Requests -->
+	<entry key="Requests.title">Requests</entry>
+	<entry key="Requests.classId">System name</entry>
+
+	<!-- ScheduledJobs -->
+	<entry key="ScheduledJobs.title">Jobs</entry>
+	<entry key="ScheduledJobs.job">Job</entry>
+	<entry key="ScheduledJobs.user">User</entry>
+	<entry key="ScheduledJobs.settings">Settings</entry>
+	<entry key="ScheduledJobs.cron">CRON-expression</entry>
+	<entry key="ScheduledJobs.logErrorsOnly">Log only errors</entry>
+	<entry key="ScheduledJobs.active">Active</entry>
+	<entry key="ScheduledJobs.lastStart">Last start</entry>
+	<entry key="ScheduledJobs.nextStart">Next Start</entry>
+
+	<!-- ScheduledJobLogs -->
+	<entry key="ScheduledJobLogs.description">Description</entry>
+	<entry key="ScheduledJobLogs.title">Message</entry>
+	<entry key="ScheduledJobLogs.start">Start</entry>
+	<entry key="ScheduledJobLogs.finish">Finish</entry>
+	<entry key="ScheduledJobLogs.errors">Errors</entry>
+	<entry key="ScheduledJobLogs.file">Log file</entry>
+	<entry key="ScheduledJobLogs.fileSize">Log file, bytes</entry>
+
+	<!-- JobsView -->
+	<entry key="JobsView.job">Job</entry>
+	<entry key="JobsView.user">User</entry>
+
+	<!-- SystemTools -->
+	<entry key="SystemTools.title">Administrative tools</entry>
+
+	<!-- SystemSequences -->
+	<entry key="Sequences.title">Sequences</entry>
+	<entry key="Sequences.key">Key</entry>
+	<entry key="Sequences.value">Value</entry>
+
+	<!-- Sequencer -->
+	<entry key="Sequencer.notInitialized">Sequencer is not initialized. Use static methods Sequencer.next() and Sequencer.reset().</entry>
+
+	<!-- Procedure -->
+	<entry key="Procedure.rollback">All data changes have been cancelled.</entry>
+	<entry key="Procedure.jobError">The task was aborted due to an error: {0}</entry>
+
+	<!-- Reports -->
+	<entry key="Report.groupTotal">Total</entry>
+	<entry key="Report.groupGrandTotal">Grand total</entry>
+
+	<!-- Exceptions -->
+	<entry key="Exception.invalidVersion">Database schema version does not match server version.</entry>
+	<entry key="Exception.accessDenied">Incorrect login or password</entry>
+	<entry key="Exception.accessRightsViolation">Access rights violation.</entry>
+	<entry key="Exception.userNotFound">Unknown not found</entry>
+	<entry key="Exception.serverUnavailable">Server does not respond.</entry>
+	<entry key="Exception.resourceNotFound">Resource not found: {0}</entry>
+	<entry key="Exception.fileNotFound">File not found: {0}</entry>
+	<entry key="Exception.fileCanNotBeDeleted">File can not be deleted: {0}</entry>
+	<entry key="Exception.fileSizeLimitExceeded">File size ''{0}'' exceeds limit {1}Mb</entry>
+
+	<entry key="Exception.unknownDatabase">Unknown database</entry>
+
+	<!-- Generator -->
+	<entry key="Generator.displayName">Generate database scheme</entry>
+	<entry key="Generator.schedulerStopped">Scheduler stopped</entry>
+	<entry key="Generator.schedulerStarted">Scheduler started</entry>
+	<entry key="Generator.createTableError">Error. Table ''{0}''({1}) - creating error. {2}</entry>
+	<entry key="Generator.dropTableError">Error. Table ''{0}'' - dropping error. {1}</entry>
+	<entry key="Generator.dropForeignKeyError">Error. Table ''{0}'' - foreign key dropping error {1}. {2}</entry>
+	<entry key="Generator.dropIndexError">Error. Table ''{0}'' - index dropping error {1}. {2}</entry>
+	<entry key="Generator.createForeignKeyError">Error. Table ''{0}''({1}) - error creating foreign key to table ''{2}''({3}). {4}</entry>
+	<entry key="Generator.createUniqueIndexError">Error. Table "{1}"({2}) - error creating unique index "{0}". {3}</entry>
+	<entry key="Generator.createIndexError">Error. Table ''{1}''({2}) - error creating index ''{0}''. {3}</entry>
+	<entry key="Generator.insertRecordsError">Error inserting record {0} to table ''{1}''({2}). {3}</entry>
+</properties>

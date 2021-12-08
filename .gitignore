@@ -9,3 +9,4 @@ target
 *.log
 /org.zenframework.z8.pde/
 .idea/
+gradle.properties

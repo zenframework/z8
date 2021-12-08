@@ -16,8 +16,7 @@ Z8.define('Z8.button.File', {
 
 	onDestroy: function() {
 		DOM.un(this.fileInput, 'change', this.onFileInputChange, this);
-
-		delete this.fileInput;
+		this.fileInput = null;
 
 		Button.prototype.onDestroy.call(this);
 	},

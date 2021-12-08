@@ -40,7 +40,7 @@ public class GeometryExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public geometry get() {
 		return z8_get();
 	}
 

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.DatabaseVendor;
-import org.zenframework.z8.server.db.Statement;
+import org.zenframework.z8.server.db.DmlStatement;
 import org.zenframework.z8.server.engine.IDatabase;
 
 class ForeignKeyGenerator {
@@ -23,6 +23,6 @@ class ForeignKeyGenerator {
 		String sql = "ALTER TABLE " + database.tableName(foreignKey.table) + " " + "ADD CONSTRAINT " + vendor.quote(foreignKey.name) + " " + "FOREIGN KEY" + "(" + vendor.quote(foreignKey.field) + ")" + " " + "REFERENCES " + database.tableName(foreignKey.referenceTable) + " "
 				+ "(" + vendor.quote(foreignKey.referenceField) + ")";
 
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 }

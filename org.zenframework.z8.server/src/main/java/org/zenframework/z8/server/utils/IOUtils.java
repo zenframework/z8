@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterInputStream;
@@ -225,6 +226,11 @@ public class IOUtils {
 				closable.close();
 		} catch(Throwable e) {
 		}
+	}
+
+	static public void closeQuietly(Collection<Closeable> closeables) {
+		for(Closeable closeable : closeables)
+			closeQuietly(closeable);
 	}
 
 	static public byte[] zip(byte[] bytes) {

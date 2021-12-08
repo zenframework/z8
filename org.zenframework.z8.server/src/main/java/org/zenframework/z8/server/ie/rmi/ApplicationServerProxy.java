@@ -9,6 +9,7 @@ import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.file;
 
 public class ApplicationServerProxy implements IApplicationServer {
@@ -59,17 +60,42 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(String login, String password, String scheme) throws RemoteException {
+	public IUser user(LoginParameters loginParameters, String password) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IUser create(String login, String scheme) throws RemoteException {
+	public IUser create(LoginParameters loginParameters) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String[] domains() throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser verifyUser(String verification, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser remind(String verification, String schema, String requestHost) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 }

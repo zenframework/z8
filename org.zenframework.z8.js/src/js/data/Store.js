@@ -194,6 +194,10 @@ Z8.define('Z8.data.Store', {
 		return this.getModel().prototype.getQuickFilters();
 	},
 
+	getFilterFields: function() {
+		return this.getModel().prototype.getFilterFields();
+	},
+
 	getLimit: function() {
 		return (this.isTree() ? 0 : this.limit) || 0;
 	},
@@ -581,15 +585,15 @@ Z8.define('Z8.data.Store', {
 		};
 	},
 
-	load: function(options) {
+	load: function(callback) {
 		var params = this.getLoadParams();
 
 		this.fireEvent('beforeLoad', this, params);
 
-		var callback = function(response, success) {
+		var loadCallback = function(response, success) {
 			var records = success ? this.initRecords(response.data || []) : [];
 			this.fireEvent('load', this, records, success);
-			Z8.callback(options, this, records, success);
+			Z8.callback(callback, this, records, success);
 
 			if(success) {
 				this.loadTotalCount();
@@ -598,7 +602,7 @@ Z8.define('Z8.data.Store', {
 		};
 
 		this.loadIndex++;
-		this.sendLoadRequest(params, { fn: callback, scope: this });
+		this.sendLoadRequest(params, { fn: loadCallback, scope: this });
 	},
 
 	loadTotalCount: function(options) {

@@ -3,13 +3,15 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.LinkedHashMap;
 
 import org.zenframework.z8.server.base.query.RecordLock;
+import org.zenframework.z8.server.base.security.LoginParameters;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.crypto.MD5;
+import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.Runtime;
@@ -19,6 +21,7 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -31,7 +34,7 @@ public class Users extends Table {
 	static public final guid System = BuiltinUsers.System.guid();
 	static public final guid Administrator = BuiltinUsers.Administrator.guid();
 
-	static private String defaultPassword = MD5.hex("");
+	static private String defaultPassword = Digest.md5("");
 
 	static public class fieldNames {
 		public final static String Password = "Password";
@@ -43,6 +46,10 @@ public class Users extends Table {
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
 		public final static String Settings = "Settings";
+		public final static String Verification = "Verification";
+		public final static String VerificationModAt = "Verification Modified At";
+		public final static String Company = "Company";
+		public final static String Position = "Position";
 	}
 
 	static public class strings {
@@ -58,6 +65,8 @@ public class Users extends Table {
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
+		public final static String Company = "Users.company";
+		public final static String Position = "Users.position";
 
 		public final static String DefaultName = "Users.name.default";
 	}
@@ -76,6 +85,8 @@ public class Users extends Table {
 		public final static String DefaultName = Resources.get(strings.DefaultName);
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Description = Resources.get(strings.Description);
+		public final static String Company = Resources.get(strings.Company);
+		public final static String Position = Resources.get(strings.Position);
 
 		public final static String SystemName = BuiltinUsers.displayNames.SystemName;
 		public final static String AdministratorName = BuiltinUsers.displayNames.AdministratorName;
@@ -110,10 +121,15 @@ public class Users extends Table {
 	public StringField.CLASS<StringField> lastName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> phone = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> email = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> company = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<StringField> position = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> changePassword = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
-
+	public StringField.CLASS<StringField> verification = new StringField.CLASS<StringField>(this);
+	public DatetimeField.CLASS<DatetimeField> verificationModAt = new DatetimeField.CLASS<DatetimeField>(this);
+	
+	
 	private boolean notifyBlock = false;
 
 	public Users() {
@@ -135,9 +151,13 @@ public class Users extends Table {
 		objects.add(lastName);
 		objects.add(phone);
 		objects.add(email);
+		objects.add(company);
+		objects.add(position);
 		objects.add(banned);
 		objects.add(changePassword);
 		objects.add(settings);
+		objects.add(verification);
+		objects.add(verificationModAt);
 	}
 
 	@Override
@@ -181,6 +201,16 @@ public class Users extends Table {
 		email.setIndex("email");
 		email.setDisplayName(displayNames.Email);
 		email.get().length = new integer(128);
+		
+		company.setName(fieldNames.Company);
+		company.setIndex("company");
+		company.setDisplayName(displayNames.Company);
+		company.get().length = new integer(100);
+		
+		position.setName(fieldNames.Position);
+		position.setIndex("position");
+		position.setDisplayName(displayNames.Position);
+		position.get().length = new integer(100);
 
 		banned.setName(fieldNames.Banned);
 		banned.setIndex("banned");
@@ -193,6 +223,13 @@ public class Users extends Table {
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
+		
+		verification.setName(fieldNames.Verification);
+		verification.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
+		verification.setIndex("verification");
+		
+		verificationModAt.setName(fieldNames.VerificationModAt);
+		verificationModAt.setIndex("verificationModAt");
 	}
 
 	@Override
@@ -214,8 +251,10 @@ public class Users extends Table {
 	@Override
 	public void onNew() {
 		super.onNew();
-		password.get().set(defaultPassword);
-		changePassword.get().set(bool.True);
+		if(!password.get().changed())
+			password.get().set(defaultPassword);
+		if(!changePassword.get().changed())
+			changePassword.get().set(bool.True);
 	}
 
 	@Override
@@ -228,6 +267,8 @@ public class Users extends Table {
 		StringField name = this.name.get();
 		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.Null))
 			name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
+		if (this.verification.get().changed())
+			this.verificationModAt.get().set(new date());
 	}
 
 	@Override
@@ -242,6 +283,9 @@ public class Users extends Table {
 			if(ban && (System.equals(recordId) || Administrator.equals(recordId)))
 				throw new exception("Builtin users ban state can not be changed");
 		}
+		
+		if (this.verification.get().changed())
+			this.verificationModAt.get().set(new date());
 	}
 
 	@Override
@@ -302,11 +346,17 @@ public class Users extends Table {
 		}
 	}
 
-	public boolean getExtraParameters(IUser user, RLinkedHashMap<string, primary> parameters) {
-		return z8_getParameters(user.id(), new string(user.login()), parameters).get();
+	public boolean getExtraParameters(org.zenframework.z8.server.security.LoginParameters loginParameters, RLinkedHashMap<string, primary> parameters) {
+		return z8_getParameters(LoginParameters.newInstance(loginParameters), parameters).get();
 	}
 
-	public bool z8_getParameters(guid id, string name, RLinkedHashMap<string, primary> parameters) {
+	@SuppressWarnings("rawtypes")
+	public bool z8_getParameters(guid id, string name, RLinkedHashMap parameters) {
 		return bool.True;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public bool z8_getParameters(LoginParameters.CLASS<? extends LoginParameters> loginParameters, RLinkedHashMap parameters) {
+		return z8_getParameters(loginParameters.get().z8_userId(), loginParameters.get().z8_login(), parameters);
 	}
 }

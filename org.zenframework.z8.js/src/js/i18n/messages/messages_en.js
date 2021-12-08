@@ -62,7 +62,7 @@ Z8.loadMessages('en', {
     'Button.period': 'Period',
     'Button.selectAPeriod': 'Select a period',
     'Button.filter': 'Filter',
-    'Button.configureFilter': 'Configure filter',
+    'Button.configureFiltration': 'Configure filter',
     'Button.configure': 'Configure',
     'Button.filterConfiguration': 'FIlter configuration',
 

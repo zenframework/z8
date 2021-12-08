@@ -55,7 +55,7 @@ public class DatetimeField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public date get() {
 		return z8_get();
 	}
 

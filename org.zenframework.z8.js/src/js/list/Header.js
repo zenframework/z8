@@ -156,6 +156,10 @@ Z8.define('Z8.list.Header', {
 		}
 	},
 
+	getName: function() {
+		return this.field.name;
+	},
+
 	getSort: function() {
 		return this.sortDirection;
 	},
@@ -165,6 +169,20 @@ Z8.define('Z8.list.Header', {
 		var cls = DOM.parseCls(this.getSortIcon()).pushIf('sort', 'icon');
 		DOM.setCls(this.sortElement, cls);
 		return cls;
+	},
+
+	getSortProperty: function() {
+		return this.field.sorter || this.getName();
+	},
+
+	isSortable: function() {
+		return this.field.sortable !== false;
+	},
+
+	isSortableWith: function(sorter) {
+		if(sorter == null || !this.isSortable())
+			return false;
+		return this.getSortProperty() == (String.isString(sorter) ? sorter : sorter.property);
 	},
 
 	getFilterIcon: function() {

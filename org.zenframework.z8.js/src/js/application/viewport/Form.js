@@ -1,6 +1,6 @@
 Z8.define('Z8.application.viewport.Form', {
 	extend: 'Z8.Container',
-	shortClassName: 'viewport.Form',
+	shortClassName: 'ViewportForm',
 
 	setTitle: function(title) {
 		Z8.Container.prototype.setTitle(this, title);

@@ -39,7 +39,7 @@ public class DatetimeExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public date get() {
 		return z8_get();
 	}
 

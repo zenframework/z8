@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment></comment>
+
+	<!-- bool -->
+	<entry key="bool.true">да</entry>
+	<entry key="bool.false">нет</entry>
+
+	<!-- Field -->
+	<entry key="Field.readException">Ошибка чтения поля {0}</entry>
+
+	<!-- Query -->
+	<entry key="Query.readError">Ошибка чтения базы данных</entry>
+
+	<!-- Table -->
+	<entry key="Table.id">Код</entry>
+	<entry key="Table.description">Описание</entry>
+
+	<!-- Settings -->
+	<entry key="Settings.title">Системные свойства</entry>
+	<entry key="Settings.name">Свойство</entry>
+	<entry key="Settings.value">Значение</entry>
+
+	<!-- Users -->
+	<entry key="Users.title">Пользователи</entry>
+	<entry key="Users.login">Логин</entry>
+	<entry key="Users.firstName">Имя</entry>
+	<entry key="Users.middleName">Отчество</entry>
+	<entry key="Users.lastName">Фамилия</entry>
+	<entry key="Users.description">Описание</entry>
+	<entry key="Users.company">Организация</entry>
+	<entry key="Users.phone">Телефон</entry>
+	<entry key="Users.email">Email</entry>
+	<entry key="Users.company">Компания</entry>
+	<entry key="Users.position">Должность</entry>
+	<entry key="Users.banned">Заблокирован</entry>
+	<entry key="Users.changePassword">Изменить пароль при следующем входе</entry>
+	<entry key="Users.resetPassword">Сбросить пароль</entry>
+	<entry key="Users.settings">Настройки</entry>
+	<entry key="Users.isGroup">Группа</entry>
+
+	<entry key="Users.name.default">User</entry>
+
+	<entry key="Users.error.builtinBannedChanged">Состояние блокировки системных пользователей не может быть изменено</entry>
+	<entry key="Users.error.builtinIsGroupChanged">Системные учётные записи не могут быть преобразованы в группы</entry>
+
+	<!-- Domains -->
+	<entry key="Domains.title">Домены</entry>
+	<entry key="Domains.name">Имя</entry>
+	<entry key="Domains.address">Адрес</entry>
+	<entry key="Domains.user">Системный пользователь</entry>
+	<entry key="Domains.user.description">Системный пользователь (описание)</entry>
+	<entry key="Domains.owner">Владелец</entry>
+	<entry key="Domains.address.default">Domain</entry>
+
+	<!-- MessageQueue -->
+	<entry key="MessagesQueue.title">Очередь сообщений</entry>
+	<entry key="MessagesQueue.name">Сообщение</entry>
+	<entry key="MessagesQueue.description">Описание</entry>
+	<entry key="MessagesQueue.sender">Отправитель</entry>
+	<entry key="MessagesQueue.address">Получатель</entry>
+	<entry key="MessagesQueue.ordinal">Номер</entry>
+	<entry key="MessagesQueue.processing">В обработке</entry>
+
+	<!-- TransportQueue -->
+	<entry key="TransportQueue.title">Очередь отправки</entry>
+	<entry key="TransportQueue.name">Сообщение</entry>
+	<entry key="TransportQueue.description">Описание</entry>
+	<entry key="TransportQueue.sender">Отправитель</entry>
+	<entry key="TransportQueue.address">Получатель</entry>
+	<entry key="TransportQueue.result">Результат</entry>
+	<entry key="TransportQueue.ordinal">Номер</entry>
+	<entry key="TransportQueue.processed">Обработано</entry>
+	<entry key="TransportQueue.bytesTransferred">Отправлено, Б</entry>
+
+	<!-- Tables -->
+	<entry key="Tables.title">Таблицы</entry>
+	<entry key="Tables.classId">Системное имя</entry>
+	<entry key="Tables.name">DB name</entry>
+	<entry key="Tables.displayName">Заголовок</entry>
+
+	<!-- Fields -->
+	<entry key="Fields.title">Поля</entry>
+	<entry key="Fields.classId">Системное имя</entry>
+	<entry key="Fields.displayName">Заголовок</entry>
+	<entry key="Fields.type">Тип данных</entry>
+
+	<!-- UserRoles -->
+	<entry key="UserRoles.title">Роли пользователя</entry>
+
+	<!-- RoleTableAccess -->
+	<entry key="RoleTableAccess.title">Таблицы</entry>
+	<entry key="RoleTableAccess.read">Чтение</entry>
+	<entry key="RoleTableAccess.write">Изменение</entry>
+	<entry key="RoleTableAccess.create">Создание</entry>
+	<entry key="RoleTableAccess.copy">Копирование</entry>
+	<entry key="RoleTableAccess.destroy">Удаление</entry>
+
+	<!-- RoleFieldAccess -->
+	<entry key="RoleFieldAccess.title">Поля</entry>
+	<entry key="RoleFieldAccess.read">Чтение</entry>
+	<entry key="RoleFieldAccess.write">Изменение</entry>
+
+	<!-- RoleRequestAccess -->
+	<entry key="RoleRequestAccess.title">Запросы</entry>
+	<entry key="RoleRequestAccess.execute">Исполнение</entry>
+
+	<!-- Privileges -->
+	<entry key="Privileges.noReadAccess">У вас отсутствуют права на просмотр этих данных</entry>
+	<entry key="Privileges.noWriteAccess">У вас отсутствуют права на изменение этих данных</entry>
+	<entry key="Privileges.noDestroyAccess">У вас отсутствуют права на удаление этих данных</entry>
+	<entry key="Privileges.noExecuteAccess">У вас отсутствуют права на исполнение запроса</entry>
+
+	<!-- Files -->
+	<entry key="Files.title">Файлы</entry>
+	<entry key="Files.name">Имя файла</entry>
+	<entry key="Files.path">Путь к файлу в кэше</entry>
+	<entry key="Files.size">Размер файла</entry>
+	<entry key="Files.time">Дата создания</entry>
+	<entry key="Files.lastModified">Дата изменения</entry>
+	<entry key="Files.extension">Тип</entry>
+
+	<entry key="Preview.unsupportedFileFormat">Невозможно отобразить содержимое файла {0}: формат не поддерживается.</entry>
+
+	<!-- FilesView -->
+	<entry key="FilesView.attachment">Вложение</entry>
+
+	<!-- Entries -->
+	<entry key="Entries.title">Компоненты</entry>
+	<entry key="Entries.classId">Системное имя</entry>
+	<entry key="Entries.name">Имя</entry>
+
+	<!-- UserEntries -->
+	<entry key="UserEntries.title">Компоненты</entry>
+	<entry key="UserEntries.position">Позиция</entry>
+
+	<!-- HubServerView -->
+	<entry key="HubServerView.id">Id</entry>
+	<entry key="HubServerView.host">Application server host</entry>
+	<entry key="HubServerView.port">Port</entry>
+	<entry key="HubServerView.active">Up</entry>
+	<entry key="HubServerView.serverId">Server Id</entry>
+	<entry key="HubServerView.domains">Domains</entry>
+	<entry key="HubServerView.unregister">Удалить</entry>
+
+	<!-- AuthorityCenterView -->
+	<entry key="AuthorityCenterView.title">Authority Center</entry>
+
+	<!-- InterconnectionCenterView -->
+	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
+
+	<!-- Roles -->
+	<entry key="Roles.title">Группы безопасности</entry>
+	<entry key="Roles.name">Группа</entry>
+	<entry key="Roles.read">Чтение</entry>
+	<entry key="Roles.write">Изменение</entry>
+	<entry key="Roles.create">Создание</entry>
+	<entry key="Roles.copy">Копирование</entry>
+	<entry key="Roles.destroy">Удаление</entry>
+	<entry key="Roles.execute">Запуск заданий</entry>
+
+	<!-- Jobs -->
+	<entry key="Jobs.title">Задания</entry>
+	<entry key="Jobs.classId">Системное имя</entry>
+
+	<!-- Requests -->
+	<entry key="Requests.title">Запросы</entry>
+	<entry key="Requests.classId">Системное имя</entry>
+
+	<!-- ScheduledJobs -->
+	<entry key="ScheduledJobs.title">Задания</entry>
+	<entry key="ScheduledJobs.job">Задание</entry>
+	<entry key="ScheduledJobs.user">Пользователь</entry>
+	<entry key="ScheduledJobs.settings">Настройки</entry>
+	<entry key="ScheduledJobs.cron">CRON-выражение</entry>
+	<entry key="ScheduledJobs.logErrorsOnly">Логировать только ошибки</entry>
+	<entry key="ScheduledJobs.active">Активна</entry>
+	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
+	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
+
+	<!-- ScheduledJobLogs -->
+	<entry key="ScheduledJobLogs.description">Описание</entry>
+	<entry key="ScheduledJobLogs.title">Сообщения</entry>
+	<entry key="ScheduledJobLogs.start">Старт</entry>
+	<entry key="ScheduledJobLogs.finish">Финиш</entry>
+	<entry key="ScheduledJobLogs.errors">Ошибки</entry>
+	<entry key="ScheduledJobLogs.file">Лог-файл</entry>
+	<entry key="ScheduledJobLogs.fileSize">Лог-файл, байт</entry>
+
+	<!-- JobsView -->
+	<entry key="JobsView.job">Задание</entry>
+	<entry key="JobsView.user">Пользователь</entry>
+
+	<!-- SystemTools -->
+	<entry key="SystemTools.title">Администрирование</entry>
+
+	<!-- SystemSequences -->
+	<entry key="Sequences.title">Последовательности</entry>
+	<entry key="Sequences.key">Ключ</entry>
+	<entry key="Sequences.value">Значение</entry>
+
+	<!-- Sequencer -->
+	<entry key="Sequencer.notInitialized">Sequencer не инициализирован. Используйте статические методы Sequencer.next() и Sequencer.reset().</entry>
+
+	<!-- Procedure -->
+	<entry key="Procedure.rollback">Отменены все возможные изменения в данных, произошедшие в ходе выполнения задания.</entry>
+	<entry key="Procedure.jobError">Выполнение задания прервано из-за возникшей ошибки: {0}</entry>
+
+	<!-- Reports -->
+	<entry key="Report.groupTotal">Итого по </entry>
+	<entry key="Report.groupGrandTotal">Всего</entry>
+
+	<!-- Exceptions -->
+	<entry key="Exception.invalidVersion">Версия схемы базы данных не соответствует версии сервера.</entry>
+	<entry key="Exception.accessDenied">Неверный логин или пароль</entry>
+	<entry key="Exception.accessRightsViolation">Нарушение прав доступа</entry>
+	<entry key="Exception.userNotFound">Пользователь не найден</entry>
+	<entry key="Exception.serverUnavailable">Сервер не отвечает.</entry>
+	<entry key="Exception.resourceNotFound">Ресурс не найден: {0}</entry>
+	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
+	<entry key="Exception.fileCanNotBeDeleted">Файл не может быть удален: {0}</entry>
+	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
+
+	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
+
+	<!-- Generator -->
+	<entry key="Generator.displayName">Генерация схемы данных</entry>
+	<entry key="Generator.schedulerStopped">Планировщик заданий остановлен</entry>
+	<entry key="Generator.schedulerStarted">Планировщик заданий запущен</entry>
+	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено. {1}</entry>
+	<entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей. {2}</entry>
+	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей. {2}</entry>
+	<entry key="Generator.createForeignKeyError">Ошибка. Таблица ''{0}''({1}) - создание внешнего ключа на таблицу ''{2}''({3}) закончилось неудачей. {4}</entry>
+	<entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено. {3}</entry>
+	<entry key="Generator.createIndexError">Ошибка. Таблица ''{1}''({2}) - создание индекса ''{0}'' не выполнено. {3}</entry>
+	<entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице ''{1}''({2}), закончилось неудачей. {3}</entry>
+</properties>

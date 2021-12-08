@@ -76,7 +76,7 @@ Z8.define('Z8.list.Item', {
 		var list = this.getList();
 
 		if(list.checks) {
-			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' ') };
+			var check = { tag: 'i', cls: this.getCheckBoxCls(this.checked).join(' '), html: String.htmlText() };
 			var text = { cls: 'text', cn: [check] };
 			var cell = { cls: 'cell', cn: [text] };
 			columns.push({ tag: 'td', cls: 'check column', cn: [cell] });
@@ -100,9 +100,7 @@ Z8.define('Z8.list.Item', {
 
 		var record = this.record;
 
-		var iconCls = this.getIconCls();
-		if(iconCls != null)
-			icons.push({ tag: 'i', cls: iconCls.join(' '), html: String.htmlText() });
+		icons.push({ tag: 'i', cls: this.getIconCls().join(' '), html: String.htmlText() });
 
 		if(record != null) {
 			var fields = list.getFields();
@@ -302,7 +300,7 @@ Z8.define('Z8.list.Item', {
 
 	getIconCls: function() {
 		var icon = this.getIcon();
-		return icon != null ? DOM.parseCls(icon).add(['fa', 'fa-fw', 'icon']) : null;
+		return String.isEmpty(icon) ? ['icon empty'] : DOM.parseCls(icon).add(['fa', 'fa-fw', 'icon']);
 	},
 
 	setEnabled: function(enabled) {
@@ -407,7 +405,9 @@ Z8.define('Z8.list.Item', {
 
 		var isString = String.isString(text);
 		DOM.setInnerHtml(textElement, isString ? String.htmlText(text) : DOM.markup(text));
-		DOM.setAttribute(cell, 'title', isString ? Format.htmlEncode(Format.br2nl(text)) : '');
+		var encodedText = isString ? Format.htmlEncode(Format.br2nl(text)) : '';
+		DOM.setAttribute(textElement, 'title', encodedText);
+		DOM.setAttribute(cell, 'title', encodedText);
 	},
 
 	updateText: function(index, field) {
@@ -443,7 +443,7 @@ Z8.define('Z8.list.Item', {
 
 		var list = this.getList();
 
-		if(list.getFocused() && !list.isEditing() && this.canStartEdit(target) && this.startEdit(index, 300))
+		if(list.getFocused() && !list.isEditing() && event.button == 0 /* Primary button */ && this.canStartEdit(target) && this.startEdit(index, 300))
 			event.stopEvent();
 	},
 
@@ -477,8 +477,14 @@ Z8.define('Z8.list.Item', {
 		if(!this.isEnabled())
 			return;
 
+		var list = this.getList(), editor = list.getCurrentEditor();
+
+		if(editor != null && (target == editor.getDom() || DOM.isParentOf(editor, target)))
+			return;
+
 		var index = this.findCellIndex(target);
-		this.getList().onItemContextMenu(this, index);
+		this.getList().onItemContextMenu(this, index, event.pageX, event.pageY);
+		event.stopEvent();
 	},
 
 	onDblClick: function(event, target) {

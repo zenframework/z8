@@ -97,7 +97,7 @@ public class Application {
 	static public RCollection<string> z8_supportedFileTypes() {
 		RCollection<string> result = new RCollection<string>();
 
-		result.add(new string(FileConverter.PDF_EXTENSION));
+		result.add(new string(FileConverter.PDF));
 		result.addAll(string.wrap(ServerConfig.textExtensions()));
 		result.addAll(string.wrap(ServerConfig.imageExtensions()));
 		result.addAll(string.wrap(ServerConfig.emailExtensions()));

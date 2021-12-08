@@ -1,5 +1,25 @@
 package org.zenframework.z8.web.server;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.ConnectException;
+import java.rmi.NoSuchObjectException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -17,24 +37,14 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Message;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.security.IUser;
+import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
 import org.zenframework.z8.web.servlet.Servlet;
 import org.zenframework.z8.web.utils.ServletUtil;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.rmi.ConnectException;
-import java.rmi.NoSuchObjectException;
-import java.util.*;
 
 public abstract class Adapter {
 	private static final String UseContainerSession = "useContainerSession";
@@ -65,29 +75,38 @@ public abstract class Adapter {
 			parseRequest(request, parameters, files);
 
 			boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
+			boolean isRegistration = Json.register.equals(parameters.get(Json.request.get()));
+			boolean isVerification = Json.verify.equals(parameters.get(Json.request.get()));
+			boolean isRemindInit = Json.remindInit.equals(parameters.get(Json.request.get()));
+			boolean isRemind = Json.remind.equals(parameters.get(Json.request.get()));
+			boolean isChangePassword = Json.changePassword.equals(parameters.get(Json.request.get()));
 
 			String sessionId = getParameter(Json.session.get(), parameters, httpSession);
 			String serverId = parameters.get(Json.server.get());
 
-			if(isLogin && sessionId == null) {
-				String login = parameters.get(Json.login.get());
-				String password = parameters.get(Json.password.get());
-
-				if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
-					throw new AccessDeniedException();
-
-				session = login(login, password, ServletUtil.getSchema(request));
-				if (httpSession != null)
-					httpSession.setAttribute(Json.session.get(), session.id());
-			} else
-				session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
-
-			if(session == null)
-				throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
-
-			service(session, parameters, files, request, response);
+			if(isChangePassword)
+				changePassword(parameters, request, response);
+			else if(isRemindInit)
+				remindInit(parameters, request, response);
+			else if(isRemind)
+				remind(parameters, request, response);
+			else if(isVerification)
+				verify(parameters, request, response);
+			else if(isRegistration)
+				register(parameters, request, response);
+			else {
+				if(isLogin && sessionId == null)
+					session = login(parameters, request, session, httpSession);
+				else
+					session = authorize(sessionId, serverId, parameters.get(Json.request.get()));
+	
+				if(session == null)
+					throw serverId == null ? new AccessDeniedException() : new ServerUnavailableException(serverId);
+	
+				service(session, parameters, files, request, response);
+			}
 		} catch(AccessDeniedException e) {
-			if (httpSession != null)
+			if(httpSession != null)
 				httpSession.invalidate();
 			processAccessDenied(response);
 		} catch(NoSuchObjectException e) {
@@ -102,9 +121,138 @@ public abstract class Adapter {
 			}
 		}
 	}
+	
+	private String getRequestHost(HttpServletRequest request) throws MalformedURLException {
+		URL rURL = new URL(request.getRequestURL().toString());
+		StringBuilder host = new StringBuilder().append(rURL.getProtocol()).append("://").append(rURL.getHost());
+		if (rURL.getPort() != -1)
+			host.append(":").append(rURL.getPort());
+		host.append("/");
+		return host.toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void remindInit(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String login = parameters.get(Json.login.get());
+		
+		ServerConfig.authorityCenter().remindInit(login, ServletUtil.getSchema(request), getRequestHost(request));
+		
+		JsonWriter writer = new JsonWriter();
+		writer.startResponse(null, true);
+		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+		writer.startArray(Json.data);
+		writer.finishArray();
+		writer.finishResponse();
+		
+		writeResponse(response, writer.toString());
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void remind(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String verificationCode = parameters.get(Json.verificationCode.get());
+		
+		IUser user = ServerConfig.authorityCenter().remind(verificationCode, ServletUtil.getSchema(request), getRequestHost(request));
+		boolean accessed = verificationCode.equals(user.verification());
+		
+		JsonWriter writer = new JsonWriter();
+		writer.startResponse(null, true);
+		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+		writer.startArray(Json.data);
+		writer.startObject();
+		if (accessed)
+			writer.writeProperty(Json.verification, user.verification());
+		writer.writeProperty(Json.login, user.login());
+		writer.writeProperty(Json.success, accessed);
+		writer.finishObject();
+		writer.finishArray();
+		writer.finishResponse();
+		
+		writeResponse(response, writer.toString());
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void changePassword(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String verificationCode = parameters.get(Json.verificationCode.get());
+		String password = parameters.get(Json.password.get());
+		
+		ServerConfig.authorityCenter().changePassword(verificationCode, password, ServletUtil.getSchema(request), getRequestHost(request));
+		
+		JsonWriter writer = new JsonWriter();
+		writer.startResponse(null, true);
+		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+		writer.startArray(Json.data);
+		writer.finishArray();
+		writer.finishResponse();
+		
+		writeResponse(response, writer.toString());
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void verify(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String verificationCode = parameters.get(Json.verificationCode.get());
+		
+		IUser user = ServerConfig.authorityCenter().verify(verificationCode, ServletUtil.getSchema(request), getRequestHost(request));
+		boolean unbanned = !user.banned();
+		
+		JsonWriter writer = new JsonWriter();
+		writer.startResponse(null, true);
+		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+		writer.startArray(Json.data);
+		writer.startObject();
+		writer.writeProperty(Json.login, user.login());
+		writer.writeProperty(Json.success, unbanned);
+		writer.finishObject();
+		writer.finishArray();
+		writer.finishResponse();
+		
+		writeResponse(response, writer.toString());
+	}
 
-	protected ISession login(String login, String password, String scheme) throws IOException, ServletException {
-		return ServerConfig.authorityCenter().login(login, password, scheme);
+	@SuppressWarnings("unchecked")
+	private void register(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String login = parameters.get(Json.email.get());
+		String email = parameters.get(Json.email.get());
+		String firstName = parameters.get(Json.firstName.get());
+		String lastName = parameters.get(Json.lastName.get());
+		String password = parameters.get(Json.password.get());
+		String company = parameters.get(Json.company.get());
+		String position = parameters.get(Json.position.get());
+		
+		LoginParameters loginParameters = new LoginParameters(login)
+				.setEmail(email)
+				.setFirstName(firstName)
+				.setLastName(lastName)
+				.setCompany(company)
+				.setPosition(position)
+				.setSchema(ServletUtil.getSchema(request));
+		
+		ServerConfig.authorityCenter().register(loginParameters, password, getRequestHost(request));
+		
+		JsonWriter writer = new JsonWriter();
+		writer.startResponse(null, true);
+		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+		writer.startArray(Json.data);
+		writer.finishArray();
+		writer.finishResponse();
+		
+		writeResponse(response, writer.toString());
+	}
+	
+	private ISession login(Map<String, String> parameters, HttpServletRequest request, ISession session, HttpSession httpSession) throws IOException, ServletException {
+		String login = parameters.get(Json.login.get());
+		String password = parameters.get(Json.password.get());
+
+		if(login == null || login.isEmpty() || login.length() > IAuthorityCenter.MaxLoginLength || password != null && password.length() > IAuthorityCenter.MaxPasswordLength)
+			throw new AccessDeniedException();
+
+		session = login(getLoginParameters(login, request), password);
+		if(httpSession != null)
+			httpSession.setAttribute(Json.session.get(), session.id());
+		return session;
+	}
+
+	protected ISession login(LoginParameters loginParameters, String password) throws IOException, ServletException {
+		return ServerConfig.authorityCenter().login(loginParameters, password);
 	}
 
 	protected ISession authorize(String sessionId, String serverId, String request) throws IOException, ServletException {
@@ -193,26 +341,32 @@ public abstract class Adapter {
 	}
 
 	protected void writeResponse(HttpServletResponse response, String content) throws IOException {
-		InputStream in = new ByteArrayInputStream(content.getBytes());
-		writeResponse(response, in, ContentType.Json);
+		writeResponse(response, new ByteArrayInputStream(content.getBytes()), ContentType.Json);
 	}
 
 	protected void writeResponse(HttpServletResponse response, InputStream in, ContentType contentType) throws IOException {
 		response.setContentType(contentType + ";charset=" + encoding.Default.toString());
-		response.setContentLength(in.available());
 
-		if(in != null) {
-			OutputStream out = response.getOutputStream();
-			IOUtils.copyLarge(in, out);
+		try {
+			response.setContentLength(in.available());
+			IOUtils.copyLarge(in, response.getOutputStream());
+		} finally {
+			IOUtils.closeQuietly(in);
 		}
+	}
+
+	protected static LoginParameters getLoginParameters(String login, HttpServletRequest request) {
+		LoginParameters loginParameters = new LoginParameters(login);
+		loginParameters.setAddress(request.getRemoteAddr());
+		loginParameters.setSchema(ServletUtil.getSchema(request));
+		return loginParameters;
 	}
 
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
 		String value = parameters.get(key);
 
-		if(httpSession != null && value == null) {
+		if(httpSession != null && value == null)
 			value = (String)httpSession.getAttribute(key);
-		}
 
 		return value;
 	}

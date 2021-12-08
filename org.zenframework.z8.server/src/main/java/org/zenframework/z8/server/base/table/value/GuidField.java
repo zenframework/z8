@@ -58,7 +58,7 @@ public class GuidField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public guid get() {
 		return z8_get();
 	}
 

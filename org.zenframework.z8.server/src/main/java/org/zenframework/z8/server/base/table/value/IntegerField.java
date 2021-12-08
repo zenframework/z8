@@ -69,7 +69,7 @@ public class IntegerField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public integer get() {
 		return z8_get();
 	}
 

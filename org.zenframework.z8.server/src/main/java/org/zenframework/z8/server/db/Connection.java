@@ -36,7 +36,7 @@ public class Connection {
 
 	private long lastUsed = System.currentTimeMillis();
 
-	private Set<BasicStatement> statements = new HashSet<BasicStatement>();
+	private Set<Statement> statements = new HashSet<Statement>();
 	private Collection<Listener> listeners;
 
 	static private java.sql.Connection newConnection(IDatabase database) {
@@ -66,9 +66,6 @@ public class Connection {
 	}
 
 	public void addListener(Listener listener) {
-		if(!inBatchMode())
-			throw new RuntimeException("Connection.addListener() - not in batch mode");
-
 		if(listeners == null)
 			listeners = new ArrayList<Listener>();
 		listeners.add(listener);
@@ -119,10 +116,6 @@ public class Connection {
 		return transactionCount != 0;
 	}
 
-	public boolean inBatchMode() {
-		return batch != null;
-	}
-
 	public void use() {
 		if(inTransaction() || isClosed())
 			reconnect();
@@ -137,7 +130,7 @@ public class Connection {
 		if(!inTransaction())
 			owner = null;
 
-		for(BasicStatement statement : statements)
+		for(Statement statement : statements)
 			statement.safeClose();
 
 		statements.clear();
@@ -223,14 +216,16 @@ public class Connection {
 		try {
 			if(!inTransaction())
 				throw new RuntimeException("Connection.commit() - not in transaction");
-			if(transactionCount == 1) {
-				onCommit();
-				batch.commit();
-				batch = null;
-				connection.commit();
-				setAutoCommit(true);
-			}
+
 			transactionCount--;
+			if(inTransaction())
+				return;
+
+			onCommit();
+			batch.commit();
+			batch = null;
+			connection.commit();
+			setAutoCommit(true);
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -244,15 +239,17 @@ public class Connection {
 	public void rollback() {
 		try {
 			if(!inTransaction())
-				throw new RuntimeException("Connection.rollback() - not in transaction");
-			if(transactionCount == 1) {
-				onRollback();
-				batch.rollback();
-				batch = null;
-				connection.rollback();
-				setAutoCommit(true);
-			}
+				return;
+
 			transactionCount--;
+			if(inTransaction())
+				return;
+
+			onRollback();
+			batch.rollback();
+			batch = null;
+			connection.rollback();
+			setAutoCommit(true);
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -265,9 +262,7 @@ public class Connection {
 
 	public void execute(String sql) {
 		try {
-			BasicStatement statement = new Statement(this);
-			statement.prepare(sql);
-			statement.executeUpdate();
+			new DmlStatement(this, sql).executeUpdate();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -306,8 +301,8 @@ public class Connection {
 		return false;
 	}
 
-	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		return prepareStatement(sql, 0);
+	public Statement getStatement(String sql) {
+		return inTransaction() ? batch.statement(sql) : null;
 	}
 
 	public PreparedStatement prepareCall(String sql) throws SQLException {
@@ -319,22 +314,9 @@ public class Connection {
 		}
 	}
 
-	public PreparedStatement prepareStatement(String sql, int priority) throws SQLException {
+	public PreparedStatement prepareStatement(String sql) throws SQLException {
 		try {
-			PreparedStatement statement = null;
-
-			if(inTransaction()) {
-				statement = batch.statement(sql);
-				if(statement != null)
-					return statement;
-			}
-
-			statement = connection.prepareStatement(sql);
-
-			if(inTransaction())
-				batch.register(sql, statement, priority);
-
-			return statement;
+			return connection.prepareStatement(sql);
 		} catch(SQLException e) {
 			checkAndReconnect(e);
 			return connection.prepareStatement(sql);
@@ -350,13 +332,13 @@ public class Connection {
 		}
 	}
 
-	private ResultSet doExecuteQuery(BasicStatement statement) throws SQLException {
-		PreparedStatement preparedStatement = statement.statement();
+	private ResultSet doExecuteQuery(Statement statement) throws SQLException {
+		PreparedStatement preparedStatement = statement.preparedStatement();
 		preparedStatement.setFetchSize(DefaultFetchSize);
 		return preparedStatement.executeQuery();
 	}
 
-	public ResultSet executeQuery(BasicStatement statement) throws SQLException {
+	public ResultSet executeQuery(Statement statement) throws SQLException {
 		try {
 			ResultSet resultSet = doExecuteQuery(statement);
 			statements.add(statement);
@@ -369,29 +351,29 @@ public class Connection {
 		}
 	}
 
-	public int executeUpdate(BasicStatement statement) throws SQLException {
+	public int executeUpdate(Statement statement) throws SQLException {
 		try {
 			if(inTransaction()) {
-				batch.add(statement.statement());
+				batch.add(statement);
 				return 0;
 			}
-			return statement.statement().executeUpdate();
+			return statement.preparedStatement().executeUpdate();
 		} catch(SQLException e) {
 			checkAndReconnect(e);
 			statement.safeClose();
 			statement.prepare();
-			return statement.statement().executeUpdate();
+			return statement.preparedStatement().executeUpdate();
 		}
 	}
 
-	public void executeCall(BasicStatement statement) throws SQLException {
+	public void executeCall(Statement statement) throws SQLException {
 		try {
-			statement.statement().execute();
+			statement.preparedStatement().execute();
 		} catch(SQLException e) {
 			checkAndReconnect(e);
 			statement.safeClose();
 			statement.prepare();
-			statement.statement().execute();
+			statement.preparedStatement().execute();
 		}
 	}
 }

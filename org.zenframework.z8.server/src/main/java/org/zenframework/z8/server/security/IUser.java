@@ -21,6 +21,9 @@ public interface IUser extends RmiSerializable, Serializable {
 	public String middleName();
 	public String lastName();
 	public String fullName();
+	public String verification();
+	public String company();
+	public String position();
 
 	public String description();
 

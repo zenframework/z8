@@ -28,11 +28,11 @@ Z8.define('Z8.menu.Menu', {
 
 	completeRender: function() {
 		Z8.list.Dropdown.prototype.completeRender.call(this);
-		DOM.on(this, 'blur', this.onFocusOut, this);
+		DOM.on(this, 'blur', this.onFocusOut, this, true);
 	},
 
 	onDestroy: function() {
-		DOM.un(this, 'blur', this.onFocusOut, this);
+		DOM.un(this, 'blur', this.onFocusOut, this, true);
 		Z8.list.Dropdown.prototype.onDestroy.call(this);
 	},
 
