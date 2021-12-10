@@ -7,7 +7,7 @@ import org.zenframework.z8.server.types.guid;
 import java.rmi.RemoteException;
 
 public interface IAuthorityCenter extends IHubServer {
-	int MaxLoginLength = 32;
+	int MaxLoginLength = 128;
 	int MaxPasswordLength = 32;
 
 	public IUser register(LoginParameters loginParameters, String password, String requestHost) throws RemoteException;
