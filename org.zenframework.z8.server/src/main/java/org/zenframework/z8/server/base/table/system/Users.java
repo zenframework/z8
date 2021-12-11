@@ -120,8 +120,7 @@ public class Users extends Table {
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<StringField> verification = new StringField.CLASS<StringField>(this);
 	public DatetimeField.CLASS<DatetimeField> verificationModAt = new DatetimeField.CLASS<DatetimeField>(this);
-	
-	
+
 	private boolean notifyBlock = false;
 
 	public Users() {
@@ -202,11 +201,11 @@ public class Users extends Table {
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
-		
+
 		verification.setName(fieldNames.Verification);
 		verification.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		verification.setIndex("verification");
-		
+
 		verificationModAt.setName(fieldNames.VerificationModAt);
 		verificationModAt.setIndex("verificationModAt");
 	}
@@ -230,8 +229,10 @@ public class Users extends Table {
 	@Override
 	public void onNew() {
 		super.onNew();
+
 		if(!password.get().changed())
 			password.get().set(defaultPassword);
+
 		if(!changePassword.get().changed())
 			changePassword.get().set(bool.True);
 	}
@@ -246,7 +247,8 @@ public class Users extends Table {
 		StringField name = this.name.get();
 		if((!name.changed() || name.string().isEmpty()) && !recordId.equals(guid.Null))
 			name.set(new string(displayNames.DefaultName + name.getSequencer().next()));
-		if (this.verification.get().changed())
+
+		if(this.verification.get().changed())
 			this.verificationModAt.get().set(new date());
 	}
 
@@ -262,7 +264,7 @@ public class Users extends Table {
 			if(ban && (System.equals(recordId) || Administrator.equals(recordId)))
 				throw new exception("Builtin users ban state can not be changed");
 		}
-		
+
 		if (this.verification.get().changed())
 			this.verificationModAt.get().set(new date());
 	}
