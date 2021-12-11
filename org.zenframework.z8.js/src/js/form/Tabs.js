@@ -196,6 +196,11 @@ Z8.define('Z8.form.Tabs', {
 		this.updateTabsActiveState();
 	},
 
+	focus: function() {
+		var activeTab = this.getActiveTab();
+		activeTab != null ? activeTab.focus() : Container.prototype.focus.call(this);
+	},
+
 	add: function(tab, index) {
 		var tag = this.initializeTab(tab).getTabTag();
 		this.header.add(tag, index);

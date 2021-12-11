@@ -98,13 +98,11 @@ var Z8 = {
 		if(mixins == null)
 			return;
 
-		mixins = Array.isArray(mixins) ? mixins : [mixins];
-
-		for(var i = 0, length = mixins.length; i < length; i++) {
-			var mixin = Z8.classes[mixins[i]];
+		for(var mixin of Array.isArray(mixins) ? mixins : [mixins]) {
+			mixin = String.isString(mixin) ? Z8.classes[mixin] : mixin;
 
 			if(mixin == null)
-				throw 'Mixin not found: "' + mixins[i] + '"';
+				throw 'Mixin not found: "' + mixin + '"';
 
 			mixin = mixin.prototype;
 			var mixinId = mixin.mixinId || mixin.$shortClassName;
