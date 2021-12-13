@@ -762,7 +762,7 @@ Z8.define('Z8.dom.Dom', {
 				if(!success) {
 					response = response.charAt(0) == '{' ? JSON.decode(response) : { info: { messages: [{ text: '\'' + url + Z8.$('DOM.fileNotFound'), type: 'error' }] }};
 
-					if(response.status == HttpRequest.status.AccessDenied) {
+					if(response.status == HttpRequest.AccessDenied) {
 						var loginCallback = function() {
 							DOM.download(url, id, serverId, callback);
 						};
