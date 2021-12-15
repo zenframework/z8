@@ -785,7 +785,7 @@ Z8.define('Z8.dom.Dom', {
 		},
 
 		onContextMenu: function(event, target) {
-			if(target.tagName != 'INPUT' && target.tagName != 'PRE')
+			if(target.tagName != 'INPUT' && target.tagName != 'PRE' && target.tagName != 'TEXTAREA')
 				event.stopEvent();
 		},
 
