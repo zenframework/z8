@@ -92,7 +92,7 @@ Z8.define('Z8.form.field.Files', {
 	},
 
 	updateTools: function() {
-		if(this.getDom() == null)
+		if(this.getDom() == null || !this.tools)
 			return;
 
 		var enabled = this.isEnabled();

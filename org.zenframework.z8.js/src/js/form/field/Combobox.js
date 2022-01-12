@@ -58,7 +58,7 @@ Z8.define('Z8.form.field.Combobox', {
 		dropdown.on('cancel', this.cancelDropdown, this);
 
 		var cls = this.needsPager() ? '' : 'display-none';
-		var pager = this.pager = new Z8.pager.Pager({ visible: false, store: this.getStore() });
+		var pager = this.pager = new Z8.pager.Pager({ cls: cls, store: this.getStore() });
 
 		dropdown.on('align', this.onDropdownAlign, this);
 		dropdown.on('show', this.onDropdownShow, this);
@@ -531,8 +531,8 @@ Z8.define('Z8.form.field.Combobox', {
 		var rect = new Rect(this.dropdown);
 
 		var pager = DOM.get(this.pager);
-		DOM.setLeft(pager, DOM.getLeft(dropdown));
-		DOM.setTop(pager, DOM.getTop(dropdown) + rect.height);
+		DOM.setLeft(pager, DOM.getLeft(dropdown) + 'px');
+		DOM.setTop(pager, DOM.getTop(dropdown) + Ems.emsToPixels(rect.height) + 'px');
 		DOM.setWidth(pager, rect.width);
 	},
 

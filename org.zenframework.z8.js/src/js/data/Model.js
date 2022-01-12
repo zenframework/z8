@@ -499,7 +499,7 @@ Z8.define('Z8.data.Model', {
 		this.modified = this.original = null;
 	},
 
-	attach: function(name, files, callback) {
+	attach: function(name, files, callback, details) {
 		if(this.getAccess().update === false)
 			throw 'Model ' + this.getName() + ' does not have update record privilege';
 
@@ -525,6 +525,9 @@ Z8.define('Z8.data.Model', {
 			link: this.getLink(),
 			query: this.getQuery()
 		};
+
+		if (details)
+			data.details = details;
 
 		var requestCallback = function(response, success) {
 			if(success) {

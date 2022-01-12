@@ -171,6 +171,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 		user = new guid(json.has(Json.user) ? json.getString(Json.user) : "");
 		author = new string(json.has(Json.author) ? json.getString(Json.author) : "");
 
+		if (json.has(Json.details)) {
+			JsonObject dtl = json.getJsonObject("details");
+			for (String key : dtl.keySet())
+				details.z8_add(new string(key), new string(dtl.getString(key)));
+		}
+
 		String jsonTime = json.has(Json.time) ? json.getString(Json.time) : "";
 		try {
 			time = jsonTime == null || jsonTime.indexOf('/') == -1 ? new date(jsonTime) : new date(jsonTime, "D/M/y H:m:s");
