@@ -1,0 +1,219 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Z8</title>
+<link rel="stylesheet" type="text/css" href="./resources/css/ext-all.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/shared/icons/silk.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/ux/gridfilters/css/GridFilters.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/ux/gridfilters/css/RangeMenu.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/ux/grouptab/GroupTab.css" />
+<link rel="stylesheet" type="text/css" href="./resources/css/z8style.css"/>
+<link rel="stylesheet" type="text/css" href="./resources/css/vars.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/form/css/Spinner.css" />
+<link rel="stylesheet" type="text/css" href="./z8/form/css/DateTime.css" />
+<link rel="stylesheet" type="text/css" href="./z8/form/css/FileUploadField.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/grid/css/GroupSummary.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/grid/css/RowEditor.css"/>
+<link rel="stylesheet" type="text/css" href="./z8/desktop/css/desktop.css"/>
+</head>
+
+<body>
+
+<script type="text/javascript" src="./adapter/ext/ext-base.js"></script>
+
+<script type="text/javascript" src="./ext-all-debug.js"></script>
+<script type="text/javascript" src="./ext-lang-ru.js"></script>
+
+<script type="text/javascript" src="./z8/ux/Ext.ux.netbox.InputTextMask.js"></script>
+<script type="text/javascript" src="./z8/overrides/Override.js"></script>
+
+<script type="text/javascript" src="./z8/Z8.js"></script>
+<script type="text/javascript" src="./z8/vars.js"></script>
+
+<script type="text/javascript" src="./z8/ext/util/Date.js"></script>
+<script type="text/javascript" src="./z8/ext/util/Format.js"></script>
+<script type="text/javascript" src="./z8/ext/util/Json.js"></script>
+<script type="text/javascript" src="./z8/ext/util/Number.js"></script>
+
+<script type="text/javascript" src="./z8/ext/Component.js"></script>
+<script type="text/javascript" src="./z8/ext/Container.js"></script>
+<script type="text/javascript" src="./z8/ext/DatePicker.js"></script>
+<script type="text/javascript" src="./z8/ext/Panel.js"></script>
+
+<script type="text/javascript" src="./z8/ext/menu/Menu.js"></script>
+
+<!-- Window with header buttons -->
+<script type="text/javascript" src="./z8/widgets/Window.js"></script>
+<script type="text/javascript" src="./z8/widgets/Panel.js"></script>
+
+<!-- <script type="text/javascript" src="./z8/tester/tester.js"></script> -->
+
+<script type="text/javascript" src="./z8/ux/CheckColumn.js"></script>
+
+<script type="text/javascript" src="./z8/ux/gridfilters/menu/RangeMenu.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/menu/ListMenu.js"></script>
+
+<script type="text/javascript" src="./z8/ux/gridfilters/GridFilters.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/filter/Filter.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/filter/StringFilter.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/filter/DateFilter.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/filter/ListFilter.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/filter/NumericFilter.js"></script>
+<script type="text/javascript" src="./z8/ux/gridfilters/filter/BooleanFilter.js"></script>
+
+<script type="text/javascript" src="./z8/ux/grouptab/GroupTabPanel.js"></script>
+<script type="text/javascript" src="./z8/ux/grouptab/GroupTab.js"></script>
+
+<!-- Buttons UX -->
+
+<script type="text/javascript" src="./z8/ux/Ext.ux.UUID.js"></script>
+
+<script type="text/javascript" src="./z8/history/History.js"></script>
+
+<script type="text/javascript" src="./z8/query/Record.js"></script>
+<script type="text/javascript" src="./z8/query/Store.js"></script>
+<script type="text/javascript" src="./z8/query/Query.js"></script>
+<script type="text/javascript" src="./z8/query/Field.js"></script>
+<script type="text/javascript" src="./z8/query/Section.js"></script>
+<script type="text/javascript" src="./z8/query/Connection.js"></script>
+<script type="text/javascript" src="./z8/query/Request.js"></script>
+<script type="text/javascript" src="./z8/query/JsonWriter.js"></script>
+
+<script type="text/javascript" src="./z8/layout/BorderLayout.js"></script>
+<script type="text/javascript" src="./z8/layout/BoxLayout.js"></script>
+<script type="text/javascript" src="./z8/layout/FormLayout.js"></script>
+<script type="text/javascript" src="./z8/layout/ColumnLayout.js"></script>
+<script type="text/javascript" src="./z8/layout/MenuLayout.js"></script>
+
+<script type="text/javascript" src="./z8/controls/Toolbar.js"></script>
+
+<script type="text/javascript" src="./z8/menu/Menu.js"></script>
+
+<script type="text/javascript" src="./z8/grid/RowEditor.js"></script>
+<script type="text/javascript" src="./z8/grid/GroupSummary.js"></script>
+<script type="text/javascript" src="./z8/grid/GridView.js"></script>
+<script type="text/javascript" src="./z8/grid/GridPanel.js"></script>
+<script type="text/javascript" src="./z8/grid/PropertyGrid.js"></script>
+<script type="text/javascript" src="./z8/grid/Column.js"></script>
+<script type="text/javascript" src="./z8/grid/GridStateManager.js"></script>
+<script type="text/javascript" src="./z8/grid/Tooltip.js"></script>
+<script type="text/javascript" src="./z8/grid/RecordsMerger.js"></script>
+
+<script type="text/javascript" src="./z8/widgets/DataView.js"></script>
+<script type="text/javascript" src="./z8/widgets/List.js"></script>
+
+<script type="text/javascript" src="./z8/evaluations/Evaluator.js"></script>
+
+<script type="text/javascript" src="./z8/tree/TreePanel.js"></script>
+<script type="text/javascript" src="./z8/tree/TreeNodeUI.js"></script>
+<script type="text/javascript" src="./z8/tree/TreePanelDD.js"></script>
+<script type="text/javascript" src="./z8/tree/TreeSelectionModel.js"></script>
+
+<script type="text/javascript" src="./z8/form/datetime/BaseTimePicker.js"></script>
+<script type="text/javascript" src="./z8/form/datetime/DateTimePicker.js"></script>
+<script type="text/javascript" src="./z8/form/datetime/DateTimeMenu.js"></script>
+
+<script type="text/javascript" src="./z8/form/Action.js"></script>
+<script type="text/javascript" src="./z8/form/Button.js"></script>
+<script type="text/javascript" src="./z8/form/ComboBox.js"></script>
+<script type="text/javascript" src="./z8/form/DateField.js"></script>
+<script type="text/javascript" src="./z8/form/DateTimeField.js"></script>
+<script type="text/javascript" src="./z8/form/FileUploadField.js"></script>
+<script type="text/javascript" src="./z8/form/FieldSet.js"></script>
+<script type="text/javascript" src="./z8/form/FormPanel.js"></script>
+<script type="text/javascript" src="./z8/form/FormView.js"></script>
+<script type="text/javascript" src="./z8/form/SearchBox.js"></script>
+<script type="text/javascript" src="./z8/form/Spinner.js"></script>
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization', 'version':'1','packages':['corechart']}]}"></script>
+<script type="text/javascript" src="./z8/chart/canvg.js"></script>
+<script type="text/javascript" src="./z8/chart/ChartPanel.js"></script>
+
+<script type="text/javascript" src="./z8/login/TaskManager.js"></script>
+<script type="text/javascript" src="./z8/login/LoginManager.js"></script>
+<script type="text/javascript" src="./z8/login/PageManager.js"></script>
+<script type="text/javascript" src="./z8/report/ReportManager.js"></script>
+<script type="text/javascript" src="./z8/report/FileViewer.js"></script>
+
+<script type="text/javascript" src="./z8/messenger/MessengerPanel.js"></script>
+<script type="text/javascript" src="./z8/messenger/Messenger.js"></script>
+
+<script type="text/javascript" src="./z8/view/FilterPanel.js"></script>
+<script type="text/javascript" src="./z8/view/UserComponents.js"></script>
+<script type="text/javascript" src="./z8/view/Import.js"></script>
+
+<script type="text/javascript" src="./z8/login/LoginWindow.js"></script>
+<script type="text/javascript" src="./z8/login/ParametersWindow.js"></script>
+<script type="text/javascript" src="./z8/login/PagingToolbar.js"></script>
+
+<script type="text/javascript" src="./z8/desktop/MenuItem.js"></script>
+<script type="text/javascript" src="./z8/desktop/ComponentsAccordion.js"></script>
+<script type="text/javascript" src="./z8/desktop/Dashboard.js"></script>
+
+<script type="text/javascript" src="./z8/desktop/HelperPanel.js"></script>
+<script type="text/javascript" src="./z8/desktop/Desktop.js"></script>
+<script type="text/javascript" src="./z8/desktop/ChangePasswordDialog.js"></script>
+<script type="text/javascript" src="./z8/desktop/ChangeEmailDialog.js"></script>
+<script type="text/javascript" src="./z8/desktop/WizardWindow.js"></script>
+
+<script type="text/javascript" src="./z8/desktop/vmenu/PinnedItem.js"></script>
+<script type="text/javascript" src="./z8/desktop/vmenu/ClosableItem.js"></script>
+<script type="text/javascript" src="./z8/desktop/vmenu/LastTasks.js"></script>
+<script type="text/javascript" src="./z8/desktop/vmenu/Feedback.js"></script>
+<script type="text/javascript" src="./z8/desktop/vmenu/Messenger.js"></script>
+
+<script type="text/javascript" src="./z8/login/grid.js"></script>
+<script type="text/javascript" src="./z8/login/ConsoleView.js"></script>
+
+<!-- Home Portal Panel -->
+
+<script type="text/javascript" src="./z8/login/UploadDialog.js"></script>
+<script type="text/javascript" src="./z8/login/MoveDialog.js"></script>
+
+<script type="text/javascript" src="./z8/view/tools/AddButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/FilesButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/PrintButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/CommandButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/DetailButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/StateButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/PeriodButton.js"></script>
+<script type="text/javascript" src="./z8/view/tools/FilterButton.js"></script>
+
+<script type="text/javascript" src="./z8/login/BackwardsView.js"></script>
+<script type="text/javascript" src="./z8/login/GridView.js"></script>
+<script type="text/javascript" src="./z8/login/ReportPanel.js"></script>
+<script type="text/javascript" src="./z8/login/MasterDetailPanel.js"></script>
+
+<script type="text/javascript" src="./z8/login/DataModelViewer.js"></script>
+
+<script type="text/javascript">
+	// 						http://domain/
+	// demo:  				http://domain/login.html?login=demo&password=
+	// demo-usn:			http://domain/login.html?login=demousnp&password=
+	// demobase:			http://domain/login.html?login=demobase&password=
+	// demobase-usn:  		http://domain/login.html?login=demousnd&password=
+	// demopro:				http://domain/login.html?login=demopro&password=
+	// demopro-usn:			http://domain/login.html?login=demousndr&password=
+	var params = getRequestUrlParameters();
+	//var demoLogin = params.login;
+	//var demoPassword = params.password;
+	var messagesOff = params.messagesOff;
+
+	var formToOpen = params.formToOpen;
+	var formId = params.formId;
+	
+	document.title = Z8.vars.pageTitle;
+</script>
+
+<!-- Fields required for history management -->
+<form id="history-form" class="x-hidden">
+   	<input type="hidden" id="x-history-field" />
+   	<iframe id="x-history-frame"></iframe>
+</form>
+	
+<script type="text/javascript" src="./z8/login/login.js"></script>
+
+	
+</body>
+</html>
