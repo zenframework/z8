@@ -371,7 +371,10 @@ public class IOUtils {
 	}
 
 	static public String determineEncoding(File file, String defaultCharset) throws IOException {
-		return determineEncoding(new FileInputStream(file), defaultCharset);
+		InputStream in = new FileInputStream(file);
+		String encoding = determineEncoding(in, defaultCharset);
+		in.close();
+		return encoding;
 	}
 
 	static public String determineEncoding(InputStream in, String defaultCharset) throws IOException {
@@ -379,14 +382,10 @@ public class IOUtils {
 
 		detector.reset();
 
-		try {
-			byte[] buf = new byte[1024];
-			for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf))
-				detector.handleData(buf, 0, n);
-			detector.dataEnd();
-			return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+		byte[] buf = new byte[1024];
+		for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf))
+			detector.handleData(buf, 0, n);
+		detector.dataEnd();
+		return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
 	}
 }

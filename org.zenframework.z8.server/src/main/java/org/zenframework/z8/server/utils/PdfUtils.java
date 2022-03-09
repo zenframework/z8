@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.utils;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -53,7 +54,11 @@ public class PdfUtils {
 
 	public static void textToPdf(InputStream in, File convertedFile) throws IOException {
 		try {
-			textToPdf(IOUtils.readText(in, Charset.forName(IOUtils.determineEncoding(in, "UTF-8"))), convertedFile);
+			BufferedInputStream buffIn = new BufferedInputStream(in);
+			buffIn.mark(1024*1024);
+			String encoding = IOUtils.determineEncoding(buffIn, "UTF-8");
+			buffIn.reset();
+			textToPdf(IOUtils.readText(buffIn, Charset.forName(encoding)), convertedFile);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
