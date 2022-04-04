@@ -16,10 +16,12 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
-import org.zenframework.z8.server.ie.Message;
+import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.ie.DataMessage;
 import org.zenframework.z8.server.ie.FileMessage;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ProxyUtils;
@@ -70,6 +72,9 @@ public class Transport implements Runnable {
 	@Override
 	public void run() {
 		try {
+			if(ServerConfig.isMultitenant())
+				throw new RuntimeException("Transport is incompatible with multitenacy ");
+			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 			do {
 				prepareMessages();
 			} while (sendMessages());
@@ -78,6 +83,7 @@ public class Transport implements Runnable {
 		} finally {
 			Scheduler.unregister(ApplicationServer.getDatabase(), thread);
 			Transport.unregister(this);
+			ApplicationServer.setRequest(null);
 		}
 	}
 

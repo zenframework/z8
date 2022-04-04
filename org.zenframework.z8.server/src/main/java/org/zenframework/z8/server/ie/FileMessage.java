@@ -10,7 +10,10 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
@@ -104,10 +107,13 @@ public class FileMessage extends Message {
 		} else if(!target.exists() || (offset + file.partLength()) < target.length())
 			return false;
 
+		ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
+
 		try {
 			if(!file.addPartTo(target))
 				return true;
 		} catch(IOException e) {
+			ApplicationServer.setRequest(null);
 			throw new RuntimeException(e);
 		}
 
@@ -123,6 +129,7 @@ public class FileMessage extends Message {
 			return true;
 		} finally {
 			target.delete();
+			ApplicationServer.setRequest(null);
 		}
 	}
 

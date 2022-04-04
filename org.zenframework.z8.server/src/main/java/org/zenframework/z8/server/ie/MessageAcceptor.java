@@ -5,6 +5,9 @@ import java.util.Set;
 
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 
@@ -19,6 +22,7 @@ public class MessageAcceptor {
 			return true;
 
 		if(message instanceof FileMessage) {
+			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 			boolean result = Files.newInstance().hasRecord(id);
 			ConnectionManager.release();
 			return result;
