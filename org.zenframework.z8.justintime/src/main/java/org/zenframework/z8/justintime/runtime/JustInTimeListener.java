@@ -3,6 +3,7 @@ package org.zenframework.z8.justintime.runtime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.tools.Diagnostic;
@@ -66,6 +67,11 @@ public class JustInTimeListener implements IBuildMessageConsumer, DiagnosticList
 
 	public void writeMessages(ISource source) {
 		source.writeMessages(blMessages);
+
+		System.out.println(">>> JAVA COMPILATION >>>");
+		for (Diagnostic<? extends JavaFileObject> diagnostic : javaDiagnostics)
+			System.out.println(diagnostic.getSource().getName() + " (" + diagnostic.getKind() + ", " + diagnostic.getCode() + "): " + diagnostic.getMessage(Locale.getDefault()));
+		System.out.println("<<< JAVA COMPILATION <<<");
 	}
 
 	public void clear() {
