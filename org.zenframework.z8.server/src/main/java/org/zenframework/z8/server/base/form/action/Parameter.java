@@ -94,6 +94,7 @@ public class Parameter extends OBJECT implements IParameter {
 	public primary parse(String value, FieldType type) {
 		switch(type) {
 		case String:
+		case Text:
 			return new string(value);
 		case Integer:
 			return new integer(value);
