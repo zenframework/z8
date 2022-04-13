@@ -44,7 +44,7 @@ public class IntegerExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public integer get() {
 		return z8_get();
 	}
 

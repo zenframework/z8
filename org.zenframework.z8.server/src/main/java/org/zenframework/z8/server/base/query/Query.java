@@ -78,6 +78,7 @@ public class Query extends OBJECT {
 	public RCollection<Field.CLASS<? extends Field>> names = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> quickFilters = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> filterFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> extraFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> sortFields = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> groupFields = new RCollection<Field.CLASS<? extends Field>>();
@@ -160,6 +161,11 @@ public class Query extends OBJECT {
 	public void onCopy(guid recordId) {
 		if(ApplicationServer.userEventsEnabled())
 			z8_onCopy(recordId);
+	}
+
+	public void onReadAction() {
+		if(ApplicationServer.userEventsEnabled())
+			z8_onReadAction();
 	}
 
 	public void beforeRead() {
@@ -258,7 +264,7 @@ public class Query extends OBJECT {
 	}
 
 	public Connection getConnection() {
-		return connection;
+		return connection != null ? connection : ConnectionManager.get();
 	}
 
 	public void setConnection(Connection connection) {
@@ -345,12 +351,11 @@ public class Query extends OBJECT {
 	}
 
 	public int executeUpdate(guid recordId) {
-		return new Update(this, getChangedFields(), recordId).execute();
+		return Update.create(this, getChangedFields(), recordId).execute();
 	}
 
 	private void executeInsert(Collection<Field> fields) {
-		Insert insert = new Insert(this, fields);
-		insert.execute();
+		Insert.create(this, fields).execute();
 	}
 
 	public guid insert(guid recordId) {
@@ -784,6 +789,10 @@ public class Query extends OBJECT {
 		return CLASS.asList(quickFilters);
 	}
 
+	public Collection<Field> filterFields() {
+		return CLASS.asList(filterFields);
+	}
+
 	public Collection<Field> sortFields() {
 		return CLASS.asList(sortFields);
 	}
@@ -1156,6 +1165,7 @@ public class Query extends OBJECT {
 		writer.writeControls(Json.columns, columns(), this, context);
 		writer.writeControls(Json.nameFields, names(), this, context);
 		writer.writeControls(Json.quickFilters, quickFilters(), this, context);
+		writer.writeControls(Json.filterFields, filterFields(), this, context);
 
 		writer.writeControls(Json.fields, selectFields(), this, context);
 
@@ -1453,6 +1463,9 @@ public class Query extends OBJECT {
 	}
 
 	public void z8_onCopy(guid recordId) {
+	}
+
+	public void z8_onReadAction() {
 	}
 
 	public void z8_beforeRead() {

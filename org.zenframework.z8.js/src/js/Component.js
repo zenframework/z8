@@ -83,6 +83,7 @@ Z8.define('Z8.Component', {
 
 	setTitle: function(title) {
 		this.title = title;
+		return this;
 	},
 
 	isEnabled: function() {
@@ -92,6 +93,7 @@ Z8.define('Z8.Component', {
 	setEnabled: function(enabled) {
 		this.enabled = enabled;
 		this.setTabIndex(enabled ? this.tabIndex: -1);
+		return this;
 	},
 
 	isActive: function() {
@@ -100,6 +102,7 @@ Z8.define('Z8.Component', {
 
 	setActive: function(active) {
 		this.inactive = !active;
+		return this;
 	},
 
 	getTabIndex: function() {
@@ -112,8 +115,24 @@ Z8.define('Z8.Component', {
 		return tabIndex;
 	},
 
+	getText: function() {
+		return this.getInnerHtml();
+	},
+
 	setText: function(text) {
-		DOM.setInnerHtml(this, text);
+		return this.setInnerHtml(text);
+	},
+
+	getInnerHtml: function() {
+		return this.getDom() != null ? DOM.getInnerHtml(this) : this.html;
+	},
+
+	setInnerHtml: function(html) {
+		if(this.getDom() != null)
+			DOM.setInnerHtml(this, html);
+		else
+			this.html = html;
+		return this;
 	},
 
 	isVisible: function() {
@@ -267,17 +286,10 @@ Z8.define('Z8.Component', {
 		return { id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), html: this.html || '' };
 	},
 
-	getInnerHtml: function(html) {
-		return DOM.setInnerHtml(this);
-	},
-
-	setInnerHtml: function(html) {
-		DOM.setInnerHtml(this, html);
-	},
-
 	setPosition: function(left, top) {
 		DOM.setPoint(this, 'left', left != null ? left : 'auto');
 		DOM.setPoint(this, 'top', top != null ? top : 'auto');
+		return this;
 	},
 
 	getAlignment: function() {
@@ -286,10 +298,12 @@ Z8.define('Z8.Component', {
 
 	setAlignment: function(alignment) {
 		this.alignment = alignment;
+		return this;
 	},
 
 	setAlignmentOffset: function(horizontal, vertical, margin, adjustHeight) {
 		this.alignmentOffset = { width: horizontal, height: vertical, margin: margin, adjustHeight: adjustHeight };
+		return this;
 	},
 
 	getClipping: function() {

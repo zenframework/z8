@@ -6,11 +6,19 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
+import org.zenframework.z8.compiler.core.IPosition;
+import org.zenframework.z8.compiler.error.BuildError;
+import org.zenframework.z8.compiler.error.BuildMessage;
+import org.zenframework.z8.compiler.error.BuildWarning;
 import org.zenframework.z8.justintime.runtime.ISource;
 import org.zenframework.z8.justintime.runtime.Workspace;
 import org.zenframework.z8.server.base.table.TreeTable;
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolExpression;
+import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlField;
@@ -25,7 +33,9 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.string.IndexOf;
+import org.zenframework.z8.server.db.sql.functions.string.IsEmpty;
 import org.zenframework.z8.server.db.sql.functions.string.Length;
+import org.zenframework.z8.server.db.sql.functions.string.Replace;
 import org.zenframework.z8.server.db.sql.functions.string.Reverse;
 import org.zenframework.z8.server.db.sql.functions.string.Substr;
 import org.zenframework.z8.server.resources.Resources;
@@ -33,7 +43,6 @@ import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_integer;
 import org.zenframework.z8.server.types.sql.sql_string;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -45,6 +54,8 @@ public class Source extends TreeTable implements ISource {
 	static public class fieldNames {
 		public final static String TypeId = "Type";
 		public final static String Source = "Source";
+		public final static String Errors = "Errors";
+		public final static String Warnings = "Warnings";
 	}
 
 	static public class strings {
@@ -52,7 +63,10 @@ public class Source extends TreeTable implements ISource {
 		public final static String Name = "Source.name";
 		public final static String ShortName = "Source.shortName";
 		public final static String ParentName = "Source.parentName";
+		public final static String Description = "Source.description";
 		public final static String Source = "Source.source";
+		public final static String Errors = "Source.errors";
+		public final static String Warnings = "Source.warnings";
 	}
 
 	static public class displayNames {
@@ -60,7 +74,10 @@ public class Source extends TreeTable implements ISource {
 		public final static String Name = Resources.get(strings.Name);
 		public final static String ShortName = Resources.get(strings.ShortName);
 		public final static String ParentName = Resources.get(strings.ParentName);
+		public final static String Description = Resources.get(strings.Description);
 		public final static String Source = Resources.get(strings.Source);
+		public final static String Errors = Resources.get(strings.Errors);
+		public final static String Warnings = Resources.get(strings.Warnings);
 	}
 
 	static public class extensions {
@@ -74,6 +91,8 @@ public class Source extends TreeTable implements ISource {
 		public static final sql_string Nls = new sql_string("fa-file-text-o");
 		public static final sql_string Java = new sql_string("fa-file-code-o");
 		public static final sql_string Package = new sql_string("fa-th-large");
+		public static final sql_string Error = new sql_string("fa-times-circle");
+		public static final sql_string Warning = new sql_string("fa-exclamation-triangle");
 	}
 
 	public static class CLASS<T extends Source> extends TreeTable.CLASS<T> {
@@ -113,9 +132,36 @@ public class Source extends TreeTable implements ISource {
 		}
 	};
 
+	public static class SourcePath extends StringExpression {
+		public static class CLASS<T extends SourcePath> extends StringExpression.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(SourcePath.class);
+			}
+
+			public Object newObject(IObject container) {
+				return new SourcePath(container);
+			}
+		}
+
+		public SourcePath(IObject container) {
+			super(container);
+		}
+
+		public SqlToken z8_expression() {
+			Source container = (Source) getContainer();
+			SqlToken parentName = new SqlField(container.parent.get().name.get());
+			SqlToken shortName = new SqlField(container.shortName.get());
+			SqlToken parentPath = new Replace(parentName, new sql_string("."), new sql_string("/"));
+			return new If(new IsEmpty(parentName), shortName, new Add(new Add(parentPath, Operation.Add, new sql_string("/")), Operation.Add, shortName));
+		}
+	};
+
 	public Source.CLASS<? extends Source> parent = new Parent.CLASS<Parent>(this);
 
 	public TextField.CLASS<TextField> source = new TextField.CLASS<TextField>(this);
+	public IntegerField.CLASS<IntegerField> errors = new IntegerField.CLASS<IntegerField>(this);
+	public IntegerField.CLASS<IntegerField> warnings = new IntegerField.CLASS<IntegerField>(this);
 
 	public StringExpression.CLASS<StringExpression> ext = new StringExpression.CLASS<StringExpression>(this);
 	public BoolExpression.CLASS<BoolExpression> isBl = new BoolExpression.CLASS<BoolExpression>(this);
@@ -123,6 +169,7 @@ public class Source extends TreeTable implements ISource {
 	public BoolExpression.CLASS<BoolExpression> isJava = new BoolExpression.CLASS<BoolExpression>(this);
 	public BoolExpression.CLASS<BoolExpression> isPackage = new BoolExpression.CLASS<BoolExpression>(this);
 	public StringExpression.CLASS<StringExpression> icon = new StringExpression.CLASS<StringExpression>(this);
+	public SourcePath.CLASS<SourcePath> sourcePath = new SourcePath.CLASS<SourcePath>(this);
 
 	protected boolean eventsDisabled = false;
 	protected String prevName = null;
@@ -138,12 +185,15 @@ public class Source extends TreeTable implements ISource {
 
 		objects.add(parent);
 		objects.add(source);
+		objects.add(errors);
+		objects.add(warnings);
 		objects.add(ext);
 		objects.add(isBl);
 		objects.add(isNls);
 		objects.add(isJava);
 		objects.add(isPackage);
 		objects.add(icon);
+		objects.add(sourcePath);
 	}
 
 	@Override
@@ -154,6 +204,7 @@ public class Source extends TreeTable implements ISource {
 
 		SqlToken shortName = this.shortName.get(IClass.Constructor1).sql_string();
 		SqlToken extPos = new IndexOf(new sql_string("."), new Reverse(shortName), null);
+
 		ext.get(IClass.Constructor).setExpression(new If(
 				new Rel(extPos, Operation.GT, new sql_integer(0L)),
 						new Substr(shortName, new Add(new Length(shortName), Operation.Sub, extPos)),
@@ -166,9 +217,12 @@ public class Source extends TreeTable implements ISource {
 				new SqlField(isBl.get(IClass.Constructor1)), new SqlField(isNls.get(IClass.Constructor1)), new SqlField(isJava.get(IClass.Constructor1)))));
 
 		icon.get(IClass.Constructor).setExpression(
-				new If(new sql_bool(new SqlField(isBl.get(IClass.Constructor1))), icons.Bl,
-						new If(new sql_bool(new SqlField(isNls.get(IClass.Constructor1))), icons.Nls,
-								new If(new sql_bool(new SqlField(isJava.get(IClass.Constructor1))), icons.Java, icons.Package))));
+				new If(new Rel(errors.get(), Operation.GT, new sql_integer(0)), icons.Error,
+						new If(new Rel(warnings.get(), Operation.GT, new sql_integer(0)), icons.Warning,
+								new If(new SqlField(isBl.get(IClass.Constructor1)), icons.Bl,
+										new If(new SqlField(isNls.get(IClass.Constructor1)), icons.Nls,
+												new If(new SqlField(isJava.get(IClass.Constructor1)), icons.Java,
+														icons.Package))))));
 	}
 
 	@Override
@@ -183,18 +237,29 @@ public class Source extends TreeTable implements ISource {
 		shortName.setDisplayName(displayNames.ShortName);
 		shortName.get().length = new integer(100L);
 
+		description.setDisplayName(displayNames.Description);
+
 		source.setName(fieldNames.Source);
 		source.setIndex("source");
 		source.setDisplayName(displayNames.Source);
 
-		ext.setIndex("ext");
+		errors.setName(fieldNames.Errors);
+		errors.setIndex("errors");
+		errors.setDisplayName(displayNames.Errors);
+		errors.get().aggregation = Aggregation.Sum;
 
+		warnings.setName(fieldNames.Warnings);
+		warnings.setIndex("warnings");
+		warnings.setDisplayName(displayNames.Warnings);
+		warnings.get().aggregation = Aggregation.Sum;
+
+		ext.setIndex("ext");
 		isBl.setIndex("isBl");
 		isNls.setIndex("isNls");
 		isJava.setIndex("isJava");
 		isPackage.setIndex("isPackage");
-
 		icon.setIndex("icon");
+		sourcePath.setIndex("sourcePath");
 	}
 
 	public void z8_beforeUpdate(guid recordId) {
@@ -240,9 +305,9 @@ public class Source extends TreeTable implements ISource {
 
 	@Override
 	public void exportSources(Workspace workspace) {
-		read(Arrays.asList(parent.get().name.get(), shortName.get(), source.get()), new IsNot(isPackage.get()));
+		read(Arrays.asList(sourcePath.get(), source.get()), new IsNot(isPackage.get()));
 		while (next()) {
-			File file = new File(workspace.getBlSources(), parent.get().name.get().string().get().replace('.', '/') + '/' + shortName.get().string().get());
+			File file = new File(workspace.getBlSources(), sourcePath.get().string().get());
 			file.getParentFile().mkdirs();
 			Writer writer = null;
 			try {
@@ -254,6 +319,51 @@ public class Source extends TreeTable implements ISource {
 				IOUtils.closeQuietly(writer);
 			}
 		}
+	}
+
+	@Override
+	public void writeMessages(Map<String, List<BuildMessage>> messages) {
+		read(Arrays.asList(sourcePath.get()));
+		while (next()) {
+			StringBuilder description = new StringBuilder(2048);
+			int errors = 0, warnings = 0;
+			List<BuildMessage> resourceMessages = messages.get(sourcePath.get().string().get());
+			if (resourceMessages != null) {
+				for (BuildMessage message : resourceMessages) {
+					if (description.length() > 0)
+						description.append('\n');
+					description.append(format(message));
+
+					if (message instanceof BuildError)
+						errors++;
+					else if (message instanceof BuildWarning)
+						warnings++;
+				}
+			}
+			this.description.get().set(description.toString());
+			this.errors.get().set(errors);
+			this.warnings.get().set(warnings);
+			update(recordId());
+		}
+	}
+
+	private static String format(BuildMessage message) {
+		StringBuilder str = new StringBuilder(512);
+
+		if (message instanceof BuildError)
+			str.append("ERROR");
+		else if (message instanceof BuildWarning)
+			str.append("WARNING");
+		else
+			str.append("INFO");
+
+		IPosition position = message.getPosition();
+		if (position != null)
+			str.append(" (").append(position.getLine()).append(", ").append(position.getColumn()).append(")");
+
+		str.append(": ").append(message.getDescription());
+
+		return str.toString();
 	}
 
 }

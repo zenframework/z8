@@ -7,7 +7,7 @@ Z8.define('Z8.data.field.Float', {
 		if(Number.isNumber(value))
 			return value;
 
-		if(value == null || value == '')
+		if(String.isEmpty(value))
 			return 0;
 
 		value = parseFloat(value);

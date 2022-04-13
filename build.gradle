@@ -19,11 +19,9 @@ allprojects {
 	apply plugin: 'eclipse'
 	apply plugin: 'maven-publish'
 
-	ext.buildFolder = './target'
 	ext.dependenciesVersion = '3.1'
 
-
-	buildDir = buildFolder
+	buildDir = "${projectDir}/target"
 
 	publishing {
 		repositories {
@@ -36,12 +34,12 @@ subprojects {
 	plugins.withType(JavaPlugin) {
 		// Eclipse: default java output -> $buildDir/classes/default
 		eclipse.classpath.defaultOutputDir = file("${buildDir}/classes/main")
-		// Eclipse: java source folders output -> $buildFolder/classes/...
+		// Eclipse: java source folders output -> ${relativePath(buildDir)}/classes/...
 		eclipse.classpath.file.whenMerged {
 			entries.findAll { entry ->
 				entry instanceof org.gradle.plugins.ide.eclipse.model.SourceFolder
 			}.each { entry ->
-				entry.output = entry.output.replace('bin/', "${buildFolder}/classes/")
+				entry.output = entry.output.replace('bin/', "${relativePath(buildDir)}/classes/")
 			}
 		}
 

@@ -735,7 +735,7 @@ Z8.define('Z8.dom.Dom', {
 
 		saveFile: function(file) {
 			var url = URL.createObjectURL(file);
-			var anchor = DOM.append(document.body, { tag: 'a', cls: 'display-none', href: url, download: file.name });
+			var anchor = DOM.append(document.body, { tag: 'a', cls: 'display-none', href: url, download: Format.htmlEncode(file.name) });
 			anchor.click();
 			URL.revokeObjectURL(url);
 
@@ -785,7 +785,7 @@ Z8.define('Z8.dom.Dom', {
 		},
 
 		onContextMenu: function(event, target) {
-			if(target.tagName != 'INPUT' && target.tagName != 'PRE')
+			if(target.tagName != 'INPUT' && target.tagName != 'PRE' && target.tagName != 'TEXTAREA')
 				event.stopEvent();
 		},
 

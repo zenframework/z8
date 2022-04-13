@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -23,12 +24,10 @@ public class UpdateAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		String jsonData = getDataParameter();
+		JsonArray records = new JsonArray(getRequestParameter(Json.data));
 
-		if(jsonData.charAt(0) == '{')
-			jsonData = "[" + jsonData + "]";
-
-		JsonArray records = new JsonArray(jsonData);
+		if(records.isEmpty())
+			throw new RuntimeException("UpdateAction - bad data parameter"); 
 
 		Query query = getQuery();
 

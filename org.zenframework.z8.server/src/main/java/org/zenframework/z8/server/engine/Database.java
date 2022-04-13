@@ -11,7 +11,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.BasicSelect;
+import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.json.Json;
@@ -57,6 +57,9 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return database;
 	}
 
+	public Database() {
+	}
+
 	private Database(String schema, String user, String password, String connection, String driver, encoding charset) {
 		this.schema = schema;
 		this.user = user;
@@ -85,6 +88,12 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 	@Override
 	public int hashCode() {
 		return key().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		Database database = (Database)object;
+		return database != null && database.hashCode() == hashCode();
 	}
 
 	public Object getLock() {
@@ -174,7 +183,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		Cursor cursor = null;
 
 		try {
-			cursor = BasicSelect.cursor(sql);
+			cursor = SelectStatement.cursor(sql);
 			return cursor.next() && cursor.getInteger(1).get() != 0;
 		} catch(SQLException e) {
 			Trace.logError(e);
@@ -215,6 +224,8 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public void serialize(ObjectOutputStream out) throws IOException {
+		RmiIO.writeLong(out, serialVersionUID);
+
 		RmiIO.writeString(out, schema);
 		RmiIO.writeString(out, user);
 		RmiIO.writeString(out, password);
@@ -243,7 +254,6 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		isSystemInstalled = RmiIO.readBoolean(in);
 		isLatestVersion = RmiIO.readBoolean(in);
 
-		charset = encoding.fromString(RmiIO.readString(in));
 		vendor = DatabaseVendor.fromString(RmiIO.readString(in));
 	}
 }

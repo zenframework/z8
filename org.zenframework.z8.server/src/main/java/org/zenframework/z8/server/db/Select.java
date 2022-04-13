@@ -337,7 +337,7 @@ public class Select {
 		long startAt = traceSql ? System.currentTimeMillis() : 0;
 
 		try {
-			cursor = BasicSelect.cursor(getConnection(), sql);
+			cursor = SelectStatement.cursor(getConnection(), sql);
 		} catch(Throwable e) {
 			close();
 			Trace.logError(sql, e);

@@ -113,6 +113,6 @@
 .fieldset>.row>.cell>.control-group>.box>.textarea.control,
 .fieldset>.row>.cell>.control-group>.box>.html.control {
 	padding: .14285714em;
-	overflow-x: hidden;
-	overflow-y: hidden;
+	overflow-x: auto;
+	overflow-y: auto;
 }

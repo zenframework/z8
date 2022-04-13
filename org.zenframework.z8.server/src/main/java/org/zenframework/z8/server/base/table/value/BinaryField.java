@@ -44,7 +44,7 @@ public class BinaryField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public binary get() {
 		return z8_get();
 	}
 

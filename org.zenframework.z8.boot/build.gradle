@@ -5,3 +5,11 @@ publishing.publications {
 		from components.java
 	}
 }
+
+eclipse.classpath.file.whenMerged {
+	entries.findAll { entry ->
+		entry instanceof org.gradle.plugins.ide.eclipse.model.Container
+	}.each { entry ->
+		entry.accessRules.add new org.gradle.plugins.ide.eclipse.model.AccessRule('0', 'sun/**')
+	}
+}

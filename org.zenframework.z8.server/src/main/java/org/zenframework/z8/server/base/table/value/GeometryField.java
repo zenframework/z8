@@ -75,7 +75,7 @@ public class GeometryField extends Field {
 	}
 
 	@Override
-	public primary get() {
+	public geometry get() {
 		return z8_get();
 	}
 

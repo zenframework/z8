@@ -17,13 +17,15 @@ dependencies {
 }
 
 task assembleBl(type: Zip, group: 'build') {
+	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
+
 	archiveName "${project.name}-${project.version}.zip"
 	destinationDir file("${buildDir}/libs/")
-	from("${projectDir}/WEB-INF/resources") {
-		include '**/*.nls'
+
+	from(projectDir) {
+		include 'WEB-INF/**/*'
 		includeEmptyDirs = false
 	}
-	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"
 }
 
 assemble.dependsOn assembleBl

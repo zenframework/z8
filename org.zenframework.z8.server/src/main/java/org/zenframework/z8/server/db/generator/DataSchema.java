@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.zenframework.z8.server.db.BasicSelect;
+import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
@@ -70,7 +70,7 @@ public class DataSchema {
 			"WHERE OWNER = '" + ConnectionManager.database().schema() + "' " +
 			"ORDER BY TABLE_NAME, COLUMN_ID";
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		while(cursor.next()) {
 			String tableName = cursor.getString(1).get();
@@ -105,7 +105,7 @@ public class DataSchema {
 			"WHERE table_schema = '" + ConnectionManager.database().schema() + "' " +
 			"ORDER BY table_name, ordinal_position";
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		while(cursor.next()) {
 			String tableName = cursor.getString(1).get();
@@ -138,7 +138,7 @@ public class DataSchema {
 				+ "(case when IS_NULLABLE = 'NO' then 0 else 1 end) NULLABLE, " + "cast(isnull(COLUMN_DEFAULT, '') as nvarchar(max)) " + "FROM " + "INFORMATION_SCHEMA.COLUMNS " + "WHERE " + "lower(TABLE_NAME) like lower('" + tablePattern + "')" + "ORDER BY "
 				+ "TABLE_NAME, ORDINAL_POSITION";
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		while(cursor.next()) {
 			String tableName = cursor.getString(1).get().toUpperCase();
@@ -158,7 +158,7 @@ public class DataSchema {
 
 	static boolean isView(String table) throws SQLException {
 		String sql = "select type from sys.objects where type_desc = 'VIEW' and lower(name) = lower('" + table + "')";
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		boolean isView = cursor.next();
 		cursor.close();
@@ -189,7 +189,7 @@ public class DataSchema {
 
 		Map<String, PrimaryKey> primaryKeys = new Hashtable<String, PrimaryKey>();
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		while(cursor.next()) {
 			String pk_name = cursor.getString(1).get();
@@ -247,7 +247,7 @@ public class DataSchema {
 
 		Map<String, Index> indexes = new Hashtable<String, Index>();
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		while(cursor.next()) {
 			String index = cursor.getString(1).get();
@@ -299,7 +299,7 @@ public class DataSchema {
 
 		Collection<ForeignKey> foreignKeys = new LinkedList<ForeignKey>();
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		while(cursor.next()) {
 			foreignKeys.add(new ForeignKey(cursor.getString(1).get(), cursor.getString(2).get(), cursor.getString(3).get(), cursor.getString(4).get(), cursor.getString(5).get()));

@@ -41,11 +41,15 @@ public abstract class RequestAction extends RequestTarget {
 		this.config = config;
 	}
 
-	public ActionConfig config() {
+	public ActionConfig getConfig() {
 		return config;
 	}
 
-	public Map<string, string> requestParameters() {
+	public boolean isRequest() {
+		return config.isRequest();
+	}
+
+	public Map<string, string> getRequestParameters() {
 		return config.requestParameters();
 	}
 
@@ -61,20 +65,6 @@ public abstract class RequestAction extends RequestTarget {
 		return config.link;
 	}
 
-	protected Collection<Field> getFormFields() {
-		return getFormFields(null);
-	}
-
-	private Collection<Field> getFormFields(Query query) {
-		String json = getRequestParameter(Json.fields);
-		if(query == null) {
-			query = getContextQuery();
-			if(query == null)
-				query = getQuery();
-		}
-		return QueryUtils.parseFormFields(query, json);
-	}
-
 	public boolean hasRequestParameter(string key) {
 		return getRequestParameter(key) != null;
 	}
@@ -88,44 +78,22 @@ public abstract class RequestAction extends RequestTarget {
 		return value != null && !value.isEmpty() ? Integer.parseInt(value) : defaultValue;
 	}
 
-	public guid getParentIdParameter() {
+	public boolean getRequestParameter(string key, boolean defaultValue) {
+		String value = getRequestParameter(key);
+		return value != null && !value.isEmpty() ? new bool(value).get() : defaultValue;
+	}
+
+	public guid getRecordId() {
+		return getConfig().getRecordId();
+	}
+
+	public Collection<guid> getRecordIds() {
+		return getConfig().getRecordIds();
+	}
+
+	public guid getParentId() {
 		String parentId = getRequestParameter(Json.parentId);
 		return parentId == null ? null : parentId.isEmpty() ? guid.Null : new guid(parentId);
-	}
-
-	public guid getRecordIdParameter() {
-		String recordId = getRequestParameter(Json.recordId);
-		return recordId != null ? new guid(recordId) : null;
-	}
-
-	public String getFieldParameter() {
-		return getRequestParameter(Json.field);
-	}
-
-	public String getTypeParameter() {
-		return getRequestParameter(Json.type);
-	}
-
-	public String getDetailsParameter() {
-		return getRequestParameter(Json.details);
-	}
-
-	public boolean getTotalsParameter() {
-		String totals = getRequestParameter(Json.totals);
-		return new bool(totals).get();
-	}
-
-	public boolean getCountParameter() {
-		String count = getRequestParameter(Json.count);
-		return new bool(count).get();
-	}
-
-	public String getTextParameter() {
-		return getRequestParameter(Json.text);
-	}
-
-	public String getLookupParameter() {
-		return getRequestParameter(Json.lookup);
 	}
 
 	public Collection<String> getLookupFields() {
@@ -144,74 +112,22 @@ public abstract class RequestAction extends RequestTarget {
 		return result;
 	}
 
-	public String getDataParameter() {
-		return getRequestParameter(Json.data);
+	public Collection<guid> getGuidCollection(string key) {
+		return getConfig().getGuidCollection(key);
 	}
 
-	public String getFormatParameter() {
-		return getRequestParameter(Json.format);
+	protected Collection<Field> getFormFields() {
+		return getFormFields(null);
 	}
 
-	public String getReportParameter() {
-		return getRequestParameter(Json.report);
-	}
-
-	public String getOptionsParameter() {
-		return getRequestParameter(Json.options);
-	}
-
-	public String getCommandParameter() {
-		return getRequestParameter(Json.command);
-	}
-
-	public String getParametersParameter() {
-		return getRequestParameter(Json.parameters);
-	}
-
-	public String getHavingParameter() {
-		return getRequestParameter(Json.having);
-	}
-
-	public String getFilterParameter() {
-		return getRequestParameter(Json.filter);
-	}
-
-	public String getWhereParameter() {
-		return getRequestParameter(Json.where);
-	}
-
-	public String getQuickFilterParameter() {
-		return getRequestParameter(Json.quickFilter);
-	}
-
-	public String getPeriodParameter() {
-		return getRequestParameter(Json.period);
-	}
-
-	public String getRecordParameter() {
-		return getRequestParameter(Json.record);
-	}
-
-	public String getColumnsParameter() {
-		return getRequestParameter(Json.columns);
-	}
-
-	public Collection<guid> getGuidCollection(string property) {
-		Collection<guid> ids = new ArrayList<guid>();
-
-		String json = getRequestParameter(property);
-
-		if(json == null || json.isEmpty())
-			return ids;
-
-		JsonArray records = new JsonArray(getRequestParameter(property));
-
-		for(int index = 0; index < records.length(); index++) {
-			String id = records.getString(index);
-			ids.add(new guid(id));
+	private Collection<Field> getFormFields(Query query) {
+		String json = getRequestParameter(Json.fields);
+		if(query == null) {
+			query = getContextQuery();
+			if(query == null)
+				query = getQuery();
 		}
-
-		return ids;
+		return QueryUtils.parseFormFields(query, json);
 	}
 
 	protected void writeFormFields(JsonWriter writer, Query query, Collection<guid> recordIds) {

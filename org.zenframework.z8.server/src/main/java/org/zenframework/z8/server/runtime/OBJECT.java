@@ -344,7 +344,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		RCollection<file> files = (RCollection<file>)getFiles();
 		return z8_processContentRequest(parameters, files);
 	}
-	
+
 	public org.zenframework.z8.server.json.parser.JsonArray getData() {
 		RLinkedHashMap<string, string> parameters = (RLinkedHashMap<string, string>)getParameters();
 		JsonArray.CLASS<? extends JsonArray> cls = z8_getData(parameters);

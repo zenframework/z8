@@ -39,6 +39,9 @@ public class SourcesView extends Source {
 		source.get().colSpan = new integer(2);
 		source.get().flex = new integer(1);
 
+		description.get().colSpan = new integer(2);
+		description.get().height = new integer(3);
+
 		colCount = new integer(2);
 
 		names.add(name);
@@ -46,9 +49,12 @@ public class SourcesView extends Source {
 		controls.add(parent.get(IClass.Constructor1).name);
 		controls.add(shortName);
 		controls.add(source);
+		controls.add(description);
 
 		columns.add(parent.get(IClass.Constructor1).name);
 		columns.add(shortName);
+		columns.add(errors);
+		columns.add(warnings);
 
 		extraFields.add(icon);
 

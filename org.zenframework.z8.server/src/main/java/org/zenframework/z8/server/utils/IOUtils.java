@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterInputStream;
@@ -227,6 +228,11 @@ public class IOUtils {
 		}
 	}
 
+	static public void closeQuietly(Collection<Closeable> closeables) {
+		for(Closeable closeable : closeables)
+			closeQuietly(closeable);
+	}
+
 	static public byte[] zip(byte[] bytes) {
 		return zip(bytes, 0, bytes.length);
 	}
@@ -365,7 +371,10 @@ public class IOUtils {
 	}
 
 	static public String determineEncoding(File file, String defaultCharset) throws IOException {
-		return determineEncoding(new FileInputStream(file), defaultCharset);
+		InputStream in = new FileInputStream(file);
+		String encoding = determineEncoding(in, defaultCharset);
+		in.close();
+		return encoding;
 	}
 
 	static public String determineEncoding(InputStream in, String defaultCharset) throws IOException {
@@ -373,14 +382,10 @@ public class IOUtils {
 
 		detector.reset();
 
-		try {
-			byte[] buf = new byte[1024];
-			for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf))
-				detector.handleData(buf, 0, n);
-			detector.dataEnd();
-			return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+		byte[] buf = new byte[1024];
+		for(int n = in.read(buf); n >= 0 && !detector.isDone(); n = in.read(buf))
+			detector.handleData(buf, 0, n);
+		detector.dataEnd();
+		return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
 	}
 }

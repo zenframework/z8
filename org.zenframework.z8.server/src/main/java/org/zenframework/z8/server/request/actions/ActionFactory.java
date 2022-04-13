@@ -30,10 +30,10 @@ public class ActionFactory {
 		String actionName = config.requestParameter(Json.action);
 
 		if(actionName == null)
-			return new MetaAction(config);
+			return new DefaultAction(config);
 
 		if(RequestAction.Meta.equals(actionName))
-			return new MetaAction(config, false);
+			return new MetaAction(config);
 		else if(RequestAction.Create.equals(actionName))
 			return new CreateAction(config);
 		else if(RequestAction.Copy.equals(actionName))

@@ -223,7 +223,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private void initialzeSystemJobs() {
-		if(systemJobs.isEmpty())
+		if(!systemJobs.isEmpty())
 			return;
 
 		if(ServerConfig.maintenanceJobEnabled())

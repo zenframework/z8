@@ -1,5 +1,5 @@
 Z8.define('Z8.application.form.Navigator', {
-	extend: 'viewport.Form',
+	extend: 'ViewportForm',
 
 	oneRecord: false,
 
@@ -37,7 +37,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	getCls: function() {
-		var cls = viewport.Form.prototype.getCls.call(this);
+		var cls = ViewportForm.prototype.getCls.call(this);
 
 		if(this.oneRecord)
 			cls.pushIf('one-record');
@@ -334,7 +334,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	createFilterButton: function() {
-		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFields() });
+		var filter = new Z8.filter.Button({ filter: this.filter, fields: this.store.getFilterFields() });
 		filter.on('filter', this.onFilter, this);
 		return filter;
 	},
@@ -708,7 +708,7 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onKeyDown: function(event, target) {
-		viewport.Form.prototype.onKeyDown.call(this, event, target);
+		ViewportForm.prototype.onKeyDown.call(this, event, target);
 
 		switch(event.getKey()) {
 		case Event.F:
@@ -796,6 +796,27 @@ Z8.define('Z8.application.form.Navigator', {
 	},
 
 	onAction: function(menu, item) {
+		var action = item.action;
+
+		if(!Z8.isEmpty(action.parameters))
+			this.requestActionParameters(menu, item);
+		else
+			this.runAction(menu, item);
+	},
+
+	requestActionParameters: function(menu, item) {
+		var handler = function(action) { this.runAction(menu, item, ActionUtil.getParameters(action)) };
+		var action = item.action;
+
+		if(ActionUtil.hasVisibleParameters(action)) {
+			var window = ActionUtil.getParametersWindow(action, handler, this);
+			window.open();
+		} else {
+			handler.call(this, action);
+		}
+	},
+
+	runAction: function(menu, item, parameters) {
 		this.actionsButton.setBusy(true);
 
 		var action = item.action;
@@ -807,6 +828,9 @@ Z8.define('Z8.application.form.Navigator', {
 			name: action.name,
 			records: records
 		};
+
+		if (parameters)
+			params.parameters = parameters;
 
 		var callback = function(response, success) {
 			this.onActionComplete(action, this.getChecked(), response, success);

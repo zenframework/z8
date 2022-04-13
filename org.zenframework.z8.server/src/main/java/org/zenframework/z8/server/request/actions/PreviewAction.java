@@ -31,10 +31,11 @@ public class PreviewAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		String requestId = config().requestId;
-		guid recordId = getRecordIdParameter();
+		String requestId = getConfig().requestId;
+		guid recordId = getRecordId();
 		Query query = getQuery();
-		String fieldId = getFieldParameter();
+
+		String fieldId = getRequestParameter(Json.field);
 		Field field = query.findFieldById(fieldId);
 
 		if(field == null)
@@ -46,7 +47,7 @@ public class PreviewAction extends RequestAction {
 		Collection<file> attachments = file.parse(field.string().get());
 
 		if(attachments.size() == 0)
-			throw new RuntimeException("'" + config().requestId + "." + fieldId + "' is empty");
+			throw new RuntimeException("'" + getConfig().requestId + "." + fieldId + "' is empty");
 
 		List<File> converted = new ArrayList<File>(attachments.size());
 		List<String> unsupported = new ArrayList<String>(attachments.size());

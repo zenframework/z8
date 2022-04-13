@@ -11,4 +11,13 @@ public class BoolField extends Field {
 	virtual public bool[] array();
 
 	public BoolField operator = (bool value);
+
+	public sql_bool IIF(sql_bool yes, sql_bool no);
+	public sql_date IIF(sql_date yes, sql_date no);
+	public sql_datespan IIF(sql_datespan yes, sql_datespan no);
+	public sql_decimal IIF(sql_decimal yes, sql_decimal no);
+	public sql_guid IIF(sql_guid yes, sql_guid no);
+	public sql_int IIF(sql_int yes, sql_int no);
+	public sql_string IIF(sql_string yes, sql_string no);
+	public sql_geometry IIF(sql_geometry yes, sql_geometry no);
 }

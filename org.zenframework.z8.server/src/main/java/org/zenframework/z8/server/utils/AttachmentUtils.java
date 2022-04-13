@@ -15,7 +15,7 @@ import org.zenframework.z8.server.types.file;
 public class AttachmentUtils {
 
 	static public File getPreview(file file, Map<String, String> parameters) throws IOException {
-		String ext = FileConverter.getExtension(file.baseName());
+		String ext = file.extension();
 		if (!FileConverter.isConvertableToPdf(ext))
 			return null;
 		
@@ -30,7 +30,7 @@ public class AttachmentUtils {
 			return path;
 
 		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get());
-		return FileConverter.convertToPdf(path, convertedFile, parameters);
+		return FileConverter.convert(path, convertedFile, parameters);
 	}
 
 	static public int getPageCount(file file) {

@@ -27,7 +27,7 @@ public class ExportAction extends ReadAction {
 
 	@Override
 	protected void initialize() {
-		ActionConfig config = config();
+		ActionConfig config = getConfig();
 
 		columns = getColumns();
 		groupFields = config.groupFields;
@@ -48,7 +48,7 @@ public class ExportAction extends ReadAction {
 	private Collection<Column> getColumns() {
 		Collection<Column> result = new ArrayList<Column>();
 
-		JsonArray columns = new JsonArray(getColumnsParameter());
+		JsonArray columns = new JsonArray(getRequestParameter(Json.columns));
 
 		for(int index = 0; index < columns.length(); index++) {
 			JsonObject json = (JsonObject)columns.get(index);
@@ -56,11 +56,11 @@ public class ExportAction extends ReadAction {
 			Field field = getQuery().findFieldById(json.getString(Json.id));
 
 			if(field != null) {
-				Column c = new Column(columnHeader(field));
-				c.setField(field);
-				c.setWidth(json.getInt(Json.width));
-				c.setMinWidth(json.getInt(Json.minWidth));
-				result.add(c);
+				Column column = new Column(columnHeader(field));
+				column.setField(field);
+				column.setWidth(json.getInt(Json.width));
+				column.setMinWidth(json.getInt(Json.minWidth));
+				result.add(column);
 			}
 		}
 
@@ -88,7 +88,7 @@ public class ExportAction extends ReadAction {
 	private String getReportHeader() {
 		String name = getReportName();
 
-		Period period = new Period(getQuery().periodKey(), getPeriodParameter());
+		Period period = new Period(getQuery().periodKey(), getRequestParameter(Json.period));
 		if(period.start.equals(date.Min))
 			return name;
 
@@ -98,12 +98,12 @@ public class ExportAction extends ReadAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) {
-		PrintOptions printOptions = new PrintOptions(getOptionsParameter());
+		PrintOptions printOptions = new PrintOptions(getRequestParameter(Json.options));
 
 		ReportOptions report = new ReportOptions(printOptions);
 		report.setName(getReportName());
 		report.setHeader(getReportHeader());
-		report.format = getFormatParameter();
+		report.format = getRequestParameter(Json.format);
 		report.action = this;
 
 		BirtReport birtReport = new BirtReport(report);

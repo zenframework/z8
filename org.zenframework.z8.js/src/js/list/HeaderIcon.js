@@ -1,5 +1,6 @@
 Z8.define('Z8.list.HeaderIcon', {
-	extend: 'Z8.list.HeaderBase',
+	extend: 'HeaderBase',
+	shortClassName: 'HeaderIcon',
 
 	fixed: true,
 

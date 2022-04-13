@@ -13,7 +13,10 @@
 	<entry key="Source.name">File</entry>
 	<entry key="Source.shortName">File name</entry>
 	<entry key="Source.parentName">Package</entry>
+	<entry key="Source.description">Messages</entry>
 	<entry key="Source.source">Source</entry>
+	<entry key="Source.errors">Errors</entry>
+	<entry key="Source.warnings">Warnings</entry>
 
 	<!-- CompileAction -->
 

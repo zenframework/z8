@@ -11,6 +11,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.exceptions.AccessRightsViolationException;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -27,12 +28,10 @@ public class CreateAction extends RequestAction {
 		if(!getQuery().access().create())
 			throw new AccessRightsViolationException();
 
-		String jsonData = getDataParameter();
+		String jsonData = getRequestParameter(Json.data);
 
-		if(jsonData == null)
-			jsonData = "[{}]";
-		else if(jsonData.charAt(0) == '{')
-			jsonData = "[" + jsonData + "]";
+		if(jsonData == null || jsonData.isEmpty())
+			throw new RuntimeException("CreateAction - bad data parameter"); 
 
 		JsonArray records = new JsonArray(jsonData);
 

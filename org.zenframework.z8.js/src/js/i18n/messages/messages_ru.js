@@ -62,7 +62,7 @@ Z8.loadMessages('ru', {
     'Button.period': 'Период',
     'Button.selectAPeriod': 'Выбрать период',
     'Button.filter': 'Фильтрация',
-    'Button.configureFilter': 'Настроить фильтрацию',
+    'Button.configureFiltration': 'Настроить фильтрацию',
     'Button.configure': 'Настроить',
     'Button.filterConfiguration': 'Настройка фильтрации',
 

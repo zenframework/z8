@@ -1,3 +1,4 @@
+import org.zenframework.z8.base.security.LoginParameters;
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.StringField;
@@ -8,7 +9,7 @@ import org.zenframework.z8.base.table.value.TextField;
 [native "org.zenframework.z8.server.base.table.system.Users"]
 public class Users extends Table {
 	[displayName "Логин"] name;
-	name.length = 32;
+	name.length = 128;
 
 	[name "Password"]
 	[displayName "Пароль"]
@@ -39,6 +40,14 @@ public class Users extends Table {
 	[name "Email"]
 	[displayName "email"]
 	public StringField email;
+	
+	[name "Company"]
+	[displayName "Компания"]
+	public StringField company;
+	
+	[name "Position"]
+	[displayName "Должность"]
+	public StringField position;
 
 	[name "Banned"]
 	[displayName "Заблокирован"]
@@ -53,6 +62,7 @@ public class Users extends Table {
 	public BoolField changePassword;
 
 	virtual protected bool getParameters(guid id, string login, primary[string] parameters);
+	virtual protected bool getParameters(LoginParameters loginParameters, primary[string] parameters);
 
 	records {
 		[name "System"]

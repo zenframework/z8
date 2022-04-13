@@ -60,7 +60,7 @@ public class OdaQuery implements IQuery {
 			readAction = (ReadAction)context.get(classId);
 
 		if(readAction != null) {
-			fields = new ArrayList<IField>(readAction.config().fields);
+			fields = new ArrayList<IField>(readAction.getConfig().fields);
 			return;
 		}
 

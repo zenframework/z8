@@ -279,6 +279,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 
 	private boolean accept(boolean localSend) {
+		ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
+
 		Domains domains = Domains.newInstance();
 		Domain acceptorDomain = domains.getDomain(address);
 

@@ -1,6 +1,10 @@
 String.ZeroWidthChar = String.fromCharCode(8203);
 String.SpacerChar = '&#160;';
 
+String.isEmpty = function(value) {
+	return value == null || value == '';
+},
+
 String.isString = function(value) {
 	return typeof value == 'string';
 };

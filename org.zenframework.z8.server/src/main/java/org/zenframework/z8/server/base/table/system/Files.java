@@ -17,6 +17,7 @@ import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -117,6 +118,15 @@ public class Files extends Table {
 
 		lastModified.setName(fieldNames.LastModified);
 		lastModified.setIndex("lastModified");
+	}
+
+	@Override
+	public void onNew() {
+		super.onNew();
+
+		date now = new date();
+		time.get().set(now);
+		lastModified.get().set(now);
 	}
 
 	public void add(file file) {

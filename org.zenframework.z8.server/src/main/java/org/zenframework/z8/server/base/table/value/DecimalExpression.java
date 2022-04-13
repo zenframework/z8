@@ -40,7 +40,7 @@ public class DecimalExpression extends Expression {
 	}
 
 	@Override
-	public primary get() {
+	public decimal get() {
 		return z8_get();
 	}
 

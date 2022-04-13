@@ -25,7 +25,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerExpression;
 import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.TextExpression;
-import org.zenframework.z8.server.db.BasicSelect;
+import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.CountingSelect;
@@ -33,7 +33,7 @@ import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.Select;
-import org.zenframework.z8.server.db.Statement;
+import org.zenframework.z8.server.db.DmlStatement;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlStringToken;
@@ -340,7 +340,7 @@ public class TableGenerator {
 			throw new UnsupportedOperationException();
 		}
 
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 
 	public void dropAllKeys() {
@@ -449,11 +449,11 @@ public class TableGenerator {
 		}
 
 		if(bAdd) {
-			Statement.executeUpdate(addColumnSql);
+			DmlStatement.execute(addColumnSql);
 		}
 
 		if(bModify) {
-			Statement.executeUpdate(modifyColumnSql);
+			DmlStatement.execute(modifyColumnSql);
 		}
 	}
 
@@ -462,13 +462,13 @@ public class TableGenerator {
 
 		if((defaultValue != null) && (defaultValue.length() > 0)) {
 			String sql = "alter table " + database().tableName(table().name()) + " drop constraint " + vendor().quote(defaultValue);
-			Statement.executeUpdate(sql);
+			DmlStatement.execute(sql);
 		}
 
 		defaultValue = formatDefaultValue(vendor(), fld.field);
 
 		String sql = "alter table " + database().tableName(table().name()) + " add constraint " + vendor().quote("DF_" + table().name() + fld.field.name()) + " default " + defaultValue + " for " + vendor().quote(fld.field.name());
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 
 	private void recreateTable() throws SQLException {
@@ -512,7 +512,7 @@ public class TableGenerator {
 
 		sql += ")";
 
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 
 	public void createPrimaryKey() {
@@ -697,7 +697,7 @@ public class TableGenerator {
 			String sql = "insert into " + database.tableName(dstTableName) + " (" + targetFields + ")";
 			sql += " select " + sourceFields + " from " + database.tableName(table().name()) + (vendor == DatabaseVendor.SqlServer ? " as " : "") + table().getAlias();
 
-			Statement.executeUpdate(sql);
+			DmlStatement.execute(sql);
 		}
 	}
 
@@ -737,13 +737,13 @@ public class TableGenerator {
 		IDatabase database = connection.database();
 
 		String sql = "drop table " + database.tableName(tableName);
-		Statement.executeUpdate(sql);
+		DmlStatement.execute(sql);
 	}
 
 	public String getDefault(String tableName, String fieldName) throws SQLException {
 		String sql = "select so.name from sysobjects so, sysobjects so2, syscolumns sc where sc.name = '" + fieldName + "' and sc.id = so2.id and so2.name = " + database().tableName(tableName) + " and so.id = sc.cdefault and so.xtype = 'D'";
 
-		Cursor cursor = BasicSelect.cursor(sql);
+		Cursor cursor = SelectStatement.cursor(sql);
 
 		String result = cursor.next() ? cursor.getString(1).get() : "";
 		cursor.close();

@@ -44,6 +44,9 @@ public class ServerConfig extends Properties {
 	static final private String DatabaseConnection = "application.database.connection";
 	static final private String DatabaseDriver = "application.database.driver";
 	static final private String DatabaseCharset = "application.database.charset";
+	
+	static final private String EmailLogin = "application.email.login";
+	static final private String EmailPassword = "application.email.password";
 
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
@@ -124,6 +127,9 @@ public class ServerConfig extends Properties {
 	static private String databaseConnection;
 	static private String databaseDriver;
 	static private encoding databaseCharset;
+	
+	static private String emailLogin;
+	static private String emailPassword;
 
 	static private String applicationServerHost;
 	static private int applicationServerPort;
@@ -230,6 +236,9 @@ public class ServerConfig extends Properties {
 		databaseConnection = getProperty(DatabaseConnection);
 		databaseDriver = getProperty(DatabaseDriver);
 		databaseCharset = encoding.fromString(getProperty(DatabaseCharset));
+		
+		emailLogin = getProperty(EmailLogin, "noreply@doczilla.ru");
+		emailPassword = getProperty(EmailPassword);
 
 		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
 		applicationServerPort = getProperty(ApplicationServerPort, 15000);
@@ -436,6 +445,14 @@ public class ServerConfig extends Properties {
 
 	static public String databaseUser() {
 		return databaseUser;
+	}
+	
+	static public String emailLogin() {
+		return emailLogin;
+	}
+	
+	static public String emailPassword() {
+		return emailPassword;
 	}
 
 	static public String databasePassword() {
