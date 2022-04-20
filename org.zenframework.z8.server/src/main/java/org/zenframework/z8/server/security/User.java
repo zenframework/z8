@@ -726,10 +726,12 @@ public class User implements IUser {
 		Users.saveSettings(id, settings);
 	}
 
+	@Override
 	public IDatabase database() {
 		return this.database;
 	}
 
+	@Override
 	public void setDatabase(IDatabase database) {
 		this.database = database;
 	}

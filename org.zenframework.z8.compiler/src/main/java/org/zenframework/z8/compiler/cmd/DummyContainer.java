@@ -32,6 +32,7 @@ public class DummyContainer extends DummyResource implements IContainer {
 		this.isProject = isProject;
 	}
 
+	@Override
 	public IPath getProjectPath() {
 		return isProject ? path : super.getProjectPath();
 	}

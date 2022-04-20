@@ -70,6 +70,7 @@ public class Jobs extends Table {
 			usedFields.add(((Jobs.CLASS<Jobs>)getContainer().getCLASS()).get().recordId);
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public string z8_get() {
 			super.z8_get();

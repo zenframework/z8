@@ -68,6 +68,7 @@ public class Requests extends Table {
 			usedFields.add(((Requests.CLASS<Requests>)getContainer().getCLASS()).get().classId);
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public string z8_get() {
 			super.z8_get();

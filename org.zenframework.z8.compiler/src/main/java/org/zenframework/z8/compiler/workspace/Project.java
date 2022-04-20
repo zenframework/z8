@@ -66,6 +66,7 @@ public class Project extends Folder {
 		getWorkspace().installResourceListener(resourceListener);
 	}
 
+	@Override
 	public void initialize() throws CoreException {
 		IPath[] sourcePaths = getSourcePaths();
 

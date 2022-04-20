@@ -46,6 +46,7 @@ public class StreamRemoteCall implements RemoteCall {
 		return conn;
 	}
 
+	@Override
 	public ObjectOutput getOutputStream() throws IOException {
 		return getOutputStream(false);
 	}
@@ -54,6 +55,7 @@ public class StreamRemoteCall implements RemoteCall {
 		return out == null ? out = new ConnectionOutputStream(conn, resultStream) : out;
 	}
 
+	@Override
 	public void releaseOutputStream() throws IOException {
 		try {
 			if(out != null) {
@@ -69,10 +71,12 @@ public class StreamRemoteCall implements RemoteCall {
 		}
 	}
 
+	@Override
 	public ObjectInput getInputStream() throws IOException {
 		return in == null? in = new ConnectionInputStream(conn.getInputStream()) : in;
 	}
 
+	@Override
 	public void releaseInputStream() throws IOException {
 		try {
 			if(in != null) {
@@ -90,6 +94,7 @@ public class StreamRemoteCall implements RemoteCall {
 		}
 	}
 
+	@Override
 	public ObjectOutput getResultStream(boolean success) throws IOException {
 		if(resultStarted)
 			throw new StreamCorruptedException("result already in progress");
@@ -108,6 +113,7 @@ public class StreamRemoteCall implements RemoteCall {
 		return out;
 	}
 
+	@Override
 	@SuppressWarnings("fallthrough")
 	public void executeCall() throws Exception {
 		byte returnType;
@@ -173,6 +179,7 @@ public class StreamRemoteCall implements RemoteCall {
 		return serverException;
 	}
 
+	@Override
 	public void done() throws IOException {
 		releaseInputStream();
 	}

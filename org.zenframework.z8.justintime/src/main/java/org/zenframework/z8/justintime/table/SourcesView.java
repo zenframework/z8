@@ -13,6 +13,7 @@ public class SourcesView extends Source {
 			setAttribute(SystemTool, Integer.toString(900));
 		}
 
+		@Override
 		public Object newObject(IObject container) {
 			return new SourcesView(container);
 		}
@@ -31,6 +32,7 @@ public class SourcesView extends Source {
 		objects.add(compile);
 	}
 
+	@Override
 	public void constructor2() {
 		super.constructor2();
 

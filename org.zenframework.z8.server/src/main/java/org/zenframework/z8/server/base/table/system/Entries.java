@@ -77,6 +77,7 @@ public class Entries extends Table {
 			usedFields.add(((Entries.CLASS<Entries>)getContainer().getCLASS()).get().classId);
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public string z8_get() {
 			super.z8_get();
