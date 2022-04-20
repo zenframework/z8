@@ -19,6 +19,12 @@ public interface IDatabase {
 
 	public String tableName(String name);
 	public boolean tableExists(String name);
+	public boolean fieldExists(String table, String field);
+
+	public void renameTable(String tableName, String newTableName);
+	public void renameField(String tableName, String fieldName, String newFieldName);
+
+	public void dropTable(String tableName);
 
 	public boolean isSystemInstalled();
 	public boolean isLatestVersion();

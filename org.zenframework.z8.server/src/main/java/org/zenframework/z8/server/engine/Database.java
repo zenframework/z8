@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.SelectStatement;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.json.Json;
@@ -96,6 +97,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return database != null && database.hashCode() == hashCode();
 	}
 
+	@Override
 	public Object getLock() {
 		Object lock = locks.get(this);
 		if(lock == null) {
@@ -105,14 +107,17 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return lock;
 	}
 
+	@Override
 	public boolean isExternal() {
 		return external;
 	}
 
+	@Override
 	public DatabaseVendor vendor() {
 		return vendor;
 	}
 
+	@Override
 	public String schema() {
 		return schema;
 	}
@@ -121,6 +126,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.schema = schema;
 	}
 
+	@Override
 	public String password() {
 		return password;
 	}
@@ -129,6 +135,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.password = password;
 	}
 
+	@Override
 	public String user() {
 		return user;
 	}
@@ -137,6 +144,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.user = user;
 	}
 
+	@Override
 	public String connection() {
 		return connection;
 	}
@@ -145,6 +153,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.connection = connection;
 	}
 
+	@Override
 	public String driver() {
 		return driver;
 	}
@@ -153,6 +162,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.driver = driver;
 	}
 
+	@Override
 	public encoding charset() {
 		return charset;
 	}
@@ -161,10 +171,12 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		this.charset = charset;
 	}
 
+	@Override
 	public String tableName(String name) {
 		return vendor.quote(schema()) + "." + vendor.quote(name);
 	}
 
+	@Override
 	public boolean tableExists(String name) {
 		String sql = null;
 
@@ -194,6 +206,52 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		}
 	}
 
+	@Override
+	public boolean fieldExists(String table, String field) {
+		if(vendor != DatabaseVendor.Postgres)
+			throw new UnsupportedOperationException();
+
+		String sql = "SELECT column_name FROM information_schema.columns WHERE table_schema = '" + schema() + "' and table_name = '" + table + "' AND column_name = '" + field + "'";
+
+		Cursor cursor = null;
+
+		try {
+			cursor = SelectStatement.cursor(sql);
+			return cursor.next();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if(cursor != null)
+				cursor.close();
+		}
+	}
+
+	@Override
+	public void renameTable(String tableName, String newTableName) {
+		DatabaseVendor vendor = vendor();
+
+		String sql = "alter table if exists " + tableName(tableName) + " rename to " + vendor.quote(newTableName);
+		ConnectionManager.get().execute(sql);
+	}
+
+	@Override
+	public void renameField(String tableName, String fieldName, String newFieldName) {
+		DatabaseVendor vendor = vendor();
+
+		if(!fieldExists(tableName, fieldName))
+			return;
+
+		String sql = "alter table " + tableName(tableName) + " rename column " + vendor.quote(fieldName) + " to " + vendor.quote(newFieldName);
+		ConnectionManager.get().execute(sql);
+	}
+
+	@Override
+	public void dropTable(String tableName) {
+		String sql = "drop table if exists" + tableName(tableName) + " cascade";
+		ConnectionManager.get().execute(sql);
+	}
+
+	@Override
 	public boolean isSystemInstalled() {
 		if(isSystemInstalled)
 			return isSystemInstalled;
@@ -201,6 +259,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		return isSystemInstalled = tableExists(Users.TableName);
 	}
 
+	@Override
 	public boolean isLatestVersion() {
 		if(isLatestVersion)
 			return isLatestVersion;

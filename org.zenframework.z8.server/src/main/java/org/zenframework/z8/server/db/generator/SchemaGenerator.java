@@ -3,6 +3,7 @@ package org.zenframework.z8.server.db.generator;
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.engine.IDatabase;
@@ -10,6 +11,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class SchemaGenerator extends Executable {
@@ -74,6 +76,26 @@ public class SchemaGenerator extends Executable {
 			Scheduler.resume(database);
 			logger.info(Resources.get("Generator.schedulerStarted"));
 		}
+	}
+
+	public bool z8_tableExists(string tableName) {
+		return new bool(ConnectionManager.database().tableExists(tableName.get()));
+	}
+
+	public bool z8_fieldExists(string tableName, string fieldName) {
+		return new bool(ConnectionManager.database().fieldExists(tableName.get(), fieldName.get()));
+	}
+
+	public void z8_renameTable(string tableName, string newTableName) {
+		ConnectionManager.database().renameTable(tableName.get(), newTableName.get());
+	}
+
+	public void z8_renameField(string tableName, string fieldName, string newFieldName) {
+		ConnectionManager.database().renameField(tableName.get(), fieldName.get(), newFieldName.get());
+	}
+
+	public void z8_dropTable(string tableName) {
+		ConnectionManager.database().dropTable(tableName.get());
 	}
 
 	private class Logger implements ILogger {

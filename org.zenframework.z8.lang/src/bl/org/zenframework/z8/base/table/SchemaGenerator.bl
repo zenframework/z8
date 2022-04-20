@@ -3,6 +3,14 @@ import org.zenframework.z8.base.Executable;
 [name "Schema generator"]
 [native "org.zenframework.z8.server.db.generator.SchemaGenerator"]
 public class SchemaGenerator extends Executable {
+	protected bool tableExists(string tableName);
+	protected bool fieldExists(string tableName, string fieldName);
+
+	protected void renameTable(string tableName, string newTableName);
+	protected void renameField(string tableName, string fieldName, string newFieldName);
+
+	protected void dropTable(string name);
+
 	virtual public void beforeStart();
 	virtual public void afterFinish();
 }
