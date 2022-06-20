@@ -1,0 +1,40 @@
+.cron {
+	text-align: center;
+}
+
+.cron>.header,
+.cron>.prepared {
+	clear: both;
+}
+
+.cron>.header {
+	color: #39c;
+}
+
+.cron>.cron-list>.prepared {
+	cursor: pointer;
+	margin: .1em .5em;
+	padding: 0 .5em;
+}
+
+.cron>.cron-list>.prepared.selected {
+	background-color: #39c;
+}
+
+.cron>.cron-list>.prepared:hover {
+	background-color: #ebebeb;
+}
+
+.dropdown-cron {
+	padding: .57142857em 0;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: .28571429em;
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	position: fixed;
+	top: 100%;
+	left: 0;
+	z-index: 1000000;
+	float: left;
+}
