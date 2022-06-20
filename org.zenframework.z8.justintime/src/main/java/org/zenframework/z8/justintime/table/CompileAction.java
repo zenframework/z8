@@ -50,6 +50,7 @@ public class CompileAction extends Action {
 		compileAll((Source) query);
 	}
 
+	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		execute((Collection<guid>)records, context.get(), (Collection<guid>)selected, query.get());

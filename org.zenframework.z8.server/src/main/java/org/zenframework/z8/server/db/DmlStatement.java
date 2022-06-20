@@ -63,6 +63,7 @@ public class DmlStatement extends Statement {
 	protected void log() {
 	}
 
+	@Override
 	protected void setBinary(int position, binary value) throws SQLException {
 		super.setBinary(position, value);
 

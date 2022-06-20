@@ -31,6 +31,7 @@ public class SpnegoWebServer extends org.zenframework.z8.webserver.WebServer imp
 		super();
 	}
 
+	@Override
 	protected void configureServer() {
 		super.configureServer();
 		final String domainRealm = ServerConfig.domainRealm();

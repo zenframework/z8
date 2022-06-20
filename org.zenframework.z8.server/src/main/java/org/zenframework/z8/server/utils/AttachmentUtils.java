@@ -29,7 +29,7 @@ public class AttachmentUtils {
 		if (FileConverter.isPdfExtension(ext))
 			return path;
 
-		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get());
+		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get() + '.' + FileConverter.PDF);
 		return FileConverter.convert(path, convertedFile, parameters);
 	}
 
