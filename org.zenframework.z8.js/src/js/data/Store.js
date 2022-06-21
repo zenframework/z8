@@ -630,7 +630,7 @@ Z8.define('Z8.data.Store', {
 			Z8.callback(options, this, success);
 		};
 
-		this.fireEvent('beforeCount', this);
+		this.fireEvent('beforeCount', this, params);
 		this.sendLoadRequest(params, { fn: callback, scope: this });
 	},
 
