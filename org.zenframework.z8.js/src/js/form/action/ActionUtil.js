@@ -49,7 +49,7 @@ Z8.define('Z8.form.action.Util', {
 								handler: winHandler, scope: null };
 			return new Z8.window.Window(windowCfg);
 		},
-		
+
 		getParameters: function(action) {
 			var parameters = action.parameters;
 			
@@ -57,6 +57,17 @@ Z8.define('Z8.form.action.Util', {
 			for (var i = 0; i < parameters.length; ++i) {
 				var parameter = parameters[i];
 				values.add({ id: parameter.id, value: parameter.value });
+			}
+			return values;
+		},
+
+		getExecutableParameters: function(action) {
+			var parameters = action.parameters;
+			
+			var values = {};
+			for (var i = 0; i < parameters.length; ++i) {
+				var parameter = parameters[i];
+				values[parameter.id] = parameter.value;
 			}
 			return values;
 		}

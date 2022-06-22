@@ -141,5 +141,14 @@ public class Executable extends Action {
 	public void write(JsonWriter writer) {
 		super.write(writer);
 		writer.writeProperty(Json.isJob, true);
+
+		writer.startArray(Json.parameters);
+		for(Parameter.CLASS<?> cls : parameters) {
+			Parameter parameter = (Parameter)cls.get();
+			writer.startObject();
+			parameter.write(writer);
+			writer.finishObject();
+		}
+		writer.finishArray();
 	}
 }
