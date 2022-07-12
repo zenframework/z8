@@ -84,6 +84,7 @@ public class JobsView extends ScheduledJobs {
 		jobs.get().name.get().colSpan = new integer(4);
 		users.get().name.get().colSpan = new integer(2);
 		cron.get().colSpan = new integer(2);
+		cron.setAttribute("ui", "Z8.form.field.Cron");
 		active.get().colSpan = new integer(2);
 		logErrorsOnly.get().colSpan = new integer(2);
 
