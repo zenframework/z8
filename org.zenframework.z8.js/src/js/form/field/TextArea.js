@@ -10,7 +10,7 @@ Z8.define('Z8.form.field.TextArea', {
 
 	constructor: function(config) {
 		config = config || {};
-		config.minHeight = config.minHeight != 0? config.minHeight: 10;
+		config.minHeight = config.minHeight && config.minHeight != 0 ? config.minHeight : 10;
 
 		Z8.form.field.Text.prototype.constructor.call(this, config);
 	},
