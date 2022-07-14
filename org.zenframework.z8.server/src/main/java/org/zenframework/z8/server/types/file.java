@@ -324,13 +324,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public void serialize(ObjectOutputStream out) throws IOException {
 		RmiIO.writeLong(out, serialVersionUID);
 
-		RmiIO.writeGuid(out, id);
+		// MARK id в старой версии пишется после size, а так же нет user и author
 		RmiIO.writeString(out, name);
 		RmiIO.writeString(out, path);
 		RmiIO.writeDate(out, time);
 		RmiIO.writeInteger(out, size);
-		RmiIO.writeGuid(out, user);
-		RmiIO.writeString(out, author);
+		//RmiIO.writeGuid(out, user);
+		//RmiIO.writeString(out, author);
+		RmiIO.writeGuid(out, id);
 
 		RmiIO.writeLong(out, offset);
 		RmiIO.writeInt(out, partLength);
@@ -355,13 +356,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
-		id = RmiIO.readGuid(in);
+		// MARK id в старой версии пишется после size, а так же нет user и author
 		name = new string(RmiIO.readString(in));
 		path = new string(RmiIO.readString(in));
 		time = RmiIO.readDate(in);
 		size = RmiIO.readInteger(in);
-		user = RmiIO.readGuid(in);
-		author = new string(RmiIO.readString(in));
+		//user = RmiIO.readGuid(in);
+		//author = new string(RmiIO.readString(in));
+		id = RmiIO.readGuid(in);
 
 		offset = RmiIO.readLong(in);
 		partLength = RmiIO.readInt(in);

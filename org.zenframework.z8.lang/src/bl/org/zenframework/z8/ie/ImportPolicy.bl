@@ -1,6 +1,6 @@
 [native "org.zenframework.z8.server.ie.ImportPolicy"]
 public enum ImportPolicy {
-	Keep,
-	Override,
-	Merge
+	KEEP,
+	OVERRIDE,
+	MERGE
 }

@@ -35,8 +35,8 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
+import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
-import org.zenframework.z8.server.utils.StringUtils;
 
 import sun.rmi.transport.LiveRef;
 
@@ -133,8 +133,10 @@ public class RmiIO extends ObjectIO {
 	}
 
 	static public void writeString(ObjectOutputStream out, String value) throws IOException {
-		byte[] bytes = value != null ? StringUtils.charsToBytes(value.toCharArray()) : null;
-		writeBytes(out, bytes);
+		writeBytes(out, value != null ? value.getBytes(IOUtils.DefaultCharset) : null);
+		// MARK - новый подход не давал соединиться в Interconnection
+		//byte[] bytes = value != null ? StringUtils.charsToBytes(value.toCharArray()) : null;
+		//writeBytes(out, bytes);
 	}
 
 	static public void writeBoolean(ObjectOutputStream out, boolean value) throws IOException {
@@ -458,7 +460,9 @@ public class RmiIO extends ObjectIO {
 		if(bytes == null)
 			return null;
 
-		return new String(StringUtils.bytesToChars(bytes));
+		return new String(bytes, IOUtils.DefaultCharset);
+		// MARK - новый подход не давал соединиться в Interconnection
+		//return new String(StringUtils.bytesToChars(bytes));
 	}
 
 	static public Object readSerializable(ObjectInputStream in) throws IOException, ClassNotFoundException {

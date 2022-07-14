@@ -24,6 +24,11 @@ public class FieldInfo implements RmiSerializable, Serializable {
 		this.value = field.get();
 	}
 
+	public FieldInfo(String fieldName, primary fieldValue) {
+		this.name = fieldName;
+		this.value = fieldValue;
+	}
+
 	public String name() {
 		return name;
 	}

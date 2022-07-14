@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.Table.CLASS;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -32,7 +33,8 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class MessageSource implements RmiSerializable, Serializable {
-	private static final long serialVersionUID = -145929531248527279L;
+	// MARK - в новой версии serialVersionUID кончается на 9, а не 8
+	private static final long serialVersionUID = -145929531248527278L;
 
 	private static class Cache {
 		final Map<String, Table> tables = new HashMap<String, Table>();
@@ -46,15 +48,15 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 	}
 
-	private boolean exportAll;
-	private ExportRules exportRules = new ExportRules();
-	private Collection<ExportSource> sources = new ArrayList<ExportSource>();
-	private Map<String, primary> properties = new HashMap<String, primary>();
+	protected boolean exportAll;
+	protected ExportRules exportRules = new ExportRules();
+	protected Collection<ExportSource> sources = new ArrayList<ExportSource>();
+	protected Map<String, primary> properties = new HashMap<String, primary>();
 
-	private Collection<RecordInfo> inserts = new ArrayList<RecordInfo>();
-	private Collection<RecordInfo> updates = new ArrayList<RecordInfo>();
+	protected Collection<RecordInfo> inserts = new ArrayList<RecordInfo>();
+	protected Collection<RecordInfo> updates = new ArrayList<RecordInfo>();
 
-	private Collection<file> files = new ArrayList<file>();
+	protected Collection<file> files = new ArrayList<file>();
 
 	public ExportRules exportRules() {
 		return exportRules;
@@ -69,6 +71,18 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 		
 		return result;
+	}
+
+	public Collection<ExportSource> getSources() {
+		return sources;
+	}
+
+	public Collection<RecordInfo> getInserts() {
+		return inserts;
+	}
+
+	public Collection<RecordInfo> getUpdates() {
+		return updates;
 	}
 
 	public void add(Table table, Collection<Field> fields, sql_bool where) {
@@ -292,7 +306,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		Table table = cache.tables.get(name);
 
 		if(table == null) {
-			table = (Table)Runtime.instance().getTableByName(name).newInstance();
+			CLASS<? extends Table> cls = Runtime.instance().getTableByName(name);
+			if (cls == null)
+				return null;
+			table = (Table)cls.newInstance();
 			cache.tables.put(name, table);
 		}
 
@@ -315,6 +332,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 	private void insert(RecordInfo record, Cache cache) {
 		String tableName = record.table();
 		Table table = getTable(tableName, cache);
+		if (table == null)
+			return;
 		guid recordId = record.id();
 
 		Collection<Field> attachments = table.attachments();
@@ -329,12 +348,12 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 			ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
 
-			if(!exists || fieldPolicy == ImportPolicy.Override) {
+			if(!exists || fieldPolicy == ImportPolicy.OVERRIDE) {
 				primary value = fieldInfo.value();
 
 				if(exists && field instanceof FileField)
 					value = mergeAttachments(field.string(), (string)value);
-
+				
 				field.set(value);
 			}
 		}
@@ -356,7 +375,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 			if(!cache.records.contains(recordId)) {
 				ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
-				if(fieldPolicy != ImportPolicy.Override)
+				if(fieldPolicy != ImportPolicy.OVERRIDE)
 					continue;
 			}
 
@@ -394,5 +413,29 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	public void setExportAll(boolean exportAll) {
 		this.exportAll = exportAll;
+	}
+
+	public void setExportRules(ExportRules exportRules) {
+		this.exportRules = exportRules;
+	}
+
+	public void setSources(Collection<ExportSource> sources) {
+		this.sources = sources;
+	}
+
+	public void setProperties(Map<String, primary> properties) {
+		this.properties = properties;
+	}
+
+	public void setInserts(Collection<RecordInfo> inserts) {
+		this.inserts = inserts;
+	}
+
+	public void setUpdates(Collection<RecordInfo> updates) {
+		this.updates = updates;
+	}
+
+	public void setFiles(Collection<file> files) {
+		this.files = files;
 	}
 }

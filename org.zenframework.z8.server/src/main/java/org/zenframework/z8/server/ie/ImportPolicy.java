@@ -5,17 +5,17 @@ public enum ImportPolicy {
 	/**
 	 * Если импортируемое запись существует, не менять
 	 */
-	Keep,
+	KEEP,
 
 	/**
 	 * Если импортируемая запись существует, обновить
 	 */
-	Override,
+	OVERRIDE,
 	
 	/**
 	 * Если импортируемая запись существует, использовать метод <code>DataMessage.onMerge()</code>
 	 */
-	Merge;
+	MERGE;
 
-	public static final ImportPolicy Default = Keep;
+	public static final ImportPolicy Default = KEEP;
 }
