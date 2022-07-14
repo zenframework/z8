@@ -405,6 +405,7 @@ canvas {
 }
 
 .btn-trigger {
+	margin-right: 0px !important;
 }
 
 .btn-trigger>.icon {

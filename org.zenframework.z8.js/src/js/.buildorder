@@ -83,6 +83,7 @@ form/field/Files.js
 form/field/Datetime.js
 form/field/Date.js
 form/field/SearchText.js
+form/field/SearchDateBox.js
 form/field/SearchCombobox.js
 form/field/Filter.js
 form/field/Geometry.js
