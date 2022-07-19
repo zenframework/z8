@@ -21,7 +21,7 @@ allprojects {
 
 	ext.dependenciesVersion = '3.1'
 
-	buildDir = "${projectDir}/target"
+	buildDir = 'target'
 
 	publishing {
 		repositories {
@@ -39,7 +39,7 @@ subprojects {
 			entries.findAll { entry ->
 				entry instanceof org.gradle.plugins.ide.eclipse.model.SourceFolder
 			}.each { entry ->
-				entry.output = entry.output.replace('bin/', "${relativePath(buildDir)}/classes/")
+				entry.output = entry.output.replace('bin/', "${project.relativePath(buildDir)}/classes/")
 			}
 		}
 
