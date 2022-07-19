@@ -1,0 +1,28 @@
+.tabs
+	display: flex
+	flex-direction: column
+
+	&>.header
+		display: flex
+		align-items: stretch
+		width: 100%
+
+		&>.tag
+			overflow-x: hidden
+			overflow-y: hidden
+			text-overflow: ellipsis
+
+	&>.body
+		position: relative
+		flex: 1
+		display: flex
+		flex-direction: row
+
+		&>.tab
+			width: 100%
+			overflow-x: hidden
+			overflow-y: hidden
+
+			&.inactive
+				display: none !important
+

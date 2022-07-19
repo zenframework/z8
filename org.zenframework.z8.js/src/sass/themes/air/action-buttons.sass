@@ -1,0 +1,101 @@
+.air
+	.btn
+		&.push
+			height: 32px
+			padding: 0 16px
+
+			&~.btn-trigger
+				height: 32px
+				padding: 0 4px
+
+			&>.icon, &>.text
+				opacity: 1
+
+			&.disabled
+				&>.icon, &>.text
+					opacity: .7
+
+		&.default
+			background-color: #eee
+
+			&:focus, &:hover, &.active
+				background-color: #ddd
+
+			&.disabled
+				&:hover, &:focus, &.active
+					background-color: #fafafa
+
+		&.primary
+			color: #fff
+			background-color: #337ab7
+
+			&:focus, &:hover, &.active
+				background-color: #286090
+
+			&.active
+				&:hover, &:focus
+					background-color: #204d74
+
+			&.disabled
+				&:hover, &:focus, &.active
+					background-color: #337ab7
+		
+		&.success
+			color: #fff
+			background-color: #1d9d74
+
+			&:focus, &:hover, &.active
+				background-color: #157254
+
+			&.active
+				&:hover, &:focus
+					background-color: #0f543e
+
+			&.disabled
+				&:hover, &:focus, &.active
+					background-color: #1d9d74
+
+		&.info
+			color: #fff
+			background-color: #5bc0de
+
+			&:focus, &:hover, &.active
+				background-color: $info
+
+			&.active
+				&:hover, &:focus
+					background-color: #269abc
+
+			&.disabled
+				&:hover, &:focus, &.active
+					background-color: #5bc0de
+
+		&.warning
+			color: #fff
+			background-color: $warning
+
+			&:focus, &:hover, &.active
+				background-color: #ec971f
+
+			&.active
+				&:hover, &:focus
+					background-color: #d58512
+
+			&.disabled
+				&:hover, &:focus, &.active
+					background-color: $warning
+
+		&.danger
+			color: #fff
+			background-color: $danger
+
+			&:focus, &:hover, &.active
+				background-color: $red
+
+			&.active
+				&:hover, &:focus
+					background-color: #ac2925
+
+			&.disabled
+				&:hover, &:focus, &.active
+					background-color: $danger

@@ -1,0 +1,51 @@
+.air
+	.toolbar
+		display: flex
+		flex-direction: row
+		align-items: center
+		height: 40px
+		padding: 0 8px
+		border-bottom: 1px solid rgba(0, 0, 0, 0.14902)
+
+		&>.btn, &>.btn-group>.btn
+			margin-right: 4px
+
+		.btn
+			height: 24px
+			padding: 0 4px
+
+			&.push
+				padding: 0 8px
+
+			&>.btn-trigger
+				padding: 0
+
+			&.default
+				background-color: #fff
+
+				&:focus, &:hover, &.active
+					background-color: #eee
+
+				&>.btn-trigger
+					padding: 0
+
+		&>.text
+			font-weight: 500
+			color: #333
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+
+		&>.control-group, &>.btn-group>.control-group
+			&>.box
+				background: #fff
+				border-radius: 4px
+				border: 1px solid #eee
+				padding-bottom: 0
+				margin: 0 4px
+
+			&.focus
+				&>.box
+					border-color: $light-blue
+					border-width: 1px
+					padding-bottom: 0

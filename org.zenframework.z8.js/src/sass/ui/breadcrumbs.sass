@@ -1,0 +1,131 @@
+.viewport
+	&>.header
+		&>.breadcrumbs
+			overflow-x: hidden
+			overflow-y: hidden
+			white-space: nowrap
+			display: flex
+			flex-direction: row
+			padding-right: em(32)
+			margin-left: em(4)
+
+			&>.btn
+				color: #fff
+				text-decoration: none
+				padding: em(7) 0 em(7) em(45) !important
+				background: #222
+				position: relative
+				display: inline-block
+				border: none
+				border-radius: 0
+				box-shadow: none
+				text-shadow: none
+				outline: none !important
+				margin-left: 0 !important
+				overflow: visible
+				z-index: auto
+				-webkit-transition: background-color ease-in-out .15s, color ease-in-out .15s
+				-o-transition: background-color ease-in-out .15s, color ease-in-out .15s
+				transition: background-color ease-in-out .15s, color ease-in-out .15s
+
+				&:after
+					-webkit-transition: border-color ease-in-out .15s
+					-o-transition: border-color ease-in-out .15s
+					transition: border-color ease-in-out .15s
+					content: " "
+					display: block
+					width: 0
+					height: 0
+					border-bottom: em(35) solid transparent
+					border-top: em(35) solid transparent
+					border-left: em(30) solid #222
+					position: absolute
+					top: 50%
+					left: 100%
+					z-index: 1
+					margin-top: -#{em(35)}
+
+				&:focus, &:hover
+					z-index: auto
+
+				&>.fa.empty
+					width: auto
+
+				&:first-child
+					padding-left: em(12) !important
+					font-weight: 500
+
+				&.n1
+					background: #222
+
+					&:after
+						border-left-color: #222
+
+					&:focus, &:hover, &:active
+						color: $light-blue
+						background-color: #222
+
+						&:after
+							border-left-color: #222
+
+				&.n2
+					background: #444
+
+					&:after
+						border-left-color: #444
+
+				&.n3
+					background: #555
+
+					&:after
+						border-left-color: #555
+
+				&.n4
+					background: #666
+
+					&:after
+						border-left-color: #666
+
+				&.n5
+					background: #777
+
+					&:after
+						border-left-color: #777
+
+				&.n6
+					background: #444
+
+					&:after
+						border-left-color: #444
+
+				&.n7
+					background: #555
+
+					&:after
+						border-left-color: #555
+
+				&.n8
+					background: #666
+
+					&:after
+						border-left-color: #666
+
+				&.n9
+					background: #777
+
+					&:after
+						border-left-color: #777
+
+				&:focus, &:active
+					color: #fff
+					background-color: #17a
+
+					&:after
+						border-left-color: #17a
+
+				&:not(:first-child):hover
+					color: #fff
+					background-color: $light-blue
+
+					&:after
+						border-left-color: $light-blue

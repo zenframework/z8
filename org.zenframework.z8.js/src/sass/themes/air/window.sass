@@ -1,0 +1,60 @@
+.air
+	.window
+		left: 2.5%
+		top: 2.5%
+		width: 95%
+		height: 95%
+		-webkit-box-shadow: 0 0 8px rgba(127,127,127,0.4)
+		box-shadow: 0 0 8px rgba(127,127,127,0.4)
+		border-radius: em(4)
+
+		&>.header
+			height: em(40)
+			min-height: em(40)
+			background-color: #222
+			padding-left: em(10)
+			padding-right: em(10)
+			border: 1px solid #222
+			border-top-left-radius: em(4)
+			border-top-right-radius: em(4)
+			border-bottom-width: 0
+
+			&>.icon
+				color: #eee
+				margin-right: em(10)
+
+			&>.text
+				font-weight: 500
+				color: #eee
+
+			.btn-tool:not(:hover):not(:focus):not(:active):not(.focus):not(.active)
+				color: #eee
+
+		&>.body
+			background-color: #fff
+			border: 1px solid #adadad
+			border-top-width: 0
+			border-bottom-width: 0
+			padding: em(15)
+
+		&>.footer
+			height: em(75)
+			min-height: em(75)
+			border: 1px solid #adadad
+			border-bottom-left-radius: em(4)
+			border-bottom-right-radius: em(4)
+			background-color: #fff
+			padding: 0 em(15)
+
+			&>.btn
+				margin-right: em(10)
+				min-width: em(90)
+
+		&.change-password
+			left: calc(50% - 15em)
+			top: calc(50% - 12em)
+			width: 30em
+			height: 24em
+
+			&>.body
+				padding: 1em

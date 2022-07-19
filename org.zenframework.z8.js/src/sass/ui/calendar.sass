@@ -1,0 +1,282 @@
+.calendar 
+	color: #555
+	min-height: 18.4642857em
+	
+	&>.header
+		position: relative
+		text-align: center
+
+		&>.month
+			padding-right: em(3)
+			font-weight: bold
+
+		&>.year
+			padding-left: em(3)
+			font-weight: bold
+
+		&>.previous-month, &>.next-month
+			width: em(20)
+
+		&>.previous-month 
+			float: left
+			margin-left: em(10)
+
+		&>.next-month 
+			float: right
+			margin-right: em(10)
+
+	&>.header, &>.days, &>.days-of-week 
+		clear: both
+		
+	&>.days, &>.days-of-week
+		min-width: em(220.5)
+		margin-left: em(5)
+		margin-right: em(5)
+
+		&>.day
+			float: left
+			width: em(31.5)
+			height: em(31.5)
+			padding-top: .625em
+			padding-bottom: .625em
+			text-align: center
+			color: #404040
+			border-radius: 50%
+
+			&.week-end
+				color: #d43f3a
+
+	&>.days-of-week>.day 
+		padding-top: .925em
+		padding-bottom: .325em
+
+	&>.days 
+		height: em(189)
+
+		&>.day
+			&.today
+				font-weight: 500
+
+			&.previous-month, &.next-month
+				color: #a6a6a6
+
+				&.week-end
+					color: #e6918e
+
+			&.selected
+				&:focus
+					color: white
+					background-color: $light-blue
+
+				&.week-end
+					&:focus
+						background-color: #ef5350
+
+	&>.days>.day,
+	&>.header>.years>.year,
+	&>.header>.months>.month,
+	&>.time>.hours>.hour,
+	&>.time>.minutes>.minute
+		&:focus, &:hover
+			background-color: #ebebeb
+
+	&>.days>.day.selected
+		background-color: #ebebeb
+
+	&>.header
+		&>.previous-month, &>.next-month, &>.year, &>.month
+			transition: color .15s linear
+		
+		&>.years
+			&>.previous-year, &>.next-year
+				transition: color .15s linear
+
+		&>.time
+			&>.hour, &>.minute
+				transition: color .15s linear
+
+	&>.header>.previous-month,
+	&>.header>.next-month,
+	&>.header>.years>.previous-year,
+	&>.header>.years>.next-year,
+	&>.header>.year,
+	&>.header>.month,
+	&>.time>.hour,
+	&>.time>.minute
+		&:focus, &:hover
+			color: $light-blue
+
+	&>.time
+		position: relative
+		padding-top: em(8)
+		border-top: 1px solid #dfdfdf
+		text-align: center
+
+		&.hour, &.minute
+			font-weight: bold
+
+		&.hour
+			padding-left: em(10)
+
+	&>.days>.day,
+	&>.header>.previous-month,
+	&>.header>.next-month,
+	&>.header>.year,
+	&>.header>.month,
+	&>.header>.years>.year,
+	&>.header>.years>.previous-year,
+	&>.header>.years>.next-year,
+	&>.header>.months>.month,
+	&>.time>.hour,
+	&>.time>.hours>.hour,
+	&>.time>.minute,
+	&>.time>.minutes>.minute
+		cursor: pointer
+
+	&>.header>.years,
+	&>.header>.months,
+	&>.time>.hours,
+	&>.time>.minutes
+		position: absolute
+		margin-top: em(5)
+		background-color: white
+		border-top: 1px solid #dfdfdf
+		border-left: 1px solid #dfdfdf
+
+	&>.header>.years>.year,
+	&>.header>.months>.month,
+	&>.time>.hours>.hour,
+	&>.time>.minutes>.minute
+		float: left
+		height: em(28)
+		line-height: em(28)
+		text-align: center
+		color: #404040
+		border-right: 1px solid #dfdfdf
+		border-bottom: 1px solid #dfdfdf
+
+	&>.time
+		&>.hours>.hour, &>.minutes>.minute
+			width: em(35)
+
+		&>.hours>.hour
+			bottom: em(30)
+			left: 0
+			
+		&>.minutes>.minute
+			bottom: em(30)
+			right: 0
+
+	&>.header
+		&>.months
+			left: 0
+
+		&>.years>.year, &>.months>.year
+			width: em(50)
+
+		&>.years
+			right: 0
+			padding-left: em(20)
+			padding-right: em(20)
+
+			&.previous-year, &.next-year
+				position: absolute
+				width: em(20)
+				height: 8em
+				padding-top: em(48)
+				text-align: center
+				border-right: 1px solid #dfdfdf
+				border-bottom: 1px solid #dfdfdf
+
+			&>.previous-year
+				left: 0
+
+			&>.next-year
+				right: 0
+
+	&>.header>.years>.year-3,
+	&>.header>.years>.year-6,
+	&>.header>.years>.year-9,
+	&>.header>.months>.month-3,
+	&>.header>.months>.month-6,
+	&>.header>.months>.month-9,
+	&>.days>.day-7,
+	&>.days>.day-14,
+	&>.days>.day-21,
+	&>.days>.day-28,
+	&>.days>.day-35,
+	&>.time>.hours>.hour-6,
+	&>.time>.hours>.hour-12,
+	&>.time>.hours>.hour-18,
+	&>.time>.minutes>.minute-4,
+	&>.time>.minutes>.minute-8 
+		clear: left
+
+	&>.header>.years,
+	&>.header>.months,
+	&>.time>.hours,
+	&>.time>.minutes
+		-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+
+.dropdown-calendar 
+	padding: em(8) 0
+	min-height: 19.75em
+	background-color: #fff
+	border: 1px solid #ccc
+	border-radius: em(4)
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175)
+	position: fixed
+	top: 100%
+	left: 0
+	z-index: 1000000
+	float: left
+
+.period
+	&>.body
+		display: flex
+		flex-direction: row
+		padding: em(10)
+
+		&>.calendar
+			border: 1px solid #eee
+			padding: em(10)
+
+			&.finish
+				margin-left: em(10)
+
+		&>.selector
+			margin-left: em(10)
+
+			&>.btn
+				margin-left: em(10)
+
+			&>.separator
+				margin-top: em(5)
+				margin-bottom: em(5)
+				border-bottom: 1px solid #eee
+
+			&>.btn
+				border: none
+				padding: em(5) 1em em(5) 0
+				text-align: left
+				background: none
+				box-shadow: none
+
+	&>.buttons
+		display: flex
+		flex-direction: row
+		justify-content: flex-end
+
+		&>.btn
+			margin-right: em(10)
+			height: 32px
+			padding: 0 16px
+
+.date
+	&>.dropdown-calendar
+		min-height: 17.25em
+
+		&>.time
+			display: none

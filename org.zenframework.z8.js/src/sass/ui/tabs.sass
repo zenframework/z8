@@ -1,0 +1,49 @@
+.air .tabs 
+	border: 1px solid #dfdfdf
+
+	&>.header
+		display: inline-block
+		margin: 0
+		border-bottom: 1px solid #eee
+		background-color: #fcfcfc
+
+	&>.body
+		min-height: fit-content
+		padding: 1em em(5) em(5) em(5)
+
+	&>.header
+		&>.tag
+			height: em(42)
+			border: em(2) solid transparent
+			padding-left: em(20)
+			padding-top: em(10)
+			padding-right: em(20)
+			border-radius: 0
+			font-weight: 500
+			color: #555
+			text-transform: uppercase
+			background-color: inherit
+			float: left
+			max-width: em(200)
+			-webkit-transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s
+			-o-transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s
+			transition: border-color ease-in-out .15s, color ease-in-out .15s, padding-top ease-in-out .15s
+
+			&>.text
+				font-weight: 600
+				font-size: 0.8em
+
+			&>.icon
+				width: auto
+
+			&.active
+				padding-top: em(15)
+				border-bottom-color: #888
+				color: inherit
+
+				&:focus
+					border-bottom-color: $light-blue
+
+			&:hover,
+			&:focus
+				color: $light-blue

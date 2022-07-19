@@ -1,0 +1,225 @@
+.list 
+	display: flex
+	flex-direction: column
+	align-items: stretch
+	list-style: none
+	text-align: left
+	overflow-x: hidden
+	overflow-y: hidden
+
+	&>.scroller
+		&.headers
+			overflow-x: hidden
+			overflow-y: hidden
+
+		&.items
+			overflow-y: auto
+			flex: 1
+
+	&.columns
+		&>.scroller.items
+			overflow-x: auto
+
+		&.totals
+			&>.scroller.items
+				overflow-x: hidden !important
+
+		&>.scroller.totals
+			overflow-x: auto
+			overflow-y: hidden
+
+	table
+		cursor: default
+		width: 100%
+
+	.divider
+		overflow-x: hidden
+		overflow-y: hidden
+
+	.column
+		position: relative
+
+	.header>.column>.text,
+	.item>.column>.cell>.text,
+	.total>.column>.cell>.text
+		overflow-x: hidden
+		overflow-y: hidden
+		text-overflow: ellipsis
+
+	.total>.column>.cell>.text
+		white-space: nowrap
+
+	.header>.column>.text
+		float: left
+		max-width: 100%
+
+	.item>.column>.cell,
+	.total>.column>.cell
+		display: flex
+		flex-direction: row
+
+	.number>.column>.cell
+		text-align: center
+
+	.item
+		&>.column
+			&.file
+				&>.cell
+					&>.text
+						cursor: pointer
+
+			&>.cell
+				&>.text
+					display: inline-block
+					flex: 1
+
+					&.follow
+						cursor: pointer
+
+			&.int, &.float, &.date, &.datetime
+				&>.cell
+					white-space: nowrap
+
+				&:first-child
+					&>.cell
+						flex-direction: row
+
+			&.boolean, &.lock, &.check
+				&>.cell
+					flex-direction: column
+					align-items: center
+
+					&>.text
+						cursor: pointer
+						overflow-x: visible
+						overflow-y: visible
+
+			&>.control-group
+				top: 0
+				left: 0
+				right: 0
+				bottom: 0
+				position: absolute
+				z-index: 1
+
+				&>.box>.textarea.control
+					overflow-y: hidden
+					white-space: normal
+					min-height: 0
+
+				&>.label
+					display: none
+
+		&.active
+			&>.column:first-child:before
+				content: ' '
+				position: absolute
+				top: 0
+				width: 2px
+				left: 0
+				bottom: 0
+				z-index: 2
+
+		&:not(.no-children)>.column>.cell>.collapser
+			cursor: pointer
+
+		&.disabled, &.disabled:hover
+			&>.column
+				cursor: not-allowed
+
+	.total
+		&>.column
+			&.cell
+				&>.text
+					display: inline-block
+					flex: 1
+
+			&.int, &.float, &.date, &.datetime
+				&>.cell
+					white-space: nowrap
+
+	.header
+		&>.column
+			cursor: pointer
+
+			&.icon
+				cursor: pointer
+
+			&>.resize-handle-left, &>.resize-handle-right
+				position: absolute
+				top: 0
+				bottom: 0
+				width: 4px
+				cursor: col-resize
+
+			&>.resize-handle-left
+				left: 0
+
+			&>.resize-handle-right
+				right: 0
+
+			&.first:first-child>.resize-handle-left
+				display: none
+
+.dropdown-list.list 
+	top: 100%
+	left: 0
+	z-index: 1000
+	float: left
+
+	&>.scroller.items
+		overflow-y: auto
+		overflow-x: auto
+		position: relative
+		height: 100%
+
+	&.columns>.scroller.items
+		top: 0
+
+	.item
+		overflow-x: hidden
+		overflow-y: hidden
+		text-overflow: ellipsis
+
+.dropdown-list,
+.dropdown-menu
+	&.list
+		position: fixed
+
+.dropdown-menu.list 
+	top: 100%
+	left: 0
+	z-index: 1000
+	float: left
+
+	&>.scroller.items
+		overflow-x: hidden
+		overflow-y: auto
+		position: relative
+
+	table
+		table-layout: auto
+
+	.item>.column>.cell>.text
+		position: relative
+		white-space: nowrap
+		flex: 1
+
+		&.shortcuts
+			display: flex
+
+		&>.shortcut
+			text-align: right
+			flex: 1
+
+.list.control
+	height: auto
+
+.column-resizer-mask 
+	cursor: col-resize
+	position: fixed
+	top: 0
+	left: 0
+	width: 100%
+	height: 100%
+	z-index: 1000000

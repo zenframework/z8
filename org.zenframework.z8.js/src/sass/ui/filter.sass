@@ -1,0 +1,121 @@
+.filter-control
+	&>.box
+		border: 1px solid #eee
+
+		&>.expression
+			overflow-y: auto
+
+	.group
+		position: relative
+		display: inline-block
+		float: left
+		clear: both
+
+		&>.btn.vertical
+			position: absolute
+			top: 0
+			bottom: 0
+			width: em(30)
+
+			&.open
+				z-index: 5
+
+			&>.btn
+				position: absolute
+				width: 100%
+				padding: 0
+				text-align: center
+				font-weight: 500
+				z-index: 1
+
+				&:focus
+					z-index: 2
+
+			&:not(:hover):not(:active):not(:focus):not(.active):not(.focus)
+				background-color: #fff
+
+			&>.btn
+				&:first-child
+					top: 0
+					bottom: em(15)
+
+					&>.text
+						position: absolute
+						width: 100%
+						left: 0
+						top: calc(50% + #{em(4)})
+						font-size: em(12)
+
+					&>.icon
+						position: absolute
+						left: em(7)
+						top: em(10)
+
+				&>.icon
+					font-weight: 400
+
+			&>.btn-trigger
+				bottom: 0
+				top: calc(100% - #{em(15)})
+
+		&:not(.expression)>.group .btn:first-child>.fa
+			left: em(8)
+
+	.group.active>.group,
+	.group.active>.line,
+	.group>.btn:hover~.group,
+	.group>.btn:hover~.line,
+	.line.active
+		background-color: #fafafa
+
+	.group, .line
+		padding-left: em(30)
+		width: 100%
+		margin-left: -1px
+
+	&>.box
+		&>.expression
+			padding: em(4) em(4) em(10)
+
+			&>.group, &>.line
+				padding-left: 0
+
+			&>.group>.btn.vertical
+				left: 0
+
+	.line
+		clear: left
+		float: left
+		position: relative
+		padding-top: em(5)
+		padding-bottom: em(5)
+		padding-right: 0
+		display: flex
+		flex-direction: row
+
+		&>.control-group.invalid>.control
+			border-color: $red
+
+		&>.checkbox
+			width: em(30) !important
+			justify-content: center
+			margin-right: 0 !important
+			text-align: center
+			margin-top: 0
+			min-height: auto
+
+		&>.property, &>.operator, &>.value
+			float: left
+
+		&>.property, &>.operator
+			margin-right: em(25)
+
+		&>.property
+			flex: 1
+
+		&>.operator
+			width: em(250)
+
+		&>.value
+			width: 21.42857142em
+

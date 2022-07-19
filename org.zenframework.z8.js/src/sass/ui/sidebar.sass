@@ -1,0 +1,123 @@
+.viewport>.menu 
+	position: absolute
+	top: em(40)
+	left: -#{em(250)}
+	bottom: 0
+	background-color: #222
+	width: em(250)
+	z-index: 10000
+	padding-right: em(10)
+	opacity: .97
+	border-right: 1px solid #333
+	-webkit-box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+	box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+
+	&>.handle
+		width: em(10)
+		position: absolute
+		height: 25%
+		top: 37.5%
+		padding-top: 70%
+		right: 0
+		color: #aaa
+		text-align: center
+
+	&.open
+		padding-right: 0
+		left: 0
+		-webkit-transition: left .3s
+		transition: left .3s
+
+		/*.viewport>.menu:hover>.handle,*/
+		&>.handle
+			display: none
+
+	&.disabled
+		left: -#{em(250)}
+
+	&>.logo
+		text-align: center
+		color: #fff
+		padding-left: em(20)
+		padding-top: em(30)
+		padding-bottom: em(30)
+		border-bottom: 1px solid #333
+		width: 100%
+
+	& .item
+		height: em(36)
+		width: 100%
+		color: #eee
+		background-color: #222
+		padding-left: em(15)
+		padding-right: em(20)
+		border-left: 2px solid transparent
+		border-bottom: 1px solid #333
+		position: relative
+		cursor: pointer
+		display: flex
+		align-items: center
+
+		&:after
+			position: absolute
+			top: 0
+			left: 0
+			content: ''
+			height: em(36)
+			width: 0
+			z-index: 1
+			background-color: #2a2a2a
+			-webkit-transition: width .3s
+			transition: width .3s
+			opacity: .5
+
+		&>.icon
+			float: left
+			margin-right: em(10)
+			width: 1em
+
+		&>.text
+			float: left
+			overflow-x: hidden
+			overflow-y: hidden
+			text-overflow: ellipsis
+			white-space: nowrap
+			flex: 1
+
+		&>.chevron
+			color: #aaa
+			position: absolute
+			right: em(10)
+			top: em(18)
+			font-size: em(10)
+			z-index: 2
+
+		&>.submenu
+			position: absolute
+			display: none
+			top: 0
+			left: calc(#{em(248)} - 1px)
+			background-color: #222
+			width: 21.42857142em
+			min-height: em(117)
+			-webkit-box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+			box-shadow: 3px 0 6px rgba(0, 0, 0, 0.100)
+			z-index: 10000
+
+		&.active
+			border-left-color: $light-blue
+
+			&>.chevron
+				color: $light-blue
+
+			&:after
+				width: 100%
+
+	&>.item.active>.submenu
+		display: block
+
+	&.disabled>.item.active>.submenu
+		display: none
+
+	& .submenu>.item>.text
+		width: em(230)

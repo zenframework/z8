@@ -1,0 +1,93 @@
+.form.fieldset
+	padding-top: em(15)
+	padding-left: em(15)
+	padding-right: em(15)
+	margin: 0
+	overflow-y: auto
+	overflow-x: hidden
+	border: none
+
+.fieldset 
+	position: relative
+	margin-top: .71428572em
+	padding: em(20) em(10) em(10)
+	border: 1px solid #ccc
+
+	&.section
+		padding: 0
+		border: none
+		margin-top: 0
+		margin-bottom: 0
+
+	&>.legend
+		position: absolute
+		top: -#{em(8)}
+		max-width: 85%
+		padding-left: em(10)
+		padding-right: em(10)
+		color: #555
+		background-color: #fff
+		white-space: nowrap
+		text-overflow: ellipsis
+		overflow: hidden
+
+		&>.fa
+			margin-right: em(7)
+
+	&>.row
+		position: relative
+
+		&>.cell.action
+			justify-content: center
+			align-items: flex-start
+
+		&:not(:last-child)>.cell
+			&>.tabs, &>.fieldset, &>.control-group, &>.btn-group, &>.btn
+				margin-bottom: em(24)
+
+.action-group 
+	display: flex
+	flex-direction: row
+	align-items: center
+	justify-content: flex-end
+	flex: 1
+
+	&>.btn, &>.btn-group
+		margin-right: 1em
+
+.fieldset
+	&>.row>.cell
+		&>.btn-group, &>.btn
+			&:not(:first-child)
+				margin-left: em(10)
+
+		&>.tabs, &>.fieldset, &>.control-group:not(.scrollable)
+			flex: 1
+
+		&>.control-group.scrollable
+			position: absolute
+			top: 0
+			left: em(15)
+			right: em(15)
+			bottom: 0
+
+@media screen and (min-width: 768px) 
+	.fieldset 
+		display: flex
+		flex-direction: column
+
+		&>.row
+			display: flex
+			flex-direction: row
+			align-items: stretch
+			min-height: fit-content
+			min-height: -moz-fit-content
+
+			&>.cell.stretch
+				align-items: stretch
+
+.fieldset>.row>.cell>.control-group>.box
+	&>.textarea.control, >.html.control
+		padding: em(2)
+		overflow-x: hidden
+		overflow-y: hidden
