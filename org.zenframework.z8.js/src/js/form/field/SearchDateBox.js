@@ -39,7 +39,35 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		}
 		return !Z8.isEmpty(value) && !filters.isEmpty() ? filters : null;
 	},
-	
+
+	initTriggers: function (){
+		this.callParent();
+		this.triggers.push({ icon: 'fa-calendar', tooltip: 'Выбрать период', handler: this.showPeriodMenu, scope: this });
+
+		TextBox.prototype.initTriggers.call(this);
+	},
+
+	showPeriodMenu: function() {
+		DOM.append(this, this.menu);
+		this.menu.setAlignment(this);
+		this.menu.toggle();
+	},
+
+	completeRender: function() {
+		Z8.form.field.Text.prototype.completeRender.call(this);
+		var periodControl = new Z8.calendar.Period({ period: this.period });
+		periodControl.on('apply', this.onPeriodApply, this);
+		periodControl.on('cancel', this.onPeriodCancel, this);
+		
+		var menu = this.menu = new Z8.menu.Menu({ items: [periodControl], useTab: false });
+		menu.render();
+		this.updateTrigger();
+	},
+
+	onPeriodCancel: function(control) {
+		this.menu.hide();
+	},
+
 	onPeriodApply: function(control, start, finish) {
 		this.menu.hide();
 
@@ -76,34 +104,6 @@ Z8.define('Z8.form.field.SearchDateBox', {
 			return start.getFullYear() + ", " + onlyStartDate + " - " + onlyFinishDate;
 		}
 		return start.getFullYear() + " - " + finish.getFullYear();
-	},
-	
-	initTriggers: function (){
-		this.callParent();
-		this.triggers.push({ icon: 'fa-calendar', tooltip: 'Выбрать период', handler: this.showPeriodMenu, scope: this });
-
-		TextBox.prototype.initTriggers.call(this);
-	},
-	
-	completeRender: function() {
-		Z8.form.field.Text.prototype.completeRender.call(this);
-		var periodControl = new Z8.calendar.Period({ period: this.period });
-		periodControl.on('apply', this.onPeriodApply, this);
-		periodControl.on('cancel', this.onPeriodCancel, this);
-		
-		var menu = this.menu = new Z8.menu.Menu({ items: [periodControl], useTab: false });
-		menu.render();
-		this.updateTrigger();
-	},
-
-	onPeriodCancel: function(control) {
-		this.menu.hide();
-	},
-
-	showPeriodMenu: function() {
-		DOM.append(this, this.menu);
-		this.menu.setAlignment(this);
-		this.menu.toggle();
 	},
 
 	getSelection: function() {
