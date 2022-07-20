@@ -2,7 +2,6 @@ Z8.define('Z8.form.field.SearchDateBox', {
 	extend: 'Z8.form.field.SearchText',
 	shortClassName: 'SearchDateBox',
 
-	tag: 'textarea',
 	period: { 
 		start: new Date(), 
 		finish: new Date() 
@@ -14,22 +13,16 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		config.confirm = config.confirm !== false;
 		config.searchIcon =  config.searchIcon || 'fa-search';
 		config.clearIcon = config.clearIcon || 'fa-times';
-
+		
 		Z8.form.field.Text.prototype.constructor.call(this, config);
-	},
-
-	htmlMarkup: function() {
-		var markup = this.callParent();
-
-		return markup;
 	},
 
 	getFilter: function() {
 		if(this.field == null)
 			return null;
 
-		var value = this.getValue();
-		var periodDate = 	!Z8.isEmpty(value) ? value.split("\n"): [];
+		var value = this.input.getAttribute("title");
+		var periodDate = !Z8.isEmpty(value) ? value.split("\n"): [];
 		var filters = [];
 		var start = periodDate.length == 2 ? Parser.date(periodDate[0], this.format) : Parser.date(value, this.format);
 		var finish = periodDate.length == 2 ? Parser.date(periodDate[1], this.format) : Parser.date(value, this.format);
@@ -58,9 +51,31 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		period.finish = finish;
 		var startDate = Format.formatDate(period.start, this.format);
 		var finsihDate = Format.formatDate(period.finish, this.format);
-		this.setValue(startDate + "\n" + finsihDate);
+		this.setValue(this.formatPeriod(period.start, period.finish));
+		this.input.setAttribute("title", startDate + "\n" + finsihDate)
 		this.searchPending = this.value != this.lastSearchValue;
 		this.updateTrigger();
+	},
+
+	formatPeriod: function(start, finish) {
+		var onlyStartDate = start.toLocaleString(undefined, {
+			month: "short", day: "numeric", 
+			hour: undefined, minute: undefined, second: undefined
+		});
+		var onlyFinishDate = finish.toLocaleString(undefined, {
+			month: "short", day: "numeric", 
+			hour: undefined, minute: undefined, second: undefined
+		});					
+
+		if(Format.formatDate(start, this.format) == Format.formatDate(finish, this.format))
+			return Format.formatDate(start, this.format);
+
+		if(start.getFullYear() == finish.getFullYear()) {
+			if(start.getMonth() == finish.getMonth() && start.getDate() == finish.getDate())
+				return start.toLocaleTimeString() + " - " + finish.toLocaleTimeString()
+			return start.getFullYear() + ", " + onlyStartDate + " - " + onlyFinishDate;
+		}
+		return start.getFullYear() + " - " + finish.getFullYear();
 	},
 	
 	initTriggers: function (){
@@ -75,7 +90,7 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		var periodControl = new Z8.calendar.Period({ period: this.period });
 		periodControl.on('apply', this.onPeriodApply, this);
 		periodControl.on('cancel', this.onPeriodCancel, this);
-
+		
 		var menu = this.menu = new Z8.menu.Menu({ items: [periodControl], useTab: false });
 		menu.render();
 		this.updateTrigger();
