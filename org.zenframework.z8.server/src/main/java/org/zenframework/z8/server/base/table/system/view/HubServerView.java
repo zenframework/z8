@@ -1,13 +1,17 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -16,6 +20,7 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 abstract public class HubServerView extends Query {
@@ -126,6 +131,8 @@ abstract public class HubServerView extends Query {
 	public JsonArray getData() {
 		JsonArray data = new JsonArray();
 
+		JsonArray qf = parseQuickFilter();
+
 		try {
 			for(IServerInfo server : getServers()) {
 				JsonObject object = new JsonObject();
@@ -135,12 +142,64 @@ abstract public class HubServerView extends Query {
 				object.put(port.id(), getPort(server));
 				object.put(domains.id(), getDomains(server));
 				object.put(active.id(), server.isAlive());
-				data.add(object);
+
+				if (filtered(qf, object))
+					data.add(object);
 			}
+
+			doRequestSort(data);
 
 			return data;
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private JsonArray parseQuickFilter() {
+		String qf = ApplicationServer.getRequest().getParameter(new string("quickFilter"));
+		if (qf == null || qf.isEmpty())
+			return new JsonArray();
+		return new JsonArray(qf);
+	}
+
+	private boolean filtered(JsonArray filts, JsonObject obj) {
+		for (int i = 0; i < filts.size(); ++i) {
+			JsonObject f = filts.getJsonObject(i);
+			if (!obj.getString(f.getString("property")).toLowerCase().contains(f.getString("value").toLowerCase()))
+				return false;
+		}
+		return true;
+	}
+
+	private void doRequestSort(JsonArray data) {
+		String sort = ApplicationServer.getRequest().getParameter(new string("sort"));
+		if (sort == null || sort.isEmpty())
+			return;
+		JsonArray sortArr = new JsonArray(sort);
+		if (sortArr.length() == 0)
+			return;
+		JsonObject obj = sortArr.getJsonObject(0);
+		data.sort(new JsonComparator(obj.getString("property"), obj.getString("direction").equals("asc")));
+	}
+
+	private class JsonComparator implements Comparator<Object> {
+
+		private String fieldName;
+		private boolean ascender;
+
+		public JsonComparator(String field, boolean asc) {
+			fieldName = field;
+			ascender = asc;
+		}
+
+		@Override
+		public int compare(Object o1, Object o2) {
+			JsonObject j1 = (JsonObject)o1;
+			JsonObject j2 = (JsonObject)o2;
+			if (ascender)
+				return j1.getString(fieldName).compareTo(j2.getString(fieldName));
+			else
+				return j2.getString(fieldName).compareTo(j1.getString(fieldName));
 		}
 	}
 
@@ -153,8 +212,10 @@ abstract public class HubServerView extends Query {
 		if(domains == null)
 			return "";
 
-		String result = Arrays.toString(server.getDomains());
-		return result.substring(1, result.length() - 1);
+		List<String> list = new ArrayList<>(Arrays.asList(domains));
+		if (list.size() > 1 && list.get(0).startsWith("System at"))
+			list.remove(0);
+		return String.join(", ", list);
 	}
 
 	private String getHost(IServerInfo server) {
