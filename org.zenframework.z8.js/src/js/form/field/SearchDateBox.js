@@ -107,16 +107,16 @@ Z8.define('Z8.form.field.SearchDateBox', {
 	},
 
 	getSelection: function() {
-		if(typeof this.list !== 'undefined') {
-			var currentItem = this.list.getCurrentItem();
-			if(currentItem != null) {
-				var record = currentItem.getRecord();
-				if(record != null) {
-					this.setValue(Format.formatDate(record.data[this.field.name], this.format));
-					this.searchPending = this.value != this.lastSearchValue;
-					this.updateTrigger();
-				}
-			}
+		if(!this.list)
+			return;
+		var currentItem = this.list.getCurrentItem();
+		if(currentItem == null)
+			return;
+		var record = currentItem.getRecord();
+		if(record != null) {
+			this.setValue(Format.formatDate(record.get(this.field.name), this.format));
+			this.searchPending = this.value != this.lastSearchValue;
+			this.updateTrigger();
 		}
 	},
 });

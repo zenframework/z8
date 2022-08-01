@@ -45,7 +45,7 @@ Z8.define('Z8.form.field.SearchText', {
 		var trigger = this.triggers[0];
 		if(trigger.isBusy())
 			return;
-		
+
 		if(this.confirm) {
 			trigger.setIcon(this.searchPending || this.lastSearchValue.isEmpty() ? this.searchIcon : this.clearIcon);
 			trigger.setEnabled(this.searchPending || this.lastSearchValue != '');
@@ -114,16 +114,16 @@ Z8.define('Z8.form.field.SearchText', {
 	},
 
 	getSelection: function() {
-		if(typeof this.list !== 'undefined') {
-			var currentItem = this.list.getCurrentItem();
-			if(currentItem != null) {
-				var record = currentItem.getRecord();
-				if(record != null) {
-					this.setValue(record.data[this.field.name]);
-					this.searchPending = this.value != this.lastSearchValue;
-					this.updateTrigger();
-				}
-			}
+		if (!this.list)
+			return;
+		var currentItem = this.list.getCurrentItem();
+		if (currentItem == null)
+			return;
+		var record = currentItem.getRecord();
+		if (record != null) {
+			this.setValue(record.get(this.field.name));
+			this.searchPending = this.value != this.lastSearchValue;
+			this.updateTrigger();
 		}
 	},
 

@@ -404,8 +404,8 @@ canvas {
 .btn-tool {
 }
 
-.btn-trigger {
-	margin-right: 0px !important;
+.filter>.column .btn-trigger {
+    margin-right: 0px;
 }
 
 .btn-trigger>.icon {
