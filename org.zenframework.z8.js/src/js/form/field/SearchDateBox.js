@@ -107,7 +107,7 @@ Z8.define('Z8.form.field.SearchDateBox', {
 	},
 
 	getSelection: function() {
-		if(!this.list)
+		if (this.list == null)
 			return;
 		var currentItem = this.list.getCurrentItem();
 		if(currentItem == null)

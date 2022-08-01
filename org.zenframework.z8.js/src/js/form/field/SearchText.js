@@ -114,7 +114,7 @@ Z8.define('Z8.form.field.SearchText', {
 	},
 
 	getSelection: function() {
-		if (!this.list)
+		if (this.list == null)
 			return;
 		var currentItem = this.list.getCurrentItem();
 		if (currentItem == null)
