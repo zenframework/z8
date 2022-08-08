@@ -9,8 +9,8 @@ import org.zenframework.z8.base.table.system.UserEntries;
 import org.zenframework.z8.base.table.system.UserRoles;
 import org.zenframework.z8.base.table.system.Users;
 
-[native "org.zenframework.z8.server.base.table.system.view.UsersForm"]
-class UsersForm extends Form {
+[native "org.zenframework.z8.server.base.table.system.view.UserForm"]
+class UserForm extends Form {
 
 	public Users users;
 
@@ -39,7 +39,7 @@ class UsersForm extends Form {
 	protected Source rolesSource;
 	rolesSource.query = new RoleTableAccessView;
 
-	Listbox rolesListbox;
+	protected Listbox rolesListbox;
 	rolesListbox.query = userRoles;
 	rolesListbox.link = userRoles.user;
 	rolesListbox.source = rolesSource;

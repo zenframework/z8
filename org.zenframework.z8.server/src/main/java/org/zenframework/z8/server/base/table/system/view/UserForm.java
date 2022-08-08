@@ -13,34 +13,34 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
-public class UsersForm extends Form {
-	public static class CLASS<T extends UsersForm> extends Form.CLASS<T> {
+public class UserForm extends Form {
+	public static class CLASS<T extends UserForm> extends Form.CLASS<T> {
 		public CLASS(IObject container) {
 			super(container);
-			setJavaClass(UsersForm.class);
+			setJavaClass(UserForm.class);
 			setAttribute(SystemTool, Integer.toString(100));
 		}
 
 		@Override
 		public Object newObject(IObject container) {
-			return new UsersForm(container);
+			return new UserForm(container);
 		}
 	}
 
 	public Users.CLASS<? extends Users> users = new Users.CLASS<Users>();
 
-	public Listbox.CLASS<Listbox> entriesListbox = new Listbox.CLASS<Listbox>(this);
-	public Listbox.CLASS<Listbox> rolesListbox = new Listbox.CLASS<Listbox>(this);
+	protected Listbox.CLASS<Listbox> entriesListbox = new Listbox.CLASS<Listbox>(this);
+	protected Listbox.CLASS<Listbox> rolesListbox = new Listbox.CLASS<Listbox>(this);
 
-	private UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
-	private UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
+	protected UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
+	protected UserRoles.CLASS<UserRoles> userRoles = new UserRoles.CLASS<UserRoles>(this);
 
-	private Section.CLASS<Section> section2 = new Section.CLASS<Section>(this);
-	private Section.CLASS<Section> section3 = new Section.CLASS<Section>(this);
+	protected Section.CLASS<Section> section2 = new Section.CLASS<Section>(this);
+	protected Section.CLASS<Section> section3 = new Section.CLASS<Section>(this);
 
-	private ResetPasswordAction.CLASS<ResetPasswordAction> resetPassword = new ResetPasswordAction.CLASS<ResetPasswordAction>(this);
+	protected ResetPasswordAction.CLASS<ResetPasswordAction> resetPassword = new ResetPasswordAction.CLASS<ResetPasswordAction>(this);
 
-	public UsersForm(IObject container) {
+	public UserForm(IObject container) {
 		super(container);
 	}
 
