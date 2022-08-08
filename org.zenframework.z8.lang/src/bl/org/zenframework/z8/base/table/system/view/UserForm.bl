@@ -36,13 +36,10 @@ class UserForm extends Form {
 	protected UserRoles userRoles;
 	userRoles.columns = { userRoles.roles.name };
 
-	protected Source rolesSource;
-	rolesSource.query = new RoleTableAccessView;
-
 	protected Listbox rolesListbox;
 	rolesListbox.query = userRoles;
 	rolesListbox.link = userRoles.user;
-	rolesListbox.source = rolesSource;
+	rolesListbox.source = new RoleTableAccessView;
 	rolesListbox.flex = 1;
 
 	users.name.colSpan = 3;
