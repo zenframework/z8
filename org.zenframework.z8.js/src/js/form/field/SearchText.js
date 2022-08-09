@@ -19,7 +19,8 @@ Z8.define('Z8.form.field.SearchText', {
 
 	initTriggers: function (){
 		var triggers = this.triggers;
-		triggers.push({ icon: 'fa-copy', tooltip: 'Вставить данные из выбранной записи', handler: this.getSelection, scope: this });
+		if (this.list)
+			triggers.push({ icon: 'fa-copy', tooltip: 'Вставить данные из выбранной записи', handler: this.getSelection, scope: this });
 
 		TextBox.prototype.initTriggers.call(this);
 	},
