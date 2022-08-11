@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
+import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.Tables;
 import org.zenframework.z8.server.runtime.IObject;
@@ -8,77 +9,90 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class TablesView extends Tables {
-	public static class CLASS<T extends TablesView> extends Tables.CLASS<T> {
-		public CLASS(IObject container) {
-			super(container);
-			setJavaClass(TablesView.class);
-			setAttribute(SystemTool, Integer.toString(400));
-		}
+    public static class CLASS<T extends TablesView> extends Tables.CLASS<T> {
+        public CLASS(IObject container) {
+            super(container);
+            setJavaClass(TablesView.class);
+            setAttribute(SystemTool, Integer.toString(400));
+        }
 
-		@Override
-		public Object newObject(IObject container) {
-			return new TablesView(container);
-		}
-	}
+        @Override
+        public Object newObject(IObject container) {
+            return new TablesView(container);
+        }
+    }
 
-	public Listbox.CLASS<Listbox> fieldsListbox = new Listbox.CLASS<Listbox>(this);
-	private Fields.CLASS<Fields> fields = new Fields.CLASS<Fields>(this);
+    public Listbox.CLASS<Listbox> fieldsListbox = new Listbox.CLASS<Listbox>(this);
+    public final Fields.CLASS<Fields> fields = new Fields.CLASS<Fields>(this);
+    public Report.CLASS<? extends Report> download = new TablesReport.CLASS<TablesReport>(this);
 
-	public TablesView(IObject container) {
-		super(container);
-	}
+    @Override
+    public void afterRead() {
+        super.afterRead();
 
-	@Override
-	public void initMembers() {
-		super.initMembers();
-		objects.add(this.fields);
-	}
+    }
 
-	@Override
-	public void constructor2() {
-		super.constructor2();
+    public TablesView(IObject container) {
+        super(container);
+    }
 
-		fields.setIndex("fields");
+    @Override
+    public void initMembers() {
+        super.initMembers();
+        objects.add(this.fields);
+        objects.add(download);
+    }
 
-		readOnly = bool.True;
-		colCount = new integer(6);
+    @Override
+    public void constructor2() {
+        super.constructor2();
+        fields.setIndex("fields");
 
-		fieldsListbox.setIndex("fieldsListbox");
-		fieldsListbox.setDisplayName(Fields.displayNames.Title);
+        readOnly = bool.True;
+        colCount = new integer(6);
 
-		Fields fields = this.fields.get();
-		fields.readOnly = bool.True;
+        download.setIndex("download");
 
-		fieldsListbox.get().query = this.fields;
-		fieldsListbox.get().link = fields.table;
-		fieldsListbox.get().sortFields.add(fields.position);
+        fieldsListbox.setIndex("fieldsListbox");
+        fieldsListbox.setDisplayName(Fields.displayNames.Title);
 
-		fields.columns.add(fields.name);
-		fields.columns.add(fields.type);
-		fields.columns.add(fields.displayName);
+        Fields fields = this.fields.get();
+        fields.readOnly = bool.True;
 
-		classId.get().colSpan = new integer(2);
+        fieldsListbox.get().query = this.fields;
+        fieldsListbox.get().link = fields.table;
+        fieldsListbox.get().sortFields.add(fields.position);
 
-		name.get().colSpan = new integer(2);
-		name.get().width = new integer(100);
+        fields.columns.add(fields.name);
+        fields.columns.add(fields.type);
+        fields.columns.add(fields.displayName);
+        fields.columns.add(fields.description);
 
-		displayName.get().colSpan = new integer(2);
-		displayName.get().width = new integer(200);
+        classId.get().colSpan = new integer(2);
 
-		description.get().colSpan = new integer(6);
-		description.get().height = new integer(2);
+        name.get().colSpan = new integer(2);
+        name.get().width = new integer(100);
 
-		fieldsListbox.get().colSpan = new integer(6);
-		fieldsListbox.get().flex = new integer(1);
+        displayName.get().colSpan = new integer(2);
+        displayName.get().width = new integer(200);
 
-		registerControl(classId);
-		registerControl(name);
-		registerControl(displayName);
-		registerControl(description);
-		registerControl(fieldsListbox);
+        description.get().colSpan = new integer(6);
+        description.get().height = new integer(2);
 
-		names.add(displayName);
-		names.add(name);
-		sortFields.add(name);
-	}
+        fieldsListbox.get().colSpan = new integer(6);
+        fieldsListbox.get().flex = new integer(1);
+
+        registerControl(classId);
+        registerControl(name);
+        registerControl(displayName);
+        registerControl(description);
+        registerControl(fieldsListbox);
+
+        names.add(displayName);
+        names.add(name);
+        sortFields.add(name);
+        reports.add(download);
+    }
+
+
 }
