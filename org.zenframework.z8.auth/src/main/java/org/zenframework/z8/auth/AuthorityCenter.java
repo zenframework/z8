@@ -139,9 +139,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		IUser user;
 		// backward compatibility
 		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())
-				&& LdapAPI.isUserExist(new LdapAPI.Connection(), loginParameters.getLogin())) {
+		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())) {
 			try {
+				new LdapAPI(ldapUrl, loginParameters.getLogin(), password);
 				user = loginServer.user(loginParameters, null);
 			} catch (UserNotFoundException e) {
 				if (ldapUsersCreateOnSuccessfulLogin)
