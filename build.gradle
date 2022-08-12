@@ -19,7 +19,7 @@ allprojects {
 	apply plugin: 'eclipse'
 	apply plugin: 'maven-publish'
 
-	ext.dependenciesVersion = '3.1'
+	ext.dependenciesVersion = '3.3'
 
 	buildDir = 'target'
 
