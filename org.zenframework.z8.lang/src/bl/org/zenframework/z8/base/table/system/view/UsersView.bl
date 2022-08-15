@@ -1,98 +1,14 @@
-import org.zenframework.z8.base.application.Application;
-import org.zenframework.z8.base.form.Listbox;
-import org.zenframework.z8.base.form.Section;
-import org.zenframework.z8.base.form.Source;
-import org.zenframework.z8.base.form.action.Action;
-import org.zenframework.z8.base.form.action.ActionType;
-import org.zenframework.z8.base.table.system.UserEntries;
-import org.zenframework.z8.base.table.system.UserRoles;
 import org.zenframework.z8.base.table.system.Users;
 
 [native "org.zenframework.z8.server.base.table.system.view.UsersView"]
 class UsersView extends Users {
-	Action resetPassword;
-	resetPassword.type = ActionType.Primary;
-	
-	Section section2;
-	section2.colSpan = 3;
-	
-	Section section3;
-	section3.colSpan = 3;
-	
-	UserEntries userEntries;
-	userEntries.position.editable = true;
-	userEntries.columns = { userEntries.entries.name, userEntries.position };
-	userEntries.sortFields = { userEntries.position };
-	
-	Listbox entriesListbox;
-	entriesListbox.query = userEntries;
-	entriesListbox.link = userEntries.user;
-	entriesListbox.flex = 1;
-	
-	UserRoles userRoles;
-	userRoles.columns = { userRoles.roles.name };
-	
-	Source rolesSource;
-	rolesSource.query = new RoleTableAccessView;
-	
-	Listbox rolesListbox;
-	rolesListbox.query = userRoles;
-	rolesListbox.link = userRoles.user;
-	rolesListbox.source = rolesSource;
-	rolesListbox.flex = 1;
-	
-	name.colSpan = 3;
-	name.editable = true;
-	
-	banned.colSpan = 3;
-	[icon "fa-ban"] banned;
-	
-	changePassword.colSpan = 3;
-	[icon "fa-key"] changePassword;
-	
-	firstName.colSpan = 3;
-	
-	lastName.colSpan = 3;
-	lastName.editable = true;
-	
-	middleName.colSpan = 3;
-	
-	phone.colSpan = 3;
-	email.colSpan = 3;
-	
-	company.colSpan = 3;
-	position.colSpan = 3;
+	protected UserForm form;
+	form.users = this;
+	form.flex = 1;
 
-	description.colSpan =12;
-	description.height = 3;
+	colCount = 1;
 
-	entriesListbox.colSpan = 6;
-	rolesListbox.colSpan = 6;
-	
-	colCount = 12;
-	readOnly = !Application.user().isAdministrator();
-	
-	controls = { name,
-				 banned,
-				 changePassword,
-				 resetPassword,
-				 
-				 lastName,
-				 firstName,
-				 middleName,
-				 section2,
-				 
-				 phone,
-				 email,
-				 section3,
-				 
-				 company,
-				 position,
-				 
-				 description,
-				 rolesListbox,
-				 entriesListbox };
-				 
+	controls = { form };
 	sortFields = { name };
 	names = { name, lastName };
 	quickFilters = { name, lastName };
