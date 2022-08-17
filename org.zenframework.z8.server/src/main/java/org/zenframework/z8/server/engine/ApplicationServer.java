@@ -3,8 +3,10 @@ package org.zenframework.z8.server.engine;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
+import java.util.Collections;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
@@ -142,11 +144,22 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public IUser user(LoginParameters loginParameters, String password) {
-		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
+		setRequest(new Request(loginParameters, Collections.emptyList(), new Session(loginParameters.getSchema())));
+
+		SecurityLog securityLog = Runtime.instance().securityLog().get();
 
 		try {
-			return User.load(loginParameters, password);
+			IUser user = User.load(loginParameters, password);
+			securityLog.addLoginEvent(user);
+			securityLog.setResult(true, "");
+			return user;
+		} catch (Throwable e) {
+			securityLog.addLoginEvent(new User(loginParameters));
+			securityLog.setResult(false, e.getMessage());
+			throw e;
 		} finally {
+			securityLog.commitEvents();
+
 			Scheduler.start(getDatabase());
 
 			releaseConnections();

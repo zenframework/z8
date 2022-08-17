@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
@@ -114,6 +118,9 @@ public class ServerConfig extends Properties {
 
 	static final private String FtsConfiguration = "fts.configuration";
 
+	static final private String SecurityLogFile = "security.log.file";
+	static final private String SecurityLogFormat = "security.log.format";
+
 	static private File workingPath;
 
 	static private String language;
@@ -193,6 +200,9 @@ public class ServerConfig extends Properties {
 
 	static private String ftsConfiguration;
 
+	static private File securityLogFile;
+	static private String securityLogFormat;
+
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
 	static public String[] emailExtensions; // "eml, mime"
@@ -236,7 +246,7 @@ public class ServerConfig extends Properties {
 		databaseConnection = getProperty(DatabaseConnection);
 		databaseDriver = getProperty(DatabaseDriver);
 		databaseCharset = encoding.fromString(getProperty(DatabaseCharset));
-		
+
 		emailLogin = getProperty(EmailLogin, "noreply@doczilla.ru");
 		emailPassword = getProperty(EmailPassword);
 
@@ -256,9 +266,7 @@ public class ServerConfig extends Properties {
 		webServerPort = getProperty(WebServerPort, 25000);
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
 
-		webServerWebapp = new File(getProperty(WebServerWebapp, ".."));
-		if (!webServerWebapp.isAbsolute())
-			webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
+		webServerWebapp = getFile(WebServerWebapp, "..");
 
 		webServerMappings = getProperty(WebServerMappings);
 		webServerUrlPatterns = getProperty(WebServerUrlPatterns);
@@ -287,9 +295,9 @@ public class ServerConfig extends Properties {
 		transportJobLogStackTrace = getProperty(TransportJobLogStackTrace, false);
 
 		exchangeJobCron = getProperty(ExchangeJobCron, "");
-		exchangeFolderIn = new File(workingPath, getProperty(ExchangeFolderIn, "exchange/in"));
-		exchangeFolderOut = new File(workingPath, getProperty(ExchangeFolderOut, "exchange/out"));
-		exchangeFolderErr = new File(workingPath, getProperty(ExchangeFolderErr, "exchange/err"));
+		exchangeFolderIn = getFile(ExchangeFolderIn, "exchange/in");
+		exchangeFolderOut = getFile(ExchangeFolderOut, "exchange/out");
+		exchangeFolderErr = getFile(ExchangeFolderErr, "exchange/err");
 
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -307,10 +315,13 @@ public class ServerConfig extends Properties {
 		ldapSearchBase = getProperty(LdapSearchBase, "");
 		ldapSearchUserFilter = getProperty(LdapSearchUserFilter, "");
 		ldapSearchGroupFilter = getProperty(LdapSearchGroupFilter, "");
-		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
+		ldapUsersIgnore = getList(LdapUsersIgnore, "Admin", "\\,");
 		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
 
 		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
+
+		securityLogFile = instance.getFile(SecurityLogFile, null);
+		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
 
 		instance = this;
 	}
@@ -386,6 +397,39 @@ public class ServerConfig extends Properties {
 		}
 
 		return result;
+	}
+
+	public File getFile(String key, String defaultValue) {
+		String value = getProperty(key, defaultValue);
+
+		if (value == null)
+			return null;
+
+		File file = new File(value);
+
+		try {
+			return file.isAbsolute() ? file : new File(workingPath, value).getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<String> getList(String key, String defaultValue, String delimiter) {
+		return StringUtils.asList(instance.getProperty(key, defaultValue), delimiter);
+	}
+
+	public Map<String, String> getMap(String key, String defaultValue, String pattern) {
+		String value = getProperty(key, defaultValue);
+
+		if (value == null)
+			return Collections.emptyMap();
+
+		Map<String, String> map = new HashMap<String, String>();
+		Matcher matcher = Pattern.compile(pattern).matcher(value);
+		while (matcher.find())
+			map.put(matcher.group("key"), matcher.group("value"));
+
+		return Collections.unmodifiableMap(map);
 	}
 
 	public String getHost(String key, String defaultValue) {
@@ -683,6 +727,14 @@ public class ServerConfig extends Properties {
 
 	static public String ftsConfiguration() {
 		return ftsConfiguration;
+	}
+
+	static public File securityLogFile() {
+		return securityLogFile;
+	}
+
+	static public String securityLogFormat() {
+		return securityLogFormat;
 	}
 
 	static public IApplicationServer applicationServer() {

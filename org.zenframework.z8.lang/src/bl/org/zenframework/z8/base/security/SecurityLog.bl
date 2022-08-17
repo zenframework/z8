@@ -1,0 +1,14 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.security.SecurityLog"]
+public class SecurityLog extends Object {
+
+	virtual protected string format(User user);
+	virtual protected string format(SecurityObject object);
+
+	virtual protected string[string] filterParameters(string[string] parameters);
+
+	virtual protected bool acceptEvent(SecurityEvent event);
+	virtual protected void writeEvent(SecurityEvent event);
+
+}

@@ -113,7 +113,11 @@ public class User implements IUser {
 		return system;
 	}
 
-	public User() {
+	public User() {}
+
+	public User(LoginParameters loginParameters) {
+		this.id = new guid(loginParameters.getUserId());
+		this.login = loginParameters.getLogin();
 	}
 
 	public User(IDatabase database) {
@@ -190,7 +194,7 @@ public class User implements IUser {
 
 	@Override
 	public boolean isBuiltinAdministrator() {
-		return id.equals(Users.Administrator) || id.equals(Users.System);
+		return id != null && id.equals(Users.Administrator) || id.equals(Users.System);
 	}
 
 	@Override

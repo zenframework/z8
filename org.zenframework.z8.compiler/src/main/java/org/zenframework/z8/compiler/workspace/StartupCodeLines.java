@@ -9,6 +9,7 @@ public class StartupCodeLines {
 	public String addJob = null;
 	public String addRequest = null;
 	public String addExecutable = null;
+	public String addSecurityLog = null;
 
 	public StartupCodeLines() {
 	}
@@ -19,6 +20,7 @@ public class StartupCodeLines {
 		addJob = null;
 		addRequest = null;
 		addExecutable = null;
+		addSecurityLog = null;
 	}
 
 	private String getJavaNew(IType type) {
@@ -57,5 +59,10 @@ public class StartupCodeLines {
 			if(value.isEmpty() || Boolean.parseBoolean(value))
 				addRequest = "addRequest(" + getJavaNew(type) + ");";
 		}
+
+		attribute = type.getAttribute(IAttribute.Log);
+
+		if(attribute != null)
+			addSecurityLog = "addSecurityLog(" + getJavaNew(type) + ");";
 	}
 }
