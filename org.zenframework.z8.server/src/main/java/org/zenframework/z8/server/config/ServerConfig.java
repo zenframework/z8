@@ -320,8 +320,8 @@ public class ServerConfig extends Properties {
 
 		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
 
-		securityLogFile = instance.getFile(SecurityLogFile, null);
-		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
+		securityLogFile = getFile(SecurityLogFile, null);
+		securityLogFormat = getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
 
 		instance = this;
 	}
@@ -415,7 +415,7 @@ public class ServerConfig extends Properties {
 	}
 
 	public List<String> getList(String key, String defaultValue, String delimiter) {
-		return StringUtils.asList(instance.getProperty(key, defaultValue), delimiter);
+		return StringUtils.asList(getProperty(key, defaultValue), delimiter);
 	}
 
 	public Map<String, String> getMap(String key, String defaultValue, String pattern) {
