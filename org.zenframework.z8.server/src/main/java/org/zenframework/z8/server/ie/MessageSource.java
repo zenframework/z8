@@ -366,9 +366,23 @@ public class MessageSource implements RmiSerializable, Serializable {
 		if (cache.exists(recordId))
 			return;
 
-		Table table = getTable(record.table(), cache);
+		String tableName = record.table();
+		Table table = getTable(tableName, cache);
 		if (table == null)
 			return;
+
+		for(FieldInfo fieldInfo : record.fields()) {
+			String fieldName = fieldInfo.name();
+
+			Field field = getField(tableName, fieldName, cache);
+
+			if(field == null)
+				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
+
+			if (field.unique())
+				field.set(fieldInfo.value());
+		}
+
 		table.create(recordId);
 	}
 
