@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.Table.CLASS;
@@ -39,12 +37,16 @@ public class MessageSource implements RmiSerializable, Serializable {
 	private static class Cache {
 		final Map<String, Table> tables = new HashMap<String, Table>();
 		final Map<String, Field> fields = new HashMap<String, Field>();
-		final Set<guid> records = new HashSet<guid>();
+		final Map<guid, Map<String, string>> attachments = new HashMap<>();
 
 		void clear() {
 			tables.clear();
 			fields.clear();
-			records.clear();
+			attachments.clear();
+		}
+
+		boolean exists(guid id) {
+			return attachments.containsKey(id);
 		}
 	}
 
@@ -290,9 +292,18 @@ public class MessageSource implements RmiSerializable, Serializable {
 		ApplicationServer.setEventsLevel(EventsLevel.NONE);
 
 		for(RecordInfo record : inserts)
+			readExisting(record, cache);
+
+		for(RecordInfo record : updates)
+			readExisting(record, cache);
+
+		for(RecordInfo record : inserts)
 			insert(record, cache);
 
 		ConnectionManager.get().flush();
+
+		for(RecordInfo record : inserts)
+			update(record, cache);
 
 		for(RecordInfo record : updates)
 			update(record, cache);
@@ -329,40 +340,36 @@ public class MessageSource implements RmiSerializable, Serializable {
 		return field;
 	}
 
-	private void insert(RecordInfo record, Cache cache) {
+	private void readExisting(RecordInfo record, Cache cache) {
+		guid recordId = record.id();
+		if (cache.exists(recordId))
+			return;
+
 		String tableName = record.table();
 		Table table = getTable(tableName, cache);
 		if (table == null)
 			return;
-		guid recordId = record.id();
 
 		Collection<Field> attachments = table.attachments();
 		boolean exists = table.readRecord(recordId, attachments);
 
-		for(FieldInfo fieldInfo : record.fields()) {
-			String fieldName = fieldInfo.name();
-			Field field = getField(tableName, fieldName, cache);
-
-			if(field == null)
-				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
-
-			ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
-
-			if(!exists || fieldPolicy == ImportPolicy.OVERRIDE) {
-				primary value = fieldInfo.value();
-
-				if(exists && field instanceof FileField)
-					value = mergeAttachments(field.string(), (string)value);
-				
-				field.set(value);
-			}
+		if (exists) {
+			Map<String, string> recAtts = new HashMap<>();
+			for (Field f : attachments)
+				recAtts.put(f.name(), f.string());
+			cache.attachments.put(recordId, recAtts);
 		}
+	}
 
-		if(!exists) {
-			table.create(recordId);
-			cache.records.add(recordId);
-		} else
-			table.update(recordId);
+	private void insert(RecordInfo record, Cache cache) {
+		guid recordId = record.id();
+		if (cache.exists(recordId))
+			return;
+
+		Table table = getTable(record.table(), cache);
+		if (table == null)
+			return;
+		table.create(recordId);
 	}
 
 	private void update(RecordInfo record, Cache cache) {
@@ -370,10 +377,12 @@ public class MessageSource implements RmiSerializable, Serializable {
 		Table table = getTable(tableName, cache);
 		guid recordId = record.id();
 
+		boolean exists = cache.exists(recordId);
+
 		for(FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
 
-			if(!cache.records.contains(recordId)) {
+			if(exists) {
 				ImportPolicy fieldPolicy = exportRules.getPolicy(tableName, fieldName, recordId);
 				if(fieldPolicy != ImportPolicy.OVERRIDE)
 					continue;
@@ -384,7 +393,11 @@ public class MessageSource implements RmiSerializable, Serializable {
 			if(field == null)
 				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
 
-			field.set(fieldInfo.value());
+			if(exists && field instanceof FileField) {
+				string wasValue = cache.attachments.get(recordId).get(field.name());
+				field.set(mergeAttachments(wasValue, (string)fieldInfo.value()));
+			} else
+				field.set(fieldInfo.value());
 		}
 
 		table.update(record.id());
