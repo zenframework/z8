@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.types.guid;
 
@@ -16,6 +17,8 @@ public abstract class AbstractRuntime implements IRuntime {
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
 	private Map<guid, OBJECT.CLASS<? extends OBJECT>> requestKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
 	private Map<guid, Procedure.CLASS<? extends Procedure>> jobKeys = new HashMap<guid, Procedure.CLASS<? extends Procedure>>();
+
+	protected SecurityLog.CLASS<? extends SecurityLog> securityLog = null;
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -55,6 +58,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<guid> jobKeys() {
 		return jobKeys.keySet();
+	}
+
+	@Override
+	public SecurityLog.CLASS<? extends SecurityLog> securityLog() {
+		return securityLog;
 	}
 
 	@Override
@@ -141,6 +149,11 @@ public abstract class AbstractRuntime implements IRuntime {
 			jobKeys.put(cls.classIdKey(), cls);
 	}
 
+	protected void addSecurityLog(SecurityLog.CLASS<? extends SecurityLog> cls) {
+		if (cls != null && (securityLog == null || securityLog.getClass().isAssignableFrom(cls.getClass())))
+			securityLog = cls;
+	}
+
 	protected void mergeWith(IRuntime runtime) {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
@@ -153,5 +166,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
 			addRequest(request);
+
+		addSecurityLog(runtime.securityLog());
 	}
 }

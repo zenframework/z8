@@ -1,0 +1,12 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.security.SecurityObject"]
+public class SecurityObject extends Object {
+
+	virtual public string getType();
+	virtual public guid getId();
+	virtual public string getName();
+
+	static public SecurityObject object(string type, guid id, string name);
+
+}

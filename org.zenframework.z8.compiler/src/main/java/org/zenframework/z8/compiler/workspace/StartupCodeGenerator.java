@@ -83,6 +83,7 @@ public class StartupCodeGenerator {
 		String addEntry = "";
 		String addRequest = "";
 		String addExecutable = "";
+		String addSecurityLog = "";
 
 		for(CompilationUnit compilationUnit : compilationUnits) {
 			StartupCodeLines startupCodeLines = compilationUnit.getStartupCodeLines();
@@ -101,11 +102,14 @@ public class StartupCodeGenerator {
 
 			if(startupCodeLines.addExecutable != null)
 				addExecutable += "\t\t" + startupCodeLines.addExecutable + '\n';
+
+			if(startupCodeLines.addSecurityLog != null)
+				addSecurityLog += "\t\t" + startupCodeLines.addSecurityLog + '\n';
 		}
 
 		String className = getRuntimeClassSimpleName(project);
 
 		return "package org.zenframework.z8;\n\n" + "import org.zenframework.z8.server.runtime.*;\n" + "@SuppressWarnings(\"all\")\n" + "public final class " + className + " extends org.zenframework.z8.server.runtime.AbstractRuntime {\n\t" + "public " + className + "() {\n"
-				+ addTable + "\n" + addEntry + "\n" + addJob + "\n" + addRequest  + "\n" + addExecutable + "\n\t" + "}\n" + "}";
+				+ addTable + "\n" + addEntry + "\n" + addJob + "\n" + addRequest + "\n" + addExecutable + "\n" + addSecurityLog + "\n\t" + "}\n" + "}";
 	}
 }

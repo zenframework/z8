@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.runtime;
 
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Entries;
 import org.zenframework.z8.server.base.table.system.Fields;
@@ -54,5 +55,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addTable(new TransportQueue.CLASS<TransportQueue>(null));
 
 		addEntry(new SystemTools.CLASS<SystemTools>(null));
+
+		addSecurityLog(new SecurityLog.CLASS<>(null));
 	}
 }
