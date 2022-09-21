@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.Procedure;
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
@@ -31,6 +32,8 @@ public abstract class AbstractRuntime implements IRuntime {
 	protected AbstractRuntime() {
 		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' loaded");
 	}
+
+	protected SecurityLog.CLASS<? extends SecurityLog> securityLog = null;
 
 	@Override
 	public Collection<Table.CLASS<? extends Table>> tables() {
@@ -75,6 +78,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<OBJECT.CLASS<? extends OBJECT>> systemTools() {
 		return systemTools.values();
+	}
+
+	@Override
+	public SecurityLog.CLASS<? extends SecurityLog> securityLog() {
+		return securityLog;
 	}
 
 	@Override
@@ -186,6 +194,11 @@ public abstract class AbstractRuntime implements IRuntime {
 			systemTools.put(cls.classId(), cls);
 	}
 
+	protected void addSecurityLog(SecurityLog.CLASS<? extends SecurityLog> cls) {
+		if (cls != null && (securityLog == null || securityLog.getClass().isAssignableFrom(cls.getClass())))
+			securityLog = cls;
+	}
+
 	protected void mergeRuntime(IRuntime runtime) {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
@@ -199,8 +212,10 @@ public abstract class AbstractRuntime implements IRuntime {
 		for(OBJECT.CLASS<? extends OBJECT> request : runtime.requests())
 			addRequest(request);
 
+
 		for(OBJECT.CLASS<? extends OBJECT> systemTool : runtime.systemTools())
 			addSystemTool(systemTool);
-	}
 
+		addSecurityLog(runtime.securityLog());
+	}
 }

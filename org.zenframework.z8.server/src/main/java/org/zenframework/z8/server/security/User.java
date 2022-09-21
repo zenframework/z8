@@ -101,7 +101,10 @@ public class User implements IUser {
 		return system;
 	}
 
-	public User() {
+	public User() {}
+
+	public User(String login) {
+		this.login = login;
 	}
 
 	@Override
@@ -159,7 +162,7 @@ public class User implements IUser {
 
 	@Override
 	public boolean isBuiltinAdministrator() {
-		return id.equals(Users.Administrator) || id.equals(Users.System);
+		return id != null && (id.equals(Users.Administrator) || id.equals(Users.System));
 	}
 
 	@Override

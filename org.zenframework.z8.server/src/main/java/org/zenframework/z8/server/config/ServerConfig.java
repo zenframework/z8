@@ -89,6 +89,9 @@ public class ServerConfig extends Properties {
 
 	static final private String GeneratorStaticRecordsRestore = "generator.staticRecords.restore";
 
+	static final private String SecurityLogFile = "security.log.file";
+	static final private String SecurityLogFormat = "security.log.format";
+
 	static private File workingPath;
 
 	static private String instanceId;
@@ -148,6 +151,9 @@ public class ServerConfig extends Properties {
 
 	static private Database database;
 
+	static private File securityLogFile;
+	static private String securityLogFormat;
+
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
 	static public String[] emailExtensions; // "eml, mime"
@@ -197,9 +203,7 @@ public class ServerConfig extends Properties {
 		webServerPort = getProperty(WebServerPort, 25000);
 		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
 
-		webServerWebapp = new File(getProperty(WebServerWebapp, ".."));
-		if (!webServerWebapp.isAbsolute())
-			webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
+		webServerWebapp = getFile(WebServerWebapp, "..");
 
 		webServerMappings = getProperty(WebServerMappings);
 		webServerUrlPatterns = getProperty(WebServerUrlPatterns);
@@ -223,9 +227,9 @@ public class ServerConfig extends Properties {
 		transportJobLogStackTrace = getProperty(TransportJobLogStackTrace, false);
 
 		exchangeJobCron = getProperty(ExchangeJobCron, "");
-		exchangeFolderIn = new File(workingPath, getProperty(ExchangeFolderIn, "exchange/in"));
-		exchangeFolderOut = new File(workingPath, getProperty(ExchangeFolderOut, "exchange/out"));
-		exchangeFolderErr = new File(workingPath, getProperty(ExchangeFolderErr, "exchange/err"));
+		exchangeFolderIn = getFile(ExchangeFolderIn, "exchange/in");
+		exchangeFolderOut = getFile(ExchangeFolderOut, "exchange/out");
+		exchangeFolderErr = getFile(ExchangeFolderErr, "exchange/err");
 
 		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -244,6 +248,9 @@ public class ServerConfig extends Properties {
 		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
 
 		generatorStaticRecordsRestore = getProperty(GeneratorStaticRecordsRestore, false);
+
+		securityLogFile = getFile(SecurityLogFile, null);
+		securityLogFormat = getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
 
 		instance = this;
 	}
@@ -318,6 +325,21 @@ public class ServerConfig extends Properties {
 		}
 
 		return result;
+	}
+
+	public File getFile(String key, String defaultValue) {
+		String value = getProperty(key, defaultValue);
+
+		if (value == null)
+			return null;
+
+		File file = new File(value);
+
+		try {
+			return file.isAbsolute() ? file : new File(workingPath, value).getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public String getHost(String key, String defaultValue) {
@@ -541,6 +563,14 @@ public class ServerConfig extends Properties {
 
 	static public boolean isLatestVersion() {
 		return database().isLatestVersion();
+	}
+
+	static public File securityLogFile() {
+		return securityLogFile;
+	}
+
+	static public String securityLogFormat() {
+		return securityLogFormat;
 	}
 
 	static public IApplicationServer applicationServer() {

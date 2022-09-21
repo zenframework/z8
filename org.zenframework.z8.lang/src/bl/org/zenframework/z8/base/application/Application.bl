@@ -1,4 +1,5 @@
 import org.zenframework.z8.base.json.JsonWriter;
+import org.zenframework.z8.base.security.SecurityObject;
 import org.zenframework.z8.base.security.User;
 import org.zenframework.z8.lang.Object;
 
@@ -14,6 +15,9 @@ public class Application extends Object {
 	static public void logInfo(string text);
 	static public void logWarning(string text);
 	static public void logError(string text);
+
+	static public void logSecurityEvent(string objectType, guid objectId, string objectName, string action);
+	static public void logSecurityEvent(SecurityObject object, string action);
 
 	static public void info(string text);
 	static public void error(string text);

@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
@@ -138,7 +139,25 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public IUser user(String login, String password, boolean createIfNotExist) {
-		return User.load(login, password, createIfNotExist);
+		setRequest(new Request(new Session()));
+
+		SecurityLog securityLog = Runtime.instance().securityLog().get();
+
+		try {
+			IUser user = User.load(login, password, createIfNotExist);
+			securityLog.addLoginEvent(user);
+			securityLog.setResult(true, "");
+			return user;
+		} catch (Throwable e) {
+			securityLog.addLoginEvent(new User(login));
+			securityLog.setResult(false, e.getMessage());
+			throw e;
+		} finally {
+			securityLog.commitEvents();
+
+			ConnectionManager.release();
+			setRequest(null);
+		}
 	}
 
 	@Override
