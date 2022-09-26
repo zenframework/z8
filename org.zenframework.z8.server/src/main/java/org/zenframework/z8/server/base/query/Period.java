@@ -9,7 +9,9 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public class Period extends OBJECT {
@@ -19,6 +21,22 @@ public class Period extends OBJECT {
 			setJavaClass(Period.class);
 		}
 
+		public date start = date.Min;
+		public date finish = date.Max;
+		
+		public  CLASS(JsonObject parameters) {
+			super(null);
+			
+			JsonObject period = new JsonObject(parameters.get(Json.period).toString());
+			
+			boolean active = period.has(Json.active) ? period.getBoolean(Json.active) : false;
+
+			if(active) {
+				this.start = period.has(Json.start) ? new date(period.getString(Json.start)) : date.Min;
+				this.finish = period.has(Json.finish) ? new date(period.getString(Json.finish)) : date.Max;
+			}
+		}
+		
 		@Override
 		public Object newObject(IObject container) {
 			return new Period(container);
@@ -60,6 +78,14 @@ public class Period extends OBJECT {
 		}
 	}
 
+	
+	
+	
+	public static Period.CLASS<? extends Period> z8_getPeriod(RLinkedHashMap<string,string> parameters) {
+		JsonObject params = new JsonObject(parameters);
+		return new Period.CLASS<Period>(params);
+	}
+	
 	public sql_bool where() {
 		SqlToken where = null;
 
