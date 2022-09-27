@@ -20,22 +20,6 @@ public class Period extends OBJECT {
 			super(container);
 			setJavaClass(Period.class);
 		}
-
-		public date start = date.Min;
-		public date finish = date.Max;
-		
-		public  CLASS(JsonObject parameters) {
-			super(null);
-			
-			JsonObject period = new JsonObject(parameters.get(Json.period).toString());
-			
-			boolean active = period.has(Json.active) ? period.getBoolean(Json.active) : false;
-
-			if(active) {
-				this.start = period.has(Json.start) ? new date(period.getString(Json.start)) : date.Min;
-				this.finish = period.has(Json.finish) ? new date(period.getString(Json.finish)) : date.Max;
-			}
-		}
 		
 		@Override
 		public Object newObject(IObject container) {
@@ -79,11 +63,26 @@ public class Period extends OBJECT {
 	}
 
 	
-	
+	public Period fillByParameters(RLinkedHashMap<string,string> parameters) {
+		
+		if(parameters.get(Json.period).equals(null))
+			return this;
+		
+		JsonObject period = new JsonObject(parameters.get(Json.period).toString());
+		
+		boolean active = period.has(Json.active) ? period.getBoolean(Json.active) : false;
+
+		if(active) {
+			this.start = period.has(Json.start) ? new date(period.getString(Json.start)) : date.Min;
+			this.finish = period.has(Json.finish) ? new date(period.getString(Json.finish)) : date.Max;
+		}
+		return this;
+	}
 	
 	public static Period.CLASS<? extends Period> z8_getPeriod(RLinkedHashMap<string,string> parameters) {
-		JsonObject params = new JsonObject(parameters);
-		return new Period.CLASS<Period>(params);
+		Period.CLASS<Period> period = new Period.CLASS<Period>(null);
+		period.get().fillByParameters(parameters);
+		return period;
 	}
 	
 	public sql_bool where() {

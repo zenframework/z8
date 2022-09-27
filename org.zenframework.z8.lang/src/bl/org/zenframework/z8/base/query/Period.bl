@@ -10,5 +10,5 @@ public class Period extends Object {
 
 	public sql_bool where();
 	
-	public static Period getPeriod(string[string] period);
+	public static Period getPeriod(string[string] parameters);
 }
