@@ -22,6 +22,8 @@ JAVA_OPTS="\$JAVA_OPTS -Xbootclasspath/p:\$BOOT_CP"
 JAVA_OPTS="\$JAVA_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=\$FORM_CONTENT_SIZE"
 JAVA_OPTS="\$JAVA_OPTS -Dorg.mortbay.http.HttpRequest.maxFormContentSize=\$FORM_CONTENT_SIZE"
 JAVA_OPTS="\$JAVA_OPTS -Dz8.web.server.webapp=\$WEB"
+JAVA_OPTS="\$JAVA_OPTS -Dorg.slf4j.simpleLogger.defaultLogLevel=warn"
+
 
 if [ "\$DEBUG" == "true" ] ; then
  JAVA_OPTS="\$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=9999,server=y,suspend=n"
