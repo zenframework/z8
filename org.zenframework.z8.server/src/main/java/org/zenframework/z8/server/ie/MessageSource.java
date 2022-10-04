@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.Table.CLASS;
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -414,6 +415,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 				field.set(fieldInfo.value());
 		}
 
+		if (table instanceof Users)
+			((Users)table).setNotifyBlock(true);
 		table.update(record.id());
 	}
 

@@ -307,6 +307,11 @@ public class Users extends Table {
 		notifyUserChange(recordId);
 	}
 
+
+	public void setNotifyBlock(boolean block) {
+		notifyBlock = block;
+	}
+
 	static public void saveSettings(guid user, String settings) {
 		Users users = new Users.CLASS<Users>().get();
 		users.settings.get().set(new string(settings));
