@@ -508,6 +508,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 		InputStream input = null;
 		try {
 			input = getInputStream();
+			if (input == null)
+				throw new NullPointerException("Файл не может быть прочитан");
 			input.skip(offset);
 			return IOUtils.read(input, bytes);
 		} finally {
