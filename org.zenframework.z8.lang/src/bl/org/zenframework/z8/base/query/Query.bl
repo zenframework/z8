@@ -86,6 +86,7 @@ public class Query extends Object {
 	public void read(Field[] fields, sql_bool where);
 	public void read(Field[] fields, Field[] sortFields);
 	public void read(Field[] fields, Field[] sortFields, sql_bool where);
+	public void read(Field[] fields, Field[] sortFields, sql_bool where, int start, int limit);
 
 	public bool readFirst(Field[] fields);
 	public bool readFirst(Field[] fields, sql_bool where);

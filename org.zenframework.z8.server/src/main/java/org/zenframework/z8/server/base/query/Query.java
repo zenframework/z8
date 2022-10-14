@@ -618,7 +618,7 @@ public class Query extends OBJECT {
 		return readRecord(id, fields);
 	}
 
-	private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having) {
+	private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having, int start, int limit) {
 		Collection<Field> fields = CLASS.asList(fieldClasses);
 		Collection<Field> sortFields = CLASS.asList(sortClasses);
 		Collection<Field> groupFields = CLASS.asList(groupClasses);
@@ -627,7 +627,7 @@ public class Query extends OBJECT {
 		sortFields = sortFields.isEmpty() ? null : sortFields;
 		groupFields = groupFields.isEmpty() ? null : groupFields;
 
-		read(fields, sortFields, groupFields, where, having);
+		read(fields, sortFields, groupFields, where, having, start, limit);
 	}
 
 	public boolean next() {
@@ -1334,106 +1334,111 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses) {
-		read1(fieldClasses, null, null, null, null);
+		read1(fieldClasses, null, null, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses) {
-		read1(fieldClasses, null, null, null, null);
+		read1(fieldClasses, null, null, null, null, 0, -1);
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, null, null, null);
+		read1(fieldClasses, sortClasses, null, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, null, null, null);
+		read1(fieldClasses, sortClasses, null, null, null, 0, -1);
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, null, where, null);
+		read1(fieldClasses, null, null, where, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, null, where, null);
+		read1(fieldClasses, null, null, where, null, 0, -1);
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null);
+		read1(fieldClasses, sortClasses, null, where, null, 0, -1);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where, integer start, integer limit) {
+		read1(fieldClasses, sortClasses, null, where, null, start.getInt(), limit.getInt());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null);
+		read1(fieldClasses, sortClasses, null, where, null, 0, -1);
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_sort(RCollection sortClasses) {
-		read1(null, sortClasses, null, null, null);
+		read1(null, sortClasses, null, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_sort(RCollection sortClasses, sql_bool where) {
-		read1(null, sortClasses, null, where, null);
+		read1(null, sortClasses, null, where, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_sort(RCollection sortClasses, RCollection fieldClasses) {
-		read1(fieldClasses, sortClasses, null, null, null);
+		read1(fieldClasses, sortClasses, null, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_sort(RCollection sortClasses, RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null);
+		read1(fieldClasses, sortClasses, null, where, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses) {
-		read1(null, null, groupByClasses, null, null);
+		read1(null, null, groupByClasses, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, sql_bool where) {
-		read1(null, null, groupByClasses, where, null);
+		read1(null, null, groupByClasses, where, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, RCollection fieldClasses) {
-		read1(fieldClasses, null, groupByClasses, null, null);
+		read1(fieldClasses, null, groupByClasses, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, groupByClasses, where, null);
+		read1(fieldClasses, null, groupByClasses, where, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where, sql_bool having) {
-		read1(fieldClasses, null, groupByClasses, where, having);
+		read1(fieldClasses, null, groupByClasses, where, having, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, groupClasses, null, null);
+		read1(fieldClasses, sortClasses, groupClasses, null, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, groupClasses, where, null);
+		read1(fieldClasses, sortClasses, groupClasses, where, null, 0, -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having) {
-		read1(fieldClasses, sortClasses, groupClasses, where, having);
+		read1(fieldClasses, sortClasses, groupClasses, where, having, 0, -1);
 	}
 
 	public integer z8_update(guid id) {
