@@ -42,10 +42,13 @@ public class Period extends OBJECT {
 		this.finish = finish != null ? finish : date.Max;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Period(Field field, String json) {
 		super(null);
-
+		init(field, json);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void init(Field field, String json) {
 		if(field == null)
 			return;
 
@@ -59,7 +62,13 @@ public class Period extends OBJECT {
 			this.finish = period.has(Json.finish) ? new date(period.getString(Json.finish)) : date.Max;
 		}
 	}
-
+	
+	public static Period.CLASS<? extends Period> z8_getPeriod(Field.CLASS<? extends Field> field, string json) {
+		Period.CLASS<Period> period = new Period.CLASS<Period>(null);
+		period.get().init(field.get(), json.get());
+		return period;
+	}
+	
 	public sql_bool where() {
 		SqlToken where = null;
 
