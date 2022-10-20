@@ -217,24 +217,25 @@ public abstract class Adapter {
 		String password = parameters.get(Json.password.get());
 		String company = parameters.get(Json.company.get());
 		String position = parameters.get(Json.position.get());
-		
-		LoginParameters loginParameters = new LoginParameters(login)
+
+		LoginParameters loginParameters = new LoginParameters()
+				.setLogin(login)
 				.setEmail(email)
 				.setFirstName(firstName)
 				.setLastName(lastName)
 				.setCompany(company)
 				.setPosition(position)
 				.setSchema(ServletUtil.getSchema(request));
-		
+
 		ServerConfig.authorityCenter().register(loginParameters, password, getRequestHost(request));
-		
+
 		JsonWriter writer = new JsonWriter();
 		writer.startResponse(null, true);
 		writer.writeInfo(Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
 		writer.startArray(Json.data);
 		writer.finishArray();
 		writer.finishResponse();
-		
+
 		writeResponse(response, writer.toString());
 	}
 	
@@ -356,10 +357,7 @@ public abstract class Adapter {
 	}
 
 	protected static LoginParameters getLoginParameters(String login, HttpServletRequest request) {
-		LoginParameters loginParameters = new LoginParameters(login);
-		loginParameters.setAddress(request.getRemoteAddr());
-		loginParameters.setSchema(ServletUtil.getSchema(request));
-		return loginParameters;
+		return new LoginParameters().setLogin(login).setAddress(request.getRemoteAddr()).setSchema(ServletUtil.getSchema(request));
 	}
 
 	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {

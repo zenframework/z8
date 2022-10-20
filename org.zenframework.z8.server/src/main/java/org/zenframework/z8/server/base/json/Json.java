@@ -15,6 +15,7 @@ public class Json extends OBJECT {
 	final static public string server = org.zenframework.z8.server.json.Json.server;
 	final static public string service = org.zenframework.z8.server.json.Json.service;
 	final static public string retry = org.zenframework.z8.server.json.Json.retry;
+	final static public string ip = org.zenframework.z8.server.json.Json.ip;
 
 	final static public string upload = org.zenframework.z8.server.json.Json.upload;
 
