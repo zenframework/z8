@@ -137,9 +137,7 @@ public class RequestDispatcher implements Runnable {
 					request.setAction(action);
 					action.processRequest(response);
 				} else if(object instanceof Executable) {
-					String name = object.getCLASS().name();
-					Executable executable = (Executable)(name != null ? Runtime.instance().getExecutableByName(name).newInstance() : object);
-					Job job = new Job(executable);
+					Job job = new Job(getNamedExecutable((Executable)object));
 					job.processRequest(response);
 				} else
 					object.processRequest(response);
@@ -153,5 +151,10 @@ public class RequestDispatcher implements Runnable {
 				ConnectionManager.release();
 			}
 		}
+	}
+
+	private Executable getNamedExecutable(Executable executable) {
+		Executable.CLASS<? extends Executable> namedExecutable = Runtime.instance().getExecutableByName(executable.name());
+		return namedExecutable != null ? namedExecutable.newInstance() : executable;
 	}
 }
