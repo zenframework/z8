@@ -530,8 +530,9 @@ public class BirtReport {
 		case Datetime:
 			return format.get().replace("d", "dd").replace("m", "MM").replace("F", "MMM").replace("Y", "yyyy").replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("S", "SSS");
 		case Integer:
+			return format.get().replace("0", "#") + "0";
 		case Decimal:
-			return format.get().replaceAll("0", "#").replace("#.##", "0.00");
+			return format.get().replace("0", "#");
 		default:
 			return format.get();
 		}
@@ -577,7 +578,7 @@ public class BirtReport {
 			if(styleHandle != null) {
 				String format = getColumnFormat(column);
 				styleHandle.setNumberFormatCategory("Fixed");
-				styleHandle.setNumberFormat(format != null ? format : "#,###");
+				styleHandle.setNumberFormat(format != null ? format : "#,##0");
 			}
 		}
 	}
