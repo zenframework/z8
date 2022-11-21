@@ -57,6 +57,7 @@ public class ConverterAdapter extends Adapter {
 
 		boolean preview = parameters.containsKey(Json.preview.get());
 		boolean noCache = parameters.containsKey(Json.noCache.get());
+		boolean stamps = parameters.containsKey(FileConverter.Stamps.get());
 
 		file file = null;
 
@@ -86,7 +87,7 @@ public class ConverterAdapter extends Adapter {
 			String ext = FileConverter.getExtension(absolutePath);
 			if (FileConverter.isConvertableToPdf(ext)) {
 				response.addHeader("Content-Type", "application/pdf");
-				if (!FileConverter.isPdfExtension(ext)) {
+				if (!FileConverter.isPdfExtension(ext) || stamps) {
 					File convertedFile = new File(Folders.Base, Folders.Cache + '/' + relativePath + '.' + FileConverter.PDF);
 					absolutePath = FileConverter.convert(absolutePath, convertedFile, parameters);
 				}
