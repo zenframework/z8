@@ -190,7 +190,8 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
-		File path = file.path.get().startsWith(Storage) ? new File(ServerConfig.storagePath(), file.path.get().substring(Storage.length()))
+		String storage = new File(Storage).toString();
+		File path = file.path.get().startsWith(storage) ? new File(ServerConfig.storagePath(), file.path.get().substring(storage.length()))
 				: new File(Folders.Base, file.path.get());
 
 		if(!path.exists()) {
