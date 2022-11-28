@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.xml.GNode;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
@@ -88,7 +89,7 @@ public class ConverterAdapter extends Adapter {
 			if (FileConverter.isConvertableToPdf(ext)) {
 				response.addHeader("Content-Type", "application/pdf");
 				if (!FileConverter.isPdfExtension(ext) || stamps) {
-					File convertedFile = new File(Folders.Base, Folders.Cache + '/' + relativePath + '.' + FileConverter.PDF);
+					File convertedFile = new File(ServerConfig.storagePreviewPath(), relativePath.toString() + '.' + FileConverter.PDF);
 					absolutePath = FileConverter.convert(absolutePath, convertedFile, parameters);
 				}
 			} else {

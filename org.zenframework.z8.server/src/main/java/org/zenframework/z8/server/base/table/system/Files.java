@@ -14,6 +14,7 @@ import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -25,6 +26,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 
 public class Files extends Table {
 	public static final String TableName = "SystemFiles";
+	public static final String Storage = "storage/";
 
 	static public class fieldNames {
 		public final static String File = "File";
@@ -188,7 +190,8 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
-		File path = new File(Folders.Base, file.path.get());
+		File path = file.path.get().startsWith(Storage) ? new File(ServerConfig.storagePath(), file.path.get().substring(Storage.length()))
+				: new File(Folders.Base, file.path.get());
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
