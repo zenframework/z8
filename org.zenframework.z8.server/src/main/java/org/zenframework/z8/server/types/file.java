@@ -385,7 +385,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public file createLogFile(String folder, String extension) {
-		return createTempFile(FileUtils.getFile(Folders.Base, ApplicationServer.getSchema(), Folders.Logs, folder), null, extension);
+		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, ApplicationServer.getSchema(), folder), null, extension);
 	}
 
 	static public file createTempFile(File folder, String prefix, String extension) {
