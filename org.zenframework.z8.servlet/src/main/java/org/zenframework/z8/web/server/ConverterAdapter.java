@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ISession;
@@ -54,7 +55,11 @@ public class ConverterAdapter extends Adapter {
 			requestUrl = requestUrl.substring(contextPath.length());
 
 		File relativePath = new File(requestUrl);
-		File absolutePath = new File(Folders.Base, requestUrl);
+		File absolutePath = null;
+		if (requestUrl.startsWith(Files.Storage))
+			absolutePath = new File(ServerConfig.storagePath(), requestUrl.substring(Files.Storage.length()));
+		else
+			absolutePath = new File(Folders.Base, requestUrl);
 
 		boolean preview = parameters.containsKey(Json.preview.get());
 		boolean noCache = parameters.containsKey(Json.noCache.get());
