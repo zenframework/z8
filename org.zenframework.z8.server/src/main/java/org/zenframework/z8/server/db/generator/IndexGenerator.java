@@ -39,7 +39,7 @@ class IndexGenerator {
 		switch(field.type()) {
 		case String:
 			boolean trigram = field.trigram();
-			return (trigram ? "using gin " : "") + "(" + name + (trigram ? " gist_trgm_ops" : "") + ")";
+			return (trigram ? "using gin " : "") + "(" + name + (trigram ? " gin_trgm_ops" : "") + ")";
 		case Geometry:
 			return "using gist (" + name + ")";
 		default:
