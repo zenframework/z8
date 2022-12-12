@@ -505,7 +505,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 	private int readPart(long offset, byte[] bytes) throws IOException {
 		InputStream input = null;
 		try {
-			input = getInputStream();
+			if ((input = getInputStream()) == null)
+				throw new NullPointerException("Файл '" + path.get() + "' не может быть прочитан");
 			input.skip(offset);
 			return IOUtils.read(input, bytes);
 		} finally {

@@ -16,6 +16,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
@@ -190,15 +191,18 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
-		String storage = new File(Storage).toString();
-		File path = file.path.get().startsWith(storage) ? new File(ServerConfig.storagePath(), file.path.get().substring(storage.length()))
-				: new File(Folders.Base, file.path.get());
+		String storage = new File(Storage).toString().replace("\\", "/");
+		String pathStr = file.path.get().replace("\\", "/");
+		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
+				: new File(Folders.Base, pathStr);
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
 
-			if(inputStream == null)
+			if(inputStream == null) {
+				Trace.logError(new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath()));
 				return null;
+			}
 
 			IOUtils.copy(inputStream, path);
 		}
