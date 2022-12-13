@@ -53,8 +53,6 @@ import com.lowagie.text.pdf.PdfStamper;
 
 public class FileConverter {
 
-	private static final int OFFICE_PORT = 8100;
-
 	public static final String PDF = "pdf";
 
 	public static final string PDFX = new string("PDF/X");
@@ -328,10 +326,12 @@ public class FileConverter {
 //		officeManager = ExternalOfficeManager.builder().install().connectOnStart(true).portNumber(OFFICE_PORT).build();
 //		officeManager.start();
 
+		int officePort = ServerConfig.officePort();
+
 		try {
-			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(OFFICE_PORT).build();
+			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(officePort).build();
 			officeManager.start();
-			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + OFFICE_PORT);
+			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + officePort);
 		} catch(OfficeException e1) {
 			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
 		}

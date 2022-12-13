@@ -101,6 +101,7 @@ public class ServerConfig extends Properties {
 	static final public String OfficeExtensions = "file.converter.office";
 
 	static final private String OfficeHome = "office.home";
+	static final private String OfficePort = "office.port";
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
@@ -187,6 +188,7 @@ public class ServerConfig extends Properties {
 	static private boolean traceSqlConnections;
 
 	static private String officeHome;
+	static private int officePort;
 
 	static private String spnegoDomainRealm;
 	static private String spnegoPropertiesPath;
@@ -311,6 +313,7 @@ public class ServerConfig extends Properties {
 		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "rtf", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
+		officePort = getProperty(OfficePort, 8100);
 
 		spnegoDomainRealm = getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = getProperty(SpnegoPropertiesPath, "");
@@ -686,6 +689,10 @@ public class ServerConfig extends Properties {
 
 	static public String officeHome() {
 		return officeHome;
+	}
+
+	static public int officePort() {
+		return officePort;
 	}
 
 	static public boolean webClientHashPassword() {
