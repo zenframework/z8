@@ -192,7 +192,7 @@ public class Files extends Table {
 
 	public static file get(file file) throws IOException {
 		String storage = new File(Storage).toString().replace("\\", "/");
-		String pathStr = file.path.get().replace("\\", "/");
+		String pathStr = file.getPath();
 		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
 				: new File(Folders.Base, pathStr);
 

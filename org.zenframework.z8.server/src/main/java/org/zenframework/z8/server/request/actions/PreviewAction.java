@@ -76,7 +76,7 @@ public class PreviewAction extends RequestAction {
 
 	private static String getPreviewPath(file file, String requestId, guid recordId, Field field) {
 		try {
-			return new File(file.path.get()).getParentFile().getParent() + '/' + PREVIEW;
+			return new File(file.getPath()).getParentFile().getParent() + '/' + PREVIEW;
 		} catch(Throwable e) {
 			return new StringBuilder().append(Files.Storage).append(requestId).append('/').append(recordId).append('/').append(field.name()).append('/').append(PREVIEW).toString();
 		}

@@ -20,7 +20,7 @@ public class AttachmentUtils {
 		
 		Files.get(file);
 		
-		File path = new File(ServerConfig.workingPath(), file.path.get());
+		File path = new File(ServerConfig.workingPath(), file.getPath());
 
 		if (!path.exists())
 			return null;

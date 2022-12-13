@@ -268,15 +268,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String baseName() {
-		return FilenameUtils.getBaseName(path.isEmpty() ? name.get() : path.get());
+		return FilenameUtils.getBaseName(path.isEmpty() ? name.get() : getPath());
 	}
 
 	public String fileName() {
-		return FilenameUtils.getName(path.isEmpty() ? name.get() : path.get());
+		return FilenameUtils.getName(path.isEmpty() ? name.get() : getPath());
 	}
 
 	public String extension() {
-		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : path.get()).toLowerCase();
+		return FilenameUtils.getExtension(path.isEmpty() ? name.get() : getPath()).toLowerCase();
 	}
 
 	public date lastModified() {
@@ -284,11 +284,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String folder() {
-		return FilenameUtils.getFullPath(path.get());
+		return FilenameUtils.getFullPath(getPath());
 	}
 
 	public boolean isFolder() {
-		File file = getAbsolutePath(path.get());
+		File file = getAbsolutePath(getPath());
 		return file.isDirectory();
 	}
 
@@ -326,7 +326,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		RmiIO.writeGuid(out, id);
 		RmiIO.writeString(out, name);
-		RmiIO.writeString(out, path);
+		RmiIO.writeString(out, new string(getPath()));
 		RmiIO.writeDate(out, time);
 		RmiIO.writeInteger(out, size);
 		RmiIO.writeGuid(out, user);
@@ -357,7 +357,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		id = RmiIO.readGuid(in);
 		name = new string(RmiIO.readString(in));
-		path = new string(RmiIO.readString(in));
+		path = new string(RmiIO.readString(in).replace("\\", "/"));
 		time = RmiIO.readDate(in);
 		size = RmiIO.readInteger(in);
 		user = RmiIO.readGuid(in);
@@ -506,7 +506,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		InputStream input = null;
 		try {
 			if ((input = getInputStream()) == null)
-				throw new NullPointerException("Файл '" + path.get() + "' не может быть прочитан");
+				throw new NullPointerException("File '" + getPath() + "' read error");
 			input.skip(offset);
 			return IOUtils.read(input, bytes);
 		} finally {
@@ -605,7 +605,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public InputStream getBinaryInputStream() throws IOException {
 		InputStream input = getInputStream();
 		if(input == null) {
-			File file = getAbsolutePath(path.get());
+			File file = getAbsolutePath(getPath());
 			input = new FileInputStream(file);
 		}
 		return input;
@@ -614,11 +614,15 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public OutputStream getBinaryOutputStream() throws IOException {
 		OutputStream output = getOutputStream();
 		if(output == null) {
-			File file = getAbsolutePath(path.get());
+			File file = getAbsolutePath(getPath());
 			file.getParentFile().mkdirs();
 			output = new FileOutputStream(file);
 		}
 		return output;
+	}
+
+	public String getPath() {
+		return path.get().replace("\\", "/");
 	}
 
 	@Override
@@ -679,12 +683,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file z8_parent() {
-		File file = getAbsolutePath(path.get());
+		File file = getAbsolutePath(getPath());
 		return new file(file.getParentFile());
 	}
 
 	public RCollection<file> z8_listFiles() {
-		File[] files = getAbsolutePath(path.get()).listFiles();
+		File[] files = getAbsolutePath(getPath()).listFiles();
 
 		RCollection<file> result = new RCollection<file>();
 
