@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
@@ -75,9 +76,9 @@ public class PreviewAction extends RequestAction {
 
 	private static String getPreviewPath(file file, String requestId, guid recordId, Field field) {
 		try {
-			return new File(file.path.get()).getParentFile().getParent() + '/' + PREVIEW;
+			return new File(file.getPath()).getParentFile().getParent() + '/' + PREVIEW;
 		} catch(Throwable e) {
-			return new StringBuilder().append(Folders.Storage).append('/').append(requestId).append('/').append(recordId).append('/').append(field.name()).append('/').append(PREVIEW).toString();
+			return new StringBuilder().append(Files.Storage).append(requestId).append('/').append(recordId).append('/').append(field.name()).append('/').append(PREVIEW).toString();
 		}
 	}
 

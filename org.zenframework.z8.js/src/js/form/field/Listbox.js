@@ -566,7 +566,7 @@ Z8.define('Z8.form.field.Listbox', {
 		} else if(field.type == Type.File) {
 			var file = record.get(field.name);
 			if(!Z8.isEmpty(file))
-				DOM.download(file[0].path, file[0].id);
+				DOM.download(window.location.origin + '/' + file[0].path, file[0].id);
 		}
 	},
 

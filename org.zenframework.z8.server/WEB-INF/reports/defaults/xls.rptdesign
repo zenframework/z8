@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 4.6.0.v201606072122</property>
+    <property name="createdBy">Eclipse BIRT Designer Version 4.7.0.v201706222054</property>
     <property name="units">in</property>
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="layoutPreference">fixed layout</property>
@@ -36,16 +36,16 @@
             <property name="fontSize">9px</property>
             <property name="fontWeight">bolder</property>
             <property name="color">#444444</property>
-            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomColor">#000000</property>
             <property name="borderBottomStyle">solid</property>
             <property name="borderBottomWidth">1px</property>
-            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftColor">#000000</property>
             <property name="borderLeftStyle">solid</property>
             <property name="borderLeftWidth">1px</property>
-            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightColor">#000000</property>
             <property name="borderRightStyle">solid</property>
             <property name="borderRightWidth">1px</property>
-            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopColor">#000000</property>
             <property name="borderTopStyle">solid</property>
             <property name="borderTopWidth">1px</property>
             <property name="marginTop">0pt</property>
@@ -102,16 +102,16 @@
         <style name="DetailCell" id="10">
             <property name="fontFamily">"Roboto"</property>
             <property name="fontSize">small</property>
-            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomColor">#000000</property>
             <property name="borderBottomStyle">solid</property>
             <property name="borderBottomWidth">1px</property>
-            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftColor">#000000</property>
             <property name="borderLeftStyle">solid</property>
             <property name="borderLeftWidth">1px</property>
-            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightColor">#000000</property>
             <property name="borderRightStyle">solid</property>
             <property name="borderRightWidth">1px</property>
-            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopColor">#000000</property>
             <property name="borderTopStyle">solid</property>
             <property name="borderTopWidth">1px</property>
             <property name="paddingTop">15px</property>

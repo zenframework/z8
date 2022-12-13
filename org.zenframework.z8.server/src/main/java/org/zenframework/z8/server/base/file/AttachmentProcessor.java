@@ -126,9 +126,9 @@ public class AttachmentProcessor extends OBJECT {
 	private void setPathIfEmpty(guid recordId, file f) {
 		String path = f.path.get();
 
-		if(path.isEmpty() || !path.startsWith(Folders.Storage)) {
+		if(path.isEmpty() || !path.startsWith(Files.Storage)) {
 			date time = new date();
-			path = StringUtils.concat(file.separator, Folders.Storage, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), f.name.get());
+			path = Files.Storage + StringUtils.concat(file.separator, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), f.name.get());
 			f.path = new string(path);
 		}
 	}

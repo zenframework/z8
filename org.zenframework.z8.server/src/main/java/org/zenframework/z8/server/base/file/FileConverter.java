@@ -2,11 +2,14 @@ package org.zenframework.z8.server.base.file;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
 import org.jodconverter.core.DocumentConverter;
@@ -18,12 +21,19 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ArrayUtils;
 import org.zenframework.z8.server.utils.EmlUtils;
@@ -31,9 +41,17 @@ import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.PdfUtils;
 import org.zenframework.z8.server.utils.PrimaryUtils;
 
-public class FileConverter {
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfAnnotation;
+import com.lowagie.text.pdf.PdfAppearance;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
 
-	private static final int OFFICE_PORT = 8100;
+public class FileConverter {
 
 	public static final String PDF = "pdf";
 
@@ -46,6 +64,7 @@ public class FileConverter {
 	public static final string Background = new string("background");
 	public static final string Reset = new string("reset");
 	public static final string Format = new string("format");
+	public static final string Stamps = new string("stamps");
 
 	private static final Map<String, Integer> PDF_VERSIONS = getPdfVersions();
 
@@ -104,7 +123,9 @@ public class FileConverter {
 		if (!target.exists()) {
 			target.getParentFile().mkdirs();
 			try {
-				if (toPdf && isTextExtension(extension))
+				if (toPdf && isPdfExtension(extension))
+					IOUtils.copy(in, target);
+				else if (toPdf && isTextExtension(extension))
 					PdfUtils.textToPdf(in, target);
 				else if (toPdf && isImageExtension(extension))
 					PdfUtils.imageToPdf(in, extension, target);
@@ -119,30 +140,116 @@ public class FileConverter {
 			}
 		}
 
+		target = appendBackground(target, parameters);
+		target = appendStamps(target, parameters);
+
+		return target;
+	}
+
+	private static File appendBackground(File file, Map<String, String> parameters) {
+		boolean reset = Boolean.parseBoolean(parameters.get(Reset.get()));
+		boolean toPdf = isPdfExtension(getExtension(file));
 		String background = parameters.get(Background.get());
 		File backgroundFile;
 		if (!toPdf || background == null || !(backgroundFile = new File(Folders.Base, background)).exists())
-			return target;
+			return file;
 
-		File source = target;
-		target = new File(source.getParentFile(), addSuffix(source.getName(), "-background"));
+		File source = file;
+		file = new File(source.getParentFile(), addSuffix(source.getName(), "-background"));
 
-		if (target.exists()) {
+		if (file.exists()) {
 			if (!reset)
-				return target;
-			target.delete();
+				return file;
+			file.delete();
 		}
 
 		try {
 			if (isPdfExtension(getExtension(background)))
-				PdfUtils.insertBackgroundPdf(source, target, backgroundFile, false);
+				PdfUtils.insertBackgroundPdf(source, file, backgroundFile, false);
 			else
-				PdfUtils.insertBackgroundImg(source, target, backgroundFile);
+				PdfUtils.insertBackgroundImg(source, file, backgroundFile);
 		} catch (IOException e) {
 			throw new RuntimeException("Can't insert background " + backgroundFile + " into " + source, e);
 		}
 
-		return target;
+		return file;
+	}
+
+	private static File appendStamps(File file, Map<String, String> parameters) {
+		boolean reset = Boolean.parseBoolean(parameters.get(Reset.get()));
+		boolean toPdf = isPdfExtension(getExtension(file));
+		String stampsString = parameters.get(Stamps.get());
+		if (!toPdf || stampsString == null)
+			return file;
+
+		JsonArray stamps = new JsonArray(stampsString);
+		if (stamps.length() == 0)
+			return file;
+
+		File source = file;
+
+		file = new File(source.getParentFile(), addSuffix(source.getName(), "-stamps"));
+
+		if (file.exists()) {
+			if (!reset)
+				return file;
+			file.delete();
+		}
+
+		try {
+			InputStream sourceIn = new FileInputStream(source);
+			PdfReader sourceReader = new PdfReader(sourceIn);
+			Rectangle size = sourceReader.getPageSize(1);
+			Trace.logEvent(size.getWidth() + "x" + size.getHeight());
+			PdfStamper stamper = new PdfStamper(sourceReader, new FileOutputStream(file), '\0', true);
+
+			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
+
+			for (int i = 0; i < stamps.length(); ++i) {
+				try {
+					JsonObject stampInfo = stamps.getJsonObject(i);
+					processStamp(stamper, stampInfo);
+				} catch (Exception e) {
+					throw new RuntimeException("Can't insert stamp at index " + i + " into " + source, e);
+				}
+			}
+
+			stamper.close();
+			sourceReader.close();
+			sourceIn.close();
+		} catch (Exception e) {
+			
+		} finally {
+			ApplicationServer.setRequest(null);
+		}
+
+		return file;
+	}
+
+	private static void processStamp(PdfStamper stamper, JsonObject stampInfo) throws Exception {
+		guid stampId = stampInfo.getGuid("id");
+		int x = stampInfo.getInt("x");
+		int y = stampInfo.getInt("y");
+		int width = stampInfo.getInt("w");
+		int height = stampInfo.getInt("h");
+
+		file stampFile = Files.get(Files.get(stampId));
+		Image signImg = Image.getInstance(ImageIO.read(new FileInputStream(stampFile.getAbsolutePath())), null);
+
+		Rectangle location = new Rectangle(x, y, x + width, y + height);
+
+		addStamp(stamper, "Stamp", signImg, location);
+	}
+
+	private static void addStamp(PdfStamper stamp, String name, com.lowagie.text.Image image, Rectangle location) throws DocumentException {
+		PdfAnnotation stampAnnot = PdfAnnotation.createStamp(stamp.getWriter(), location, null, name);
+		image.setAbsolutePosition(0, 0);
+		PdfContentByte cb = new PdfContentByte(stamp.getWriter());
+		PdfAppearance app = cb.createAppearance(image.getScaledWidth(), image.getScaledHeight());
+		app.addImage(image);
+		stampAnnot.setAppearance(PdfName.N, app);
+		stampAnnot.setFlags(PdfAnnotation.FLAGS_PRINT);
+		stamp.addAnnotation(stampAnnot, 1);
 	}
 
 	public static string z8_getExtension(file file) {
@@ -220,9 +327,9 @@ public class FileConverter {
 //		officeManager.start();
 
 		try {
-			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(OFFICE_PORT).build();
+			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(ServerConfig.officePort()).build();
 			officeManager.start();
-			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + OFFICE_PORT);
+			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + ServerConfig.officePort());
 		} catch(OfficeException e1) {
 			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
 		}

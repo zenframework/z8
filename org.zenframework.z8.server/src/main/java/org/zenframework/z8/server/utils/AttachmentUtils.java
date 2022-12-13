@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.file.FileConverter;
-import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
@@ -21,7 +20,7 @@ public class AttachmentUtils {
 		
 		Files.get(file);
 		
-		File path = new File(ServerConfig.workingPath(), file.path.get());
+		File path = new File(ServerConfig.workingPath(), file.getPath());
 
 		if (!path.exists())
 			return null;
@@ -29,7 +28,7 @@ public class AttachmentUtils {
 		if (FileConverter.isPdfExtension(ext))
 			return path;
 
-		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get() + '.' + FileConverter.PDF);
+		File convertedFile = new File(ServerConfig.storagePreviewPath(), file.path.get() + '.' + FileConverter.PDF);
 		return FileConverter.convert(path, convertedFile, parameters);
 	}
 

@@ -101,6 +101,7 @@ public class ServerConfig extends Properties {
 	static final public String OfficeExtensions = "file.converter.office";
 
 	static final private String OfficeHome = "office.home";
+	static final private String OfficePort = "office.port";
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
@@ -120,6 +121,9 @@ public class ServerConfig extends Properties {
 
 	static final private String SecurityLogFile = "security.log.file";
 	static final private String SecurityLogFormat = "security.log.format";
+
+	static final private String StoragePath = "storage.path";
+	static final private String StoragePreviewPath = "storage.preview.path";
 
 	static private File workingPath;
 
@@ -184,6 +188,7 @@ public class ServerConfig extends Properties {
 	static private boolean traceSqlConnections;
 
 	static private String officeHome;
+	static private int officePort;
 
 	static private String spnegoDomainRealm;
 	static private String spnegoPropertiesPath;
@@ -202,6 +207,9 @@ public class ServerConfig extends Properties {
 
 	static private File securityLogFile;
 	static private String securityLogFormat;
+
+	static private File storagePath;
+	static private File storagePreviewPath;
 
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
@@ -305,6 +313,7 @@ public class ServerConfig extends Properties {
 		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "rtf", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
 		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
+		officePort = getProperty(OfficePort, 8100);
 
 		spnegoDomainRealm = getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = getProperty(SpnegoPropertiesPath, "");
@@ -322,6 +331,9 @@ public class ServerConfig extends Properties {
 
 		securityLogFile = getFile(SecurityLogFile, null);
 		securityLogFormat = getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
+
+		storagePath = getFile(StoragePath, "storage");
+		storagePreviewPath = getFile(StoragePreviewPath, "pdf.cache");
 
 		instance = this;
 	}
@@ -679,6 +691,10 @@ public class ServerConfig extends Properties {
 		return officeHome;
 	}
 
+	static public int officePort() {
+		return officePort;
+	}
+
 	static public boolean webClientHashPassword() {
 		return webClientHashPassword;
 	}
@@ -735,6 +751,14 @@ public class ServerConfig extends Properties {
 
 	static public String securityLogFormat() {
 		return securityLogFormat;
+	}
+
+	static public File storagePath() {
+		return storagePath;
+	}
+
+	static public File storagePreviewPath() {
+		return storagePreviewPath;
 	}
 
 	static public IApplicationServer applicationServer() {
