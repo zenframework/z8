@@ -326,12 +326,10 @@ public class FileConverter {
 //		officeManager = ExternalOfficeManager.builder().install().connectOnStart(true).portNumber(OFFICE_PORT).build();
 //		officeManager.start();
 
-		int officePort = ServerConfig.officePort();
-
 		try {
-			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(officePort).build();
+			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(ServerConfig.officePort()).build();
 			officeManager.start();
-			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + officePort);
+			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + ServerConfig.officePort());
 		} catch(OfficeException e1) {
 			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
 		}
