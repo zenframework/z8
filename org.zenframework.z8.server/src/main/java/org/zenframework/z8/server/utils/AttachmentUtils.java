@@ -14,8 +14,6 @@ import org.zenframework.z8.server.types.file;
 
 public class AttachmentUtils {
 
-	public static final String Storage = "storage/";
-
 	static public File getPreview(file file, Map<String, String> parameters) throws IOException {
 		String ext = file.extension();
 		if (!FileConverter.isConvertableToPdf(ext))
@@ -23,7 +21,7 @@ public class AttachmentUtils {
 		
 		Files.get(file);
 		
-		String storage = new File(Storage).toString().replace("\\", "/");
+		String storage = new File(Files.Storage).toString().replace("\\", "/");
 		String pathStr = file.getPath();
 		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length())) : new File(Folders.Base, pathStr);
 
