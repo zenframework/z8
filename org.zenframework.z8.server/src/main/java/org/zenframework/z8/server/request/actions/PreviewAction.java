@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
@@ -25,6 +26,7 @@ public class PreviewAction extends RequestAction {
 	private static final String UNSUPPORTED_FILE_FORMAT = "Preview.unsupportedFileFormat";
 
 	private static final String PREVIEW = "preview.pdf";
+	private static final String Storage = "storage/";
 
 	public PreviewAction(ActionConfig config) {
 		super(config);
@@ -67,7 +69,8 @@ public class PreviewAction extends RequestAction {
 		StringBuilder comment = new StringBuilder();
 		for (String fileName : unsupported)
 			comment.append(Resources.format(UNSUPPORTED_FILE_FORMAT, fileName)).append(' ');
-		File preview = new File(Folders.Base, previewRelativePath);
+		String storage = new File(Storage).toString().replace("\\", "/");
+		File preview = previewRelativePath.startsWith(storage) ? new File(ServerConfig.storagePath(), previewRelativePath.substring(storage.length())) : new File(Folders.Base, previewRelativePath);
 		preview.getParentFile().mkdirs();
 		PdfUtils.merge(converted, preview, comment.toString());
 		writer.writeProperty(Json.source, previewRelativePath);

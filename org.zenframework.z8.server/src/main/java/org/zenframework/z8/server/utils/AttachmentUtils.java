@@ -6,12 +6,15 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.file.FileConverter;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.file;
 
 public class AttachmentUtils {
+
+	public static final String Storage = "storage/";
 
 	static public File getPreview(file file, Map<String, String> parameters) throws IOException {
 		String ext = file.extension();
@@ -20,7 +23,9 @@ public class AttachmentUtils {
 		
 		Files.get(file);
 		
-		File path = new File(ServerConfig.workingPath(), file.getPath());
+		String storage = new File(Storage).toString().replace("\\", "/");
+		String pathStr = file.getPath();
+		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length())) : new File(Folders.Base, pathStr);
 
 		if (!path.exists())
 			return null;
