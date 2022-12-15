@@ -83,9 +83,8 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 	}
 
 	private long getNextValue() {
-		long result = nextValue;
 		nextValue += increment;
-		return result;
+		return nextValue;
 	}
 
 	private void flush() {
