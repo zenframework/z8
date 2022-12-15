@@ -49,6 +49,6 @@ public class Like extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
-		return new ToString(string).format(vendor, options) + " LIKE " + new ToString(like).format(vendor, options) + (escape == null ? "" : " ESCAPE " + new ToString(escape).format(vendor, options));
+		return new ToString(string).format(vendor, options) + " ILIKE " + new ToString(like).format(vendor, options) + (escape == null ? "" : " ESCAPE " + new ToString(escape).format(vendor, options));
 	}
 }

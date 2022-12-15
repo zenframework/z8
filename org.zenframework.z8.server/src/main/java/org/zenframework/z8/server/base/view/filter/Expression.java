@@ -243,9 +243,9 @@ public class Expression implements IFilter {
 					}
 				}
 
-				token = new Like(new Lower(field), new sql_string(values[0].toLowerCase()));
+				token = new Like(field, new sql_string(values[0].toLowerCase()));
 				for (int i = 1; i < values.length; i++) {
-					SqlToken t = new Like(new Lower(field), new sql_string(values[i].toLowerCase()));
+					SqlToken t = new Like(field, new sql_string(values[i].toLowerCase()));
 					token = new And(token, t);
 				}
 
