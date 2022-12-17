@@ -49,24 +49,24 @@ public class Servlet extends HttpServlet {
 		String workingPath = context.getRealPath("WEB-INF");
 
 		try {
-			ServerConfig config = new ServerConfig(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
+			ServerConfig.load(new File(workingPath, ServerConfig.DefaultConfigurationFileName).getPath());
 
 			if(getInitParameter(servletConfig, StartInterconnectionCenter, false))
-				interconnectionCenter = InterconnectionCenter.launch(config);
+				interconnectionCenter = InterconnectionCenter.launch();
 			if(getInitParameter(servletConfig, StartAuthorityCenter, true))
-				authorityCenter = AuthorityCenter.launch(config);
+				authorityCenter = AuthorityCenter.launch();
 			if(getInitParameter(servletConfig, StartApplicationServer, true))
-				applicationServer = ApplicationServer.launch(config);
+				applicationServer = ApplicationServer.launch();
 		} catch(Throwable e) {
 			Trace.logError(e);
 			destroy();
 			throw new ServletException(e);
 		}
 
-		adapters.add(new APIDocAdapter(this));
-		adapters.add(new LogoutAdapter(this));
-		adapters.add(new SingleSignOnAdapter(this));
-		adapters.add(new SystemAdapter(this));
+		adapters.add(new APIDocAdapter());
+		adapters.add(new LogoutAdapter());
+		adapters.add(new SingleSignOnAdapter());
+		adapters.add(new SystemAdapter());
 		// ConverterAdapter grabs all GET requests, it should be at the end of the list
 		adapters.add(new ConverterAdapter(this));
 

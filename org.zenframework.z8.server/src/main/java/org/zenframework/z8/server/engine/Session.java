@@ -59,8 +59,9 @@ public class Session implements ISession {
 	}
 
 	@Override
-	public void setServerInfo(IServerInfo serverInfo) {
+	public ISession setServerInfo(IServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
+		return this;
 	}
 
 	@Override
@@ -69,8 +70,9 @@ public class Session implements ISession {
 	}
 
 	@Override
-	public void access() {
+	public ISession touch() {
 		lastAccessTime = System.currentTimeMillis();
+		return this;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

@@ -1,14 +1,14 @@
 package org.zenframework.z8.server.security;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.types.guid;
 
-public class LoginParameters extends HashMap<String, String> {
-	private static final long serialVersionUID = 1L;
-
-	private static final String UserId = "userId";
+public class LoginParameters {
 	private static final String Login = "login";
+	private static final String UserId = "userId";
+	private static final String Trusted = "trusted";
 	private static final String Address = "address";
 	private static final String Schema = "schema";
 	private static final String FirstName = "firstName";
@@ -17,12 +17,22 @@ public class LoginParameters extends HashMap<String, String> {
 	private static final String Company = "company";
 	private static final String Position = "position";
 
-	private guid userId = null;
+	private final Map<String, String> parameters = new HashMap<String, String>();
 
-	public LoginParameters() {}
+	private guid userId;
+	private String login;
+	private boolean trusted;
+
+	public LoginParameters(String login) {
+		setLogin(login);
+	}
 
 	public LoginParameters(guid userId) {
 		setUserId(userId);
+	}
+
+	public boolean isSystem() {
+		return login == null;
 	}
 
 	public guid getUserId() {
@@ -31,79 +41,97 @@ public class LoginParameters extends HashMap<String, String> {
 
 	public LoginParameters setUserId(guid userId) {
 		this.userId = userId;
-		put(UserId, userId.toString());
 		return this;
 	}
 
 	public String getLogin() {
-		return get(Login);
+		return login;
 	}
 
 	public LoginParameters setLogin(String login) {
-		put(Login, login);
+		this.login = login;
+		return this;
+	}
+
+	public boolean isTrusted() {
+		return trusted;
+	}
+
+	public LoginParameters setTrusted(boolean trusted) {
+		this.trusted = trusted;
 		return this;
 	}
 
 	public String getAddress() {
-		return get(Address);
+		return parameters.get(Address);
 	}
 
 	public LoginParameters setAddress(String address) {
-		put(Address, address);
+		parameters.put(Address, address);
 		return this;
 	}
 
 	public String getSchema() {
-		return get(Schema);
+		return parameters.get(Schema);
 	}
 
 	public LoginParameters setSchema(String schema) {
-		put(Schema, schema);
+		parameters.put(Schema, schema);
 		return this;
 	}
 
 	public String getFirstName() {
-		return get(FirstName);
+		return parameters.get(FirstName);
 	}
 
 	public LoginParameters setFirstName(String firstName) {
-		put(FirstName, firstName);
+		parameters.put(FirstName, firstName);
 		return this;
 	}
 
 	public String getLastName() {
-		return get(LastName);
+		return parameters.get(LastName);
 	}
 
 	public LoginParameters setLastName(String lastName) {
-		put(LastName, lastName);
+		parameters.put(LastName, lastName);
 		return this;
 	}
 
 	public String getEmail() {
-		return get(Email);
+		return parameters.get(Email);
 	}
 
 	public LoginParameters setEmail(String email) {
-		put(Email, email);
+		parameters.put(Email, email);
 		return this;
 	}
 
 	public String getCompany() {
-		return get(Company);
+		return parameters.get(Company);
 	}
 
 	public LoginParameters setCompany(String company) {
-		put(Company, company);
+		parameters.put(Company, company);
 		return this;
 	}
 
 	public String getPosition() {
-		return get(Position);
+		return parameters.get(Position);
 	}
 
 	public LoginParameters setPosition(String position) {
-		put(Position, position);
+		parameters.put(Position, position);
 		return this;
+	}
+
+	public Map<String, String> toMap() {
+		Map<String, String> map = new HashMap<String, String>();
+		if (login != null)
+			map.put(Login, login);
+		if (userId != null)
+			map.put(UserId, userId.toString());
+		map.put(Trusted, Boolean.toString(trusted));
+		return map;
 	}
 }
