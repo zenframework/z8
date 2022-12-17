@@ -11,8 +11,8 @@ public interface ISession extends RmiSerializable, Serializable {
 	public void setUser(IUser user);
 
 	public IServerInfo getServerInfo();
-	public void setServerInfo(IServerInfo serverInfo);
+	public ISession setServerInfo(IServerInfo serverInfo);
 
-	public void access();
+	public ISession touch();
 	public long getLastAccessTime();
 }

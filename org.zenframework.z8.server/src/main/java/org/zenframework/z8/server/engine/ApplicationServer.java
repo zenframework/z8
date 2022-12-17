@@ -35,7 +35,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	static private ApplicationServer instance;
 
-	static public IApplicationServer launch(ServerConfig config) throws RemoteException {
+	static public IApplicationServer launch() throws RemoteException {
 		if(instance == null) {
 			instance = new ApplicationServer();
 			instance.start();
@@ -144,7 +144,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public IUser user(LoginParameters loginParameters, String password) {
-		setRequest(new Request(loginParameters, Collections.emptyList(), new Session(loginParameters.getSchema())));
+		setRequest(new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema())));
 
 		SecurityLog securityLog = Runtime.instance().securityLog().get();
 

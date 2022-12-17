@@ -36,7 +36,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private SessionManager sessionManager;
 
-	public static IAuthorityCenter launch(ServerConfig config) throws RemoteException {
+	public static IAuthorityCenter launch() throws RemoteException {
 		if(instance == null) {
 			instance = new AuthorityCenter();
 			instance.start();
@@ -122,12 +122,17 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	public IUser remind(String verification, String schema, String requestHost) throws RemoteException {
 		return getServerInfo().getServer().remind(verification, schema, requestHost);
 	}
-	
+
 	@Override
 	public IUser changePassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		return getServerInfo().getServer().changeUserPassword(verification, password, schema, requestHost);
 	}
-	
+
+	@Override
+	public ISession authorize(String sessionId, String serverId) throws RemoteException {
+		return sessionManager.getSession(sessionId).setServerInfo(nextServer(serverId));
+	}
+
 	@Override
 	public ISession login(LoginParameters loginParameters, String password) throws RemoteException {
 		IServerInfo serverInfo = getServerInfo();
@@ -157,9 +162,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			}
 		}
 
-		ISession session = sessionManager.create(user);
-		session.setServerInfo(serverInfo);
-		return session;
+		return sessionManager.create(user).setServerInfo(serverInfo);
 	}
 
 	@Override
@@ -177,29 +180,15 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	private ISession login0(IServerInfo serverInfo, LoginParameters loginParameters) throws RemoteException {
 		IUser user = serverInfo.getServer().user(loginParameters, null);
-		ISession session = sessionManager.create(user);
-		session.setServerInfo(serverInfo);
-		return session;
+		return sessionManager.create(user).setServerInfo(serverInfo);
 	}
 
 	private IServerInfo getServerInfo() throws RemoteException {
-		IServerInfo serverInfo = findServer((String)null);
+		IServerInfo serverInfo = nextServer();
 
 		if(serverInfo == null)
 			throw new AccessDeniedException();
 		return serverInfo;
-	}
-
-	@Override
-	public ISession server(String sessionId, String serverId) throws RemoteException {
-		ISession session = sessionManager.systemSession(sessionId);
-		IServerInfo server = findServer(serverId);
-
-		if(server == null)
-			return null;
-
-		session.setServerInfo(server);
-		return session;
 	}
 
 	@Override
@@ -212,7 +201,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager.dropRoleSessions(role, schema);
 	}
 
-	private IServerInfo findServer(String serverId) throws RemoteException {
+	private IServerInfo nextServer() throws RemoteException {
+		return nextServer(null);
+	}
+
+	private IServerInfo nextServer(String serverId) throws RemoteException {
 		IServerInfo[] servers = getServers();
 
 		for(IServerInfo server : servers) {

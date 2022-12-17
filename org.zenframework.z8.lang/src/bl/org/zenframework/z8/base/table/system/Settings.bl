@@ -1,10 +1,10 @@
-import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.TreeTable;
 import org.zenframework.z8.base.table.value.TextField;
 
 [name "SystemSettings"]
 [displayName "Системные свойства"]
 [native "org.zenframework.z8.server.base.table.system.Settings"]
-public class Settings extends Table {
+public class Settings extends TreeTable {
 	[displayName "Свойство"] name;
 	name.length = 256;
 

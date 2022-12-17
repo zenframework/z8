@@ -28,7 +28,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	private boolean cacheEnabled;
 	
-	public static IInterconnectionCenter launch(ServerConfig config) throws RemoteException {
+	public static IInterconnectionCenter launch() throws RemoteException {
 		if(instance == null) {
 			instance = new InterconnectionCenter();
 			instance.start();

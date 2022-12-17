@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.internet.MimeUtility;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,8 +29,10 @@ import org.zenframework.z8.web.servlet.Servlet;
 
 public class ConverterAdapter extends Adapter {
 
+	private final Servlet servlet;
+
 	public ConverterAdapter(Servlet servlet) {
-		super(servlet);
+		this.servlet = servlet;
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	@Override
-	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
@@ -113,7 +114,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	private String getContentType(File file) throws IOException {
-		String contentType = getServlet().getServletContext().getMimeType(file.getName().toLowerCase());
+		String contentType = servlet.getServletContext().getMimeType(file.getName().toLowerCase());
 
 		if(contentType == null)
 			return "text/plain";
