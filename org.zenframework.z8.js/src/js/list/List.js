@@ -566,7 +566,7 @@ Z8.define('Z8.list.List', {
 	},
 
 	isLoaded: function() {
-		return this.store != null && this.store.isLoaded() || this.getCount() != 0;
+		return this.store != null && this.store.isLoaded(); // || this.getCount() != 0;
 	},
 
 	load: function(callback, filter) {
