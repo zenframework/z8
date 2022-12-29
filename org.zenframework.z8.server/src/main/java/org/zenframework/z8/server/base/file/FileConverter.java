@@ -208,7 +208,7 @@ public class FileConverter {
 			for (int i = 0; i < stamps.length(); ++i) {
 				try {
 					JsonObject stampInfo = stamps.getJsonObject(i);
-					processStamp(stamper, stampInfo);
+					processStamp(stamper, stampInfo, size.getHeight());
 				} catch (Exception e) {
 					throw new RuntimeException("Can't insert stamp at index " + i + " into " + source, e);
 				}
@@ -226,19 +226,32 @@ public class FileConverter {
 		return file;
 	}
 
-	private static void processStamp(PdfStamper stamper, JsonObject stampInfo) throws Exception {
+	private static void processStamp(PdfStamper stamper, JsonObject stampInfo, float pageH) throws Exception {
 		guid stampId = stampInfo.getGuid("id");
+		file stampFile = Files.get(Files.get(stampId));
+		Image signImg = Image.getInstance(ImageIO.read(new FileInputStream(stampFile.getAbsolutePath())), null);
+
+		Rectangle loc = getStampPosition(stampInfo, pageH);
+
+		addStamp(stamper, "Stamp", signImg, loc);
+	}
+
+	private static Rectangle getStampPosition(JsonObject stampInfo, float pageH) {
 		int x = stampInfo.getInt("x");
 		int y = stampInfo.getInt("y");
 		int width = stampInfo.getInt("w");
 		int height = stampInfo.getInt("h");
 
-		file stampFile = Files.get(Files.get(stampId));
-		Image signImg = Image.getInstance(ImageIO.read(new FileInputStream(stampFile.getAbsolutePath())), null);
+		String yStart = stampInfo.has("yStart") ? stampInfo.getString("yStart") : "bottom";
+		if (!yStart.equals("bottom") && !yStart.equals("top"))
+			throw new RuntimeException("Unknown 'yStart' value: " + yStart);
 
-		Rectangle location = new Rectangle(x, y, x + width, y + height);
+		float x1 = x;
+		float x2 = x + width;
+		float y1 = yStart.equals("top") ? pageH - y - height : y;
+		float y2 = yStart.equals("top") ? pageH - y : y + height;
 
-		addStamp(stamper, "Stamp", signImg, location);
+		return new Rectangle(x1, y1, x2, y2);
 	}
 
 	private static void addStamp(PdfStamper stamp, String name, com.lowagie.text.Image image, Rectangle location) throws DocumentException {
