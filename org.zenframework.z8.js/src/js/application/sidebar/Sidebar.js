@@ -111,7 +111,7 @@ Z8.define('Z8.application.sidebar.Sidebar', {
 		var target = event.relatedTarget;
 		if(this.closeOnMouseOut && target != null && !this.isInnerElement(target))
 			this.close();
-		this.closeOnMouseOut = true;
+//		this.closeOnMouseOut = true;
 	},
 
 	onKeyDown: function(event, target) {

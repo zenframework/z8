@@ -3,7 +3,7 @@ Z8.define('Z8.application.sidebar.Menu', {
 
 	cls: 'submenu',
 
-	closeOnMouseOut: true,
+	closeOnMouseOut: false,
 	closeOnBlur: true,
 
 	htmlMarkup: function() {
