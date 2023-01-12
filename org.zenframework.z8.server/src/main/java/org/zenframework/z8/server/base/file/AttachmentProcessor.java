@@ -88,6 +88,11 @@ public class AttachmentProcessor extends OBJECT {
 		Files filesTable = Files.newInstance();
 
 		for(file file : files) {
+			if (file.name.get().length() > org.zenframework.z8.server.types.file.DISK_MAX_FILENAME_LENGTH)
+				throw new RuntimeException("The file name is too long: '" + file.name.get() + "'");
+		}
+
+		for(file file : files) {
 			if(file.id.isNull()) {
 				file.id = guid.create();
 				setUser(file);

@@ -55,6 +55,8 @@ public class ConverterAdapter extends Adapter {
 		if(requestUrl.startsWith(contextPath))
 			requestUrl = requestUrl.substring(contextPath.length());
 
+		requestUrl = file.getNormalizedPath(requestUrl);
+
 		File relativePath = new File(requestUrl);
 		File absolutePath = null;
 		if (requestUrl.startsWith(Files.Storage))

@@ -44,7 +44,9 @@ import org.zenframework.z8.server.utils.NumericUtils;
 public class file extends primary implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2542688680678439014L;
+
 	static public final String EOL = "\r\n";
+	static public final int DISK_MAX_FILENAME_LENGTH = 120;
 
 	static public final String separator = "/";
 
@@ -624,7 +626,21 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String getPath() {
-		return path.get().replace("\\", "/");
+		return getNormalizedPath(path.get());
+	}
+
+	public static String getNormalizedPath(String path) {
+		String pth = path.replace("\\", "/");
+		String folder = FilenameUtils.getFullPath(pth);
+		String ext = FilenameUtils.getExtension(pth);
+		String baseName = FilenameUtils.getBaseName(pth);
+		if (baseName.length() + ext.length() + 1 > DISK_MAX_FILENAME_LENGTH) {
+			if (baseName.length() >= ext.length())
+				baseName = baseName.substring(0, DISK_MAX_FILENAME_LENGTH - ext.length());
+			else
+				ext = ext.substring(0, DISK_MAX_FILENAME_LENGTH - baseName.length());
+		}
+		return folder + baseName + (ext.isEmpty() ? "" : "." + ext);
 	}
 
 	@Override
