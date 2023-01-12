@@ -199,6 +199,7 @@ public class FileConverter {
 		try {
 			InputStream sourceIn = new FileInputStream(source);
 			PdfReader sourceReader = new PdfReader(sourceIn);
+			int pages = sourceReader.getNumberOfPages();
 			Rectangle size = sourceReader.getPageSize(1);
 			Trace.logEvent(size.getWidth() + "x" + size.getHeight());
 			PdfStamper stamper = new PdfStamper(sourceReader, new FileOutputStream(file), '\0', true);
@@ -208,7 +209,7 @@ public class FileConverter {
 			for (int i = 0; i < stamps.length(); ++i) {
 				try {
 					JsonObject stampInfo = stamps.getJsonObject(i);
-					processStamp(stamper, stampInfo, size.getHeight());
+					processStamp(stamper, stampInfo, size.getHeight(), pages);
 				} catch (Exception e) {
 					throw new RuntimeException("Can't insert stamp at index " + i + " into " + source, e);
 				}
@@ -226,14 +227,19 @@ public class FileConverter {
 		return file;
 	}
 
-	private static void processStamp(PdfStamper stamper, JsonObject stampInfo, float pageH) throws Exception {
+	private static void processStamp(PdfStamper stamper, JsonObject stampInfo, float pageH, int pages) throws Exception {
 		guid stampId = stampInfo.getGuid("id");
 		file stampFile = Files.get(Files.get(stampId));
 		Image signImg = Image.getInstance(ImageIO.read(new FileInputStream(stampFile.getAbsolutePath())), null);
 
 		Rectangle loc = getStampPosition(stampInfo, pageH);
 
-		addStamp(stamper, "Stamp", signImg, loc);
+		String pageStr = stampInfo.has("page") ? stampInfo.getString("page") : "1";
+		int page = pageStr.equals("last") ? pages : Integer.parseInt(pageStr);
+		if (page > pages)
+			page = pages;
+
+		addStamp(stamper, "Stamp", signImg, loc, page);
 	}
 
 	private static Rectangle getStampPosition(JsonObject stampInfo, float pageH) {
@@ -254,7 +260,7 @@ public class FileConverter {
 		return new Rectangle(x1, y1, x2, y2);
 	}
 
-	private static void addStamp(PdfStamper stamp, String name, com.lowagie.text.Image image, Rectangle location) throws DocumentException {
+	private static void addStamp(PdfStamper stamp, String name, com.lowagie.text.Image image, Rectangle location, int page) throws DocumentException {
 		PdfAnnotation stampAnnot = PdfAnnotation.createStamp(stamp.getWriter(), location, null, name);
 		image.setAbsolutePosition(0, 0);
 		PdfContentByte cb = new PdfContentByte(stamp.getWriter());
@@ -262,7 +268,7 @@ public class FileConverter {
 		app.addImage(image);
 		stampAnnot.setAppearance(PdfName.N, app);
 		stampAnnot.setFlags(PdfAnnotation.FLAGS_PRINT);
-		stamp.addAnnotation(stampAnnot, 1);
+		stamp.addAnnotation(stampAnnot, page);
 	}
 
 	public static string z8_getExtension(file file) {
