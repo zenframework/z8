@@ -86,7 +86,7 @@ public class ServerConfig extends Properties {
 	static final private String SchedulerEnabled = "scheduler.enabled";
 	static final private String MaintenenceJobCron = "maintenance.job.cron";
 	static final private String TransportJobCron = "transport.job.cron";
-	static final private String TransportJobTreads = "transport.job.treads";
+	static final private String TransportJobThreads = "transport.job.threads";
 	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
@@ -180,7 +180,7 @@ public class ServerConfig extends Properties {
 	static private String maintenanceJobCron;
 
 	static private String transportJobCron;
-	static private int transportJobTreads;
+	static private int transportJobThreads;
 	static private boolean transportJobLogStackTrace;
 
 	static private String exchangeJobCron;
@@ -307,7 +307,7 @@ public class ServerConfig extends Properties {
 		schedulerEnabled = instance.getProperty(SchedulerEnabled, true);
 		maintenanceJobCron = instance.getProperty(MaintenenceJobCron, "");
 		transportJobCron = instance.getProperty(TransportJobCron, "");
-		transportJobTreads = instance.getProperty(TransportJobTreads, 10);
+		transportJobThreads = instance.getProperty(TransportJobThreads, 10);
 		transportJobLogStackTrace = instance.getProperty(TransportJobLogStackTrace, false);
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
@@ -654,7 +654,7 @@ public class ServerConfig extends Properties {
 	}
 
 	static public int transportJobThreads() {
-		return transportJobTreads;
+		return transportJobThreads;
 	}
 
 	static public String transportJobCron() {
