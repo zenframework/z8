@@ -34,12 +34,11 @@ public class Batch {
 
 		statement.addBatch();
 
+		data.count++;
 		totalCount++;
 
 		if(totalCount % Connection.MaxBatchSize == 0)
 			flush();
-		else
-			data.count++;
 	}
 
 	public void commit() throws SQLException {
@@ -67,6 +66,8 @@ public class Batch {
 				throw e.getNextException();
 			}
 		}
+
+		totalCount = 0;
 	}
 
 	private Data getData(String sql) {
