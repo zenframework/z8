@@ -132,7 +132,7 @@ public class FileConverter {
 				else if (toPdf && isEmailExtension(extension))
 					PdfUtils.textToPdf(EmlUtils.emailToString(in), target);
 				else
-					convertOffice(in, target, parameters);
+					convertOffice(in, extension, target, parameters);
 			} catch (IOException e) {
 				throw new RuntimeException("Can't convert file to " + target, e);
 			} finally {
@@ -361,18 +361,18 @@ public class FileConverter {
 		officeManager = null;
 	}
 
-	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {
+	private static File convertOffice(InputStream input, String extension, File target, Map<String, String> parameters) {
 		try {
 			startOfficeManager();
 
 			DocumentConverter converter = LocalConverter.make(officeManager);
 			DocumentFormatRegistry registry = converter.getFormatRegistry();
-			//DocumentFormat inputFormat = registry.getFormatByExtension(extension);
+			DocumentFormat inputFormat = registry.getFormatByExtension(extension);
 			DocumentFormat targetFormat = getDocumentFormat(parameters);
 			if (targetFormat == null)
 				targetFormat = registry.getFormatByExtension(new file(target).extension());
 
-			converter.convert(input)/*.as(inputFormat)*/.to(target).as(targetFormat).execute();
+			converter.convert(input).as(inputFormat).to(target).as(targetFormat).execute();
 			return target;
 		} catch(Throwable e) {
 			throw new RuntimeException(e);
