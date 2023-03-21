@@ -147,11 +147,11 @@ public class Expression implements IFilter {
 			case GE:
 				return new Rel(field, operation, new date(value).sql_date());
 			case Yesterday:
-				return new Rel(field, Operation.Eq, new date().addDay(-1).sql_date());
+				return new And(new Rel(field, Operation.GE, new date().addDay(-1).truncDay().sql_date()), new Rel(field, Operation.LT, new date().truncDay().sql_date()));
 			case Today:
-				return new Rel(field, Operation.Eq, new sql_date());
+				return new And(new Rel(field, Operation.GE, new date().truncDay().sql_date()), new Rel(field, Operation.LT, new date().addDay(1).truncDay().sql_date()));
 			case Tomorrow:
-				return new Rel(field, Operation.Eq, new date().addDay(1).sql_date());
+				return new And(new Rel(field, Operation.GE, new date().addDay(1).truncDay().sql_date()), new Rel(field, Operation.LT, new date().addDay(2).truncDay().sql_date()));
 
 			case LastWeek:
 				date date = new date().truncWeek().addDay(-7);
