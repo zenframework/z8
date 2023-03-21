@@ -43,8 +43,6 @@ public class RequestDispatcher implements Runnable {
 		} catch(Throwable exception) {
 			exception = ErrorUtils.unwrapRuntimeException(exception);
 
-			Trace.logError(request.toString(), exception);
-
 			JsonWriter writer = new JsonWriter();
 			writer.startResponse(request.id(), false);
 			writer.startArray(Json.data);
