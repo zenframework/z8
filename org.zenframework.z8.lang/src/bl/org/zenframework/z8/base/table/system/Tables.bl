@@ -1,11 +1,15 @@
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
 
 [name "SystemTables"]
 [displayName "Таблицы"]
 [native "org.zenframework.z8.server.base.table.system.Tables"]
 public class Tables extends Table {
-	[displayName "DB name"] name;
+	[displayName "DB name"]
+	public StringField name;
+
+	public TextField description;
 
 	[displayName "Системное имя"]
 	public StringField classId;

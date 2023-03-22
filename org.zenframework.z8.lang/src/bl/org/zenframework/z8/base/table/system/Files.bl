@@ -8,7 +8,8 @@ import org.zenframework.z8.base.table.value.StringField;
 [displayName "Файлы"]
 [native "org.zenframework.z8.server.base.table.system.Files"]
 public class Files extends Table {
-	[displayName "Имя файла"] name;
+	[displayName "Имя файла"]
+	public StringField name;
 	name.length = 512;
 
 	[name "Path"]

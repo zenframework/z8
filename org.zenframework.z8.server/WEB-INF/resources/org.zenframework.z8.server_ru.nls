@@ -162,6 +162,7 @@
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задания</entry>
+	<entry key="Jobs.name">Задание</entry>
 	<entry key="Jobs.classId">Системное имя</entry>
 
 	<!-- Requests -->

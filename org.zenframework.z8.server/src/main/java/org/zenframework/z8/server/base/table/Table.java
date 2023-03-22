@@ -3,19 +3,15 @@ package org.zenframework.z8.server.base.table;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
-import org.zenframework.z8.server.base.table.value.StringField;
-import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.types.integer;
 
 public class Table extends TableBase {
 	static public class fieldNames {
@@ -25,11 +21,7 @@ public class Table extends TableBase {
 		public final static String ModifiedAt = "ModifiedAt";
 		public final static String ModifiedBy = "ModifiedBy";
 
-		public final static String Name = "Name";
-		public final static String ShortName = "Short name";
-		public final static String Description = "Description";
 		public final static String Lock = "Lock";
-		public final static String Archive = "Archive";
 	}
 
 	public static class CLASS<T extends Table> extends TableBase.CLASS<T> {
@@ -53,15 +45,7 @@ public class Table extends TableBase {
 	public GuidField.CLASS<? extends GuidField> createdBy = new GuidField.CLASS<GuidField>(this);
 	public GuidField.CLASS<? extends GuidField> modifiedBy = new GuidField.CLASS<GuidField>(this);
 
-	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
-	public StringField.CLASS<? extends StringField> shortName = new StringField.CLASS<StringField>(this);
-	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
-
 	public IntegerField.CLASS<? extends IntegerField> lock = new IntegerField.CLASS<IntegerField>(this);
-	public BoolField.CLASS<? extends BoolField> archive = new BoolField.CLASS<BoolField>(this);
-
-	final static public int ShortNameLength = 15;
-	final static public int NameLength = 50;
 
 	public Table(IObject container) {
 		super(container);
@@ -77,27 +61,11 @@ public class Table extends TableBase {
 		objects.add(createdBy);
 		objects.add(modifiedBy);
 		objects.add(lock);
-		objects.add(archive);
-
-		objects.add(name);
-		objects.add(shortName);
-		objects.add(description);
 	}
 
 	@Override
 	public void constructor2() {
 		super.constructor2();
-
-		name.setName(fieldNames.Name);
-		name.setIndex("name");
-		name.get().length = new integer(NameLength);
-
-		shortName.setName(fieldNames.ShortName);
-		shortName.setIndex("shortName");
-		shortName.get().length = new integer(ShortNameLength);
-
-		description.setName(fieldNames.Description);
-		description.setIndex("description");
 
 		lock.setName(fieldNames.Lock);
 		lock.setAttribute(LockKey, "");
@@ -124,19 +92,6 @@ public class Table extends TableBase {
 		modifiedBy.setName(fieldNames.ModifiedBy);
 		modifiedBy.setIndex("modifiedBy");
 		modifiedBy.setSystem(true);
-
-		archive.setName(fieldNames.Archive);
-		archive.setIndex("archive");
-		archive.setSystem(true);
-	}
-
-	@Override
-	public void constructor() {
-		super.constructor();
-
-		String displayName = name.displayName();
-		if(displayName == null || displayName.isEmpty())
-			name.setDisplayName(displayName());
 	}
 
 	@Override

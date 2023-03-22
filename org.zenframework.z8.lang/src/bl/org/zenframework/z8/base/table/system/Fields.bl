@@ -2,6 +2,7 @@ import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
 
 [name "SystemFields"]
 [displayName "Поля"]
@@ -11,7 +12,10 @@ public class Fields extends Table {
 
 	public Link table = tables;
 
+	public StringField name;
 	name.length = 256;
+
+	public TextField description;
 
 	[displayName "Системное имя"]
 	public StringField classId;
