@@ -20,6 +20,7 @@ import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.BoolExpression;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringExpression;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -52,6 +53,9 @@ public class Source extends TreeTable implements ISource {
 	public static final String TableName = "SystemSources";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String ShortName = "Short name";
+		public final static String Description = "Description";
 		public final static String TypeId = "Type";
 		public final static String Source = "Source";
 		public final static String Errors = "Errors";
@@ -163,6 +167,10 @@ public class Source extends TreeTable implements ISource {
 
 	public Source.CLASS<? extends Source> parent = new Parent.CLASS<Parent>(this);
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public StringField.CLASS<? extends StringField> shortName = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
+
 	public TextField.CLASS<TextField> source = new TextField.CLASS<TextField>(this);
 	public IntegerField.CLASS<IntegerField> errors = new IntegerField.CLASS<IntegerField>(this);
 	public IntegerField.CLASS<IntegerField> warnings = new IntegerField.CLASS<IntegerField>(this);
@@ -187,6 +195,9 @@ public class Source extends TreeTable implements ISource {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(shortName);
+		objects.add(description);
 		objects.add(parent);
 		objects.add(source);
 		objects.add(errors);
@@ -235,12 +246,18 @@ public class Source extends TreeTable implements ISource {
 
 		parent.setIndex("parent");
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(1000L);
 
+		shortName.setName(fieldNames.ShortName);
+		shortName.setIndex("shortName");
 		shortName.setDisplayName(displayNames.ShortName);
 		shortName.get().length = new integer(100L);
 
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 		description.setDisplayName(displayNames.Description);
 
 		source.setName(fieldNames.Source);

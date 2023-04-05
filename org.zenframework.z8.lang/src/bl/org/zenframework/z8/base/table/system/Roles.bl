@@ -1,10 +1,16 @@
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
+import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
 
 [name "SystemRoles"]
 [displayName "Группы безопасности"]
 [native "org.zenframework.z8.server.base.table.system.Roles"]
 public class Roles extends Table {
+
+	public StringField name;
+	public TextField description;
+
 	records {
 		[name "Администраторы"]
 		[description "Администраторы"]

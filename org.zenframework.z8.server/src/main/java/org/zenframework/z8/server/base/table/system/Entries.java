@@ -19,6 +19,7 @@ public class Entries extends Table {
 	final static public String TableName = "SystemEntries";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
 		public final static String ClassId = "Class";
 	}
 
@@ -86,16 +87,17 @@ public class Entries extends Table {
 		}
 	}
 
+	public StringField.CLASS<? extends StringField> name = new NameField.CLASS<NameField>(this);
 	public StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 
 	public Entries(IObject container) {
 		super(container);
-		name = new NameField.CLASS<NameField>(this);
 	}
 
 	@Override
 	public void initMembers() {
 		super.initMembers();
+		objects.add(name);
 		objects.add(classId);
 	}
 
@@ -108,6 +110,8 @@ public class Entries extends Table {
 		classId.setDisplayName(displayNames.ClassId);
 		classId.get().length = new integer(1024);
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(1024);
 	}

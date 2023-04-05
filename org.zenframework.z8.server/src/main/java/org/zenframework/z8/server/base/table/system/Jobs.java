@@ -1,6 +1,9 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.Files.displayNames;
+import org.zenframework.z8.server.base.table.system.Files.fieldNames;
+import org.zenframework.z8.server.base.table.system.Files.strings;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
@@ -13,15 +16,18 @@ public class Jobs extends Table {
 	final static public String TableName = "SystemJobs";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
 		public final static String ClassId = "Class";
 	}
 
 	static public class strings {
 		public final static String Title = "Jobs.title";
+		public final static String Name = "Jobs.name";
 		public final static String ClassId = "Jobs.classId";
 	}
 
 	static public class displayNames {
+		public final static String Name = Resources.get(strings.Name);
 		public final static String Title = Resources.get(strings.Title);
 		public final static String ClassId = Resources.get(strings.ClassId);
 	}
@@ -80,6 +86,7 @@ public class Jobs extends Table {
 		}
 	}
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> classId = new StringField.CLASS<StringField>(this);
 
 	public Jobs(IObject container) {
@@ -92,6 +99,7 @@ public class Jobs extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
 		objects.add(classId);
 	}
 
@@ -104,6 +112,9 @@ public class Jobs extends Table {
 		classId.setDisplayName(displayNames.ClassId);
 		classId.get().length = new integer(1024);
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
+		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(256);
 	}
 }

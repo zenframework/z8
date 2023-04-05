@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -30,6 +31,8 @@ public class MessageQueue extends Table {
 	static public String TableName = "SystemMessageQueue";
 
 	static public class fieldNames {
+		static public String Name = "Name";
+		static public String Description = "Description";
 		static public String Address = "Address";
 		static public String Sender = "Sender";
 		static public String Ordinal = "Ordinal";
@@ -76,6 +79,8 @@ public class MessageQueue extends Table {
 		}
 	}
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<StringField> address = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> sender = new StringField.CLASS<StringField>(this);
 
@@ -96,6 +101,8 @@ public class MessageQueue extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(address);
 		objects.add(sender);
 		objects.add(ordinal);
@@ -108,9 +115,13 @@ public class MessageQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.get().setDisplayName(displayNames.Name);
 		name.get().length = new integer(100);
 
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 		description.get().setDisplayName(displayNames.Description);
 
 		sender.setName(fieldNames.Sender);

@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -12,6 +13,8 @@ public class Tables extends Table {
 	final static public String TableName = "SystemTables";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		public final static String ClassId = "Class";
 		public final static String DisplayName = "Display Name";
 	}
@@ -30,6 +33,8 @@ public class Tables extends Table {
 		public final static String DisplayName = Resources.get(strings.DisplayName);
 	}
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<? extends StringField> classId = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> displayName = new StringField.CLASS<StringField>(this);
 
@@ -94,6 +99,8 @@ public class Tables extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(classId);
 		objects.add(displayName);
 	}
@@ -102,8 +109,13 @@ public class Tables extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.get().length = new integer(256);
 		name.setDisplayName(displayNames.Name);
+
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 
 		classId.setIndex("classId");
 		classId.setName(fieldNames.ClassId);

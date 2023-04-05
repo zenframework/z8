@@ -6,6 +6,8 @@ import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.FileField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
+import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
@@ -14,6 +16,7 @@ public class ScheduledJobLogs extends Table {
 	final static public String TableName = "SystemScheduledJobLogs";
 
 	static public class fieldNames {
+		public final static String Description = "Description";
 		public final static String Start = "Start";
 		public final static String Finished = "Finish";
 		public final static String ScheduledJob = "ScheduledJob";
@@ -68,6 +71,8 @@ public class ScheduledJobLogs extends Table {
 
 	public Link.CLASS<Link> scheduledJob = new Link.CLASS<Link>(this);
 
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
+
 	public DatetimeField.CLASS<DatetimeField> start = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> finish = new DatetimeField.CLASS<DatetimeField>(this);
 
@@ -88,6 +93,7 @@ public class ScheduledJobLogs extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(description);
 		objects.add(scheduledJob);
 		objects.add(start);
 		objects.add(finish);
@@ -102,6 +108,8 @@ public class ScheduledJobLogs extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 		description.setDisplayName(displayNames.Description);
 
 		scheduledJobs.setIndex("scheduledJobs");

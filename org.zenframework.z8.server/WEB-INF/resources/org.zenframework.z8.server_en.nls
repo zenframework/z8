@@ -162,6 +162,7 @@
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Jobs</entry>
+	<entry key="Jobs.name">Job</entry>
 	<entry key="Jobs.classId">System name</entry>
 
 	<!-- Requests -->

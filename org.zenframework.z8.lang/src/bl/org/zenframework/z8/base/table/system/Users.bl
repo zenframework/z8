@@ -8,7 +8,8 @@ import org.zenframework.z8.base.table.value.TextField;
 [displayName "Пользователи"]
 [native "org.zenframework.z8.server.base.table.system.Users"]
 public class Users extends Table {
-	[displayName "Логин"] name;
+	[displayName "Логин"]
+	public StringField name;
 	name.length = 128;
 
 	[name "Password"]
@@ -16,7 +17,8 @@ public class Users extends Table {
 	public StringField password;
 	password.length = 32;
 
-	[displayName "Описание"] description;
+	[displayName "Описание"]
+	public TextField description;
 
 	[name "First Name"] 
 	[displayName "Имя"] 

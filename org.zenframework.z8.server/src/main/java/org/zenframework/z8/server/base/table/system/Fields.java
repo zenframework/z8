@@ -4,6 +4,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
@@ -13,6 +14,8 @@ public class Fields extends Table {
 	final static public String TableName = "SystemFields";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		public final static String Table = "Table";
 		public final static String ClassId = "Class";
 		public final static String DisplayName = "Display Name";
@@ -55,6 +58,8 @@ public class Fields extends Table {
 	public Tables.CLASS<Tables> tables = new Tables.CLASS<Tables>(this);
 	public Link.CLASS<Link> table = new Link.CLASS<Link>(this);
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<? extends StringField> classId = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> displayName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<? extends StringField> type = new StringField.CLASS<StringField>(this);
@@ -73,6 +78,8 @@ public class Fields extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(classId);
 		objects.add(table);
 		objects.add(displayName);
@@ -91,7 +98,13 @@ public class Fields extends Table {
 		table.setName(fieldNames.Table);
 		table.setIndex("table");
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.get().length = new integer(256);
+		name.setDisplayName(displayNames.Title);
+
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 
 		classId.setIndex("classId");
 		classId.setName(fieldNames.ClassId);

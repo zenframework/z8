@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
@@ -12,6 +13,7 @@ public class Sequences extends Table {
 	final static public String TableName = "SystemSequences";
 
 	static public class fieldNames {
+		public final static String Description = "Description";
 		public final static String Key = "Key";
 		public final static String Value = "Value";
 	}
@@ -46,6 +48,7 @@ public class Sequences extends Table {
 		}
 	}
 
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<StringField> key = new StringField.CLASS<StringField>(this);
 	public IntegerField.CLASS<IntegerField> value = new IntegerField.CLASS<IntegerField>(this);
 
@@ -57,6 +60,7 @@ public class Sequences extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(description);
 		objects.add(key);
 		objects.add(value);
 	}
@@ -64,6 +68,9 @@ public class Sequences extends Table {
 	@Override
 	public void constructor2() {
 		super.constructor2();
+
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 
 		key.setName(fieldNames.Key);
 		key.setIndex("key");
