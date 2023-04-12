@@ -37,6 +37,8 @@ public class Users extends Table {
 	static private String defaultPassword = Digest.md5("");
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		public final static String Password = "Password";
 		public final static String FirstName = "First Name";
 		public final static String MiddleName = "Middle Name";
@@ -115,6 +117,8 @@ public class Users extends Table {
 		return (Users)Runtime.instance().getTableByName(Users.TableName).newInstance();
 	}
 
+	public final StringField.CLASS<StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<StringField> password = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> firstName = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> middleName = new StringField.CLASS<StringField>(this);
@@ -145,6 +149,8 @@ public class Users extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(password);
 		objects.add(firstName);
 		objects.add(middleName);
@@ -164,6 +170,8 @@ public class Users extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Login);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
 		name.get().unique = bool.True;
@@ -190,6 +198,8 @@ public class Users extends Table {
 		lastName.setDisplayName(displayNames.LastName);
 		lastName.get().length = new integer(100);
 
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 		description.setDisplayName(displayNames.Description);
 
 		phone.setName(fieldNames.Phone);

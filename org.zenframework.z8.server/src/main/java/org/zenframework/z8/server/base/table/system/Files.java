@@ -30,6 +30,7 @@ public class Files extends Table {
 	public static final String Storage = "storage/";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
 		public final static String File = "File";
 		public final static String Path = "Path";
 		public final static String Size = "Size";
@@ -73,6 +74,7 @@ public class Files extends Table {
 		}
 	}
 
+	public final StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public final StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
 	public final BinaryField.CLASS<BinaryField> data = new BinaryField.CLASS<BinaryField>(this);
 	public final IntegerField.CLASS<IntegerField> size = new IntegerField.CLASS<IntegerField>(this);
@@ -91,6 +93,7 @@ public class Files extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
 		objects.add(data);
 		objects.add(path);
 		objects.add(size);
@@ -102,6 +105,8 @@ public class Files extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(512);
 

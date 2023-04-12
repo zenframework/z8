@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
@@ -22,6 +23,7 @@ public class ScheduledJobs extends Table {
 	static public int MinRepeat = 10;
 
 	static public class fieldNames {
+		public final static String Description = "Description";
 		public final static String Job = "Job";
 		public final static String User = "User";
 		public final static String Cron = "Cron";
@@ -79,6 +81,7 @@ public class ScheduledJobs extends Table {
 	public Link.CLASS<Link> job = new Link.CLASS<Link>(this);
 	public Link.CLASS<Link> user = new Link.CLASS<Link>(this);
 
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public DatetimeField.CLASS<DatetimeField> lastStart = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> nextStart = new DatetimeField.CLASS<DatetimeField>(this);
 	public StringField.CLASS<StringField> cron = new StringField.CLASS<StringField>(this);
@@ -99,6 +102,7 @@ public class ScheduledJobs extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(description);
 		objects.add(job);
 		objects.add(user);
 		objects.add(cron);
@@ -119,6 +123,8 @@ public class ScheduledJobs extends Table {
 
 		users.setIndex("users");
 
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 		description.setDisplayName(displayNames.Settings);
 
 		job.setName(fieldNames.Job);
