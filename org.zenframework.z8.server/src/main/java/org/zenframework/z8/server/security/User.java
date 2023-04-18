@@ -274,11 +274,9 @@ public class User implements IUser {
 		if(user.isBuiltinAdministrator())
 			user.addSystemTools();
 
-		ConnectionManager.release();
-
 		return user;
 	}
-	
+
 	private static String getVerificationLink(String host, String hashPrefix, String verification) {
 		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
 	}
@@ -296,8 +294,12 @@ public class User implements IUser {
 		users.name.get().set(loginParameters.getLogin());
 		users.password.get().set(new string(user.password));
 		user.id = users.create();
-		
-		return read(loginParameters.setUserId(user.id));
+
+		try {
+			return read(loginParameters.setUserId(user.id));
+		} finally {
+			ConnectionManager.release();
+		}
 	}
 	
 	public static IUser register(LoginParameters loginParameters, String password, String host) {
@@ -498,12 +500,16 @@ public class User implements IUser {
 		if(!database.isSystemInstalled())
 			return User.system(database);
 
-		IUser user = read(loginParameters);
+		try {
+			IUser user = read(loginParameters);
 
-		if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
-			throw new AccessDeniedException();
+			if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+				throw new AccessDeniedException();
 
-		return user;
+			return user;
+		} finally {
+			ConnectionManager.release();
+		}
 	}
 
 	private void addSystemTools() {
