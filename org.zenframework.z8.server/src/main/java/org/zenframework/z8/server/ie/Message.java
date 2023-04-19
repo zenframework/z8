@@ -313,7 +313,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
-			ConnectionManager.release();
+			if(!localSend)
+				ConnectionManager.release();
 		}
 	}
 
