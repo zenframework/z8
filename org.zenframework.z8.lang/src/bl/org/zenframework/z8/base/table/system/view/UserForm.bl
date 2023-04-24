@@ -4,9 +4,12 @@ import org.zenframework.z8.base.form.Listbox;
 import org.zenframework.z8.base.form.Section;
 import org.zenframework.z8.base.form.action.Action;
 import org.zenframework.z8.base.form.action.ActionType;
+import org.zenframework.z8.base.table.Sql;
 import org.zenframework.z8.base.table.system.UserEntries;
 import org.zenframework.z8.base.table.system.UserRoles;
 import org.zenframework.z8.base.table.system.Users;
+import org.zenframework.z8.base.table.value.Aggregation;
+import org.zenframework.z8.base.table.value.Field;
 
 [native "org.zenframework.z8.server.base.table.system.view.UserForm"]
 class UserForm extends Form {
@@ -32,8 +35,26 @@ class UserForm extends Form {
 	entriesListbox.link = userEntries.user;
 	entriesListbox.flex = 1;
 
-	protected UserRoles userRoles;
-	userRoles.columns = { userRoles.roles.name };
+	protected UserRoles userRoles = class {
+		columns = { roles.name };
+
+		roles = class {
+			virtual protected void beforeRead() {
+				super.beforeRead();
+				UserRoles ролиПользователя;
+				ролиПользователя.role.aggregation = Aggregation.Array;
+				if(ролиПользователя.aggregate(Field[] { ролиПользователя.role }, ролиПользователя.user == container.container.users.recordId.get()))
+					addWhere(!Sql.inVector(recordId, ролиПользователя.role.array()));
+			}
+		};
+
+		virtual protected void beforeCreate(guid recordId) {
+			super.beforeCreate(recordId);
+			UserRoles ролиПользователя;
+			if(ролиПользователя.readFirst(Field[] { }, ролиПользователя.user == user.get() && ролиПользователя.role == role.get()))
+				throw "This role has already been added";
+		}
+	};
 
 	protected Listbox rolesListbox;
 	rolesListbox.query = userRoles;
