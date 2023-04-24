@@ -150,6 +150,7 @@ Z8.define('Z8.list.Header', {
 		case Type.Datetime:
 		case Type.Integer:
 		case Type.Float:
+		case Type.Boolean:
 			return direction == 'asc' ? ListHeader.NumericSort09IconCls : ListHeader.NumericSort90IconCls;
 		default:
 			return direction == 'asc' ? ListHeader.AlphaSortAZIconCls : ListHeader.AlphaSortZAIconCls;

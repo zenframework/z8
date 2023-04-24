@@ -640,6 +640,8 @@ Z8.define('Z8.list.List', {
 		for(var i = 0, length = fields.length; i < length; i++) {
 			var field = fields[i];
 			var cls = i != 0 ? (i == length - 1 ? 'last': null) : 'first';
+			if(field.type == Type.Boolean)
+				this.headerType = 'ListHeader';
 			var header = this.createHeader(field, cls);
 			var isSortable = header.isSortableWith(sorter);
 			header.setSort(isSortable ? sorter.direction || 'asc' : null);
