@@ -222,6 +222,7 @@
 	<entry key="Exception.fileNotFound">File not found: {0}</entry>
 	<entry key="Exception.fileCanNotBeDeleted">File can not be deleted: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">File size ''{0}'' exceeds limit {1}Mb</entry>
+	<entry key="Exception.duplicateRole">The role "{0}" has already been added before</entry>
 
 	<entry key="Exception.unknownDatabase">Unknown database</entry>
 
