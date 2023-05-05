@@ -99,7 +99,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		return eventsEnabled(EventsLevel.USER);
 	}
 
-	protected ApplicationServer() throws RemoteException {
+	public ApplicationServer() throws RemoteException {
 		super(ServerConfig.applicationServerPort());
 	}
 

@@ -44,7 +44,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		return instance;
 	}
 
-	private AuthorityCenter() throws RemoteException {
+	public AuthorityCenter() throws RemoteException {
 		super(ServerConfig.authorityCenterPort());
 		clientHashPassword = ServerConfig.webClientHashPassword();
 		checkLdapLogin = ServerConfig.checkLdapLogin();
