@@ -36,7 +36,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 		return instance;
 	}
 
-	private InterconnectionCenter() throws RemoteException {
+	public InterconnectionCenter() throws RemoteException {
 		super(ServerConfig.interconnectionCenterPort());
 		cacheEnabled = ServerConfig.interconnectionCenterCache();
 	}
