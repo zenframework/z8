@@ -222,6 +222,7 @@
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
 	<entry key="Exception.fileCanNotBeDeleted">Файл не может быть удален: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
+	<entry key="Exception.duplicateRole">Роль "{0}" уже была добавлена раньше</entry>
 
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 
