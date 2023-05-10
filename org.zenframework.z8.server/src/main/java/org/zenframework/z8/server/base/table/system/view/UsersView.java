@@ -36,6 +36,8 @@ public class UsersView extends Users {
 	public void constructor2() {
 		super.constructor2();
 
+		recordId.get().valueFor = recordId;
+
 		form.setIndex("form");
 		form.get().users = (UsersView.CLASS<UsersView>) this.getCLASS();
 		form.get().flex = new integer(1);
