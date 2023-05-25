@@ -107,7 +107,9 @@ public class ServerConfig extends Properties {
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
-	
+
+	static final private String CaseSensitiveLogin = "login.caseSensitive";
+
 	static final private String LdapCheckLdapLogin = "ldap.checkLdapLogin";
 	static final private String LdapUrl = "ldap.url";
 	static final private String LdapPrincipalName = "ldap.principalName";
@@ -196,6 +198,7 @@ public class ServerConfig extends Properties {
 
 	static private String spnegoDomainRealm;
 	static private String spnegoPropertiesPath;
+	static private boolean caseSensitiveLogin;
 	static private boolean ldapCheckLdapLogin;
 	static private String ldapUrl;
 	static private String ldapPrincipalName;
@@ -325,6 +328,7 @@ public class ServerConfig extends Properties {
 
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = instance.getProperty(SpnegoPropertiesPath, "");
+		caseSensitiveLogin = instance.getProperty(CaseSensitiveLogin, false);
 		ldapCheckLdapLogin = instance.getProperty(LdapCheckLdapLogin, false);
 		ldapUrl = instance.getProperty(LdapUrl, "");
 		ldapPrincipalName = instance.getProperty(LdapPrincipalName, "");
@@ -719,6 +723,10 @@ public class ServerConfig extends Properties {
 
 	static public String spnegoPropertiesPath() {
 		return spnegoPropertiesPath;
+	}
+
+	static public boolean caseSensitiveLogin() {
+		return caseSensitiveLogin;
 	}
 
 	static public boolean checkLdapLogin() {
