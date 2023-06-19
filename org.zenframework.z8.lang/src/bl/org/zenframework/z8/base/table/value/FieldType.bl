@@ -13,6 +13,6 @@ public enum FieldType {
 	Binary,
 	Text,
 	Attachments,
-//	File,
+	File,
 	Null
 }
