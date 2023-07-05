@@ -127,6 +127,8 @@ public class ServerConfig extends Properties {
 	static final private String StoragePath = "storage.path";
 	static final private String StoragePreviewPath = "storage.preview.path";
 
+	static final private String GeneratorSkipSystemFiles = "generator.skipSystemFiles";
+
 	static private File workingPath;
 
 	static private String language;
@@ -214,6 +216,8 @@ public class ServerConfig extends Properties {
 
 	static private File storagePath;
 	static private File storagePreviewPath;
+
+	static private boolean generatorSkipSystemFiles;
 
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
@@ -342,6 +346,8 @@ public class ServerConfig extends Properties {
 
 		storagePath = instance.getFile(StoragePath, "storage");
 		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
+
+		generatorSkipSystemFiles = instance.getProperty(GeneratorSkipSystemFiles, false);
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -773,6 +779,10 @@ public class ServerConfig extends Properties {
 
 	static public File storagePreviewPath() {
 		return storagePreviewPath;
+	}
+
+	static public boolean generatorSkipSystemFiles() {
+		return generatorSkipSystemFiles;
 	}
 
 	static public IApplicationServer applicationServer() {

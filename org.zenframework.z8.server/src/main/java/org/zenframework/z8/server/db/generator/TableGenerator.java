@@ -25,6 +25,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerExpression;
 import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.TextExpression;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -475,9 +476,9 @@ public class TableGenerator {
 		String tableName = table().name();
 
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что - все изменения руками.
-		if(tableName.equals(Files.TableName)) {
-//			logger.info(Files.TableName + " - skipped.");
-//			return;
+		if(ServerConfig.generatorSkipSystemFiles() && tableName.equals(Files.TableName)) {
+			logger.info(Files.TableName + " - skipped.");
+			return;
 		}
 
 		String name = "" + Math.abs(tableName.hashCode());
