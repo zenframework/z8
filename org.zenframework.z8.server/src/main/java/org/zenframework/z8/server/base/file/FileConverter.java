@@ -219,7 +219,7 @@ public class FileConverter {
 			sourceReader.close();
 			sourceIn.close();
 		} catch (Exception e) {
-			
+			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(null);
 		}
