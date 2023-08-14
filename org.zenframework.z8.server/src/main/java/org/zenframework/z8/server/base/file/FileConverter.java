@@ -230,7 +230,7 @@ public class FileConverter {
 	private static void processStamp(PdfStamper stamper, JsonObject stampInfo, float pageH, int pages) throws Exception {
 		guid stampId = stampInfo.getGuid("id");
 		file stampFile = Files.get(Files.get(stampId));
-		Image signImg = Image.getInstance(ImageIO.read(new FileInputStream(stampFile.getAbsolutePath())), null);
+		Image signImg = Image.getInstance(ImageIO.read(stampFile.getInputStream()), null);
 
 		Rectangle loc = getStampPosition(stampInfo, pageH);
 
