@@ -70,6 +70,11 @@ public class date extends primary {
 			return;
 		}
 
+		if (date.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")) {
+			set(date, "yyyy-MM-dd'T'HH:mm:ssXXX");
+			return;
+		}
+
 		// yyyy-MM-ddThh:mm[:ss[.m]][+hh:mm[:ss]]
 		// 0123456789012345 678 9?   012345 678
 
@@ -359,7 +364,7 @@ public class date extends primary {
 	}
 	@Override
 	public String toString() {
-		return toString("T", "");
+		return format("yyyy-MM-dd'T'HH:mm:ssXXX");
 	}
 
 	public String toString(String timeSeparator, String zoneSeparator) {
