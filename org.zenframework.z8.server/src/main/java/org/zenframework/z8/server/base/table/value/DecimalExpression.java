@@ -45,7 +45,7 @@ public class DecimalExpression extends Expression {
 	}
 
 	public decimal z8_get() {
-		return (decimal)internalGet();
+		return isArray() ? null : (decimal)internalGet();
 	}
 
 	@Override
