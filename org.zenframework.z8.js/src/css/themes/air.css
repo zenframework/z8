@@ -1067,3 +1067,11 @@ body {
 .air .window.change-password>.body {
 	padding: 1em;
 }
+
+.air .window.change-password>.body .fieldset>.row .btn {
+	margin-top: 15px;
+	height: 20px;
+	width: 20px;
+	padding: 1px;
+	margin-left: -20px;
+}

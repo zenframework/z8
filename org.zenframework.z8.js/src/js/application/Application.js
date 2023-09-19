@@ -30,6 +30,14 @@ Z8.define('Z8.application.Application', {
 		overlays: [],
 		projection: 'EPSG:96872'
 	},
+	
+	password: {
+		minLength: 0,
+		mustHaveUpperCase: false,
+		mustHaveLowerCase: false,
+		mustHaveSpecialСhar: false,
+		mustHaveDigit: false
+	},
 
 	subclasses: {
 	},

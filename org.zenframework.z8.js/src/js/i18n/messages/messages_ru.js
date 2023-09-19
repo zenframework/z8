@@ -12,6 +12,14 @@ Z8.loadMessages('ru', {
     'ChangePassword.password': 'Пароль',
     'ChangePassword.newPassword': 'Новый пароль',
     'ChangePassword.repeat': '(повтор)',
+    'ChangePassword.requirementsError': 'Пароль не соответствует требованиям',
+    'ChangePassword.noRequirements': 'Нет требований к паролю',
+    'ChangePassword.passwordMustContain': 'Пароль должен содержать:',
+    'ChangePassword.oneCapitalLetter': 'одну большую букву',
+    'ChangePassword.oneSmallLetter': 'одну маленькую букву',
+    'ChangePassword.oneSpecialChar': 'один специальный символ',
+    'ChangePassword.oneDigit': 'одну цифру',
+    'ChangePassword.length': 'символов должно быть не менее ',
 
     // Application
     'Application.fileSize': 'Размер файла \'',
