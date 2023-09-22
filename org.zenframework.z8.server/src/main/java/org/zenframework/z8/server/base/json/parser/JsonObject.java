@@ -105,7 +105,7 @@ public class JsonObject extends OBJECT {
 	}
 
 	public integer z8_getInt(string name) {
-		return new integer(object.getInt(name));
+		return new integer(object.getLong(name));
 	}
 
 	public integer z8_getInt(JsonPath.CLASS<? extends JsonPath> path) {
