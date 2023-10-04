@@ -80,7 +80,7 @@ public class DecimalField extends Field {
 	}
 
 	public decimal z8_get() {
-		return (decimal)internalGet();
+		return isArray() ? null : (decimal)internalGet();
 	}
 
 	@Override
