@@ -60,7 +60,12 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(LoginParameters loginParameters, String password) throws RemoteException {
+	public IUser loginUser(LoginParameters loginParameters, String password) throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void logoutUser(ISession session) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 

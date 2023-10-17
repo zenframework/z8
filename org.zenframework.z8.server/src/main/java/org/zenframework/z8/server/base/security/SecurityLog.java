@@ -71,13 +71,13 @@ public class SecurityLog extends OBJECT {
 		super(container);
 	}
 
-	public void addLoginEvent(IUser user) {
+	public void addUserEvent(IUser user, String event) {
 		User.CLASS<User> userCls = new User.CLASS<User>();
 		userCls.get().initialize(user);
 
 		threadUser.set(userCls);
 
-		addEvent("", guid.Null, "", Json.login.get());
+		addEvent("", guid.Null, "", event);
 	}
 
 	public void addEvent(String objectType, guid objectId, String objectName, String action) {

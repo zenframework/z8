@@ -25,6 +25,7 @@ public interface Json {
 	static public string user = new string("user");
 	static public string account = new string("account");
 	static public string login = new string("login");
+	static public string logout = new string("logout");
 	static public string saveSession = new string("saveSession");
 	static public string administrator = new string("administrator");
 	static public string firstName = new string("firstName");

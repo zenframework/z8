@@ -14,6 +14,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.MessageAcceptor;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -143,18 +144,18 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public IUser user(LoginParameters loginParameters, String password) {
+	public IUser loginUser(LoginParameters loginParameters, String password) {
 		setRequest(new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema())));
 
 		SecurityLog securityLog = Runtime.instance().securityLog().get();
 
 		try {
 			IUser user = User.load(loginParameters, password);
-			securityLog.addLoginEvent(user);
+			securityLog.addUserEvent(user, Json.login.get());
 			securityLog.setResult(true, "");
 			return user;
 		} catch (Throwable e) {
-			securityLog.addLoginEvent(new User(loginParameters));
+			securityLog.addUserEvent(new User(loginParameters), Json.login.get());
 			securityLog.setResult(false, e.getMessage());
 			throw e;
 		} finally {
@@ -165,6 +166,19 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			releaseConnections();
 			setRequest(null);
 		}
+	}
+
+	@Override
+	public void logoutUser(ISession session) throws RemoteException {
+		setRequest(new Request(session));
+
+		SecurityLog securityLog = Runtime.instance().securityLog().get();
+
+		securityLog.addUserEvent(session.user(), Json.logout.get());
+		securityLog.setResult(true, "");
+		securityLog.commitEvents();
+
+		setRequest(null);
 	}
 
 	@Override
@@ -180,7 +194,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
@@ -194,7 +208,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser verifyUser(String verification, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
@@ -208,7 +222,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
@@ -236,7 +250,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
@@ -250,7 +264,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public file download(ISession session, GNode node, file file) throws IOException {
 		setRequest(new Request(node.getAttributes(), node.getFiles(), session));

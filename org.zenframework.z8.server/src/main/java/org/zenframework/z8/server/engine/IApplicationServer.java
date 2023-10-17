@@ -19,10 +19,10 @@ public interface IApplicationServer extends IServer {
 	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException;
 	public IUser remind(String verification, String schema, String requestHost) throws RemoteException;
 	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException;
-	public IUser user(LoginParameters loginParameters, String password) throws RemoteException;
-	
+	public IUser loginUser(LoginParameters loginParameters, String password) throws RemoteException;
+	public void logoutUser(ISession session) throws RemoteException;
+
 	public IUser create(LoginParameters loginParameters) throws RemoteException;
-	
 
 	public String[] domains() throws RemoteException;
 
