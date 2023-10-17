@@ -19,6 +19,7 @@ public interface IAuthorityCenter extends IHubServer {
 	public ISession authorize(String session, String server) throws RemoteException;
 	public ISession login(LoginParameters loginParameters, String password) throws RemoteException;
 	public ISession trustedLogin(LoginParameters loginParameters, boolean createIfNotExist) throws RemoteException;
+	public void logout(ISession session) throws RemoteException;
 
 	public void userChanged(guid user, String schema) throws RemoteException;
 	public void roleChanged(guid role, String schema) throws RemoteException;

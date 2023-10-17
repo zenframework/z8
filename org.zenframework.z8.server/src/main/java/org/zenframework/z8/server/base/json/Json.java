@@ -23,6 +23,7 @@ public class Json extends OBJECT {
 	final static public string name = org.zenframework.z8.server.json.Json.name;
 	final static public string displayName = org.zenframework.z8.server.json.Json.displayName;
 	final static public string login = org.zenframework.z8.server.json.Json.login;
+	final static public string logout = org.zenframework.z8.server.json.Json.logout;
 	final static public string password = org.zenframework.z8.server.json.Json.password;
 	final static public string newPassword = org.zenframework.z8.server.json.Json.newPassword;
 

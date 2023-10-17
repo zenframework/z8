@@ -147,7 +147,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())) {
 			try {
 				new LdapAPI(ldapUrl, loginParameters.getLogin(), password);
-				user = loginServer.user(loginParameters, null);
+				user = loginServer.loginUser(loginParameters, null);
 			} catch (UserNotFoundException e) {
 				if (ldapUsersCreateOnSuccessfulLogin)
 					user = loginServer.create(loginParameters);
@@ -156,7 +156,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			}
 		} else {
 			try {
-				user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
+				user = loginServer.loginUser(loginParameters, clientHashPassword ? password : Digest.md5(password));
 			} catch (UserNotFoundException ignored) {
 				throw new AccessDeniedException();
 			}
@@ -178,8 +178,13 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		}
 	}
 
+	@Override
+	public void logout(ISession session) throws RemoteException {
+		getServerInfo().getServer().logoutUser(session);
+	}
+
 	private ISession login0(IServerInfo serverInfo, LoginParameters loginParameters) throws RemoteException {
-		IUser user = serverInfo.getServer().user(loginParameters, null);
+		IUser user = serverInfo.getServer().loginUser(loginParameters, null);
 		return sessionManager.create(user).setServerInfo(serverInfo);
 	}
 
