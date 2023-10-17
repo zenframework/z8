@@ -230,6 +230,12 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 		var newPassword = newPassword1.getValue() || '';
 		newPassword = Application.hashPassword ? MD5.hex(newPassword) : newPassword;
 
+		if(password == newPassword) {
+			Viewport.message({text: Z8.$('ChangePassword.newPasswordRepeatOld'), type: "error"});
+			this.okButton.setBusy(false);
+			return;
+		}
+
 		var parameters = {
 			request: 'login',
 			login: login,

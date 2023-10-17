@@ -80,22 +80,28 @@ public class SecurityLog extends OBJECT {
 		addEvent("", guid.Null, "", Json.login.get());
 	}
 
-	public void addEvent(String objectType, guid objectId, String objectName, String action) {
-		addEvent(new string(objectType), objectId, new string(objectName), new string(action));
+	public void addEvent(OBJECT request, String objectType, guid objectId, String objectName, String action) {
+		addEvent(request, new string(objectType), objectId, new string(objectName), new string(action));
 	}
 
-	public void addEvent(string objectType, guid objectId, string objectName, string action) {
-		addEvent(SecurityObject.object(objectType, objectId, objectName), action);
+	public void addEvent(String objectType, guid objectId, String objectName, String action) {
+		addEvent(null, new string(objectType), objectId, new string(objectName), new string(action));
+	}
+
+	public void addEvent(OBJECT request, string objectType, guid objectId, string objectName, string action) {
+		addEvent(request, SecurityObject.object(objectType, objectId, objectName), action);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void addEvent(SecurityObject object, string action) {
+	public void addEvent(OBJECT request, SecurityObject object, string action) {
 		List<SecurityEvent.CLASS<SecurityEvent>> events = threadEvents.get();
 
 		if (events == null)
 			threadEvents.set(events = new ArrayList<SecurityEvent.CLASS<SecurityEvent>>(10));
 
-		events.add(SecurityEvent.event((SecurityObject.CLASS<? extends SecurityObject>) object.getCLASS(), action));
+		SecurityEvent.CLASS<SecurityEvent> event = SecurityEvent.event(request != null ? (OBJECT.CLASS<? extends OBJECT>) request.getCLASS() : null, (SecurityObject.CLASS<? extends SecurityObject>) object.getCLASS(), action);
+		events.add(event);
+		z8_acceptEvent(event);
 	}
 
 	public void setResult(boolean success, String message) {
@@ -110,8 +116,7 @@ public class SecurityLog extends OBJECT {
 		if (events != null) {
 			for (SecurityEvent.CLASS<SecurityEvent> event : events) {
 				try {
-					if (z8_acceptEvent(event).get())
-						z8_writeEvent(event);
+					z8_writeEvent(event);
 				} catch (Throwable e) {
 					Trace.logError("Can't write security log", e);
 				}
@@ -190,10 +195,11 @@ public class SecurityLog extends OBJECT {
 				public synchronized String format(LogRecord lr) {
 					SecurityLogRecord slr = (SecurityLogRecord) lr;
 					User.CLASS<? extends User> user = z8_user();
+					String details = slr.event.getDetails();
 					return String.format(securityLogFormat, new Date(slr.getMillis()),
 							user.get().id, slr.log.z8_format(user).get(),
 							slr.log.z8_format(slr.event.z8_getObject()).get(), slr.event.getAction(),
-							filterParameters(slr.log.getParameters()), slr.event.isSuccess(), slr.getMessage());
+							filterParameters(slr.log.getParameters()), slr.event.isSuccess(), slr.getMessage(), details.isEmpty() ? "No details" : details);
 				}
 			});
 			Logger logger = Logger.getLogger(Name);

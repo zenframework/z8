@@ -21,6 +21,7 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -36,6 +37,7 @@ import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
+import org.zenframework.z8.server.exceptions.UserBannedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
@@ -75,6 +77,11 @@ public class User implements IUser {
 	private boolean banned;
 	private boolean changePassword;
 
+	private int unsuccessfulEntries;
+
+	private date bannedDate;
+	private date changePasswordDate;
+
 	private String settings;
 	private IDatabase database;
 
@@ -101,6 +108,9 @@ public class User implements IUser {
 		system.position = "";
 		system.banned = false;
 		system.changePassword = false;
+		system.unsuccessfulEntries = 0;
+		system.bannedDate = date.Min;
+		system.changePasswordDate = date.Min;
 
 		system.settings = "";
 		system.phone = "";
@@ -176,7 +186,22 @@ public class User implements IUser {
 	public String company() {
 		return company;
 	}
-	
+
+	@Override
+	public int unsuccessfulEntries() {
+		return unsuccessfulEntries;
+	}
+
+	@Override
+	public date bannedDate() {
+		return bannedDate;
+	}
+
+	@Override
+	public date changePasswordDate() {
+		return changePasswordDate;
+	}
+
 	@Override
 	public String position() {
 		return position;
@@ -330,6 +355,9 @@ public class User implements IUser {
 		users.banned.get().set(true);
 		users.password.get().set(user.password);
 		users.changePassword.get().set(false);
+		users.unsuccessfulEntries.get().set(0);
+		users.bannedDate.get().set(date.Min);
+		users.changePasswordDate.get().set(date.Min);
 		users.verification.get().set(verification);
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction();
@@ -468,9 +496,12 @@ public class User implements IUser {
 		
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
+		date now = date.z8_now();
+		now.setTime(0, 0, 0);
 		
 		user.password = password;
 		user.changePassword = false;
+		user.changePasswordDate = now;
 		
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction();
@@ -478,6 +509,7 @@ public class User implements IUser {
 		users.verification.get().set("");
 		users.password.get().set(user.password);
 		users.changePassword.get().set(user.changePassword);
+		users.changePasswordDate.get().set(user.changePasswordDate);
 		
 		try {
 			users.update(users.recordId());
@@ -502,13 +534,84 @@ public class User implements IUser {
 
 		try {
 			IUser user = read(loginParameters);
+			boolean correctPassword = password.equals(user.password());
+			guid userId = user.id();
+			boolean systemUser = Users.System.equals(userId) || Users.Administrator.equals(userId);
 
-			if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+			if(!systemUser) {
+				checkUnsuccessfulEntries(user, correctPassword);
+				user = read(loginParameters);
+			}
+
+			date bannedDate = user.bannedDate();
+
+			if(user.banned() && bannedDate.operatorNotEqu(date.Min).get()) {
+				date banExpireDate = bannedDate.addMinute(ServerConfig.incorrectPasswordTimeout());
+				throw new UserBannedException(banExpireDate.format("dd.MM.yyyy HH:mm:ss"));
+			}
+
+			if(password != null && !correctPassword /*&& !password.equals(MD5.hex(""))*/ || user.banned())
 				throw new AccessDeniedException();
+
+			if(!systemUser && ServerConfig.incorrectPasswordMax() > 0)
+				resetUnsuccessfulEntries(userId);
 
 			return user;
 		} finally {
 			ConnectionManager.release();
+		}
+	}
+
+	static private void resetUnsuccessfulEntries(guid userId) {
+		Users users = Users.newInstance();
+		Connection connection = ConnectionManager.get();
+		connection.beginTransaction();
+		users.unsuccessfulEntries.get().set(0);
+
+		updateUser(connection, users, userId);
+	}
+
+	static private void checkUnsuccessfulEntries(IUser user, boolean correctPassword) {
+		Connection connection = ConnectionManager.get();
+		Users users = Users.newInstance();
+		int incorrectPasswordMax = ServerConfig.incorrectPasswordMax();
+		int incorrectPasswordTimeout = ServerConfig.incorrectPasswordTimeout();
+		date bannedDate = user.bannedDate();
+		date banExpireDate = bannedDate.addMinute(incorrectPasswordTimeout);
+		date now = date.z8_now();
+		boolean banExpire = now.operatorMore(banExpireDate).get();
+
+		if(!correctPassword && banExpire && incorrectPasswordMax > 0 && incorrectPasswordTimeout > 0) {
+			connection.beginTransaction();
+			int unsuccessfulEntries = user.unsuccessfulEntries() + 1;
+
+			if(incorrectPasswordMax > unsuccessfulEntries) {
+				users.unsuccessfulEntries.get().set(unsuccessfulEntries);
+			} else {
+				users.unsuccessfulEntries.get().set(0);
+				users.banned.get().set(true);
+				users.bannedDate.get().set(now);
+			}
+
+			updateUser(connection, users, user.id());
+		}
+
+		if(bannedDate.operatorNotEqu(date.Min).get() && banExpire && user.banned()) {
+			connection.beginTransaction();
+			users.banned.get().set(false);
+			users.bannedDate.get().set(date.Min);
+
+			updateUser(connection, users, user.id());
+		}
+	}
+
+	static private void updateUser(Connection connection, Users users, guid id) {
+		try {
+			users.update(id);
+			connection.commit();
+		} catch(Throwable e) {
+			connection.rollback();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -543,6 +646,9 @@ public class User implements IUser {
 			fields.add(users.email.get());
 			fields.add(users.company.get());
 			fields.add(users.position.get());
+			fields.add(users.unsuccessfulEntries.get());
+			fields.add(users.bannedDate.get());
+			fields.add(users.changePasswordDate.get());
 		}
 
 		users.read(fields, where);
@@ -563,7 +669,10 @@ public class User implements IUser {
 		this.email = users.email.get().string().get();
 		this.company = users.company.get().string().get();
 		this.position = users.position.get().string().get();
-		
+		this.unsuccessfulEntries = users.unsuccessfulEntries.get().integer().getInt();
+		this.bannedDate = users.bannedDate.get().date();
+		this.changePasswordDate = users.changePasswordDate.get().date();
+
 		if(shortInfo)
 			return true;
 

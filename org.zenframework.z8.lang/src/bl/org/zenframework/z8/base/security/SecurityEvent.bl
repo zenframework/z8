@@ -3,9 +3,12 @@ import org.zenframework.z8.lang.Object;
 [native "org.zenframework.z8.server.base.security.SecurityEvent"]
 public class SecurityEvent extends Object {
 
+	public Object getRequest();
 	public SecurityObject getObject();
 	public string getAction();
 	public bool isSuccess();
 	public string getMessage();
+	public void setDetails(string details);
+	public string getDetails();
 
 }
