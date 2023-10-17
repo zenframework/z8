@@ -1,6 +1,8 @@
 import org.zenframework.z8.base.security.LoginParameters;
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
+import org.zenframework.z8.base.table.value.DatetimeField;
+import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
@@ -62,6 +64,21 @@ public class Users extends Table {
 	[name "changePassword"]
 	[displayName "Изменить пароль при следующем входе"]
 	public BoolField changePassword;
+
+	[name "unsuccessfulEntries"]
+	[displayName "Количество неуспешных входов"]
+	[exportable false]
+	public IntField unsuccessfulEntries;
+
+	[name "bannedDate"]
+	[displayName "Дата блокировки"]
+	[exportable false]
+	public DatetimeField bannedDate;
+
+	[name "changePasswordDate"]
+	[displayName "Дата смены пароля"]
+	[exportable false]
+	public DatetimeField changePasswordDate;
 
 	virtual protected bool getParameters(guid id, string login, primary[string] parameters);
 	virtual protected bool getParameters(LoginParameters loginParameters, primary[string] parameters);

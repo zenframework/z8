@@ -20,6 +20,7 @@ Z8.loadMessages('en', {
     'ChangePassword.oneSpecialChar': 'one special character',
     'ChangePassword.oneDigit': 'single digit',
     'ChangePassword.length': 'characters must be at least ',
+    'ChangePassword.newPasswordRepeatOld': 'The new password must be different from the old password',
 
     // Application
     'Application.fileSize': 'File size \'',

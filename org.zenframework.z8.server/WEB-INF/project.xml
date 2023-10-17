@@ -23,6 +23,9 @@
 	<entry key="authority.center.cache"></entry>                        <!-- default=true -->
 	<entry key="authority.center.session.timeout"></entry>              <!-- default=1440, minutes -->
 
+	<entry key="user.incorrect.password.max"></entry>                   <!-- default=0 -->
+	<entry key="user.incorrect.password.timeout"></entry>               <!-- default=0, minutes -->
+
 	<entry key="interconnection.center.port"></entry>                   <!-- default=20000, 0 to disable -->
 	<entry key="interconnection.center.host"></entry>                   <!-- default=localhost -->
 	<entry key="interconnection.center.cache"></entry>                  <!-- default=true -->

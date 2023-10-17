@@ -120,12 +120,12 @@ public class RequestDispatcher implements Runnable {
 			try {
 				guid requestKey = guid.create(requestId);
 
-				securityLog.addEvent(Json.request.get(), requestKey, requestId, request.getParameter(Json.action));
+				OBJECT object = Loader.getInstance(requestId);
+
+				securityLog.addEvent(object, Json.request.get(), requestKey, requestId, request.getParameter(Json.action));
 
 				if(!ApplicationServer.getUser().privileges().getRequestAccess(requestKey).execute())
 					throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
-
-				OBJECT object = Loader.getInstance(requestId);
 
 				request.setTarget(object);
 
