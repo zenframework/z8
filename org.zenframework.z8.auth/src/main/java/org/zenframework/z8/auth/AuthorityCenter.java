@@ -179,8 +179,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	@Override
-	public void logout(ISession session) throws RemoteException {
-		getServerInfo().getServer().logoutUser(session);
+	public void logout(LoginParameters loginParameters) throws RemoteException {
+		getServerInfo().getServer().logoutUser(loginParameters);
 	}
 
 	private ISession login0(IServerInfo serverInfo, LoginParameters loginParameters) throws RemoteException {

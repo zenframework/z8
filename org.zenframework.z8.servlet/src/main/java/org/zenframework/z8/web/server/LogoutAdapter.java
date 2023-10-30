@@ -1,16 +1,10 @@
 package org.zenframework.z8.web.server;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.types.file;
 
 public class LogoutAdapter extends Adapter {
 
@@ -22,13 +16,11 @@ public class LogoutAdapter extends Adapter {
 	}
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
-		ServerConfig.authorityCenter().logout(session);
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HttpSession session = request.getSession();
 
-		HttpSession httpSession = request.getSession();
-
-		if (httpSession != null)
-			httpSession.invalidate();
+		if (session != null)
+			session.invalidate();
 
 		response.sendRedirect("/");
 	}

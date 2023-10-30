@@ -141,7 +141,7 @@ Z8.define('Z8.application.viewport.ChangePassword.PasswordField', {
 		var appPassword = Application.password;
 		var hasUpperCase = appPassword.mustHaveUpperCase ? /[A-ZА-Я]/.test(newPassword) : true;
 		var hasLowerCase = appPassword.mustHaveLowerCase ? /[a-zа-я]/.test(newPassword) : true;
-		var hasSpecialChar = appPassword.mustHaveSpecialСhar ? /[!@#$%^&*()_+{}\[\]:;<>,.?~\\\/'"`]/.test(newPassword) : true;
+		var hasSpecialChar = appPassword.mustHaveSpecialChar ? /[!@#$%^&*()_+{}\[\]:;<>,.?~\\\/'"`]/.test(newPassword) : true;
 		var hasDigit = Application.password.mustHaveDigit ? /[0-9]/.test(newPassword) : true;
 		return newPassword.length < appPassword.minLength || !hasUpperCase || !hasLowerCase || !hasSpecialChar || !hasDigit;
 	}
@@ -193,12 +193,12 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 		var appPassword = Application.password;
 		var mustHaveUpperCase = appPassword.mustHaveUpperCase;
 		var mustHaveLowerCase = appPassword.mustHaveLowerCase;
-		var mustHaveSpecialСhar = appPassword.mustHaveSpecialСhar;
+		var mustHaveSpecialChar = appPassword.mustHaveSpecialChar;
 		var mustHaveDigit = appPassword.mustHaveDigit;
 		var minLength = appPassword.minLength;
-		if(mustHaveUpperCase || mustHaveLowerCase || mustHaveSpecialСhar || mustHaveDigit || minLength > 0) {
+		if(mustHaveUpperCase || mustHaveLowerCase || mustHaveSpecialChar || mustHaveDigit || minLength > 0) {
 			return Z8.$('ChangePassword.passwordMustContain') + (mustHaveUpperCase ? '\n - ' + Z8.$('ChangePassword.oneCapitalLetter') : '') + (mustHaveLowerCase ? '\n - ' + Z8.$('ChangePassword.oneSmallLetter') : '')
-					+ (mustHaveSpecialСhar ? '\n - ' + Z8.$('ChangePassword.oneSpecialChar') : '') + (mustHaveDigit ? '\n - ' + Z8.$('ChangePassword.oneDigit') : '')
+					+ (mustHaveSpecialChar ? '\n - ' + Z8.$('ChangePassword.oneSpecialChar') : '') + (mustHaveDigit ? '\n - ' + Z8.$('ChangePassword.oneDigit') : '')
 					+ (minLength > 0 ? '\n - ' + Z8.$('ChangePassword.length') + minLength : '');
 		} else {
 			return Z8.$('ChangePassword.noRequirements');

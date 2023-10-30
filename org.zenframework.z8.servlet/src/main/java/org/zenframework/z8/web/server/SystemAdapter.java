@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
@@ -17,6 +18,7 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 
 public class SystemAdapter extends Adapter {
 	static private final String AdapterPath = "/request.json";
@@ -40,6 +42,8 @@ public class SystemAdapter extends Adapter {
 			verify(parameters, request, response);
 		else if(Json.register.get().equals(req))
 			register(parameters, request, response);
+		else if(Json.logout.get().equals(req))
+			logout(parameters, request, response);
 		else
 			super.service(request, response, parameters, files);
 	}
@@ -164,5 +168,15 @@ public class SystemAdapter extends Adapter {
 		writer.finishResponse();
 
 		writeResponse(response, writer.toString());
+	}
+
+	private void logout(Map<String, String> parameters, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String id = parameters.get(Json.id.get());
+		String login = parameters.get(Json.login.get());
+
+		LoginParameters loginParams = getLoginParameters(login, request, false);
+		loginParams.setUserId(new guid(id));
+
+		ServerConfig.authorityCenter().logout(loginParams);
 	}
 }

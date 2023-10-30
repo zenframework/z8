@@ -35,7 +35,7 @@ Z8.define('Z8.application.Application', {
 		minLength: 0,
 		mustHaveUpperCase: false,
 		mustHaveLowerCase: false,
-		mustHaveSpecialСhar: false,
+		mustHaveSpecialChar: false,
 		mustHaveDigit: false
 	},
 

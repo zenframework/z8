@@ -169,12 +169,12 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public void logoutUser(ISession session) throws RemoteException {
-		setRequest(new Request(session));
+	public void logoutUser(LoginParameters loginParameters) throws RemoteException {
+		setRequest(new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema())));
 
 		SecurityLog securityLog = Runtime.instance().securityLog().get();
 
-		securityLog.addUserEvent(session.user(), Json.logout.get());
+		securityLog.addUserEvent(new User(loginParameters), Json.logout.get());
 		securityLog.setResult(true, "");
 		securityLog.commitEvents();
 
