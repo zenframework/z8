@@ -265,10 +265,7 @@ Z8.define('Z8.calendar.Calendar', {
 	selectDay: function(day, focus) {
 		this.select(day, 'selectedDay', focus);
 
-		var date = this.date;
-		date.set(DOM.getIntAttribute(day, 'year'), Date.Year);
-		date.set(DOM.getIntAttribute(day, 'month'), Date.Month);
-		date.set(DOM.getIntAttribute(day, 'day'), Date.Day);
+		this.date = new Date(Date.parse(DOM.getIntAttribute(day, 'year') + '-' + (DOM.getIntAttribute(day, 'month') + 1) + '-' + DOM.getIntAttribute(day, 'day')));
 	},
 
 	selectHour: function(hour) {
