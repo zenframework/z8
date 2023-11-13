@@ -77,15 +77,11 @@ public class SecurityLog extends OBJECT {
 
 		threadUser.set(userCls);
 
-		addEvent("", guid.Null, "", event);
+		addEvent(null, "", guid.Null, "", event);
 	}
 
 	public void addEvent(OBJECT request, String objectType, guid objectId, String objectName, String action) {
 		addEvent(request, new string(objectType), objectId, new string(objectName), new string(action));
-	}
-
-	public void addEvent(String objectType, guid objectId, String objectName, String action) {
-		addEvent(null, new string(objectType), objectId, new string(objectName), new string(action));
 	}
 
 	public void addEvent(OBJECT request, string objectType, guid objectId, string objectName, string action) {

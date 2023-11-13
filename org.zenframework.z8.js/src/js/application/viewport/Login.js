@@ -133,17 +133,16 @@ Z8.define('Z8.application.viewport.ChangePassword.PasswordField', {
 	shortClassName: 'ChangePassword.PasswordField',
 
 	validate: function() {
-		this.setValid(!this.checkRequirements());
+		this.setValid(!this.checkRequirements(this.getValue() || ''));
 	},
 
-	checkRequirements: function() {
-		var newPassword = this.getValue() || '';
+	checkRequirements: function(value) {
 		var appPassword = Application.password;
-		var hasUpperCase = appPassword.mustHaveUpperCase ? /[A-ZА-Я]/.test(newPassword) : true;
-		var hasLowerCase = appPassword.mustHaveLowerCase ? /[a-zа-я]/.test(newPassword) : true;
-		var hasSpecialChar = appPassword.mustHaveSpecialChar ? /[!@#$%^&*()_+{}\[\]:;<>,.?~\\\/'"`]/.test(newPassword) : true;
-		var hasDigit = Application.password.mustHaveDigit ? /[0-9]/.test(newPassword) : true;
-		return newPassword.length < appPassword.minLength || !hasUpperCase || !hasLowerCase || !hasSpecialChar || !hasDigit;
+		var hasUpperCase = appPassword.mustHaveUpperCase ? /[A-ZА-Я]/.test(value) : true;
+		var hasLowerCase = appPassword.mustHaveLowerCase ? /[a-zа-я]/.test(value) : true;
+		var hasSpecialChar = appPassword.mustHaveSpecialChar ? /[!@#$%^&*()_+{}\[\]:;<>,.?~\\\/'"`]/.test(value) : true;
+		var hasDigit = Application.password.mustHaveDigit ? /[0-9]/.test(value) : true;
+		return value.length < appPassword.minLength || !hasUpperCase || !hasLowerCase || !hasSpecialChar || !hasDigit;
 	}
 });
 
@@ -222,7 +221,7 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 		}
 
 		var newPassword1 = this.newPassword1;
-		if(newPassword1.checkRequirements()) {
+		if(newPassword1.checkRequirements(newPassword1.getValue() || '')) {
 			Application.message({ text: Z8.$('ChangePassword.requirementsError'), type: 'error' });
 			this.okButton.setBusy(false);
 			return;

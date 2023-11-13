@@ -61,21 +61,21 @@ public class Users extends Table {
 	[displayName "Настройки"]
 	public TextField settings;
 
-	[name "changePassword"]
+	[name "Change Password"]
 	[displayName "Изменить пароль при следующем входе"]
 	public BoolField changePassword;
 
-	[name "unsuccessfulEntries"]
+	[name "Unsuccessful Entries"]
 	[displayName "Количество неуспешных входов"]
 	[exportable false]
 	public IntField unsuccessfulEntries;
 
-	[name "bannedDate"]
+	[name "Banned Date"]
 	[displayName "Дата блокировки"]
 	[exportable false]
 	public DatetimeField bannedDate;
 
-	[name "changePasswordDate"]
+	[name "Change Password Date"]
 	[displayName "Дата смены пароля"]
 	[exportable false]
 	public DatetimeField changePasswordDate;

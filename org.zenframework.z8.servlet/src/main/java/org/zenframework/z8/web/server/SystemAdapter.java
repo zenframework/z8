@@ -174,9 +174,6 @@ public class SystemAdapter extends Adapter {
 		String id = parameters.get(Json.id.get());
 		String login = parameters.get(Json.login.get());
 
-		LoginParameters loginParams = getLoginParameters(login, request, false);
-		loginParams.setUserId(new guid(id));
-
-		ServerConfig.authorityCenter().logout(loginParams);
+		ServerConfig.authorityCenter().logout(getLoginParameters(login, request, false).setUserId(new guid(id)));
 	}
 }

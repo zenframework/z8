@@ -496,7 +496,7 @@ public class User implements IUser {
 		
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		date now = date.z8_now();
+		date now = new date();
 		now.setTime(0, 0, 0);
 		
 		user.password = password;
@@ -545,7 +545,7 @@ public class User implements IUser {
 
 			date bannedDate = user.bannedDate();
 
-			if(user.banned() && bannedDate.operatorNotEqu(date.Min).get()) {
+			if(user.banned() && bannedDate.getTicks() != date.Min.getTicks()) {
 				date banExpireDate = bannedDate.addMinute(ServerConfig.incorrectPasswordTimeout());
 				throw new UserBannedException(banExpireDate.format("dd.MM.yyyy HH:mm:ss"));
 			}
@@ -564,15 +564,12 @@ public class User implements IUser {
 
 	static private void resetUnsuccessfulEntries(guid userId) {
 		Users users = Users.newInstance();
-		Connection connection = ConnectionManager.get();
-		connection.beginTransaction();
 		users.unsuccessfulEntries.get().set(0);
 
-		updateUser(connection, users, userId);
+		updateUser(users, userId);
 	}
 
 	static private void checkUnsuccessfulEntries(IUser user, boolean correctPassword) {
-		Connection connection = ConnectionManager.get();
 		Users users = Users.newInstance();
 		int incorrectPasswordMax = ServerConfig.incorrectPasswordMax();
 		int incorrectPasswordTimeout = ServerConfig.incorrectPasswordTimeout();
@@ -582,7 +579,6 @@ public class User implements IUser {
 		boolean banExpire = now.operatorMore(banExpireDate).get();
 
 		if(!correctPassword && banExpire && incorrectPasswordMax > 0 && incorrectPasswordTimeout > 0) {
-			connection.beginTransaction();
 			int unsuccessfulEntries = user.unsuccessfulEntries() + 1;
 
 			if(incorrectPasswordMax > unsuccessfulEntries) {
@@ -593,20 +589,21 @@ public class User implements IUser {
 				users.bannedDate.get().set(now);
 			}
 
-			updateUser(connection, users, user.id());
+			updateUser(users, user.id());
 		}
 
 		if(bannedDate.operatorNotEqu(date.Min).get() && banExpire && user.banned()) {
-			connection.beginTransaction();
 			users.banned.get().set(false);
 			users.bannedDate.get().set(date.Min);
 
-			updateUser(connection, users, user.id());
+			updateUser(users, user.id());
 		}
 	}
 
-	static private void updateUser(Connection connection, Users users, guid id) {
+	static private void updateUser(Users users, guid id) {
+		Connection connection = ConnectionManager.get();
 		try {
+			connection.beginTransaction();
 			users.update(id);
 			connection.commit();
 		} catch(Throwable e) {
