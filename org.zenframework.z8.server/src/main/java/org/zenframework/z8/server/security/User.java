@@ -21,6 +21,7 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -530,7 +531,8 @@ public class User implements IUser {
 		fields.add(users.password.get());
 
 		SqlToken where = (loginParameters.getUserId() != null) ? new Equ(users.recordId.get(), loginParameters.getUserId())
-				: new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
+				: (ServerConfig.caseSensitiveLogin() ? new Equ(users.name.get(), new string(loginParameters.getLogin()))
+				                                     : new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin())));
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
