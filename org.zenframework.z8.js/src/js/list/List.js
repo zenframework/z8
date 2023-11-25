@@ -1376,8 +1376,14 @@ Z8.define('Z8.list.List', {
 
 		for(var i = 0, length = filters.length; i < length; i++) {
 			var filter = filters[i].getFilter();
-			if(filter != null)
-				qiuckFilter.push(filter);
+			if(filter != null) {
+				if(!Array.isArray(filter))
+					qiuckFilter.push(filter);
+				else {
+					for(var i = 0, length = filter.length; i < length; i++)
+						qiuckFilter.push(filter[i]);
+				}
+			}
 		}
 
 		var search = header.searchBox;
