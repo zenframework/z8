@@ -90,10 +90,10 @@ Z8.define('Z8.list.Item', {
 		}
 
 		if(this.isTree()) {
-			var collapsed = this.isCollapsed();
-			this.rotation = collapsed ? 90 : -90;
-
-			var collapserIcon = { tag: 'i', cls: 'fa fa-caret-' + (collapsed ? 'right' : 'down') + ' icon', html: String.htmlText() };
+			var collapserCls = 'fa fa-caret-right icon';
+			if (!this.isCollapsed())
+				collapserCls += ' fa-rotate-90 fa-transform-transition';
+			var collapserIcon = { tag: 'i', cls: collapserCls, html: String.htmlText() };
 			var collapser = { tag: 'span', cls: 'collapser', cn: [collapserIcon] };
 			icons.push(collapser);
 		}
@@ -386,7 +386,7 @@ Z8.define('Z8.list.Item', {
 	collapse: function(collapsed) {
 		if(this.collapsed != collapsed) {
 			this.collapsed = collapsed;
-			DOM.rotate(this.collapserIcon, this.rotation == 90 ? (collapsed ? 0 : 90) : (collapsed ? -90 : 0));
+			DOM.rotate(this.collapserIcon, collapsed ? 0 : 90);
 			this.getList().onItemCollapse(this, collapsed);
 		}
 	},
