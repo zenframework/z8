@@ -558,7 +558,7 @@ Z8.define('Z8.form.field.Combobox', {
 	showDropdown: function(keepFocus) {
 		var dropdown = this.dropdown;
 
-		var width = DOM.getOffsetWidth(this/*.input*/);
+		var width = DOM.getOffsetWidth(this.getBox());
 		DOM.setWidth(dropdown, width);
 
 		var item = this.getCurrentItem();
