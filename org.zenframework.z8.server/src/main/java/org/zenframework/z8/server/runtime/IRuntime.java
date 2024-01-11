@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.Executable;
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.types.guid;
 
@@ -24,6 +25,8 @@ public interface IRuntime {
 	Collection<guid> executableKeys();
 
 	Collection<OBJECT.CLASS<? extends OBJECT>> systemTools();
+
+	SecurityLog.CLASS<? extends SecurityLog> securityLog();
 
 	Table.CLASS<? extends Table> getTable(String className);
 	Table.CLASS<? extends Table> getTableByName(String name);

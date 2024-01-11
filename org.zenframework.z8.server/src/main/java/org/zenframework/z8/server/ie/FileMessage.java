@@ -97,7 +97,7 @@ public class FileMessage extends Message {
 
 	@Override
 	protected boolean apply() {
-		File target = FileUtils.getFile(Folders.Temp, getAddress(), file.path.get());
+		File target = FileUtils.getFile(Folders.Temp, getAddress(), file.getPath());
 
 		long offset = file.offset();
 

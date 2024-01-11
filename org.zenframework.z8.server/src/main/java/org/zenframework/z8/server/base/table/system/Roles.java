@@ -10,6 +10,8 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -31,6 +33,8 @@ public class Roles extends Table {
 	final static public String TableName = "SystemRoles";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		public final static String Role = "Role";
 		public final static String Table = "Table";
 		public final static String Read = "Read";
@@ -67,6 +71,8 @@ public class Roles extends Table {
 	static public guid Guest = Role.Guest;
 	static public guid Administrator = Role.Administrator;
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public BoolField.CLASS<BoolField> read = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> write = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> create = new BoolField.CLASS<BoolField>(this);
@@ -96,6 +102,8 @@ public class Roles extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(read);
 		objects.add(write);
 		objects.add(create);
@@ -108,8 +116,13 @@ public class Roles extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(50);
+
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 
 		IAccess access = Access.guest();
 

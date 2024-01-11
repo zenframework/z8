@@ -15,6 +15,7 @@ public interface IAttribute extends ILanguageElement {
 	final static String Activator = "activator";
 	final static String Entry = "entry";
 	final static String Job = "job";
+	final static String Log = "log";
 
 	String getName();
 

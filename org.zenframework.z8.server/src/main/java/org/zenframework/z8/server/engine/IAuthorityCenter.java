@@ -15,9 +15,10 @@ public interface IAuthorityCenter extends IHubServer {
 	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException;
 	public IUser remind(String verification, String schema, String requestHost) throws RemoteException;
 	public IUser changePassword(String verification, String password, String schema, String requestHost) throws RemoteException;
+
+	public ISession authorize(String session, String server) throws RemoteException;
 	public ISession login(LoginParameters loginParameters, String password) throws RemoteException;
 	public ISession trustedLogin(LoginParameters loginParameters, boolean createIfNotExist) throws RemoteException;
-	public ISession server(String session, String server) throws RemoteException;
 
 	public void userChanged(guid user, String schema) throws RemoteException;
 	public void roleChanged(guid role, String schema) throws RemoteException;

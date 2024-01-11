@@ -2,6 +2,7 @@ import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.Link;
 import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
 
 [name "SystemDomains"]
 [displayName "Домены"]
@@ -19,8 +20,13 @@ public class Domains extends Table {
 	[name "UserId"]
 	public Link userLink = users;
 
-	[displayName "Имя"] name;
+	[displayName "Имя"]
+	[name "Name"]
+	public StringField name;
+	name.length = 50;
 	name.unique = true;
+
+	public TextField description;
 
 	[name "Owner"]
 	[displayName "Владелец"]

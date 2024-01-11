@@ -305,7 +305,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 		Field field = cache.fields.get(key);
 
 		if(field == null) {
-			field = getTable(tableName, cache).getFieldByName(fieldName);
+			Table table = getTable(tableName, cache);
+			if (table == null)
+				throw new RuntimeException("Table '" + tableName + "' not found");
+			field = table.getFieldByName(fieldName);
 			cache.fields.put(key, field);
 		}
 

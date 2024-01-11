@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.internet.MimeUtility;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.xml.GNode;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.types.encoding;
@@ -28,8 +29,10 @@ import org.zenframework.z8.web.servlet.Servlet;
 
 public class ConverterAdapter extends Adapter {
 
+	private final Servlet servlet;
+
 	public ConverterAdapter(Servlet servlet) {
-		super(servlet);
+		this.servlet = servlet;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	@Override
-	protected void service(ISession session, Map<String, String> parameters, List<file> files, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
 		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
@@ -53,10 +56,15 @@ public class ConverterAdapter extends Adapter {
 			requestUrl = requestUrl.substring(contextPath.length());
 
 		File relativePath = new File(requestUrl);
-		File absolutePath = new File(Folders.Base, requestUrl);
+		File absolutePath = null;
+		if (requestUrl.startsWith(Files.Storage))
+			absolutePath = new File(ServerConfig.storagePath(), requestUrl.substring(Files.Storage.length()));
+		else
+			absolutePath = new File(Folders.Base, requestUrl);
 
 		boolean preview = parameters.containsKey(Json.preview.get());
 		boolean noCache = parameters.containsKey(Json.noCache.get());
+		boolean stamps = parameters.containsKey(FileConverter.Stamps.get());
 
 		file file = null;
 
@@ -86,8 +94,8 @@ public class ConverterAdapter extends Adapter {
 			String ext = FileConverter.getExtension(absolutePath);
 			if (FileConverter.isConvertableToPdf(ext)) {
 				response.addHeader("Content-Type", "application/pdf");
-				if (!FileConverter.isPdfExtension(ext)) {
-					File convertedFile = new File(Folders.Base, Folders.Cache + '/' + relativePath + '.' + FileConverter.PDF);
+				if (!FileConverter.isPdfExtension(ext) || stamps) {
+					File convertedFile = new File(ServerConfig.storagePreviewPath(), relativePath.toString() + '.' + FileConverter.PDF);
 					absolutePath = FileConverter.convert(absolutePath, convertedFile, parameters);
 				}
 			} else {
@@ -106,7 +114,7 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	private String getContentType(File file) throws IOException {
-		String contentType = getServlet().getServletContext().getMimeType(file.getName().toLowerCase());
+		String contentType = servlet.getServletContext().getMimeType(file.getName().toLowerCase());
 
 		if(contentType == null)
 			return "text/plain";

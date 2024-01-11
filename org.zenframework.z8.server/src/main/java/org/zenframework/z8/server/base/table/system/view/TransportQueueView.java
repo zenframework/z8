@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 
 public class TransportQueueView extends TransportQueue {
@@ -31,20 +30,18 @@ public class TransportQueueView extends TransportQueue {
 	public void constructor2() {
 		super.constructor2();
 
-		readOnly = bool.True;
+		//readOnly = bool.True;
 
 		colCount = new integer(12);
 
-		ordinal.get().colSpan = new integer(2);
+		ordinal.get().colSpan = new integer(3);
 		registerControl(ordinal);
 		sender.get().colSpan = new integer(3);
 		registerControl(sender);
 		address.get().colSpan = new integer(3);
 		registerControl(address);
-		bytesTransferred.get().colSpan = new integer(2);
+		bytesTransferred.get().colSpan = new integer(3);
 		registerControl(bytesTransferred);
-		processed.get().colSpan = new integer(2);
-		registerControl(processed);
 
 		name.get().colSpan = new integer(12);
 		registerControl(name);

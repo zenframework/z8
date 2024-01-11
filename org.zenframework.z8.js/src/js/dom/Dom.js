@@ -423,6 +423,22 @@ Z8.define('Z8.dom.Dom', {
 			return DOM.parseCls(dom.className).indexOf(cls) != -1;
 		},
 
+		findCls: function(dom, pattern) {
+			if((dom = DOM.get(dom)) == null)
+				return null;
+			var classes = DOM.parseCls(dom.className);
+			var index = -1;
+
+			for (var i = 0, length = classes.length; i < length; ++i) {
+				if (classes[i].includes(pattern)) {
+					index = i;
+					continue;
+				}
+			}
+
+			return index != -1 ? classes[index] : null;
+		},
+
 		removeCls: function(dom, cls, delay) {
 			if((dom = DOM.get(dom)) == null)
 				return;
@@ -644,10 +660,10 @@ Z8.define('Z8.dom.Dom', {
 			if(degree != 0) {
 				DOM.addCls(dom, 'fa-transform-transition');
 				DOM.addCls(dom, cls);
-				dom.rotationCls = cls;
 			} else {
-				DOM.removeCls(dom, dom.rotationCls);
-				delete dom.rotationCls;
+				var rotationCls = DOM.findCls(dom, 'fa-rotate-');
+				if (rotationCls)
+					DOM.removeCls(dom, rotationCls);
 			}
 		},
 
@@ -743,11 +759,10 @@ Z8.define('Z8.dom.Dom', {
 		},
 
 		download: function(url, id, serverId, callback, noCache) {
-			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: '', hidden: true };
-			var frame = DOM.append(document.body, config);
-
-			frame.src = encodeURI((window._DEBUG_ ? '/' : '') + url.replace(/\\/g, '/')) + '?&session=' + Application.session +
+			var src = encodeURI((window._DEBUG_ ? '/' : '') + url.replace(/\\/g, '/')) + '?&session=' + Application.session +
 				(id != null ? '&id=' + id : '') + (serverId != null ? '&serverId=' + serverId : '') + (noCache ? '&noCache' : '');
+			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: src, hidden: true };
+			var frame = DOM.append(document.body, config);
 
 			new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, id, serverId, frame, callback);
 		},
@@ -777,7 +792,7 @@ Z8.define('Z8.dom.Dom', {
 				Z8.callback(callback, success);
 				DOM.remove(frame, 10000);
 			} else
-				new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, frame, callback);
+				new Z8.util.DelayedTask().delay(500, DOM.downloadCallback, this, url, id, serverId, frame, callback);
 		},
 
 		onReady: function(callback, scope) {

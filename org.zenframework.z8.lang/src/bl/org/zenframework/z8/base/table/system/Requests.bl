@@ -5,6 +5,7 @@ import org.zenframework.z8.base.table.value.StringField;
 [displayName "Таблицы"]
 [native "org.zenframework.z8.server.base.table.system.Requests"]
 public class Requests extends Table {
+	public StringField name;
 	name.length = 256;
 
 	[displayName "Системное имя"]

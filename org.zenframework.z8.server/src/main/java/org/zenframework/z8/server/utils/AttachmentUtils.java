@@ -21,7 +21,9 @@ public class AttachmentUtils {
 		
 		Files.get(file);
 		
-		File path = new File(ServerConfig.workingPath(), file.path.get());
+		String storage = new File(Files.Storage).toString().replace("\\", "/");
+		String pathStr = file.getPath();
+		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length())) : new File(Folders.Base, pathStr);
 
 		if (!path.exists())
 			return null;
@@ -29,7 +31,7 @@ public class AttachmentUtils {
 		if (FileConverter.isPdfExtension(ext))
 			return path;
 
-		File convertedFile = new File(Folders.Base, Folders.Cache + '/' + file.path.get() + '.' + FileConverter.PDF);
+		File convertedFile = new File(ServerConfig.storagePreviewPath(), file.path.get() + '.' + FileConverter.PDF);
 		return FileConverter.convert(path, convertedFile, parameters);
 	}
 

@@ -16,6 +16,8 @@ public final class sql_date extends sql_primary {
 	public sql_bool operator == (sql_date value);
 	public sql_bool operator != (sql_date value);
 
+	public sql_int minute();
+	public sql_int hour();
 	public sql_int day();
 	public sql_int month();
 	public sql_int year();

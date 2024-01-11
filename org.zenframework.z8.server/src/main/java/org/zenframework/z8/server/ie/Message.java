@@ -279,7 +279,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 
 	private boolean accept(boolean localSend) {
-		ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
+		if (!localSend)
+			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 
 		Domains domains = Domains.newInstance();
 		Domain acceptorDomain = domains.getDomain(address);
@@ -287,7 +288,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		IUser user = acceptorDomain != null ? acceptorDomain.getSystemUser() : User.system(Database.get(null));
 
 		IRequest currentRequest = ApplicationServer.getRequest();
-		ApplicationServer.setRequest(new Request(new Session("", user)));
+
+		IRequest request = new Request(new Session("", user));
+		request.setMonitor(currentRequest.getMonitor());
+		ApplicationServer.setRequest(request);
 
 		Connection connection = transactive() ? ConnectionManager.get() : null;
 
@@ -309,7 +313,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
-			ConnectionManager.release();
+			if(!localSend)
+				ConnectionManager.release();
 		}
 	}
 

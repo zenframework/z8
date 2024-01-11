@@ -17,23 +17,19 @@ public class SessionManager {
 	private Map<String, ISession> sessions = new HashMap<String, ISession>();
 	private Map<String, ISession> userSessions = new HashMap<String, ISession>();
 
-	SessionManager() {
-	}
+	SessionManager() {}
 
 	public void start() {
 		setSessionTimeout(ServerConfig.sessionTimeout());
 	}
 
-	public void stop() {
-	}
+	public void stop() {}
 
-	public ISession systemSession(String sessionId) {
+	public ISession getSession(String sessionId) {
 		ISession session = sessions.get(sessionId);
 
-		if(session != null) {
-			session.access();
-			return new Session(session);
-		}
+		if (session != null)
+			return new Session(session.touch());
 
 		throw new AccessDeniedException();
 	}

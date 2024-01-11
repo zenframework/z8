@@ -47,6 +47,7 @@ abstract public class HubServerView extends Query {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(HubServerView.class);
+			setAttribute("ui", "Z8.application.system.HubServerView");
 		}
 
 		@Override

@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
@@ -66,21 +70,23 @@ public class ServerConfig extends Properties {
 	static final private String WebServerWebapp = "web.server.webapp";
 	static final private String WebServerMappings = "web.server.content.map";
 	static final private String WebServerUrlPatterns = "web.server.urlPatterns";
-
-	static final private String WebServerServletConfigPrefix = "web.server.servlet.";
-
 	static final private String WebServerUploadMax = "web.server.upload.max";
-	static final private String WebClientDownloadMax = "web.client.download.max";
-	static final private String WebClientHashPassword = "web.client.hashPassword";
+	static final private String WebServerUploadMemThreshold = "web.server.upload.mem.threshold";
+	static final private String WebServerUseContainerSession = "web.server.useContainerSession";
 
 	static final private String WebServerGzipPaths = "web.server.gzip.paths";
 	static final private String WebServerGzipMethods = "web.server.gzip.methods";
 	static final private String WebServerGzipMimeTypes = "web.server.gzip.mimeTypes";
 
+	static final private String WebServerServletConfigPrefix = "web.server.servlet.";
+
+	static final private String WebClientDownloadMax = "web.client.download.max";
+	static final private String WebClientHashPassword = "web.client.hashPassword";
+
 	static final private String SchedulerEnabled = "scheduler.enabled";
 	static final private String MaintenenceJobCron = "maintenance.job.cron";
 	static final private String TransportJobCron = "transport.job.cron";
-	static final private String TransportJobTreads = "transport.job.treads";
+	static final private String TransportJobThreads = "transport.job.threads";
 	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
@@ -97,6 +103,7 @@ public class ServerConfig extends Properties {
 	static final public String OfficeExtensions = "file.converter.office";
 
 	static final private String OfficeHome = "office.home";
+	static final private String OfficePort = "office.port";
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
@@ -113,6 +120,12 @@ public class ServerConfig extends Properties {
 	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
 
 	static final private String FtsConfiguration = "fts.configuration";
+
+	static final private String SecurityLogFile = "security.log.file";
+	static final private String SecurityLogFormat = "security.log.format";
+
+	static final private String StoragePath = "storage.path";
+	static final private String StoragePreviewPath = "storage.preview.path";
 
 	static private File workingPath;
 
@@ -149,23 +162,25 @@ public class ServerConfig extends Properties {
 	static private File webServerWebapp;
 	static private String webServerMappings;
 	static private String webServerUrlPatterns;
-
-	static private Map<String, String> webServerServletParams;
-
 	static private int webServerUploadMax;
-	static private int webClientDownloadMax;
-	static private boolean webClientHashPassword;
+	static private int webServerUploadMemThreshold;
+	static private boolean webServerUseContainerSession;
 
 	static private String[] webServerGzipPaths;
 	static private String[] webServerGzipMethods;
 	static private String[] webServerGzipMimeTypes;
+
+	static private Map<String, String> webServerServletParams;
+
+	static private int webClientDownloadMax;
+	static private boolean webClientHashPassword;
 
 	static private boolean schedulerEnabled;
 
 	static private String maintenanceJobCron;
 
 	static private String transportJobCron;
-	static private int transportJobTreads;
+	static private int transportJobThreads;
 	static private boolean transportJobLogStackTrace;
 
 	static private String exchangeJobCron;
@@ -177,6 +192,7 @@ public class ServerConfig extends Properties {
 	static private boolean traceSqlConnections;
 
 	static private String officeHome;
+	static private int officePort;
 
 	static private String spnegoDomainRealm;
 	static private String spnegoPropertiesPath;
@@ -193,6 +209,12 @@ public class ServerConfig extends Properties {
 
 	static private String ftsConfiguration;
 
+	static private File securityLogFile;
+	static private String securityLogFormat;
+
+	static private File storagePath;
+	static private File storagePreviewPath;
+
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
 	static public String[] emailExtensions; // "eml, mime"
@@ -203,116 +225,123 @@ public class ServerConfig extends Properties {
 	static private IInterconnectionCenter interconnectionCenter;
 	static private IWebServer webServer;
 
-	public ServerConfig(String configFilePath) throws IOException {
+	private ServerConfig() {}
+
+	public static void load(String configFilePath) throws IOException {
 		if(instance != null)
 			return;
+
+		instance = new ServerConfig();
 
 		File configFile = new File(configFilePath != null ? configFilePath : DefaultConfigurationFileName);
 		workingPath = configFile.getCanonicalFile().getParentFile();
 
 		try {
-			load(new FileInputStream(configFile));
+			instance.load(new FileInputStream(configFile));
 		} catch(Throwable e) {
 /*
 			throw new RuntimeException(e);
 */
 /* >>>>>>>>>>>>>>>>> to remove */
 			try {
-				this.loadFromXML(new FileInputStream(new File(workingPath, "project.xml")));
+				instance.loadFromXML(new FileInputStream(new File(workingPath, "project.xml")));
 			} catch(Throwable e1) {
 				throw new RuntimeException(e);
 			}
 /* <<<<<<<<<<<<<<<<< to remove */
 		}
 
-		language = getProperty(Language, DefaultLanguage);
+		language = instance.getProperty(Language, DefaultLanguage);
 
-		instanceId = getProperty(InstanceId, DefaultInstanceId);
-		multitenancy = getProperty(Multitenancy, false);
+		instanceId = instance.getProperty(InstanceId, DefaultInstanceId);
+		multitenancy = instance.getProperty(Multitenancy, false);
 
-		databaseSchema = getProperty(DatabaseSchema);
-		databaseUser = getProperty(DatabaseUser);
-		databasePassword = getProperty(DatabasePassword);
-		databaseConnection = getProperty(DatabaseConnection);
-		databaseDriver = getProperty(DatabaseDriver);
-		databaseCharset = encoding.fromString(getProperty(DatabaseCharset));
-		
-		emailLogin = getProperty(EmailLogin, "noreply@doczilla.ru");
-		emailPassword = getProperty(EmailPassword);
+		databaseSchema = instance.getProperty(DatabaseSchema);
+		databaseUser = instance.getProperty(DatabaseUser);
+		databasePassword = instance.getProperty(DatabasePassword);
+		databaseConnection = instance.getProperty(DatabaseConnection);
+		databaseDriver = instance.getProperty(DatabaseDriver);
+		databaseCharset = encoding.fromString(instance.getProperty(DatabaseCharset));
 
-		applicationServerHost = getHost(ApplicationServerHost, Rmi.localhost);
-		applicationServerPort = getProperty(ApplicationServerPort, 15000);
-		applicationServerRequestTimeout = getProperty(ApplicationServerRequestTimeout, 10);
+		emailLogin = instance.getProperty(EmailLogin, "noreply@doczilla.ru");
+		emailPassword = instance.getProperty(EmailPassword);
 
-		authorityCenterHost = getHost(AuthorityCenterHost, Rmi.localhost);
-		authorityCenterPort = getProperty(AuthorityCenterPort, 10000);
-		authorityCenterCache = getProperty(AuthorityCenterCache, false);
-		authorityCenterSessionTimeout = getProperty(AuthorityCenterSessionTimeout, 24 * 60);
+		applicationServerHost = instance.getHost(ApplicationServerHost, Rmi.localhost);
+		applicationServerPort = instance.getProperty(ApplicationServerPort, 15000);
+		applicationServerRequestTimeout = instance.getProperty(ApplicationServerRequestTimeout, 10);
 
-		interconnectionCenterHost = getHost(InterconnectionCenterHost, Rmi.localhost);
-		interconnectionCenterPort = getProperty(InterconnectionCenterPort, 20000);
-		interconnectionCenterCache = getProperty(InterconnectionCenterCache, false);
+		authorityCenterHost = instance.getHost(AuthorityCenterHost, Rmi.localhost);
+		authorityCenterPort = instance.getProperty(AuthorityCenterPort, 10000);
+		authorityCenterCache = instance.getProperty(AuthorityCenterCache, false);
+		authorityCenterSessionTimeout = instance.getProperty(AuthorityCenterSessionTimeout, 24 * 60);
 
-		webServerPort = getProperty(WebServerPort, 25000);
-		webServerHttpPort = getProperty(WebServerHttpPort, 9080);
+		interconnectionCenterHost = instance.getHost(InterconnectionCenterHost, Rmi.localhost);
+		interconnectionCenterPort = instance.getProperty(InterconnectionCenterPort, 20000);
+		interconnectionCenterCache = instance.getProperty(InterconnectionCenterCache, false);
 
-		webServerWebapp = new File(getProperty(WebServerWebapp, ".."));
-		if (!webServerWebapp.isAbsolute())
-			webServerWebapp = new File(workingPath, getProperty(WebServerWebapp, ".."));
+		webServerPort = instance.getProperty(WebServerPort, 25000);
+		webServerHttpPort = instance.getProperty(WebServerHttpPort, 9080);
+		webServerWebapp = instance.getFile(WebServerWebapp, "..");
+		webServerMappings = instance.getProperty(WebServerMappings);
+		webServerUrlPatterns = instance.getProperty(WebServerUrlPatterns);
+		webServerUploadMax = instance.getProperty(WebServerUploadMax, 5);
+		webServerUploadMemThreshold = instance.getProperty(WebServerUploadMemThreshold, 1);
+		webServerUseContainerSession = instance.getProperty(WebServerUseContainerSession, false);
 
-		webServerMappings = getProperty(WebServerMappings);
-		webServerUrlPatterns = getProperty(WebServerUrlPatterns);
-
-		webServerServletParams = filterParameters(WebServerServletConfigPrefix);
-
-		webServerUploadMax = getProperty(WebServerUploadMax, 5);
-		webClientDownloadMax = getProperty(WebClientDownloadMax, 1);
-		webClientHashPassword = getProperty(WebClientHashPassword, true);
-
-		webServerGzipPaths = getProperty(WebServerGzipPaths, new String[] { "/*" });
-		webServerGzipMethods = getProperty(WebServerGzipMethods, new String[] { "GET", "POST" });
-		webServerGzipMimeTypes = getProperty(WebServerGzipMimeTypes, new String[] {
+		webServerGzipPaths = instance.getProperty(WebServerGzipPaths, new String[] { "/*" });
+		webServerGzipMethods = instance.getProperty(WebServerGzipMethods, new String[] { "GET", "POST" });
+		webServerGzipMimeTypes = instance.getProperty(WebServerGzipMimeTypes, new String[] {
 				"text/html", "text/plain", "text/xml", "text/css", "text/javascript", "text/json",
 				"application/javascript", "application/json", "application/octet-stream",
 				"application/x-javascript", "application/xml", "application/xml+xhtml", "image/svg+xml"
 		});
 
-		traceSql = getProperty(TraceSql, false);
-		traceSqlConnections = getProperty(TraceSqlConnections, false);
+		webServerServletParams = instance.filterParameters(WebServerServletConfigPrefix);
 
-		schedulerEnabled = getProperty(SchedulerEnabled, true);
-		maintenanceJobCron = getProperty(MaintenenceJobCron, "");
-		transportJobCron = getProperty(TransportJobCron, "");
-		transportJobTreads = getProperty(TransportJobTreads, 10);
-		transportJobLogStackTrace = getProperty(TransportJobLogStackTrace, false);
+		webClientDownloadMax = instance.getProperty(WebClientDownloadMax, 1);
+		webClientHashPassword = instance.getProperty(WebClientHashPassword, true);
 
-		exchangeJobCron = getProperty(ExchangeJobCron, "");
-		exchangeFolderIn = new File(workingPath, getProperty(ExchangeFolderIn, "exchange/in"));
-		exchangeFolderOut = new File(workingPath, getProperty(ExchangeFolderOut, "exchange/out"));
-		exchangeFolderErr = new File(workingPath, getProperty(ExchangeFolderErr, "exchange/err"));
+		traceSql = instance.getProperty(TraceSql, false);
+		traceSqlConnections = instance.getProperty(TraceSqlConnections, false);
 
-		textExtensions = getProperty(TextExtensions, new String[] { "txt", "xml" });
-		imageExtensions = getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
-		emailExtensions = getProperty(EmailExtensions, new String[] { "eml", "mime" });
-		officeExtensions = getProperty(OfficeExtensions, new String[] { "doc", "docx", "rtf", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
+		schedulerEnabled = instance.getProperty(SchedulerEnabled, true);
+		maintenanceJobCron = instance.getProperty(MaintenenceJobCron, "");
+		transportJobCron = instance.getProperty(TransportJobCron, "");
+		transportJobThreads = instance.getProperty(TransportJobThreads, 10);
+		transportJobLogStackTrace = instance.getProperty(TransportJobLogStackTrace, false);
 
-		officeHome = getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
+		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
+		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in");
+		exchangeFolderOut = instance.getFile(ExchangeFolderOut, "exchange/out");
+		exchangeFolderErr = instance.getFile(ExchangeFolderErr, "exchange/err");
 
-		spnegoDomainRealm = getProperty(SpnegoDomainRealm, "");
-		spnegoPropertiesPath = getProperty(SpnegoPropertiesPath, "");
-		ldapCheckLdapLogin = getProperty(LdapCheckLdapLogin, false);
-		ldapUrl = getProperty(LdapUrl, "");
-		ldapPrincipalName = getProperty(LdapPrincipalName, "");
-		ldapCredentials = getProperty(LdapCredentials, "");
-		ldapSearchBase = getProperty(LdapSearchBase, "");
-		ldapSearchUserFilter = getProperty(LdapSearchUserFilter, "");
-		ldapSearchGroupFilter = getProperty(LdapSearchGroupFilter, "");
-		ldapUsersIgnore = StringUtils.asList(getProperty(LdapUsersIgnore, "Admin"), "\\,");
-		ldapUsersCreateOnSuccessfulLogin = Boolean.parseBoolean(getProperty(LdapUsersCreateOnSuccessfulLogin, "false"));
+		textExtensions = instance.getProperty(TextExtensions, new String[] { "txt", "xml" });
+		imageExtensions = instance.getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
+		emailExtensions = instance.getProperty(EmailExtensions, new String[] { "eml", "mime" });
+		officeExtensions = instance.getProperty(OfficeExtensions, new String[] { "doc", "docx", "rtf", "xls", "xlsx", "ppt", "pptx", "odt", "odp", "ods", "odf", "odg", "wpd", "sxw", "sxi", "sxc", "sxd", "stw", "vsd" });
 
-		ftsConfiguration = getProperty(FtsConfiguration, (String) null);
+		officeHome = instance.getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
+		officePort = instance.getProperty(OfficePort, 8100);
 
-		instance = this;
+		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
+		spnegoPropertiesPath = instance.getProperty(SpnegoPropertiesPath, "");
+		ldapCheckLdapLogin = instance.getProperty(LdapCheckLdapLogin, false);
+		ldapUrl = instance.getProperty(LdapUrl, "");
+		ldapPrincipalName = instance.getProperty(LdapPrincipalName, "");
+		ldapCredentials = instance.getProperty(LdapCredentials, "");
+		ldapSearchBase = instance.getProperty(LdapSearchBase, "");
+		ldapSearchUserFilter = instance.getProperty(LdapSearchUserFilter, "");
+		ldapSearchGroupFilter = instance.getProperty(LdapSearchGroupFilter, "");
+		ldapUsersIgnore = instance.getList(LdapUsersIgnore, "Admin", "\\,");
+		ldapUsersCreateOnSuccessfulLogin = instance.getProperty(LdapUsersCreateOnSuccessfulLogin, false);
+
+		ftsConfiguration = instance.getProperty(FtsConfiguration, (String) null);
+
+		securityLogFile = instance.getFile(SecurityLogFile, null);
+		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
+
+		storagePath = instance.getFile(StoragePath, "storage");
+		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -386,6 +415,39 @@ public class ServerConfig extends Properties {
 		}
 
 		return result;
+	}
+
+	public File getFile(String key, String defaultValue) {
+		String value = getProperty(key, defaultValue);
+
+		if (value == null)
+			return null;
+
+		File file = new File(value);
+
+		try {
+			return file.isAbsolute() ? file : new File(workingPath, value).getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<String> getList(String key, String defaultValue, String delimiter) {
+		return StringUtils.asList(getProperty(key, defaultValue), delimiter);
+	}
+
+	public Map<String, String> getMap(String key, String defaultValue, String pattern) {
+		String value = getProperty(key, defaultValue);
+
+		if (value == null)
+			return Collections.emptyMap();
+
+		Map<String, String> map = new HashMap<String, String>();
+		Matcher matcher = Pattern.compile(pattern).matcher(value);
+		while (matcher.find())
+			map.put(matcher.group("key"), matcher.group("value"));
+
+		return Collections.unmodifiableMap(map);
 	}
 
 	public String getHost(String key, String defaultValue) {
@@ -543,16 +605,16 @@ public class ServerConfig extends Properties {
 		return webServerUrlPatterns;
 	}
 
-	static public Map<String, String> webServerServletParams() {
-		return webServerServletParams;
-	}
-
 	static public int webServerUploadMax() {
 		return webServerUploadMax;
 	}
 
-	static public int webClientDownloadMax() {
-		return webClientDownloadMax;
+	static public int webServerUploadMemThreshold() {
+		return webServerUploadMemThreshold;
+	}
+
+	static public boolean webServerUseContainerSession() {
+		return webServerUseContainerSession;
 	}
 
 	static public String[] webServerGzipPaths() {
@@ -565,6 +627,14 @@ public class ServerConfig extends Properties {
 
 	static public String[] webServerGzipMimeTypes() {
 		return webServerGzipMimeTypes;
+	}
+
+	static public Map<String, String> webServerServletParams() {
+		return webServerServletParams;
+	}
+
+	static public int webClientDownloadMax() {
+		return webClientDownloadMax;
 	}
 
 	static public boolean isSchedulerEnabled() {
@@ -584,7 +654,7 @@ public class ServerConfig extends Properties {
 	}
 
 	static public int transportJobThreads() {
-		return transportJobTreads;
+		return transportJobThreads;
 	}
 
 	static public String transportJobCron() {
@@ -635,6 +705,10 @@ public class ServerConfig extends Properties {
 		return officeHome;
 	}
 
+	static public int officePort() {
+		return officePort;
+	}
+
 	static public boolean webClientHashPassword() {
 		return webClientHashPassword;
 	}
@@ -683,6 +757,22 @@ public class ServerConfig extends Properties {
 
 	static public String ftsConfiguration() {
 		return ftsConfiguration;
+	}
+
+	static public File securityLogFile() {
+		return securityLogFile;
+	}
+
+	static public String securityLogFormat() {
+		return securityLogFormat;
+	}
+
+	static public File storagePath() {
+		return storagePath;
+	}
+
+	static public File storagePreviewPath() {
+		return storagePreviewPath;
 	}
 
 	static public IApplicationServer applicationServer() {

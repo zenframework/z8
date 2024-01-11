@@ -393,13 +393,13 @@ Z8.define('Z8.form.field.Combobox', {
 	},
 
 	clearFilter: function() {
-		if(this.lastQuery.isEmpty())
-			return;
+		if(!this.lastQuery.isEmpty()) {
+			this.queryTask.cancel();
+			this.lastQuery = '';
+		}
 
-		this.queryTask.cancel();
-		this.lastQuery = '';
-
-		this.dropdown.clearFilter();
+		if(this.dropdown)
+			this.dropdown.clearFilter();
 	},
 
 	findItem: function(text, start) {
@@ -558,7 +558,7 @@ Z8.define('Z8.form.field.Combobox', {
 	showDropdown: function(keepFocus) {
 		var dropdown = this.dropdown;
 
-		var width = DOM.getOffsetWidth(this/*.input*/);
+		var width = DOM.getOffsetWidth(this.getBox());
 		DOM.setWidth(dropdown, width);
 
 		var item = this.getCurrentItem();

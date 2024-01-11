@@ -1,26 +1,12 @@
 import org.zenframework.z8.base.query.Query;
-import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.base.table.value.IntField;
-import org.zenframework.z8.base.table.value.StringField;
-import org.zenframework.z8.base.table.value.TextField;
 
 [native "org.zenframework.z8.server.base.table.Table"]
 public class Table extends Query {
 	[name "RecordId"]
 	public GuidField recordId;
-
-	[name "Name"]
-	public StringField name;
-	name.length = 50;
-
-	[name "Short name"]
-	public StringField shortName;
-	shortName.length = 15;
-
-	[name "Description"]
-	public TextField description;
 
 	[name "CreatedAt"]
 	public DatetimeField createdAt;
@@ -36,8 +22,5 @@ public class Table extends Query {
 
 	[name "Lock"]
 	public IntField lock;
-
-	[name "Archive"]
-	public BoolField archive;
 
 }

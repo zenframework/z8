@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.job.Job;
 import org.zenframework.z8.server.base.job.JobMonitor;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.view.Dashboard;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -18,7 +19,6 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.actions.ActionFactory;
 import org.zenframework.z8.server.request.actions.RequestAction;
-import org.zenframework.z8.server.runtime.IAttributed;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.Privileges;
@@ -42,8 +42,6 @@ public class RequestDispatcher implements Runnable {
 			dispatch();
 		} catch(Throwable exception) {
 			exception = ErrorUtils.unwrapRuntimeException(exception);
-
-			Trace.logError(request.toString(), exception);
 
 			JsonWriter writer = new JsonWriter();
 			writer.startResponse(request.id(), false);
@@ -117,27 +115,44 @@ public class RequestDispatcher implements Runnable {
 
 			response.setContent(writer.toString());
 		} else {
-			if(!ApplicationServer.getUser().privileges().getRequestAccess(guid.create(requestId)).execute())
-				throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
+			SecurityLog securityLog = Runtime.instance().securityLog().get();
 
-			OBJECT object = Loader.getInstance(requestId);
+			try {
+				guid requestKey = guid.create(requestId);
 
-			request.setTarget(object);
+				securityLog.addEvent(Json.request.get(), requestKey, requestId, request.getParameter(Json.action));
 
-			if(object instanceof Query) {
-				Query query = (Query)object;
-				RequestAction action = ActionFactory.create(query);
-				request.setAction(action);
-				action.processRequest(response);
-			} else if(object instanceof Executable) {
-				String name = object.getCLASS().getAttribute(IAttributed.Name);
-				Executable executable = (Executable)(name != null ? Runtime.instance().getExecutableByName(name).newInstance() : object);
-				Job job = new Job(executable);
-				job.processRequest(response);
-			} else
-				object.processRequest(response);
+				if(!ApplicationServer.getUser().privileges().getRequestAccess(requestKey).execute())
+					throw new AccessRightsViolationException(Privileges.displayNames.NoExecuteAccess);
 
-			ConnectionManager.release();
+				OBJECT object = Loader.getInstance(requestId);
+
+				request.setTarget(object);
+
+				if(object instanceof Query) {
+					Query query = (Query)object;
+					RequestAction action = ActionFactory.create(query);
+					request.setAction(action);
+					action.processRequest(response);
+				} else if(object instanceof Executable) {
+					Job job = new Job(getNamedExecutable((Executable)object));
+					job.processRequest(response);
+				} else
+					object.processRequest(response);
+
+				securityLog.setResult(true, "");
+			} catch (Throwable e) {
+				securityLog.setResult(false, e.getMessage());
+				throw e;
+			} finally {
+				securityLog.commitEvents();
+				ConnectionManager.release();
+			}
 		}
+	}
+
+	private Executable getNamedExecutable(Executable executable) {
+		Executable.CLASS<? extends Executable> namedExecutable = Runtime.instance().getExecutableByName(executable.name());
+		return namedExecutable != null ? namedExecutable.newInstance() : executable;
 	}
 }

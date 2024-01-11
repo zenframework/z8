@@ -2,9 +2,9 @@ package org.zenframework.z8.server.engine;
 
 import java.rmi.RemoteException;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -57,45 +57,59 @@ public final class ServerMain {
 		return options;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
-			CommandLineParser parser = new BasicParser();
+			CommandLineParser parser = new DefaultParser();
 			CommandLine cmd = parser.parse(Options, args);
 
-			if(!cmd.hasOption(ServerOpt))
-				throw new RuntimeException("Server type is not specified");
+			ServerConfig.load(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
 
-			final ServerType serverType = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
-			if(serverType == null)
-				throw new RuntimeException("Incorrect server type: " + cmd.getOptionValue(ServerOpt));
-
-			final Class<? extends IServer> serverClass;
-			if(cmd.getOptionValue(ServerClassOpt) != null)
-				serverClass = (Class<? extends IServer>)Class.forName(cmd.getOptionValue(ServerClassOpt));
-			else
-				serverClass = (Class<? extends IServer>)Class.forName(serverType.className);
-
-			ServerConfig config = new ServerConfig(cmd.hasOption(ConfigOpt) ? cmd.getOptionValue(ConfigOpt) : null);
+			IServer server = getServer(cmd, !cmd.hasOption(StopOpt));
 
 			if(cmd.hasOption(StopOpt)) {
-				serverType.getServer().stop();
+				server.stop();
 				return;
 			}
 
-			serverClass.getMethod("launch", ServerConfig.class).invoke(null, config);
+			server.start();
+
 			java.lang.Runtime.getRuntime().addShutdownHook(new Thread("Z8-shutdown") {
 				@Override
 				public void run() {
 					try {
-						serverType.getServer().stop();
-					} catch(RemoteException e) {
-					}
+						server.stop();
+					} catch(RemoteException e) {}
 				}
 			});
 		} catch(Throwable e) {
 			Trace.logError("Couldn't start server " + args, e);
 			System.exit(-1);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static IServer getServer(CommandLine cmd, boolean newInstance) throws Exception {
+		ServerType serverType = null;
+
+		if (cmd.hasOption(ServerOpt)) {
+			serverType = ServerType.valueOf(cmd.getOptionValue(ServerOpt));
+
+			if (serverType == null)
+				throw new RuntimeException("Incorrect server type: " + cmd.getOptionValue(ServerOpt));
+			else if (!newInstance)
+				return serverType.getServer();
+		}
+
+		String className = null;
+
+		if (cmd.hasOption(ServerClassOpt))
+			className = cmd.getOptionValue(ServerClassOpt);
+		else if (serverType != null)
+			className = serverType.className;
+		else
+			throw new RuntimeException("Server type is not specified");
+
+		Class<? extends IServer> serverClass = (Class<? extends IServer>)Class.forName(className);
+		return serverClass.getConstructor().newInstance();
 	}
 }

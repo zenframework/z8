@@ -3,6 +3,7 @@ import org.zenframework.z8.base.table.value.BoolExpression;
 import org.zenframework.z8.base.table.value.Field;
 import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.StringExpression;
+import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
 [native "org.zenframework.z8.justintime.table.Source"]
@@ -17,8 +18,13 @@ public class Source extends TreeTable {
 
 	parentId = parent;
 
+	public StringField name;
 	name.length = 1000;
+
+	public StringField shortName;
 	shortName.length = 100;
+
+	public TextField description;
 
 	[name "Source"] public TextField source;
 

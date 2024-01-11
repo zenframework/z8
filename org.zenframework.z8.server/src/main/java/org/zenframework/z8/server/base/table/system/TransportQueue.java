@@ -31,6 +31,8 @@ public class TransportQueue extends Table {
 	static public String TableName = "SystemTransportQueue";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		static public String Address = "Address";
 		static public String Sender = "Sender";
 		static public String Ordinal = "Ordinal";
@@ -85,6 +87,9 @@ public class TransportQueue extends Table {
 		}
 	}
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
+
 	public StringField.CLASS<StringField> address = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> sender = new StringField.CLASS<StringField>(this);
 
@@ -107,6 +112,8 @@ public class TransportQueue extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(address);
 		objects.add(sender);
 		objects.add(ordinal);
@@ -121,9 +128,13 @@ public class TransportQueue extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.get().setDisplayName(displayNames.Name);
 		name.get().length = new integer(100);
 
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 		description.get().setDisplayName(displayNames.Description);
 
 		sender.setName(fieldNames.Sender);

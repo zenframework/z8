@@ -162,6 +162,7 @@
 
 	<!-- Jobs -->
 	<entry key="Jobs.title">Задания</entry>
+	<entry key="Jobs.name">Задание</entry>
 	<entry key="Jobs.classId">Системное имя</entry>
 
 	<!-- Requests -->
@@ -175,7 +176,7 @@
 	<entry key="ScheduledJobs.settings">Настройки</entry>
 	<entry key="ScheduledJobs.cron">CRON-выражение</entry>
 	<entry key="ScheduledJobs.logErrorsOnly">Логировать только ошибки</entry>
-	<entry key="ScheduledJobs.active">Активна</entry>
+	<entry key="ScheduledJobs.active">Активно</entry>
 	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
 	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
 
@@ -221,6 +222,7 @@
 	<entry key="Exception.fileNotFound">Файл не найден: {0}</entry>
 	<entry key="Exception.fileCanNotBeDeleted">Файл не может быть удален: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
+	<entry key="Exception.duplicateRole">Роль "{0}" уже была добавлена раньше</entry>
 
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 

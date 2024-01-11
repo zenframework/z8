@@ -38,7 +38,7 @@ Z8.define('Z8.calendar.Period', {
 
 	last7Days: function() {
 		return {
-			start: new Date().truncDay().add(-7, Date.Day),
+			start: new Date().truncDay().add(-6, Date.Day),
 			finish: new Date()
 		};
 	},

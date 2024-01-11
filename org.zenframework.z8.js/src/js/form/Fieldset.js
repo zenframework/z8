@@ -111,8 +111,8 @@ Z8.define('Z8.form.Fieldset', {
 				var control = controls[controlIndex];
 				var isComponent = control.isComponent;
 				var isAction = control.isAction;
-
-				var style = control.scrollable ? 'min-height:' + (control.getMinHeight() + Fieldset.MarginBottom) + 'em' : null;
+				var scrollableMinHeight = control.scrollable && control.getMinHeight() != 0 ? control.getMinHeight(): 10;
+				var style = control.scrollable ? 'min-height:' + (scrollableMinHeight + Fieldset.MarginBottom)  + 'em' : null;
 
 				cn.add(isComponent ? control.htmlMarkup() : control);
 

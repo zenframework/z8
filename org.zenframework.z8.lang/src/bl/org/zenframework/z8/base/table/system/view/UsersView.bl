@@ -2,7 +2,10 @@ import org.zenframework.z8.base.table.system.Users;
 
 [native "org.zenframework.z8.server.base.table.system.view.UsersView"]
 class UsersView extends Users {
-	protected UsersForm form;
+
+	recordId.valueFor = recordId;
+
+	protected UserForm form;
 	form.users = this;
 	form.flex = 1;
 

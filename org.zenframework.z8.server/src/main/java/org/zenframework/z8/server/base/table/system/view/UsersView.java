@@ -18,7 +18,7 @@ public class UsersView extends Users {
 		}
 	}
 
-	public UsersForm.CLASS<? extends UsersForm> form = new UsersForm.CLASS<UsersForm>(this);
+	public UserForm.CLASS<? extends UserForm> form = new UserForm.CLASS<UserForm>(this);
 
 	public UsersView(IObject container) {
 		super(container);
@@ -35,6 +35,8 @@ public class UsersView extends Users {
 	@SuppressWarnings("unchecked")
 	public void constructor2() {
 		super.constructor2();
+
+		recordId.get().valueFor = recordId;
 
 		form.setIndex("form");
 		form.get().users = (UsersView.CLASS<UsersView>) this.getCLASS();

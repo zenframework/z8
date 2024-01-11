@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.TreeTable;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
@@ -26,6 +27,8 @@ public class Settings extends TreeTable {
 	final static public guid Version = guid.create(strings.Version);
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		public final static String Value = "Value";
 	}
 
@@ -61,6 +64,8 @@ public class Settings extends TreeTable {
 		}
 	}
 
+	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
+	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public TextField.CLASS<TextField> value = new TextField.CLASS<TextField>(this);
 
 	static public Settings newInstance() {
@@ -79,6 +84,8 @@ public class Settings extends TreeTable {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(value);
 	}
 
@@ -86,8 +93,13 @@ public class Settings extends TreeTable {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(256);
+
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 
 		value.setName(fieldNames.Value);
 		value.setIndex("value");

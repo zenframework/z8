@@ -4,6 +4,8 @@ dependencies {
 	implementation project(':org.zenframework.z8.server')
 	implementation project(':org.zenframework.z8.auth')
 	implementation project(':org.zenframework.z8.interconnection')
+
+	compile ("org.zenframework.z8.dependencies:z8-dependencies-servlet:${dependenciesVersion}@pom") { transitive = true }
 }
 
 publishing.publications {

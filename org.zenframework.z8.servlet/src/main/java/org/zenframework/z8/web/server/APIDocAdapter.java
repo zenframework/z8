@@ -1,9 +1,15 @@
 package org.zenframework.z8.web.server;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.zenframework.z8.server.apidocs.DocBuilder;
 import org.zenframework.z8.server.apidocs.dto.Documentation;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -15,16 +21,11 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.ContentType;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.web.servlet.Servlet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 
 public class APIDocAdapter extends Adapter {
 
@@ -33,10 +34,6 @@ public class APIDocAdapter extends Adapter {
 
 	private Documentation documentation;
 	private Template temp;
-
-	public APIDocAdapter(Servlet servlet) {
-		super(servlet);
-	}
 
 	@Override
 	public boolean canHandleRequest(HttpServletRequest request) {

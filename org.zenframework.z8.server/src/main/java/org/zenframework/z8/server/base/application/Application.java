@@ -2,14 +2,17 @@ package org.zenframework.z8.server.base.application;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.json.JsonWriter;
+import org.zenframework.z8.server.base.security.SecurityObject;
 import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.NumericUtils;
@@ -48,6 +51,14 @@ public class Application {
 
 	static public void z8_logError(string text) {
 		ApplicationServer.getMonitor().logError(text.get());
+	}
+
+	static public void z8_logSecurityEvent(string objectType, guid objectId, string objectName, string action) {
+		Runtime.instance().securityLog().get().addEvent(objectType, objectId, objectName, action);
+	}
+
+	static public void z8_logSecurityEvent(SecurityObject.CLASS<? extends SecurityObject> object, string action) {
+		Runtime.instance().securityLog().get().addEvent(object.get(), action);
 	}
 
 	static public void z8_info(string text) {

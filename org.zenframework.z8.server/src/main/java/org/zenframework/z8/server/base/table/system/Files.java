@@ -14,7 +14,9 @@ import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
@@ -25,8 +27,10 @@ import org.zenframework.z8.server.utils.IOUtils;
 
 public class Files extends Table {
 	public static final String TableName = "SystemFiles";
+	public static final String Storage = "storage/";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
 		public final static String File = "File";
 		public final static String Path = "Path";
 		public final static String Size = "Size";
@@ -70,6 +74,7 @@ public class Files extends Table {
 		}
 	}
 
+	public final StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public final StringField.CLASS<StringField> path = new StringField.CLASS<StringField>(this);
 	public final BinaryField.CLASS<BinaryField> data = new BinaryField.CLASS<BinaryField>(this);
 	public final IntegerField.CLASS<IntegerField> size = new IntegerField.CLASS<IntegerField>(this);
@@ -88,6 +93,7 @@ public class Files extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
 		objects.add(data);
 		objects.add(path);
 		objects.add(size);
@@ -99,6 +105,8 @@ public class Files extends Table {
 	public void constructor2() {
 		super.constructor2();
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
 		name.setDisplayName(displayNames.Name);
 		name.get().length = new integer(512);
 
@@ -188,13 +196,18 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
-		File path = new File(Folders.Base, file.path.get());
+		String storage = new File(Storage).toString().replace("\\", "/");
+		String pathStr = file.getPath();
+		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
+				: new File(Folders.Base, pathStr);
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
 
-			if(inputStream == null)
+			if(inputStream == null) {
+				Trace.logError(new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath()));
 				return null;
+			}
 
 			IOUtils.copy(inputStream, path);
 		}

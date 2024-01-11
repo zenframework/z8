@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
+import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
@@ -28,6 +29,8 @@ public class Domains extends Table {
 	static public String TableName = "SystemDomains";
 
 	static public class fieldNames {
+		public final static String Name = "Name";
+		public final static String Description = "Description";
 		public final static String Address = "Id";
 		public final static String User = "User";
 		public final static String Owner = "Owner";
@@ -75,9 +78,13 @@ public class Domains extends Table {
 
 	public final Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 
+	public final StringField.CLASS<StringField> name = new StringField.CLASS<StringField>(this);
+	public final TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public final StringField.CLASS<StringField> address = new StringField.CLASS<StringField>(this);
 	public final Link.CLASS<Link> userLink = new Link.CLASS<Link>(this);
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
+
+	final static public int NameLength = 50;
 
 	static public Domains newInstance() {
 		return new Domains.CLASS<Domains>().get();
@@ -96,6 +103,8 @@ public class Domains extends Table {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(name);
+		objects.add(description);
 		objects.add(address);
 		objects.add(userLink);
 		objects.add(owner);
@@ -109,7 +118,13 @@ public class Domains extends Table {
 
 		users.setIndex("users");
 
+		name.setName(fieldNames.Name);
+		name.setIndex("name");
+		name.get().length = new integer(NameLength);
 		name.setDisplayName(displayNames.Name);
+
+		description.setName(fieldNames.Description);
+		description.setIndex("description");
 
 		address.setIndex("address");
 		address.setName(fieldNames.Address);
