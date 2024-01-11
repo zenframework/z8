@@ -316,9 +316,9 @@ Z8.define('Z8.Component', {
 		var alignment = this.alignment;
 
 		var style = DOM.getComputedStyle(this);
-		var fixed = style.position == 'fixed';
+		var isFixedOrAbsolute = style.position == 'fixed' || style.position == 'absolute';
 
-		var clipping = fixed ? document.body : this.getClipping();
+		var clipping = isFixedOrAbsolute ? document.body : this.getClipping();
 
 		var viewport = new Rect(clipping);
 
@@ -357,7 +357,7 @@ Z8.define('Z8.Component', {
 
 		var rect = new Rect();
 
-		width += offset.margin;
+		width += isFixedOrAbsolute ? 0 : offset.margin;
 		rect.left = align.left - (spaceRight < width ? width - spaceRight : 0);
 
 		if(above) {
@@ -368,9 +368,9 @@ Z8.define('Z8.Component', {
 			rect.bottom = rect.top + (Math.min(available, height) - offset.height) - (available < height ? offset.margin : 0);
 		}
 
-		rect.left = rect.left - (fixed ? 0 : parent.left);
-		rect.top = rect.top - (fixed ? 0 : parent.top);
-		rect.bottom = (fixed ? viewport.bottom : parent.bottom) - rect.bottom;
+		rect.left = rect.left - (isFixedOrAbsolute ? 0 : parent.left);
+		rect.top = rect.top - (isFixedOrAbsolute ? 0 : parent.top);
+		rect.bottom = (isFixedOrAbsolute ? viewport.bottom : parent.bottom) - rect.bottom;
 
 		DOM.setLeft(this, Ems.emsToPixels(rect.left) + 'px');
 		DOM.setTop(this, Ems.emsToPixels(rect.top) + 'px');
