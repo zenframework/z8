@@ -174,9 +174,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 		author = new string(json.has(Json.author) ? json.getString(Json.author) : "");
 
 		if (json.has(Json.details)) {
-			JsonObject dtl = json.getJsonObject("details");
-			for (String key : dtl.keySet())
-				details.z8_add(new string(key), new string(dtl.getString(key)));
+			String detailsString = json.getString(Json.details);
+			if(!detailsString.equals("null")) {
+				JsonObject dtl = json.getJsonObject(Json.details);
+				for (String key : dtl.keySet())
+					details.z8_add(new string(key), new string(dtl.getString(key)));
+			}
 		}
 
 		String jsonTime = json.has(Json.time) ? json.getString(Json.time) : "";
