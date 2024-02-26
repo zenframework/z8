@@ -9,6 +9,7 @@ public class Cursor extends Object {
 
 	public bool next();
 
+	public binary binary(int position); 
 	public string string(int position);
 	public int integer(int position);
 	public decimal decimal(int position);
