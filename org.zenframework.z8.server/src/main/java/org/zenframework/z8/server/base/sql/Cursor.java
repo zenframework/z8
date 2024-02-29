@@ -7,6 +7,7 @@ import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -59,6 +60,14 @@ public class Cursor extends OBJECT {
 
 	public void z8_close() {
 		cursor.close();
+	}
+
+	public binary z8_binary(integer position) { 
+		try { 
+			return cursor.getBinary(position.getInt()); 
+		} catch(SQLException e) { 
+			throw new RuntimeException(e); 
+		} 
 	}
 
 	public string z8_string(integer position) {
