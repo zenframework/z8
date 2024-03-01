@@ -116,7 +116,7 @@ Date.prototype.getFirstDateOfWeek = function() {
 Date.prototype.getWeekOfYear = function() {
 	var DC3 = Date.UTC(this.getFullYear(), this.getMonth(), this.getDate() + 3) / Date.MillisPerDay; // an Absolute Day Number
 	var absoluteWeekNumber = Math.floor(DC3 / 7); // an Absolute Week Number
-	var wyr = new nativeDate(absoluteWeekNumber * Date.MillisPerWeek).getUTCFullYear();
+	var wyr = new Date(absoluteWeekNumber * Date.MillisPerWeek).getUTCFullYear();
 	return absoluteWeekNumber - Math.floor(Date.UTC(wyr, 0, 7) / Date.MillisPerWeek) + 1;
 };
 
