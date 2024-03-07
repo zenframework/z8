@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
@@ -24,6 +25,9 @@ public interface IUser extends RmiSerializable, Serializable {
 	public String verification();
 	public String company();
 	public String position();
+	public int unsuccessfulEntries();
+	public date bannedDate();
+	public date changePasswordDate();
 
 	public String description();
 

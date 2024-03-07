@@ -61,6 +61,9 @@ public class ServerConfig extends Properties {
 	static final private String AuthorityCenterCache = "authority.center.cache";
 	static final private String AuthorityCenterSessionTimeout = "authority.center.session.timeout";
 
+	static final private String UserIncorrectPasswordMax = "user.incorrect.password.max";
+	static final private String UserIncorrectPasswordTimeout = "user.incorrect.password.timeout";
+
 	static final private String InterconnectionCenterHost = "interconnection.center.host";
 	static final private String InterconnectionCenterPort = "interconnection.center.port";
 	static final private String InterconnectionCenterCache = "interconnection.center.cache";
@@ -152,6 +155,9 @@ public class ServerConfig extends Properties {
 	static private int authorityCenterPort;
 	static private boolean authorityCenterCache;
 	static private int authorityCenterSessionTimeout;
+
+	static private int userIncorrectPasswordMax;
+	static private int userIncorrectPasswordTimeout;
 
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
@@ -275,6 +281,9 @@ public class ServerConfig extends Properties {
 		authorityCenterCache = instance.getProperty(AuthorityCenterCache, false);
 		authorityCenterSessionTimeout = instance.getProperty(AuthorityCenterSessionTimeout, 24 * 60);
 
+		userIncorrectPasswordMax = instance.getProperty(UserIncorrectPasswordMax, 0);
+		userIncorrectPasswordTimeout = instance.getProperty(UserIncorrectPasswordTimeout, 0);
+
 		interconnectionCenterHost = instance.getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = instance.getProperty(InterconnectionCenterPort, 20000);
 		interconnectionCenterCache = instance.getProperty(InterconnectionCenterCache, false);
@@ -338,7 +347,7 @@ public class ServerConfig extends Properties {
 		ftsConfiguration = instance.getProperty(FtsConfiguration, (String) null);
 
 		securityLogFile = instance.getFile(SecurityLogFile, null);
-		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
+		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s Details: %9$s%n");
 
 		storagePath = instance.getFile(StoragePath, "storage");
 		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
@@ -563,6 +572,14 @@ public class ServerConfig extends Properties {
 
 	static public int sessionTimeout() {
 		return authorityCenterSessionTimeout;
+	}
+
+	static public int incorrectPasswordMax() {
+		return userIncorrectPasswordMax;
+	}
+
+	static public int incorrectPasswordTimeout() {
+		return userIncorrectPasswordTimeout;
 	}
 
 	static public String interconnectionCenterHost() {

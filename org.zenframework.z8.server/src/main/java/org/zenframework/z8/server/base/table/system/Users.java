@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -48,6 +49,9 @@ public class Users extends Table {
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
 		public final static String Settings = "Settings";
+		public final static String UnsuccessfulEntries = "Unsuccessful Entries";
+		public final static String BannedDate = "Banned Date";
+		public final static String ChangePasswordDate = "Change Password Date";
 		public final static String Verification = "Verification";
 		public final static String VerificationModAt = "Verification Modified At";
 		public final static String Company = "Company";
@@ -67,6 +71,9 @@ public class Users extends Table {
 		public final static String Phone = "Users.phone";
 		public final static String Email = "Users.email";
 		public final static String Settings = "Users.settings";
+		public final static String UnsuccessfulEntries = "Users.unsuccessfulEntries";
+		public final static String BannedDate = "Users.bannedDate";
+		public final static String ChangePasswordDate = "Users.changePasswordDate";
 		public final static String Company = "Users.company";
 		public final static String Position = "Users.position";
 
@@ -84,6 +91,9 @@ public class Users extends Table {
 		public final static String Phone = Resources.get(strings.Phone);
 		public final static String Email = Resources.get(strings.Email);
 		public final static String Settings = Resources.get(strings.Settings);
+		public final static String UnsuccessfulEntries = Resources.get(strings.UnsuccessfulEntries);
+		public final static String BannedDate = Resources.get(strings.BannedDate);
+		public final static String ChangePasswordDate = Resources.get(strings.ChangePasswordDate);
 		public final static String DefaultName = Resources.get(strings.DefaultName);
 		public final static String Title = Resources.get(strings.Title);
 		public final static String Description = Resources.get(strings.Description);
@@ -130,6 +140,9 @@ public class Users extends Table {
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
 	public BoolField.CLASS<BoolField> changePassword = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
+	public IntegerField.CLASS<IntegerField> unsuccessfulEntries = new IntegerField.CLASS<IntegerField>(this);
+	public DatetimeField.CLASS<DatetimeField> bannedDate = new DatetimeField.CLASS<DatetimeField>(this);
+	public DatetimeField.CLASS<DatetimeField> changePasswordDate = new DatetimeField.CLASS<DatetimeField>(this);
 	public StringField.CLASS<StringField> verification = new StringField.CLASS<StringField>(this);
 	public DatetimeField.CLASS<DatetimeField> verificationModAt = new DatetimeField.CLASS<DatetimeField>(this);
 	
@@ -162,6 +175,9 @@ public class Users extends Table {
 		objects.add(banned);
 		objects.add(changePassword);
 		objects.add(settings);
+		objects.add(unsuccessfulEntries);
+		objects.add(bannedDate);
+		objects.add(changePasswordDate);
 		objects.add(verification);
 		objects.add(verificationModAt);
 	}
@@ -233,11 +249,26 @@ public class Users extends Table {
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
-		
+
+		unsuccessfulEntries.setName(fieldNames.UnsuccessfulEntries);
+		unsuccessfulEntries.setIndex("unsuccessfulEntries");
+		unsuccessfulEntries.setDisplayName(displayNames.UnsuccessfulEntries);
+		unsuccessfulEntries.setExportable(false);
+
+		bannedDate.setName(fieldNames.BannedDate);
+		bannedDate.setIndex("bannedDate");
+		bannedDate.setDisplayName(displayNames.BannedDate);
+		bannedDate.setExportable(false);
+
+		changePasswordDate.setName(fieldNames.ChangePasswordDate);
+		changePasswordDate.setIndex("changePasswordDate");
+		changePasswordDate.setDisplayName(displayNames.ChangePasswordDate);
+		changePasswordDate.setExportable(false);
+
 		verification.setName(fieldNames.Verification);
 		verification.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		verification.setIndex("verification");
-		
+
 		verificationModAt.setName(fieldNames.VerificationModAt);
 		verificationModAt.setIndex("verificationModAt");
 	}
@@ -290,6 +321,11 @@ public class Users extends Table {
 
 		if(banned.get().changed() && isSystemUser(recordId)) {
 			boolean ban = banned.get().bool().get();
+			if(ban)
+				unsuccessfulEntries.get().set(0);
+			else
+				bannedDate.get().set(date.Min);
+
 			if(ban && (System.equals(recordId) || Administrator.equals(recordId)))
 				throw new exception("Builtin users ban state can not be changed");
 		}
@@ -326,8 +362,12 @@ public class Users extends Table {
 
 	static public void changePassword(guid user, String password) {
 		Users users = new Users.CLASS<Users>().get();
+		date now = date.z8_now();
+		now.setTime(0, 0, 0);
+
 		users.password.get().set(new string(password));
 		users.changePassword.get().set(bool.False);
+		users.changePasswordDate.get().set(now);
 		users.update(user);
 	}
 

@@ -12,6 +12,15 @@ Z8.loadMessages('en', {
     'ChangePassword.password': 'Password',
     'ChangePassword.newPassword': 'New password',
     'ChangePassword.repeat': '(repeat)',
+    'ChangePassword.requirementsError': 'Password does not meet the requirements',
+    'ChangePassword.noRequirements': 'No password requirements',
+    'ChangePassword.passwordMustContain': 'The password must contain:',
+    'ChangePassword.oneCapitalLetter': 'one capital letter',
+    'ChangePassword.oneSmallLetter': 'one small letter',
+    'ChangePassword.oneSpecialChar': 'one special character',
+    'ChangePassword.oneDigit': 'single digit',
+    'ChangePassword.length': 'characters must be at least ',
+    'ChangePassword.newPasswordRepeatOld': 'The new password must be different from the old password',
 
     // Application
     'Application.fileSize': 'File size \'',
