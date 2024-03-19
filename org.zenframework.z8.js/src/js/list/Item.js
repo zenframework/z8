@@ -397,6 +397,11 @@ Z8.define('Z8.list.Item', {
 	},
 
 	setText: function(index, text) {
+		this.text = text;
+
+		if (this.cells == null)
+			return;
+
 		var cell = this.cells[index];
 		var textElement = this.getTextElement(cell);
 
