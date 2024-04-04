@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -81,7 +82,17 @@ public abstract class Adapter {
 	}
 
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files) throws IOException {
-		ISession session = authorize(request, parameters);
+		ISession session = null;
+
+		boolean isLogin = Json.login.equals(parameters.get(Json.request.get()));
+		if (isLogin) {
+			HttpSession httpSession = UseContainerSession ? request.getSession() : null;
+			String login = getParameter(Json.login.get(), parameters, httpSession);
+			String password = getParameter(Json.password.get(), parameters, httpSession);
+			session = ServerConfig.authorityCenter().login(new LoginParameters(login), password);
+		} else
+			session = authorize(request, parameters);
+
 		checkSession(request, parameters, session);
 		service(request, response, parameters, files, session);
 	}
@@ -216,5 +227,18 @@ public abstract class Adapter {
 	protected static String getClientIp(HttpServletRequest request) {
 		String ip = request.getHeader("X-Real-IP");
 		return ip != null ? ip : request.getRemoteAddr();
+	}
+
+	private static String getParameter(String key, Map<String, String> parameters, HttpSession httpSession) {
+		String value = parameters.get(key);
+
+		if(httpSession != null) {
+			if(value != null)
+				httpSession.setAttribute(key, value);
+			else
+				value = (String)httpSession.getAttribute(key);
+		}
+
+		return value;
 	}
 }
