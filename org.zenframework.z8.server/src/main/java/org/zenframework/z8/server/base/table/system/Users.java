@@ -175,6 +175,7 @@ public class Users extends Table {
 		name.setDisplayName(displayNames.Login);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
 		name.get().unique = bool.True;
+		name.get().caseInsensitive = bool.True;
 
 		password.setName(fieldNames.Password);
 		password.setExportable(false);
