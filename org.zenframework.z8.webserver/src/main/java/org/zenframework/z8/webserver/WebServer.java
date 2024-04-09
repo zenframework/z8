@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
@@ -47,7 +48,12 @@ public class WebServer extends RmiServer implements IWebServer {
 		context.setResourceBase(ServerConfig.webServerWebapp().getAbsolutePath());
 		context.getServletContext();
 
-		server = new Server(ServerConfig.webServerHttpPort());
+		server = new Server();
+
+		ServerConnector connector = new ServerConnector(server);
+		connector.setHost(ServerConfig.webServerHttpHost());
+		connector.setPort(ServerConfig.webServerHttpPort());
+		server.addConnector(connector);
 		server.setHandler(context);
 
 		// Specify the Session ID Manager

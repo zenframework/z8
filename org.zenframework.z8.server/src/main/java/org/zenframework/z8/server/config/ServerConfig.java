@@ -66,6 +66,7 @@ public class ServerConfig extends Properties {
 	static final private String InterconnectionCenterCache = "interconnection.center.cache";
 
 	static final private String WebServerPort = "web.server.port";
+	static final private String WebServerHttpHost = "web.server.http.host";
 	static final private String WebServerHttpPort = "web.server.http.port";
 	static final private String WebServerWebapp = "web.server.webapp";
 	static final private String WebServerMappings = "web.server.content.map";
@@ -160,6 +161,7 @@ public class ServerConfig extends Properties {
 	static private boolean interconnectionCenterCache;
 
 	static private int webServerPort;
+	static private String webServerHttpHost;
 	static private int webServerHttpPort;
 	static private File webServerWebapp;
 	static private String webServerMappings;
@@ -284,6 +286,7 @@ public class ServerConfig extends Properties {
 		interconnectionCenterCache = instance.getProperty(InterconnectionCenterCache, false);
 
 		webServerPort = instance.getProperty(WebServerPort, 25000);
+		webServerHttpHost = instance.getProperty(WebServerHttpHost, "0.0.0.0");
 		webServerHttpPort = instance.getProperty(WebServerHttpPort, 9080);
 		webServerWebapp = instance.getFile(WebServerWebapp, "..");
 		webServerMappings = instance.getProperty(WebServerMappings);
@@ -593,6 +596,10 @@ public class ServerConfig extends Properties {
 
 	static public int webServerPort() {
 		return webServerPort;
+	}
+
+	static public String webServerHttpHost() {
+		return webServerHttpHost;
 	}
 
 	static public int webServerHttpPort() {

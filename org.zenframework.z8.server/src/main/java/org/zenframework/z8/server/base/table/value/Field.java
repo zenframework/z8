@@ -69,6 +69,7 @@ abstract public class Field extends Control implements IField {
 	public bool indexed;
 	public bool trigram;
 	public bool unique;
+	public bool caseInsensitive;
 
 	public primary defaultValue;
 
@@ -331,6 +332,10 @@ abstract public class Field extends Control implements IField {
 
 	public boolean unique() {
 		return unique != null ? unique.get() : false;
+	}
+
+	public boolean caseInsensitive() {
+		return caseInsensitive != null ? caseInsensitive.get() : false;
 	}
 
 	public Sequencer getSequencer() {
