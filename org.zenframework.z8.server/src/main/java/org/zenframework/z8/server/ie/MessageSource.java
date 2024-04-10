@@ -38,7 +38,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 	private static class Cache {
 		final Map<String, Table> tables = new HashMap<String, Table>();
 		final Map<String, Field> fields = new HashMap<String, Field>();
-		final Map<guid, Map<String, string>> attachments = new HashMap<>();
+		final Map<String, Map<guid, Map<String, string>>> attachments = new HashMap<>();
 
 		void clear() {
 			tables.clear();
@@ -46,8 +46,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 			attachments.clear();
 		}
 
-		boolean exists(guid id) {
-			return attachments.containsKey(id);
+		boolean exists(String tableName, guid recordId) {
+			return attachments.containsKey(tableName) ? attachments.get(tableName).containsKey(recordId) : false;
 		}
 	}
 
@@ -346,10 +346,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	private void readExisting(RecordInfo record, Cache cache) {
 		guid recordId = record.id();
-		if (cache.exists(recordId))
+		String tableName = record.table();
+		if (cache.exists(tableName, recordId))
 			return;
 
-		String tableName = record.table();
 		Table table = getTable(tableName, cache);
 		if (table == null)
 			return;
@@ -358,19 +358,23 @@ public class MessageSource implements RmiSerializable, Serializable {
 		boolean exists = table.readRecord(recordId, attachments);
 
 		if (exists) {
+			if(!cache.attachments.containsKey(tableName)) {
+				Map<guid, Map<String, string>> tableRecords = new HashMap<>();
+				cache.attachments.put(tableName, tableRecords);
+			}
 			Map<String, string> recAtts = new HashMap<>();
 			for (Field f : attachments)
 				recAtts.put(f.name(), f.string());
-			cache.attachments.put(recordId, recAtts);
+			cache.attachments.get(tableName).put(recordId, recAtts);
 		}
 	}
 
 	private void insert(RecordInfo record, Cache cache) {
 		guid recordId = record.id();
-		if (cache.exists(recordId))
+		String tableName = record.table();
+		if (cache.exists(tableName, recordId))
 			return;
 
-		String tableName = record.table();
 		Table table = getTable(tableName, cache);
 		if (table == null)
 			return;
@@ -395,7 +399,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		Table table = getTable(tableName, cache);
 		guid recordId = record.id();
 
-		boolean exists = cache.exists(recordId);
+		boolean exists = cache.exists(tableName, recordId);
 
 		for(FieldInfo fieldInfo : record.fields()) {
 			String fieldName = fieldInfo.name();
@@ -412,7 +416,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 				throw new RuntimeException("Incorrect record format. Table '" + tableName + "' has no field '" + fieldName + "'");
 
 			if(exists && field instanceof FileField) {
-				string wasValue = cache.attachments.get(recordId).get(field.name());
+				string wasValue = cache.attachments.get(tableName).get(recordId).get(field.name());
 				field.set(mergeAttachments(wasValue, (string)fieldInfo.value()));
 			} else
 				field.set(fieldInfo.value());
