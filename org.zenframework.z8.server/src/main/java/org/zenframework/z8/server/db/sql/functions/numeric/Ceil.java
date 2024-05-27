@@ -25,6 +25,7 @@ public class Ceil extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
+		case Postgres:
 			return "Ceil(" + token.format(vendor, options) + ")";
 		case SqlServer:
 			return "Ceiling(" + token.format(vendor, options) + ")";
