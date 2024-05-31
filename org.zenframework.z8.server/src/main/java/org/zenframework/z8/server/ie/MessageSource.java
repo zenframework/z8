@@ -31,6 +31,8 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
+import ru.ivk.postfactor.base.PostfactorTable;
+
 public class MessageSource implements RmiSerializable, Serializable {
 	// MARK - в новой версии serialVersionUID кончается на 9, а не 8
 	private static final long serialVersionUID = -145929531248527278L;
@@ -90,12 +92,12 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	public void add(Table table, Collection<Field> fields, sql_bool where) {
 		if(table.exportable() || exportAll)
-			sources.add(new ExportSource(table, fields, exportAll, where));
+			sources.add(newExportSource(table, fields, where));
 	}
 
 	public void add(Table table, Collection<Field> fields, Collection<guid> ids) {
 		if(table.exportable() || exportAll)
-			sources.add(new ExportSource(table, fields, exportAll, ids));
+			sources.add(newExportSource(table, fields, ids));
 	}
 
 	public void addRule(ImportPolicy importPolicy) {
@@ -266,7 +268,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 		boolean inserting = state != null && !state;
 
 		if(notInserted) {
-			ExportSource source = new ExportSource(table, null, exportAll, Arrays.asList(value));
+			ExportSource source = newExportSource(table, null, Arrays.asList(value));
 			processExportSource(source, recordStates);
 			return true;
 		} else if(inserting) {
@@ -442,6 +444,14 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 
 		return new string(new JsonArray(files).toString());
+	}
+	
+	protected ExportSource newExportSource(Table table, Collection<Field> fields, Collection<guid> records) {
+		return new ExportSource(table, fields, exportAll, records);
+	}
+	
+	protected ExportSource newExportSource(Table table, Collection<Field> fields, sql_bool where) {
+		return new ExportSource(table, fields, exportAll, where);
 	}
 	
 	public boolean isExportAll() {
