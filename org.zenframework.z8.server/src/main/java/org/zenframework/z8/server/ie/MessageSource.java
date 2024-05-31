@@ -31,8 +31,6 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
-import ru.ivk.postfactor.base.PostfactorTable;
-
 public class MessageSource implements RmiSerializable, Serializable {
 	// MARK - в новой версии serialVersionUID кончается на 9, а не 8
 	private static final long serialVersionUID = -145929531248527278L;
