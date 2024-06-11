@@ -54,11 +54,11 @@ public class Application {
 	}
 
 	static public void z8_logSecurityEvent(string objectType, guid objectId, string objectName, string action) {
-		Runtime.instance().securityLog().get().addEvent(objectType, objectId, objectName, action);
+		Runtime.instance().securityLog().get().addEvent(null, objectType, objectId, objectName, action);
 	}
 
 	static public void z8_logSecurityEvent(SecurityObject.CLASS<? extends SecurityObject> object, string action) {
-		Runtime.instance().securityLog().get().addEvent(object.get(), action);
+		Runtime.instance().securityLog().get().addEvent(null, object.get(), action);
 	}
 
 	static public void z8_info(string text) {

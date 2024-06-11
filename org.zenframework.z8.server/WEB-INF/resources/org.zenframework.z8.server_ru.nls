@@ -38,6 +38,9 @@
 	<entry key="Users.changePassword">Изменить пароль при следующем входе</entry>
 	<entry key="Users.resetPassword">Сбросить пароль</entry>
 	<entry key="Users.settings">Настройки</entry>
+	<entry key="Users.unsuccessfulEntries">Количество неуспешных входов</entry>
+	<entry key="Users.bannedDate">Дата блокировки</entry>
+	<entry key="Users.changePasswordDate">Дата смены пароля</entry>
 	<entry key="Users.isGroup">Группа</entry>
 
 	<entry key="Users.name.default">User</entry>
@@ -223,6 +226,7 @@
 	<entry key="Exception.fileCanNotBeDeleted">Файл не может быть удален: {0}</entry>
 	<entry key="Exception.fileSizeLimitExceeded">Размер файла ''{0}'' превышает допустимый {1}Mb</entry>
 	<entry key="Exception.duplicateRole">Роль "{0}" уже была добавлена раньше</entry>
+	<entry key="Exception.userBannedException">Вы заблокированы до {0}</entry>
 
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 
