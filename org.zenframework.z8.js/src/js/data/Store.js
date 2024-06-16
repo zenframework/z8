@@ -662,6 +662,7 @@ Z8.define('Z8.data.Store', {
 			Z8.callback(options, this, totals, success);
 		};
 
+		this.fireEvent('beforeTotals', this, params);
 		this.sendLoadRequest(params, { fn: callback, scope: this });
 	},
 
