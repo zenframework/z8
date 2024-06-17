@@ -7,7 +7,7 @@ Z8.define('Z8.util.Parser', {
 				return null;
 
 			if(String.isString(value))
-				value = value.replace(/^(\d\d?)([\.\-//])(\d\d?)([\.\-//])/, '$3$2$1$4');
+				value = value.replace(/^(\d\d?)([\.\-//])(\d\d?)([\.\-//])/, '$3/$1/');
 
 			value = new Date(value);
 			return isNaN(value) ? null : value;
