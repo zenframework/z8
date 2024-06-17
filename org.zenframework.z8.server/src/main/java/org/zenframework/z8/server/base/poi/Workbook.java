@@ -49,6 +49,10 @@ public class Workbook extends OBJECT {
 		this.opcPackage = null;
 	}
 
+	public integer z8_getSheetCount() {
+		return new integer(this.workbook.getNumberOfSheets());
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Sheet.CLASS<? extends Sheet> z8_getSheet(integer index) {
 		Sheet.CLASS<Sheet> cls = new Sheet.CLASS(this);
