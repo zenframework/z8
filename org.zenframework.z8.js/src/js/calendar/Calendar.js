@@ -265,8 +265,16 @@ Z8.define('Z8.calendar.Calendar', {
 	selectDay: function(day, focus) {
 		this.select(day, 'selectedDay', focus);
 
+		var date = this.date;
+		var hours = date.getHours();
+		var minutes = date.getMinutes();
+
 		//Сделано так из-за бага при котором выбирался не тот месяц если в выбранном месяце нет текущего дня
-		this.date = new Date(Date.parse(DOM.getIntAttribute(day, 'year') + '-' + (DOM.getIntAttribute(day, 'month') + 1) + '-' + DOM.getIntAttribute(day, 'day')));
+		date = new Date(Date.parse(DOM.getIntAttribute(day, 'year') + '-' + (DOM.getIntAttribute(day, 'month') + 1) + '-' + DOM.getIntAttribute(day, 'day')));
+		date.setHours(hours);
+		date.setMinutes(minutes);
+
+		this.date = date;
 	},
 
 	selectHour: function(hour) {
@@ -278,6 +286,8 @@ Z8.define('Z8.calendar.Calendar', {
 
 		this.date = date;
 		this.initHours(date.getHours(), true);
+
+		this.fireEvent('dayClick', new Date(this.date), this);
 	},
 
 	selectMinute: function(minute) {
@@ -289,6 +299,8 @@ Z8.define('Z8.calendar.Calendar', {
 
 		this.date = date;
 		this.initMinutes(date.getMinutes(), true);
+
+		this.fireEvent('dayClick', new Date(this.date), this);
 	},
 
 	focusYear: function(year) {
