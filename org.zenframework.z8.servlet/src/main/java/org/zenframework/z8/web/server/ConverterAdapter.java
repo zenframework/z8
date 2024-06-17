@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class ConverterAdapter extends Adapter {
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
-		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString());
+		String requestUrl = URLDecoder.decode(encodedUrl, encoding.Default.toString()).replaceAll("%23", "#");
 		String contextPath = request.getContextPath() + '/';
 
 		if(requestUrl.startsWith(contextPath))
@@ -139,7 +140,7 @@ public class ConverterAdapter extends Adapter {
 			return "attachment; filename=\"" + toHexString(fileName) + "\"";
 
 		if(agent.contains("webkit"))
-			return "attachment; filename*=\"" + fileName + "\"";
+			return "attachment; filename=" + fileName + "; filename*=UTF-8''" + URLEncoder.encode(fileName, encoding.Default.toString());
 
 		if(agent.contains("opera")) {
 			int version = -1;
