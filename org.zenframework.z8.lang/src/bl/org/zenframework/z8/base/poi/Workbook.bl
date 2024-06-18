@@ -4,6 +4,7 @@ import org.zenframework.z8.lang.Object;
 public class Workbook extends Object {
 	public void operator=(file file);
 
+	public int getSheetCount();
 	public Sheet getSheet(int index);
 	public void close();
 }

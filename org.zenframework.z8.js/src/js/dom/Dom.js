@@ -761,9 +761,9 @@ Z8.define('Z8.dom.Dom', {
 		download: function(url, id, serverId, callback, noCache) {
 			url = url.replace(/\\/g, '/');
 			var path = url.substring(0, url.lastIndexOf('/'));
-			var fileName = encodeURIComponent(url.substring(url.lastIndexOf('/') + 1));
-			url = path + '/' + fileName;
-			var src = encodeURI((window._DEBUG_ ? '/' : '') + url) + '?&session=' + Application.session +
+			var fileName = url.substring(url.lastIndexOf('/') + 1);
+			url = encodeURI(path) + '/' + encodeURIComponent(fileName);
+			var src = ((window._DEBUG_ ? '/' : '') + url) + '?&session=' + Application.session +
 				(id != null ? '&id=' + id : '') + (serverId != null ? '&serverId=' + serverId : '') + (noCache ? '&noCache' : '');
 			var config = { tag: 'iframe', html: '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>', src: src, hidden: true };
 			var frame = DOM.append(document.body, config);
