@@ -129,7 +129,7 @@ Z8.define('Z8.form.field.Field', {
 				this.setValue(this.getValue(), this.getDisplayValue());
 				this.suspendCheckChange++;
 			} else
-				this.initValue(this.originalValue, this.originalDisplayValue);
+				this.initValue(this.lastValue || this.originalValue, this.originalDisplayValue);
 		}
 
 		DOM.removeCls(this, 'focus');

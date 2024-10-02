@@ -1760,7 +1760,8 @@ Z8.define('Z8.list.List', {
 		DOM.un(editor, 'keyDown', this.onEditorKeyDown, this);
 
 		editor.hide();
-		DOM.removeCls(editor.item.getCell(editor.index), 'edit');
+		if (editor.item.getDom() != null)
+			DOM.removeCls(editor.item.getCell(editor.index), 'edit');
 
 		if(focus)
 			this.focus();
