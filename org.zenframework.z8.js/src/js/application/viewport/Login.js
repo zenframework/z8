@@ -128,6 +128,24 @@ Z8.define('Z8.application.viewport.SSOLogin', {
 	},
 });
 
+Z8.define('Z8.application.viewport.ChangePassword.PasswordField', {
+	extend: 'Z8.form.field.Text',
+	shortClassName: 'ChangePassword.PasswordField',
+
+	validate: function() {
+		this.setValid(!this.checkRequirements(this.getValue() || ''));
+	},
+
+	checkRequirements: function(value) {
+		var appPassword = Application.password;
+		var hasUpperCase = appPassword.mustHaveUpperCase ? /[A-ZА-Я]/.test(value) : true;
+		var hasLowerCase = appPassword.mustHaveLowerCase ? /[a-zа-я]/.test(value) : true;
+		var hasSpecialChar = appPassword.mustHaveSpecialChar ? /[!@#$%^&*()_+{}\[\]:;<>,.?~\\\/'"`]/.test(value) : true;
+		var hasDigit = Application.password.mustHaveDigit ? /[0-9]/.test(value) : true;
+		return value.length < appPassword.minLength || !hasUpperCase || !hasLowerCase || !hasSpecialChar || !hasDigit;
+	}
+});
+
 Z8.define('Z8.application.viewport.ChangePassword', {
 	extend: 'Z8.window.Window',
 
@@ -142,7 +160,7 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 			fn: function(control, valid) {
 				if(control == newPassword1)
 					newPassword2.validate();
-				if(this.okButton != null)
+				if(control == newPassword2 && this.okButton != null)
 					this.okButton.setEnabled(valid);
 			},
 			scope: this
@@ -159,12 +177,31 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 			controls.add(password);
 		}
 
-		var newPassword1 = this.newPassword1 = new Z8.form.field.Text({ label: Z8.$('ChangePassword.newPassword'), placeholder: Z8.$('ChangePassword.newPassword'), password: true, validation: validation });
+		var newPassword1 = this.newPassword1 = new ChangePassword.PasswordField({ label: Z8.$('ChangePassword.newPassword'), placeholder: Z8.$('ChangePassword.newPassword'), password: true, validation: validation, colSpan: 11 });
+		var passwordRequirement = this.passwordRequirement = new Button({ icon: 'fa-question', tooltip: this.getRequirements(), enabled: true, cls: 'password-req', colSpan: 1 })
+		var newPasswordField = new Z8.form.Fieldset({ plain: true, controls: [newPassword1, passwordRequirement], colCount: 12 });
+
 		var newPassword2 = this.newPassword2 = new Z8.form.field.Text({ label: Z8.$('ChangePassword.newPassword') + ' ' + Z8.$('ChangePassword.repeat'), placeholder: Z8.$('ChangePassword.newPassword'), password: true, required: true, validation: validation, isEmptyValue: isEmptyValue });
 
-		this.controls = controls.add([newPassword1, newPassword2]);
+		this.controls = controls.add([newPasswordField, newPassword2]);
 
 		this.callParent();
+	},
+
+	getRequirements: function() {
+		var appPassword = Application.password;
+		var mustHaveUpperCase = appPassword.mustHaveUpperCase;
+		var mustHaveLowerCase = appPassword.mustHaveLowerCase;
+		var mustHaveSpecialChar = appPassword.mustHaveSpecialChar;
+		var mustHaveDigit = appPassword.mustHaveDigit;
+		var minLength = appPassword.minLength;
+		if(mustHaveUpperCase || mustHaveLowerCase || mustHaveSpecialChar || mustHaveDigit || minLength > 0) {
+			return Z8.$('ChangePassword.passwordMustContain') + (mustHaveUpperCase ? '\n - ' + Z8.$('ChangePassword.oneCapitalLetter') : '') + (mustHaveLowerCase ? '\n - ' + Z8.$('ChangePassword.oneSmallLetter') : '')
+					+ (mustHaveSpecialChar ? '\n - ' + Z8.$('ChangePassword.oneSpecialChar') : '') + (mustHaveDigit ? '\n - ' + Z8.$('ChangePassword.oneDigit') : '')
+					+ (minLength > 0 ? '\n - ' + Z8.$('ChangePassword.length') + minLength : '');
+		} else {
+			return Z8.$('ChangePassword.noRequirements');
+		}
 	},
 
 	ok: function() {
@@ -182,8 +219,21 @@ Z8.define('Z8.application.viewport.ChangePassword', {
 			password = this.passwordField.getValue() || '';
 			password = Application.hashPassword ? MD5.hex(password) : password;
 		}
-		var newPassword = this.newPassword1.getValue() || '';
+
+		var newPassword1 = this.newPassword1;
+		if(newPassword1.checkRequirements(newPassword1.getValue() || '')) {
+			Application.message({ text: Z8.$('ChangePassword.requirementsError'), type: 'error' });
+			this.okButton.setBusy(false);
+			return;
+		}
+		var newPassword = newPassword1.getValue() || '';
 		newPassword = Application.hashPassword ? MD5.hex(newPassword) : newPassword;
+
+		if(password == newPassword) {
+			Viewport.message({text: Z8.$('ChangePassword.newPasswordRepeatOld'), type: "error"});
+			this.okButton.setBusy(false);
+			return;
+		}
 
 		var parameters = {
 			request: 'login',
