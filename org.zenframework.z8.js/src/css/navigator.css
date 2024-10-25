@@ -23,6 +23,10 @@
 	width: 25%;
 }
 
+.navigator>.body>.listbox.navigator-listbox>.label {
+	display: none;
+}
+
 .navigator.one-record>.body>.listbox {
 	display: none;
 }
