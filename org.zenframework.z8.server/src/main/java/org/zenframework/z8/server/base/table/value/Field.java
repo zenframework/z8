@@ -427,8 +427,6 @@ abstract public class Field extends Control implements IField {
 
 			Field linkField = (Field)firstLink;
 
-			access = firstLink.access();
-
 			Query linkQuery = firstLink.getQuery();
 
 			writer.writeProperty(Json.isCombobox, true);

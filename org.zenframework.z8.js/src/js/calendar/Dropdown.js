@@ -112,7 +112,7 @@ Z8.define('Z8.calendar.Dropdown', {
 		var rect = new Rect();
 
 		width += offset.margin;
-		rect.left = align.left - (spaceLeft < width ? width - spaceLeft : 0) + (align.width - width + offset.margin);
+		rect.left = align.left + (spaceLeft > Math.abs(align.width - width) ? align.width - width + offset.margin : 0);
 
 		if(above) {
 			rect.bottom = align.top - offset.height;

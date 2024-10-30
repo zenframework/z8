@@ -28,6 +28,7 @@ public class Truncate extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(vendor) {
 		case Oracle:
+		case Postgres:
 			return "TRUNC(" + number.format(vendor, options) + ", " + (digits != null ? digits.format(vendor, options) : "0") + ")";
 		case SqlServer:
 			return "ROUND(" + number.format(vendor, options) + ", " + (digits != null ? digits.format(vendor, options) : "0") + ", 1)";
