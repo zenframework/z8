@@ -24,6 +24,18 @@ public abstract class primary implements Comparable<primary>, Serializable {
 	public string z8_toString() {
 		return new string(toString());
 	}
+	
+	public string z8_getString() {
+		if (this instanceof string)
+			return (string) this;
+		throw new IllegalStateException("Cannot convert to string");
+	}
+	
+	public integer z8_getInt() {
+		if (this instanceof integer)
+			return (integer) this;
+		throw new IllegalStateException("Cannot convert to int");
+	}
 
 	public string string() {
 		return z8_toString();
