@@ -340,7 +340,7 @@
 }
 
 .date>.dropdown-calendar {
-	min-height: 17.25em;
+	max-height: 19.75em;
 }
 
 .date>.dropdown-calendar>.time {
