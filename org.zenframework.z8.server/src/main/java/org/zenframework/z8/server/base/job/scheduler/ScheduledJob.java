@@ -197,4 +197,8 @@ public class ScheduledJob implements Runnable {
 		if(thread != null)
 			thread.interrupt();
 	}
+
+	public void startNow() {
+		lastStart = date.Min;
+	}
 }

@@ -35,7 +35,7 @@ public class Scheduler implements Runnable {
 
 	private boolean suspended = false;
 	private boolean resetPending = true;
-	
+
 	private List<ScheduledJob> jobs = new ArrayList<ScheduledJob>();
 
 	private List<ScheduledJob> systemJobs = new ArrayList<ScheduledJob>();
@@ -195,6 +195,14 @@ public class Scheduler implements Runnable {
 		ApplicationServer.setRequest(null);
 	}
 
+	public ScheduledJob findSystemJob(String classId) {
+		for (ScheduledJob job : systemJobs) {
+			if (job.classId.equals(classId))
+				return job;
+		}
+		return null;
+	}
+
 	private void startJobs() {
 		for(ScheduledJob job : jobs) {
 			try {
@@ -229,7 +237,7 @@ public class Scheduler implements Runnable {
 		if(ServerConfig.maintenanceJobEnabled())
 			systemJobs.add(new ScheduledJob(MaintenanceJob.class.getCanonicalName(), ServerConfig.maintenanceJobCron(), database));
 		if(ServerConfig.transportJobEnabled())
-			systemJobs.add(new ScheduledJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobCron(),database));
+			systemJobs.add(new ScheduledJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobCron(), database));
 		if(ServerConfig.exchangeJobEnabled())
 			systemJobs.add(new ScheduledJob(ExchangeJob.class.getCanonicalName(), ServerConfig.exchangeJobCron(), database));
 	}
