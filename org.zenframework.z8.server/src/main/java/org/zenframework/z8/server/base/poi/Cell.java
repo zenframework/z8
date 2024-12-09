@@ -43,6 +43,8 @@ public class Cell extends OBJECT {
 			return value == (long)value ? new integer((long)value).string() : new decimal(value).string();
 		case Boolean:
 			return new bool(cell.getBooleanCellValue()).string();
+		case Formula:
+			return new string(cell.getCellFormula());
 		default:
 			return new string();
 		}
