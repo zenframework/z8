@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
+import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.security.IUser;
@@ -97,5 +98,9 @@ public class ApplicationServerProxy implements IApplicationServer {
 	@Override
 	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
+	}
+	
+	public IAuthorityCenter authorityCenter() {
+		return ServerConfig.authorityCenter();
 	}
 }

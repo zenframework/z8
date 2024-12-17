@@ -141,6 +141,10 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
+	
+	public IAuthorityCenter authorityCenter() {
+		return ServerConfig.authorityCenter();
+	}
 
 	@Override
 	public IUser user(LoginParameters loginParameters, String password) {

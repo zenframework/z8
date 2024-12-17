@@ -303,6 +303,8 @@ public class Users extends Table {
 	public void afterUpdate(guid recordId) {
 		if(!notifyBlock)
 			notifyUserChange(recordId, changePassword.get().changed() && changePassword.get().bool().get());
+
+		super.afterUpdate(recordId);
 	}
 
 	@Override
