@@ -1,12 +1,11 @@
 package org.zenframework.z8.web.servlet;
 
-import org.zenframework.z8.rmi.ObjectIO;
-import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.IServer;
-import org.zenframework.z8.server.engine.RmiIO;
-import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.types.encoding;
-import org.zenframework.z8.web.server.*;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -14,12 +13,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.zenframework.z8.rmi.ObjectIO;
+import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.engine.IServer;
+import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.types.encoding;
+import org.zenframework.z8.web.server.APIDocAdapter;
+import org.zenframework.z8.web.server.AcceptAdapter;
+import org.zenframework.z8.web.server.Adapter;
+import org.zenframework.z8.web.server.ConverterAdapter;
+import org.zenframework.z8.web.server.LogoutAdapter;
+import org.zenframework.z8.web.server.RedirectAdapter;
+import org.zenframework.z8.web.server.SingleSignOnAdapter;
+import org.zenframework.z8.web.server.SystemAdapter;
 
 public class Servlet extends HttpServlet {
 
@@ -70,6 +78,8 @@ public class Servlet extends HttpServlet {
 		adapters.add(new LogoutAdapter());
 		adapters.add(new SingleSignOnAdapter());
 		adapters.add(new SystemAdapter());
+		adapters.add(new RedirectAdapter());
+		adapters.add(new AcceptAdapter());
 		// ConverterAdapter grabs all GET requests, it should be at the end of the list
 		adapters.add(new ConverterAdapter(this));
 

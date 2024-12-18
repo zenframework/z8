@@ -143,6 +143,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
+	public IAuthorityCenter authorityCenter() { 
+		return ServerConfig.authorityCenter(); 
+	}
+	
+	@Override
 	public IUser user(LoginParameters loginParameters, String password) {
 		setRequest(new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema())));
 
