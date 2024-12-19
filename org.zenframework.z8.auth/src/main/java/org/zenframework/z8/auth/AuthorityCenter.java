@@ -4,12 +4,8 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.zenframework.z8.server.base.file.Folders;
-import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.HubServer;
@@ -21,7 +17,6 @@ import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
@@ -46,7 +41,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final boolean cacheEnabled;
 
 	private SessionManager sessionManager;
-	private Map<guid, Token> tokens;
 
 	public static IAuthorityCenter launch() throws RemoteException {
 		if(instance == null) {
@@ -78,8 +72,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start();
 		
-		tokens = new HashMap<guid, Token>();
-
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
 		Trace.logEvent("Authority Center JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
@@ -266,33 +258,5 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			}
 		} catch(Throwable e) {
 		}
-	}
-	
-	@Override
-	public guid addRemoteToken(String domain, IUser user) throws RemoteException {
-		guid token = guid.create();
-		if(tokens.containsKey(token))
-			tokens.remove(token);
-		
-		Token value = new Token();
-		value.setDomain(domain);
-		value.setLogin(user.login());
-		
-		tokens.put(token, value);
-		
-		return token;
-	}
-	
-	@Override
-	public boolean checkRemoteToken(guid token, String domain, String login) throws RemoteException {
-		if(!tokens.containsKey(token) || domain == null || login == null)
-			return false;
-		
-		Token value = tokens.get(token);
-		boolean result = domain.equals(value.getDomain()) && login.equals(value.getLogin());
-		if(result)
-			tokens.remove(token);
-		
-		return result;
 	}
 }

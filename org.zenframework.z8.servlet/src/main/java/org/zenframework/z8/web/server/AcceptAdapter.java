@@ -6,17 +6,16 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.RuntimeErrorException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.engine.IApplicationServer;
-import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.crypto.Crypto;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.json.Json;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.guid;
 
 public class AcceptAdapter extends Adapter {
 	static private final String AdapterPath = "/accept";
@@ -28,23 +27,27 @@ public class AcceptAdapter extends Adapter {
 
 	@Override
 	protected ISession authorize(HttpServletRequest request, Map<String, String> parameters) throws IOException {
-		String localDomain = parameters.get("dstDomain");
-		String remoteDomain = parameters.get("srcDomain");
-		String login = parameters.get("login");
-		guid token = new guid(parameters.get("token"));
+		String jsonString = parameters.get("json");
+		if(jsonString == null)
+			throw new AccessDeniedException();
+		JsonObject json = new JsonObject(Crypto.Default.decrypt(jsonString));
+		
+		if(!json.containsKey(Json.domain.get())
+		|| !json.containsKey(Json.url.get())
+		|| !json.containsKey(Json.login.get())
+		|| !json.containsKey(Json.time.get()))
+			throw new AccessDeniedException();
+		
+		long jsonTime = json.getLong(Json.time.get());
+		long currentTime = System.currentTimeMillis();
+		if(currentTime - jsonTime >= 7000)
+			throw new AccessDeniedException();
+		
+		String domain = json.getString(Json.domain.get());
+		String login = json.getString(Json.login.get());
 		String[] localDomains = ServerConfig.applicationServer().domains();
 		
-		if(localDomain == null
-		|| remoteDomain == null
-		|| !contains(localDomains, localDomain)
-		|| contains(localDomains, remoteDomain))
-			throw new AccessDeniedException();
-		
-		IApplicationServer remoteServer = ServerConfig.interconnectionCenter().connect(remoteDomain);
-		if(remoteServer == null)
-			throw new AccessDeniedException();
-		IAuthorityCenter remoteAutCenter = remoteServer.authorityCenter();
-		if(!remoteAutCenter.checkRemoteToken(token, localDomain, login))
+		if(domain == null || !contains(localDomains, domain))
 			throw new AccessDeniedException();
 
 		return ServerConfig.authorityCenter().trustedLogin(getLoginParameters(login, request, true), true);
@@ -52,13 +55,7 @@ public class AcceptAdapter extends Adapter {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
-		try {
-			URI uri = new URI(request.getRequestURI());
-			response.sendRedirect(uri.getScheme() + "://" + uri.getAuthority());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-		
+		response.sendRedirect("/");
 	}
 	
 	private boolean contains(String[] strings, String value) {

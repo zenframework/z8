@@ -23,8 +23,6 @@ public interface IApplicationServer extends IServer {
 	
 	public IUser create(LoginParameters loginParameters) throws RemoteException;
 
-	public IAuthorityCenter authorityCenter() throws RemoteException; 
-
 	public String[] domains() throws RemoteException;
 
 	public boolean has(Message message) throws RemoteException;

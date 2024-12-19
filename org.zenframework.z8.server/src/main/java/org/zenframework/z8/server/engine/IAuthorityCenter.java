@@ -22,7 +22,4 @@ public interface IAuthorityCenter extends IHubServer {
 
 	public void userChanged(guid user, String schema) throws RemoteException;
 	public void roleChanged(guid role, String schema) throws RemoteException;
-	
-	public guid addRemoteToken(String domain, IUser user) throws RemoteException;
-	public boolean checkRemoteToken(guid token, String domain, String login) throws RemoteException;
 }
