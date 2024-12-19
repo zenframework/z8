@@ -31,7 +31,6 @@ public class AcceptAdapter extends Adapter {
 		JsonObject json = new JsonObject(Crypto.Default.decrypt(jsonString));
 		
 		if(!json.containsKey(Json.domain.get())
-		|| !json.containsKey(Json.url.get())
 		|| !json.containsKey(Json.login.get())
 		|| !json.containsKey(Json.time.get()))
 			throw new AccessDeniedException();
