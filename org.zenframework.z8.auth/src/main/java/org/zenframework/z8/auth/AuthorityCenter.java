@@ -269,7 +269,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 	
 	@Override
-	public guid addRemoteToken(String domain, IUser user) {
+	public guid addRemoteToken(String domain, IUser user) throws RemoteException {
 		guid token = guid.create();
 		if(tokens.containsKey(token))
 			tokens.remove(token);
@@ -284,7 +284,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 	
 	@Override
-	public boolean checkRemoteToken(guid token, String domain, String login) {
+	public boolean checkRemoteToken(guid token, String domain, String login) throws RemoteException {
 		if(!tokens.containsKey(token) || domain == null || login == null)
 			return false;
 		

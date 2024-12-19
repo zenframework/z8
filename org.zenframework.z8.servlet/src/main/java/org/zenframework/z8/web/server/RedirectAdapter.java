@@ -11,7 +11,6 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.ISession;
-import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
