@@ -34,12 +34,9 @@ public class AcceptAdapter extends Adapter {
 			throw new AccessDeniedException();
 		
 		IApplicationServer remoteServer = ServerConfig.interconnectionCenter().connect(remoteDomain);
-		if(remoteServer == null)
+		if(remoteServer == null || !remoteServer.authorityCenter().checkRemoteToken(token, localDomain, login))
 			throw new AccessDeniedException();
 
-		if(!remoteServer.authorityCenter().checkRemoteToken(token, remoteDomain, login))
-			throw new AccessDeniedException();
-		
 		return ServerConfig.authorityCenter().trustedLogin(getLoginParameters(login, request, true), true);
 	}
 	

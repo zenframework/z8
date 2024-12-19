@@ -46,7 +46,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final boolean cacheEnabled;
 
 	private SessionManager sessionManager;
-	private Map<guid, JsonObject> tokens;
+	private Map<guid, Token> tokens;
 
 	public static IAuthorityCenter launch() throws RemoteException {
 		if(instance == null) {
@@ -78,7 +78,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		sessionManager = new SessionManager();
 		sessionManager.start();
 		
-		tokens = new HashMap<guid, JsonObject>();
+		tokens = new HashMap<guid, Token>();
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
@@ -269,28 +269,27 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 	
 	@Override
-	public void addRemoteToken(guid token, String domain, IUser user) {
+	public guid addRemoteToken(String domain, IUser user) {
+		guid token = guid.create();
 		if(tokens.containsKey(token))
 			tokens.remove(token);
 		
-		JsonObject value = new JsonObject();
-		value.put(Json.domain.get(), domain);
-		value.put(Json.login.get(), user.login());
-		value.put(Json.time.get(), new Date());
+		Token value = new Token();
+		value.setDomain(domain);
+		value.setLogin(user.login());
 		
 		tokens.put(token, value);
+		
+		return token;
 	}
 	
 	@Override
 	public boolean checkRemoteToken(guid token, String domain, String login) {
-		if(!tokens.containsKey(token))
+		if(!tokens.containsKey(token) || domain == null || login == null)
 			return false;
 		
-		JsonObject value = tokens.get(token);
-		boolean result = value.containsKey(Json.domain.get())
-					  && value.containsKey(Json.login.get())
-					  && value.getString(Json.domain.get()).equals(domain)
-					  && value.getString(Json.login.get()).equals(login);
+		Token value = tokens.get(token);
+		boolean result = domain.equals(value.getDomain()) && login.equals(value.getLogin());
 		if(result)
 			tokens.remove(token);
 		

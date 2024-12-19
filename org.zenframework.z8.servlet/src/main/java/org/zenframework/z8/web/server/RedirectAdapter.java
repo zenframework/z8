@@ -35,27 +35,25 @@ public class RedirectAdapter extends Adapter {
 		String url = parameters.get("url");
 		String[] localDomains = ServerConfig.applicationServer().domains();
 		
-		if(remoteDomain == null || localDomains.length < 2 || contains(localDomains, remoteDomain)) {
+		if(remoteDomain == null || localDomains.length == 0 || contains(localDomains, remoteDomain)) {
 			super.service(request, response, parameters, files, session);
 			return;
 		}
 		if(url == null)
-			throw new AccessDeniedException();
+			throw new RuntimeException("Url is null");
 		
 		IApplicationServer remoteServer = ServerConfig.interconnectionCenter().connect(remoteDomain);
 		if(remoteServer == null)
-			throw new AccessDeniedException();
+			throw new RuntimeException("Domain '" + remoteDomain + "' is unavailable");
 		IAuthorityCenter auth = ServerConfig.authorityCenter();
 		IUser user = session.user();
-		guid token = guid.create();
-		auth.addRemoteToken(token, remoteDomain, user);
-		
+		guid token = auth.addRemoteToken(remoteDomain, user);
+
 		if(response != null)
-			//response.sendRedirect("https://ivk.ru");
 			response.sendRedirect(url + (url.endsWith("/") ? "" : "/") + "accept?"
 									  + "&token=" + token.toString()
 									  + "&login=" + user.login()
-									  + "&srcDomain=" + localDomains[1]
+									  + "&srcDomain=" + localDomains[0]
 									  + "&dstDomain=" + remoteDomain);
 	}
 	
