@@ -1,11 +1,27 @@
 package org.zenframework.z8.auth;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.zenframework.z8.server.base.file.Folders;
+import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
-import org.zenframework.z8.server.engine.*;
+import org.zenframework.z8.server.engine.HubServer;
+import org.zenframework.z8.server.engine.IApplicationServer;
+import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.IInterconnectionCenter;
+import org.zenframework.z8.server.engine.IServerInfo;
+import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
@@ -14,11 +30,6 @@ import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.StringUtils;
-
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.util.Collection;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -35,6 +46,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private final boolean cacheEnabled;
 
 	private SessionManager sessionManager;
+	private Map<guid, JsonObject> tokens;
 
 	public static IAuthorityCenter launch() throws RemoteException {
 		if(instance == null) {
@@ -65,6 +77,8 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 		sessionManager = new SessionManager();
 		sessionManager.start();
+		
+		tokens = new HashMap<guid, JsonObject>();
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
@@ -252,5 +266,34 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			}
 		} catch(Throwable e) {
 		}
+	}
+	
+	@Override
+	public void addRemoteToken(guid token, String domain, IUser user) {
+		if(tokens.containsKey(token))
+			tokens.remove(token);
+		
+		JsonObject value = new JsonObject();
+		value.put(Json.domain.get(), domain);
+		value.put(Json.login.get(), user.login());
+		value.put(Json.time.get(), new Date());
+		
+		tokens.put(token, value);
+	}
+	
+	@Override
+	public boolean checkRemoteToken(guid token, String domain, String login) {
+		if(!tokens.containsKey(token))
+			return false;
+		
+		JsonObject value = tokens.get(token);
+		boolean result = value.containsKey(Json.domain.get())
+					  && value.containsKey(Json.login.get())
+					  && value.getString(Json.domain.get()).equals(domain)
+					  && value.getString(Json.login.get()).equals(login);
+		if(result)
+			tokens.remove(token);
+		
+		return result;
 	}
 }
