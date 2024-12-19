@@ -1,8 +1,8 @@
 package org.zenframework.z8.web.server;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +27,10 @@ public class AcceptAdapter extends Adapter {
 
 	@Override
 	protected ISession authorize(HttpServletRequest request, Map<String, String> parameters) throws IOException {
-		String jsonString = parameters.get("json");
-		if(jsonString == null)
+		String urlJson = parameters.get("json");
+		if(urlJson == null)
 			throw new AccessDeniedException();
+		String jsonString = URLDecoder.decode(urlJson, StandardCharsets.UTF_8.name());
 		JsonObject json = new JsonObject(Crypto.Default.decrypt(jsonString));
 		
 		if(!json.containsKey(Json.domain.get())

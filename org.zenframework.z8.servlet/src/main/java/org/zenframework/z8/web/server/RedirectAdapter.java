@@ -1,6 +1,8 @@
 package org.zenframework.z8.web.server;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -50,10 +52,12 @@ public class RedirectAdapter extends Adapter {
 		json.put(Json.domain.get(), remoteDomain);
 		json.put(Json.login.get(), user.login());
 		json.put(Json.time.get(), System.currentTimeMillis());
+		String encrypt = Crypto.Default.encrypt(json.toString());
+		String urlJson = URLEncoder.encode(encrypt, StandardCharsets.UTF_8.name());
 
 		if(response != null)
 			response.sendRedirect(url + (url.endsWith("/") ? "" : "/") + "accept?"
-									  + "json=" + Crypto.Default.encrypt(json.toString()));
+									  + "json=" + urlJson);
 	}
 	
 	private boolean contains(String[] strings, String value) {
