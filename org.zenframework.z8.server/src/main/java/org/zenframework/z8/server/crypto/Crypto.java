@@ -14,7 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
 
-	private static final String SecretKey = "#This-is-Z8-secret-key!#"; // 24-bytes secret key
+	private static final String SecretKey = "#This-SAOOG-secret-key!#"; // 24-bytes secret key
 	private static final String CryptoCipherSpec = "TripleDES/CBC/PKCS5Padding";
 	private static final String CryptoSecretKeySpec = "TripleDES";
 	private static final String CryptoIv = "anc96lt1";

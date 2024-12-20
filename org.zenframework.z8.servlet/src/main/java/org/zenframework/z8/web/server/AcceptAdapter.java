@@ -1,6 +1,8 @@
 package org.zenframework.z8.web.server;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +54,14 @@ public class AcceptAdapter extends Adapter {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
-		response.sendRedirect("/");
+		try {
+			URI uri = new URI(request.getRequestURI());
+			response.sendRedirect(uri.getScheme() + "://" + uri.getAuthority() + "?" + Json.saveSession.get() + "=true");
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		
+
 	}
 	
 	private boolean contains(String[] strings, String value) {
