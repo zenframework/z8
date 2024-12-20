@@ -27,14 +27,12 @@ public class RedirectAdapter extends Adapter {
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		String remoteDomain = parameters.get("domain");
 		String url = parameters.get("url");
-		String login = parameters.get("login");
+		String login = session.user().login();
 		
 		if(remoteDomain == null)
 			throw new RuntimeException("Domain is null");
 		if(url == null)
 			throw new RuntimeException("Url is null");
-		if(login == null || login.isEmpty())
-			login = session.user().login();
 
 		JsonObject json = new JsonObject();
 		json.put(Json.domain.get(), remoteDomain);
