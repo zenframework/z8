@@ -37,7 +37,7 @@ public class RedirectAdapter extends Adapter {
 		}
 		if(url == null)
 			throw new RuntimeException("Url is null");
-		if(login == null)
+		if(login == null || login.isEmpty())
 			login = session.user().login();
 
 		JsonObject json = new JsonObject();
