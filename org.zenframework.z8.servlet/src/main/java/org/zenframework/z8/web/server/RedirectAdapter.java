@@ -14,7 +14,6 @@ import org.zenframework.z8.server.crypto.Crypto;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
-import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 
 public class RedirectAdapter extends Adapter {
@@ -29,19 +28,21 @@ public class RedirectAdapter extends Adapter {
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		String remoteDomain = parameters.get("domain");
 		String url = parameters.get("url");
+		String login = parameters.get("login");
 		String[] localDomains = ServerConfig.applicationServer().domains();
 		
 		if(remoteDomain == null || localDomains.length == 0 || contains(localDomains, remoteDomain)) {
-			super.service(request, response, parameters, files, session);
+			response.sendRedirect("/");
 			return;
 		}
 		if(url == null)
 			throw new RuntimeException("Url is null");
-		
-		IUser user = session.user();
+		if(login == null)
+			login = session.user().login();
+
 		JsonObject json = new JsonObject();
 		json.put(Json.domain.get(), remoteDomain);
-		json.put(Json.login.get(), user.login());
+		json.put(Json.login.get(), login);
 		json.put(Json.time.get(), System.currentTimeMillis());
 		String encrypt = Crypto.Default.encrypt(json.toString());
 		String urlJson = URLEncoder.encode(encrypt, StandardCharsets.UTF_8.name());
