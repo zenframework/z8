@@ -28,7 +28,7 @@ public class AcceptAdapter extends Adapter {
 	@Override
 	protected ISession authorize(HttpServletRequest request, Map<String, String> parameters) throws IOException {
 		String jsonString = parameters.get("json");
-		if(jsonString == null)
+		if(jsonString == null || !UseContainerSession)
 			throw new AccessDeniedException();
 		JsonObject json = new JsonObject(Crypto.Default.decrypt(jsonString));
 		
@@ -56,14 +56,7 @@ public class AcceptAdapter extends Adapter {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
-		try {
-			URI uri = new URI(request.getRequestURL().toString());
-			response.sendRedirect(uri.getScheme() + "://" + uri.getAuthority() + "?" + Json.saveSession.get() + "=true&" + Json.session.get() + "=" + session.id());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-		
-
+		response.sendRedirect("/");
 	}
 	
 	private boolean contains(String[] strings, String value) {
