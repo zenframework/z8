@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Crypto;
-import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -26,11 +25,6 @@ public class RedirectAdapter extends Adapter {
 		return request.getServletPath().equals(AdapterPath);
 	}
 	
-	/*@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files) throws IOException {
-		service(request, response, parameters, files, null);
-	}*/
-	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		String remoteDomain = parameters.get("domain");
@@ -44,9 +38,6 @@ public class RedirectAdapter extends Adapter {
 		if(url == null)
 			throw new RuntimeException("Url is null");
 		
-		IApplicationServer remoteServer = ServerConfig.interconnectionCenter().connect(remoteDomain);
-		if(remoteServer == null)
-			throw new RuntimeException("Domain '" + remoteDomain + "' is unavailable");
 		IUser user = session.user();
 		JsonObject json = new JsonObject();
 		json.put(Json.domain.get(), remoteDomain);
