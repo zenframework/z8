@@ -55,7 +55,7 @@ public class AcceptAdapter extends Adapter {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		try {
-			URI uri = new URI(request.getRequestURI());
+			URI uri = new URI(request.getRequestURL().toString());
 			response.sendRedirect(uri.getScheme() + "://" + uri.getAuthority() + "?" + Json.saveSession.get() + "=true");
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
