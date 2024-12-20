@@ -49,14 +49,16 @@ public class AcceptAdapter extends Adapter {
 		if(domain == null || !contains(localDomains, domain))
 			throw new AccessDeniedException();
 
-		return ServerConfig.authorityCenter().trustedLogin(getLoginParameters(login, request, true), true);
+		ISession session = ServerConfig.authorityCenter().trustedLogin(getLoginParameters(login, request, true), true);
+		request.getSession().setAttribute(Json.session.get(), session.id());
+		return session;
 	}
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		try {
 			URI uri = new URI(request.getRequestURL().toString());
-			response.sendRedirect(uri.getScheme() + "://" + uri.getAuthority() + "?" + Json.saveSession.get() + "=true");
+			response.sendRedirect(uri.getScheme() + "://" + uri.getAuthority() + "?" + Json.saveSession.get() + "=true&" + Json.session.get() + "=" + session.id());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
