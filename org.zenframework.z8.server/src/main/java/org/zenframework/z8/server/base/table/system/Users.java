@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -44,6 +45,7 @@ public class Users extends Table {
 		public final static String MiddleName = "Middle Name";
 		public final static String LastName = "Last Name";
 		public final static String Banned = "Banned";
+		public final static String BannedUntil = "Banned Until";
 		public final static String ChangePassword = "Change Password";
 		public final static String Phone = "Phone";
 		public final static String Email = "Email";
@@ -52,6 +54,7 @@ public class Users extends Table {
 		public final static String VerificationModAt = "Verification Modified At";
 		public final static String Company = "Company";
 		public final static String Position = "Position";
+		public final static String FailedAuthCount = "Failed Auth Count";
 	}
 
 	static public class strings {
@@ -62,6 +65,7 @@ public class Users extends Table {
 		public final static String LastName = "Users.lastName";
 		public final static String Description = "Users.description";
 		public final static String Banned = "Users.banned";
+		public final static String BannedUntil = "Users.bannedUntil";
 		public final static String ChangePassword = "Users.changePassword";
 		public final static String ResetPassword = "Users.resetPassword";
 		public final static String Phone = "Users.phone";
@@ -69,6 +73,7 @@ public class Users extends Table {
 		public final static String Settings = "Users.settings";
 		public final static String Company = "Users.company";
 		public final static String Position = "Users.position";
+		public final static String FailedAuthCount = "Users.failedAuthCount";
 
 		public final static String DefaultName = "Users.name.default";
 	}
@@ -79,6 +84,7 @@ public class Users extends Table {
 		public final static String MiddleName = Resources.get(strings.MiddleName);
 		public final static String LastName = Resources.get(strings.LastName);
 		public final static String Banned = Resources.get(strings.Banned);
+		public final static String BannedUntil = Resources.get(strings.BannedUntil);
 		public final static String ChangePassword = Resources.get(strings.ChangePassword);
 		public final static String ResetPassword = Resources.get(strings.ResetPassword);
 		public final static String Phone = Resources.get(strings.Phone);
@@ -89,6 +95,7 @@ public class Users extends Table {
 		public final static String Description = Resources.get(strings.Description);
 		public final static String Company = Resources.get(strings.Company);
 		public final static String Position = Resources.get(strings.Position);
+		public final static String FailedAuthCount = Resources.get(strings.FailedAuthCount);
 
 		public final static String SystemName = BuiltinUsers.displayNames.SystemName;
 		public final static String AdministratorName = BuiltinUsers.displayNames.AdministratorName;
@@ -128,12 +135,14 @@ public class Users extends Table {
 	public StringField.CLASS<StringField> company = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> position = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> banned = new BoolField.CLASS<BoolField>(this);
+	public DatetimeField.CLASS<DatetimeField> bannedUntil = new DatetimeField.CLASS<DatetimeField>(this);
 	public BoolField.CLASS<BoolField> changePassword = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> settings = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<StringField> verification = new StringField.CLASS<StringField>(this);
 	public DatetimeField.CLASS<DatetimeField> verificationModAt = new DatetimeField.CLASS<DatetimeField>(this);
-	
-	
+	public IntegerField.CLASS<IntegerField> failedAuthCount = new IntegerField.CLASS<IntegerField>(this);
+
+
 	private boolean notifyBlock = false;
 
 	public Users() {
@@ -160,10 +169,12 @@ public class Users extends Table {
 		objects.add(company);
 		objects.add(position);
 		objects.add(banned);
+		objects.add(bannedUntil);
 		objects.add(changePassword);
 		objects.add(settings);
 		objects.add(verification);
 		objects.add(verificationModAt);
+		objects.add(failedAuthCount);
 	}
 
 	@Override
@@ -212,12 +223,12 @@ public class Users extends Table {
 		email.setIndex("email");
 		email.setDisplayName(displayNames.Email);
 		email.get().length = new integer(128);
-		
+
 		company.setName(fieldNames.Company);
 		company.setIndex("company");
 		company.setDisplayName(displayNames.Company);
 		company.get().length = new integer(100);
-		
+
 		position.setName(fieldNames.Position);
 		position.setIndex("position");
 		position.setDisplayName(displayNames.Position);
@@ -227,6 +238,14 @@ public class Users extends Table {
 		banned.setIndex("banned");
 		banned.setDisplayName(displayNames.Banned);
 
+		bannedUntil.setName(fieldNames.BannedUntil);
+		bannedUntil.setIndex("bannedUntil");
+		bannedUntil.setDisplayName(displayNames.BannedUntil);
+
+		failedAuthCount.setName(fieldNames.FailedAuthCount);
+		failedAuthCount.setIndex("failedAuthCount");
+		failedAuthCount.setDisplayName(displayNames.FailedAuthCount);
+
 		changePassword.setName(fieldNames.ChangePassword);
 		changePassword.setIndex("changePassword");
 		changePassword.setDisplayName(displayNames.ChangePassword);
@@ -234,11 +253,11 @@ public class Users extends Table {
 		settings.setName(fieldNames.Settings);
 		settings.setIndex("settings");
 		settings.setDisplayName(displayNames.Settings);
-		
+
 		verification.setName(fieldNames.Verification);
 		verification.get().length = new integer(IAuthorityCenter.MaxPasswordLength);
 		verification.setIndex("verification");
-		
+
 		verificationModAt.setName(fieldNames.VerificationModAt);
 		verificationModAt.setIndex("verificationModAt");
 	}
@@ -336,6 +355,18 @@ public class Users extends Table {
 		Users users = new Users.CLASS<Users>().get();
 		users.password.get().set(new string(defaultPassword));
 		users.changePassword.get().set(bool.True);
+		users.update(user);
+	}
+
+	static public void saveFailedAuthCount(guid user, int failedAuthCount) {
+		Users users = new Users.CLASS<Users>().get();
+		users.failedAuthCount.get().set(new integer(failedAuthCount));
+		users.update(user);
+	}
+
+	static public void saveBannedUntil(guid user, long bannedUntil) {
+		Users users = new Users.CLASS<Users>().get();
+		users.bannedUntil.get().set(new date(bannedUntil));
 		users.update(user);
 	}
 

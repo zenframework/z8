@@ -128,6 +128,9 @@ public class ServerConfig extends Properties {
 	static final private String StoragePath = "storage.path";
 	static final private String StoragePreviewPath = "storage.preview.path";
 
+	static final private String AuthFailsLimit = "auth.fails.limit";
+	static final private String AuthFailsBanSeconds = "auth.fails.banSeconds";
+
 	static private File workingPath;
 
 	static private String language;
@@ -216,6 +219,9 @@ public class ServerConfig extends Properties {
 
 	static private File storagePath;
 	static private File storagePreviewPath;
+
+	static private int authFailsLimit;
+	static private int authFailsBanSeconds;
 
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
@@ -345,6 +351,9 @@ public class ServerConfig extends Properties {
 
 		storagePath = instance.getFile(StoragePath, "storage");
 		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
+
+		authFailsLimit = instance.getProperty(AuthFailsLimit, 0);
+		authFailsBanSeconds = instance.getProperty(AuthFailsBanSeconds, 0);
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -780,6 +789,14 @@ public class ServerConfig extends Properties {
 
 	static public File storagePreviewPath() {
 		return storagePreviewPath;
+	}
+
+	static public int authFailsLimit() {
+		return authFailsLimit;
+	}
+
+	static public int authFailsBanSeconds() {
+		return authFailsBanSeconds;
 	}
 
 	static public IApplicationServer applicationServer() {
