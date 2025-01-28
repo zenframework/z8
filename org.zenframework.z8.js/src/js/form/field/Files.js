@@ -153,7 +153,7 @@ Z8.define('Z8.form.field.Files', {
 		var params = {
 			request: this.form.model,
 			action: 'archive',
-			allFiles: JSON.encode(fileList)
+			archive: JSON.encode(fileList)
 		};
 
 		var callback = function(response, success) {

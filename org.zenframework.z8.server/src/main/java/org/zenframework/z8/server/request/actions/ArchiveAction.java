@@ -29,7 +29,7 @@ public class ArchiveAction extends RequestAction {
 
 	@Override
 	public void writeResponse(JsonWriter writer) throws Throwable {
-		JsonArray filesJson = new JsonArray(getRequestParameter(new string("allFiles")));
+		JsonArray filesJson = new JsonArray(getRequestParameter(new string("archive")));
 		List<File> filesToArchive = new ArrayList<>();
 		
 		for (int i = 0; i < filesJson.length(); i++) {
