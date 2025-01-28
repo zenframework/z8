@@ -130,6 +130,11 @@ Z8.define('Z8.form.field.Files', {
 	onDownloadFile: function(button) {
 		var tool = this.downloadTool;
 		var files = this.getChecked();
+		tool.setBusy(true);
+
+		var downloadCallback = function(success) {
+			tool.setBusy(false);
+		};
 
 		if (files.length == 1) {
 			var file = files[0];
@@ -151,10 +156,6 @@ Z8.define('Z8.form.field.Files', {
 			allFiles: JSON.encode(fileList)
 		};
 
-		var downloadCallback = function(success) {
-			tool.setBusy(false);
-		};
-
 		var callback = function(response, success) {
 			if (success && response.source) {
 				var url = response.source;
@@ -164,9 +165,7 @@ Z8.define('Z8.form.field.Files', {
 			}
 		};
 
-		tool.setBusy(true);
 		HttpRequest.send(params, { fn: callback, scope: this });
-		this.focus();
 	},
 
 	onFileInputChange: function() {
