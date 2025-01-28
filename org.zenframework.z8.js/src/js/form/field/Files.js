@@ -128,20 +128,45 @@ Z8.define('Z8.form.field.Files', {
 	},
 
 	onDownloadFile: function(button) {
+		var tool = this.downloadTool;
 		var files = this.getChecked();
-		var count = files.length;
 
-		var callback = function(success) {
-			if(--count == 0)
-				this.downloadTool.setBusy(false);
+		if (files.length == 1) {
+			var file = files[0];
+			DOM.download(file.get('path'), file.id, null, { fn: downloadCallback, scope: this });
+			return;
+		}
+
+		var fileList = files.map(function(file) {
+			return {
+				id: file.id,
+				path: file.get('path'),
+				name: file.get('name')
+			};
+		});
+
+		var params = {
+			request: this.form.model,
+			action: 'archive',
+			allFiles: JSON.encode(fileList)
 		};
 
-		this.downloadTool.setBusy(true);
+		var downloadCallback = function(success) {
+			tool.setBusy(false);
+		};
 
-		for(var i = 0, length = files.length; i < length; i++) {
-			var file = files[i];
-			DOM.download(file.get('path'), file.id, null, { fn: callback, scope: this });
-		}
+		var callback = function(response, success) {
+			if (success && response.source) {
+				var url = response.source;
+				DOM.download(url, null, response.server, downloadCallback, true);
+			} else {
+				tool.setBusy(false);
+			}
+		};
+
+		tool.setBusy(true);
+		HttpRequest.send(params, { fn: callback, scope: this });
+		this.focus();
 	},
 
 	onFileInputChange: function() {

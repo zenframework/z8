@@ -58,6 +58,8 @@ public class ActionFactory {
 			return new DetachAction(config);
 		else if(RequestAction.Content.equals(actionName))
 			return new ContentAction(config);
+		else if(RequestAction.ArchiveAction.equals(actionName))
+			return new ArchiveAction(config);
 		else
 			throw new RuntimeException("Unknown action: '" + actionName + "'");
 	}
