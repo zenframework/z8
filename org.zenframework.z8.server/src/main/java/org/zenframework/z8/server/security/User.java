@@ -560,7 +560,6 @@ public class User implements IUser {
 		fields.add(users.recordId.get());
 		fields.add(users.name.get());
 		fields.add(users.password.get());
-		fields.add(users.failedAuthCount.get());
 
 		SqlToken where = (loginParameters.getUserId() != null) ? new Equ(users.recordId.get(), loginParameters.getUserId())
 				: new EqualsIgnoreCase(users.name.get(), new string(loginParameters.getLogin()));
@@ -569,6 +568,7 @@ public class User implements IUser {
 			fields.add(users.banned.get());
 			fields.add(users.bannedUntil.get());
 			fields.add(users.changePassword.get());
+			fields.add(users.failedAuthCount.get());
 			fields.add(users.firstName.get());
 			fields.add(users.middleName.get());
 			fields.add(users.lastName.get());
