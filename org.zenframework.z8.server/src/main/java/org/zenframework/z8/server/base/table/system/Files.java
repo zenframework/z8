@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -150,11 +151,15 @@ public class Files extends Table {
 
 		try {
 			name.get().set(file.name);
-			data.get().set(input);
 			path.get().set(file.path);
 			size.get().set(file.size);
 			time.get().set(file.time);
 			lastModified.get().set(file.time);
+
+			if (ServerConfig.filesDiskStorageFirst())
+				putOnDisk(file, input);
+			else
+				data.get().set(input);
 
 			if(create)
 				create(file.id);
@@ -164,6 +169,16 @@ public class Files extends Table {
 			ConnectionManager.get().flush();
 		} finally {
 			IOUtils.closeQuietly(input);
+		}
+	}
+
+	private void putOnDisk(file file, InputStream input) {
+		try {
+			File path = getFullStoragePath(file);
+			path.getParentFile().mkdirs();
+			java.nio.file.Files.copy(input, path.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -196,10 +211,7 @@ public class Files extends Table {
 	}
 
 	public static file get(file file) throws IOException {
-		String storage = new File(Storage).toString().replace("\\", "/");
-		String pathStr = file.getPath();
-		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
-				: new File(Folders.Base, pathStr);
+		File path = getFullStoragePath(file);
 
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
@@ -217,6 +229,13 @@ public class Files extends Table {
 		return file;
 	}
 
+	private static File getFullStoragePath(file file) {
+		String storage = new File(Storage).toString().replace("\\", "/");
+		String pathStr = file.getPath();
+		return pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
+				: new File(Folders.Base, pathStr);
+	}
+	
 	public static file z8_get(guid fileId) {
 		return get(fileId);
 	}
