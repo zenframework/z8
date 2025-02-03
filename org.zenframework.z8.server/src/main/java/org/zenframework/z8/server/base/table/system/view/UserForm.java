@@ -34,7 +34,8 @@ public class UserForm extends Form {
 		}
 	}
 
-	public Users.CLASS<? extends Users> users = new Users.CLASS<Users>();
+	@SuppressWarnings("unchecked")
+	public Users.CLASS<? extends Users> users = (Users.CLASS<? extends Users>) Users.newInstance().getCLASS();
 
 	protected Listbox.CLASS<Listbox> entriesListbox = new Listbox.CLASS<Listbox>(this);
 	protected Listbox.CLASS<Listbox> rolesListbox = new Listbox.CLASS<Listbox>(this);
