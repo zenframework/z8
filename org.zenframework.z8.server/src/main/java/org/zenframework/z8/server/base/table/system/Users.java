@@ -338,34 +338,34 @@ public class Users extends Table {
 	}
 
 	static public void saveSettings(guid user, String settings) {
-		Users users = new Users.CLASS<Users>().get();
+		Users users = Users.newInstance();
 		users.settings.get().set(new string(settings));
 		users.notifyBlock = true;
 		users.update(user);
 	}
 
 	static public void changePassword(guid user, String password) {
-		Users users = new Users.CLASS<Users>().get();
+		Users users = Users.newInstance();
 		users.password.get().set(new string(password));
 		users.changePassword.get().set(bool.False);
 		users.update(user);
 	}
 
 	static public void resetPassword(guid user) {
-		Users users = new Users.CLASS<Users>().get();
+		Users users = Users.newInstance();
 		users.password.get().set(new string(defaultPassword));
 		users.changePassword.get().set(bool.True);
 		users.update(user);
 	}
 
 	static public void saveFailedAuthCount(guid user, int failedAuthCount) {
-		Users users = new Users.CLASS<Users>().get();
+		Users users = Users.newInstance();
 		users.failedAuthCount.get().set(new integer(failedAuthCount));
 		users.update(user);
 	}
 
 	static public void saveBannedUntil(guid user, long bannedUntil) {
-		Users users = new Users.CLASS<Users>().get();
+		Users users = Users.newInstance();
 		users.bannedUntil.get().set(new date(bannedUntil));
 		users.update(user);
 	}
