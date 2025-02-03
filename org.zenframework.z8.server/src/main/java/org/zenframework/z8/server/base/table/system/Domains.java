@@ -150,7 +150,8 @@ public class Domains extends Table {
 		super.onNew();
 
 		Field address = this.address.get();
-		address.set(new string(displayNames.DefaultAddress + address.getSequencer().next()));
+		if (!address.changed())
+			address.set(new string(displayNames.DefaultAddress + address.getSequencer().next()));
 	}
 
 	public Domain getDomain(String domain) {
