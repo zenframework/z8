@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.StandardCopyOption;
@@ -17,7 +18,6 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
@@ -156,7 +156,7 @@ public class Files extends Table {
 			time.get().set(file.time);
 			lastModified.get().set(file.time);
 
-			if (ServerConfig.filesDiskStorageFirst())
+			if (ServerConfig.filesSaveOnDisk())
 				putOnDisk(file, input);
 			else
 				data.get().set(input);
@@ -183,17 +183,18 @@ public class Files extends Table {
 	}
 
 	public static InputStream getInputStream(file file) throws IOException {
-		return getInputStream(file.id);
-	}
+		guid fileId = file.id;
 
-	public static InputStream getInputStream(guid fileId) throws IOException {
 		Files table = newInstance();
 
 		Field data = table.data.get();
-		Collection<Field> fields = Arrays.asList(data);
+		Field size = table.size.get();
+		Collection<Field> fields = Arrays.asList(data, size);
 
-		if(!fileId.isNull() && table.readRecord(fileId, fields))
+		if(!fileId.isNull() && table.readRecord(fileId, fields)) {
+			file.size = new integer(size.integer().get());
 			return data.binary().get();
+		}
 
 		return null;
 	}
@@ -216,12 +217,15 @@ public class Files extends Table {
 		if(!path.exists()) {
 			InputStream inputStream = getInputStream(file);
 
-			if(inputStream == null) {
-				Trace.logError(new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath()));
-				return null;
-			}
+			if(inputStream == null)
+				throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
 
-			IOUtils.copy(inputStream, path);
+			path.getParentFile().mkdirs();
+			long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(path));
+			if (copiedSize != file.size.get()) {
+				path.delete();
+				throw new RuntimeException("Files.java:get(file file) file broken, fileId: " + file.id.get() +  ", path: " + path.getAbsolutePath());
+			}
 		}
 
 		file.set(new InputOnlyFileItem(path, file.name.get()));
