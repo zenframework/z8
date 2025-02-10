@@ -131,6 +131,9 @@ public class ServerConfig extends Properties {
 	static final private String AuthFailsLimit = "auth.fails.limit";
 	static final private String AuthFailsBanSeconds = "auth.fails.banSeconds";
 
+	static final private String FilesSaveOnDisk = "files.saveOnDisk";
+
+
 	static private File workingPath;
 
 	static private String language;
@@ -144,7 +147,7 @@ public class ServerConfig extends Properties {
 	static private String databaseConnection;
 	static private String databaseDriver;
 	static private encoding databaseCharset;
-	
+
 	static private String emailLogin;
 	static private String emailPassword;
 
@@ -222,6 +225,8 @@ public class ServerConfig extends Properties {
 
 	static private int authFailsLimit;
 	static private int authFailsBanSeconds;
+
+	static private boolean filesSaveOnDisk;
 
 	static public String[] textExtensions; // "txt, xml"
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
@@ -354,6 +359,8 @@ public class ServerConfig extends Properties {
 
 		authFailsLimit = instance.getProperty(AuthFailsLimit, 0);
 		authFailsBanSeconds = instance.getProperty(AuthFailsBanSeconds, 0);
+
+		filesSaveOnDisk = instance.getProperty(FilesSaveOnDisk, false);
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -797,6 +804,10 @@ public class ServerConfig extends Properties {
 
 	static public int authFailsBanSeconds() {
 		return authFailsBanSeconds;
+	}
+
+	static public boolean filesSaveOnDisk() {
+		return filesSaveOnDisk;
 	}
 
 	static public IApplicationServer applicationServer() {
