@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.guid;
@@ -30,6 +31,9 @@ public interface IUser extends RmiSerializable, Serializable {
 	public boolean banned();
 	public boolean changePassword();
 
+	public long bannedUntil();
+	public void saveBannedUntil(long bannedUntil);
+
 	public String phone();
 
 	public String email();
@@ -39,6 +43,9 @@ public interface IUser extends RmiSerializable, Serializable {
 
 	public String settings();
 	public void setSettings(String settings);
+
+	public int failedAuthCount();
+	public void setFailedAuthCount(int failedAuthCount);
 
 	public Collection<IRole> roles();
 	public IPrivileges privileges();

@@ -10,10 +10,12 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
@@ -22,10 +24,11 @@ import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Domains extends Table {
 
-	static public string DefaultDomain = new string(Users.displayNames.SystemName + " at " + Rmi.localhost);
+	static public string DefaultDomain = new string(Users.displayNames.SystemName + "@" + Rmi.localhost + ":" + ProxyUtils.getPort(((ApplicationServer)ServerConfig.applicationServer()).proxy()));
 	static public String TableName = "SystemDomains";
 
 	static public class fieldNames {
@@ -150,7 +153,8 @@ public class Domains extends Table {
 		super.onNew();
 
 		Field address = this.address.get();
-		address.set(new string(displayNames.DefaultAddress + address.getSequencer().next()));
+		if (!address.changed())
+			address.set(new string(displayNames.DefaultAddress + address.getSequencer().next()));
 	}
 
 	public Domain getDomain(String domain) {

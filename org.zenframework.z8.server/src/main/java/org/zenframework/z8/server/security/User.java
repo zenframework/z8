@@ -21,6 +21,7 @@ import org.zenframework.z8.server.base.table.system.UserEntries;
 import org.zenframework.z8.server.base.table.system.UserRoles;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -71,9 +72,11 @@ public class User implements IUser {
 	private String company;
 	private String position;
 	private String verification;
-	
+
 	private boolean banned;
+	private long bannedUntil;
 	private boolean changePassword;
+	private int failedAuthCount;
 
 	private String settings;
 	private IDatabase database;
@@ -231,6 +234,18 @@ public class User implements IUser {
 	@Override
 	public boolean changePassword() {
 		return changePassword;
+	}
+
+	@Override
+	public long bannedUntil() {
+		return bannedUntil;
+	}
+
+	@Override
+	public void saveBannedUntil(long bannedUntil) {
+		this.bannedUntil = bannedUntil;
+
+		Users.saveBannedUntil(id, bannedUntil);
 	}
 
 	@Override
@@ -503,8 +518,25 @@ public class User implements IUser {
 		try {
 			IUser user = read(loginParameters);
 
-			if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/ || user.banned())
+			if (user.banned() || user.bannedUntil() > System.currentTimeMillis())
 				throw new AccessDeniedException();
+
+			int failed = user.failedAuthCount();
+
+			if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/) {
+				int failsLimit = ServerConfig.authFailsLimit();
+				if (failsLimit > 0) {
+					if (++failed >= failsLimit) {
+						failed = 0;
+						user.saveBannedUntil(System.currentTimeMillis() + ServerConfig.authFailsBanSeconds() * 1000);
+					}
+					user.setFailedAuthCount(failed);
+				}
+				throw new AccessDeniedException();
+			}
+
+			if (failed != 0)
+				user.setFailedAuthCount(0);
 
 			return user;
 		} finally {
@@ -534,7 +566,9 @@ public class User implements IUser {
 
 		if(!shortInfo) {
 			fields.add(users.banned.get());
+			fields.add(users.bannedUntil.get());
 			fields.add(users.changePassword.get());
+			fields.add(users.failedAuthCount.get());
 			fields.add(users.firstName.get());
 			fields.add(users.middleName.get());
 			fields.add(users.lastName.get());
@@ -554,6 +588,7 @@ public class User implements IUser {
 		this.login = users.name.get().string().get();
 		this.password = users.password.get().string().get();
 		this.banned = users.banned.get().bool().get();
+		this.bannedUntil = users.bannedUntil.get().date().getTicks();
 		this.changePassword = users.changePassword.get().bool().get();
 		this.firstName = users.firstName.get().string().get();
 		this.middleName = users.middleName.get().string().get();
@@ -563,7 +598,8 @@ public class User implements IUser {
 		this.email = users.email.get().string().get();
 		this.company = users.company.get().string().get();
 		this.position = users.position.get().string().get();
-		
+		this.failedAuthCount = users.failedAuthCount.get().integer().getInt();
+
 		if(shortInfo)
 			return true;
 
@@ -734,6 +770,18 @@ public class User implements IUser {
 		this.settings = settings;
 
 		Users.saveSettings(id, settings);
+	}
+
+	@Override
+	public int failedAuthCount() {
+		return failedAuthCount;
+	}
+
+	@Override
+	public void setFailedAuthCount(int failedAuthCount) {
+		this.failedAuthCount = failedAuthCount;
+
+		Users.saveFailedAuthCount(id, failedAuthCount);
 	}
 
 	@Override
