@@ -9,6 +9,7 @@ public class StartupCodeLines {
 	public String addJob = null;
 	public String addRequest = null;
 	public String addExecutable = null;
+	public String addNamed = null;
 	public String addSecurityLog = null;
 
 	public StartupCodeLines() {
@@ -20,6 +21,7 @@ public class StartupCodeLines {
 		addJob = null;
 		addRequest = null;
 		addExecutable = null;
+		addNamed = null;
 		addSecurityLog = null;
 	}
 
@@ -40,6 +42,8 @@ public class StartupCodeLines {
 				addTable = "addTable(" + getJavaNew(type) + ");";
 			else if(type.findAttribute(IAttribute.Executable) != null)
 				addExecutable = "addExecutable(" + getJavaNew(type) + ");";
+			else
+				addNamed = "addNamed(" + getJavaNew(type) + ");";
 		}
 
 		attribute = type.getAttribute(IAttribute.Job);

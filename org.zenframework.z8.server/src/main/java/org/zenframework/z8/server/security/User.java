@@ -54,6 +54,8 @@ public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
 	static private final int verificationTimeHours = 12;
 
+	private boolean authenticated = false;
+
 	private guid id;
 
 	private String login;
@@ -127,9 +129,24 @@ public class User implements IUser {
 		this.database = database;
 	}
 
+	public boolean getAuthenticated() {
+		return authenticated;
+	}
+
+	public User setAuthenticated(boolean authenticated) {
+		this.authenticated = authenticated;
+		return this;
+	}
+
 	@Override
 	public guid id() {
 		return id;
+	}
+
+	@Override
+	public IUser setId(guid id) {
+		this.id = id;
+		return this;
 	}
 
 	@Override
@@ -183,11 +200,6 @@ public class User implements IUser {
 	@Override
 	public String position() {
 		return position;
-	}
-
-	@Override
-	public Collection<IRole> roles() {
-		return roles;
 	}
 
 	@Override
@@ -295,11 +307,11 @@ public class User implements IUser {
 	private static String getVerificationLink(String host, String hashPrefix, String verification) {
 		return new StringBuilder().append(host).append("#").append(hashPrefix).append("_").append(verification).toString();
 	}
-	
+
 	public static IUser create(LoginParameters loginParameters) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		String plainPassword = User.generateOneTimePassword();
 		ApplicationServer.getRequest().getParameters().put(new string("plainPassword"), new string(plainPassword));
 		user.login = loginParameters.getLogin();
@@ -316,11 +328,11 @@ public class User implements IUser {
 			ConnectionManager.release();
 		}
 	}
-	
+
 	public static IUser register(LoginParameters loginParameters, String password, String host) {
 		IDatabase database = ApplicationServer.getDatabase();
 		User user = new User(database);
-		
+
 		user.login = loginParameters.getLogin();
 		user.lastName = loginParameters.getLastName();
 		user.firstName = loginParameters.getFirstName();
@@ -332,9 +344,9 @@ public class User implements IUser {
 		Users users = Users.newInstance();
 		if(users.readFirst(Arrays.asList(users.recordId.get()), new Equ(users.name.get(), user.login))) // user already exist
 			throw new UserNotFoundException();
-		
+
 		String verification = Digest.md5(guid.create().toString());
-		
+
 		users = Users.newInstance();
 		users.name.get().set(user.login);
 		users.lastName.get().set(user.lastName);
@@ -509,6 +521,11 @@ public class User implements IUser {
 		return user;
 	}
 
+	static private void onError(Throwable exception) {
+		Trace.logError(exception);
+		throw new AccessDeniedException();
+	}
+
 	static public IUser load(LoginParameters loginParameters, String password) {
 		IDatabase database = ApplicationServer.getDatabase();
 
@@ -518,12 +535,35 @@ public class User implements IUser {
 		try {
 			IUser user = read(loginParameters);
 
-			if (user.banned() || user.bannedUntil() > System.currentTimeMillis())
-				throw new AccessDeniedException();
+			authenticate(user, loginParameters, password);
 
-			int failed = user.failedAuthCount();
+			return user;
+		} finally {
+			ConnectionManager.release();
+		}
+	}
 
-			if(password != null && !password.equals(user.password()) /*&& !password.equals(MD5.hex(""))*/) {
+	static private void authenticate(IUser user, LoginParameters loginParameters, String password) {
+		if (user.banned() || user.bannedUntil() > System.currentTimeMillis())
+			throw new AccessDeniedException();
+
+		boolean authenticated = false;
+
+		try {
+			org.zenframework.z8.server.base.security.User u = org.zenframework.z8.server.base.security.User.newInstance(user);
+			authenticated = u.authenticate(password);
+		} catch(Throwable e) {
+			onError(e);
+		}
+
+
+		int failed = user.failedAuthCount();
+
+		if(!authenticated) {
+			if (password != null && !ServerConfig.webClientHashPassword())
+				password = Digest.md5(password);
+
+			if (password != null && !password.equals(user.password())) /*&& !password.equals(MD5.hex(""))*/ {
 				int failsLimit = ServerConfig.authFailsLimit();
 				if (failsLimit > 0) {
 					if (++failed >= failsLimit) {
@@ -534,14 +574,10 @@ public class User implements IUser {
 				}
 				throw new AccessDeniedException();
 			}
-
-			if (failed != 0)
-				user.setFailedAuthCount(0);
-
-			return user;
-		} finally {
-			ConnectionManager.release();
 		}
+
+		if (failed != 0)
+			user.setFailedAuthCount(0);
 	}
 
 	private void addSystemTools() {
@@ -613,13 +649,31 @@ public class User implements IUser {
 		}
 	}
 
-	private Collection<guid> getRoles() {
-		Collection<guid> result = new ArrayList<guid>();
+	public Collection<IRole> getRoles() {
+		return roles == null ? roles = new UserRoles().get(id()) : roles;
+	}
 
-		for(IRole role : roles)
-			result.add(role.id());
+	public boolean hasRoles() {
+		return roles != null;
+	}
 
-		return result;
+	public boolean hasRole(guid roleId) {
+		if(roles == null)
+			return false;
+
+		for(IRole role : getRoles()) {
+			if(role.id().equals(roleId))
+				return true;
+		}
+
+		return false;
+	}
+
+	public Collection<guid> getRoleIds() {
+		Collection<guid> ids = new ArrayList<guid>();
+		for(IRole role : getRoles())
+			ids.add(role.id());
+		return ids;
 	}
 
 	private IAccess defaultAccess() {
@@ -659,7 +713,7 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(tableId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write, create, copy, destroy);
 
-		SqlToken where = rta.role.get().inVector(getRoles());
+		SqlToken where = rta.role.get().inVector(getRoleIds());
 
 		SqlToken notRead = new NotEqu(read, new sql_bool(defaultAccess.read()));
 		SqlToken notWrite = new NotEqu(write, new sql_bool(defaultAccess.write()));
@@ -690,7 +744,7 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(fieldId));
 		Collection<Field> fields = Arrays.asList(tableId, read, write);
 
-		SqlToken where = rfa.role.get().inVector(getRoles());
+		SqlToken where = rfa.role.get().inVector(getRoleIds());
 
 		rfa.group(fields, groups, where);
 
@@ -723,7 +777,7 @@ public class User implements IUser {
 		Collection<Field> groups = new ArrayList<Field>(Arrays.asList(requestId));
 		Collection<Field> fields = Arrays.asList(requestId, execute);
 
-		SqlToken where = rra.role.get().inVector(getRoles());
+		SqlToken where = rra.role.get().inVector(getRoleIds());
 
 		SqlToken notExecute = new NotEqu(execute, new sql_bool(defaultAccess.execute()));
 		SqlToken having = new Group(notExecute);

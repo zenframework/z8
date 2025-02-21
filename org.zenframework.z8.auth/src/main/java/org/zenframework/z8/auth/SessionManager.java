@@ -69,7 +69,7 @@ public class SessionManager {
 			if(user.isAdministrator() || !user.database().schema().equals(schema))
 				continue;
 
-			for(IRole role : user.roles()) {
+			for(IRole role : user.getRoles()) {
 				if(role.id().equals(roleId)) {
 					userSessions.remove(userKey(user.id(), schema));
 					sessions.remove(session.id());

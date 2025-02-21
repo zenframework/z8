@@ -160,7 +160,7 @@ public class Dashboard extends RequestTarget {
 		writer.finishArray();
 
 		writer.startArray(Json.roles);
-		for(IRole role : user.roles()) {
+		for(IRole role : user.getRoles()) {
 			writer.startObject();
 			writer.writeProperty(Json.id, role.id());
 			writer.writeProperty(Json.name, role.name());

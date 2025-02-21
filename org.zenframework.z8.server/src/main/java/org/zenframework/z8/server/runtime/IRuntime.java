@@ -23,6 +23,7 @@ public interface IRuntime {
 
 	Collection<Executable.CLASS<? extends Executable>> executables();
 	Collection<guid> executableKeys();
+	Collection<OBJECT.CLASS<? extends OBJECT>> named();
 
 	Collection<OBJECT.CLASS<? extends OBJECT>> systemTools();
 
@@ -35,6 +36,8 @@ public interface IRuntime {
 	Executable.CLASS<? extends Executable> getExecutable(String className);
 	Executable.CLASS<? extends Executable> getExecutableByName(String name);
 	Executable.CLASS<? extends Executable> getExecutableByKey(guid key);
+
+	public OBJECT.CLASS<? extends OBJECT> getNamed(String name);
 
 	OBJECT.CLASS<? extends OBJECT> getRequest(String className);
 	OBJECT.CLASS<? extends OBJECT> getRequestByKey(guid key);

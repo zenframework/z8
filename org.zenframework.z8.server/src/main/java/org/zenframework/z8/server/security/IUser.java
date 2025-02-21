@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.types.guid;
@@ -13,6 +12,7 @@ import org.zenframework.z8.server.types.string;
 
 public interface IUser extends RmiSerializable, Serializable {
 	public guid id();
+	public IUser setId(guid id);
 
 	public String login();
 	public String password();
@@ -47,7 +47,10 @@ public interface IUser extends RmiSerializable, Serializable {
 	public int failedAuthCount();
 	public void setFailedAuthCount(int failedAuthCount);
 
-	public Collection<IRole> roles();
+	public Collection<IRole> getRoles();
+	public boolean hasRoles();
+	public boolean hasRole(guid roleId);
+	public Collection<guid> getRoleIds();
 	public IPrivileges privileges();
 
 	public boolean isAdministrator();

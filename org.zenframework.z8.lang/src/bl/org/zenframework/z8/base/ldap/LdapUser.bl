@@ -1,0 +1,10 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.ldap.LdapUser"]
+class LdapUser extends Object {
+	public string domainName;
+	public string login;
+	public bool locked;
+	public string[] memberOf;
+	public string[string] parameters;
+}

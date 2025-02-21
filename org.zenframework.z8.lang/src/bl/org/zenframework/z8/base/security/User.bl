@@ -15,6 +15,12 @@ public class User extends Object {
 
 	public primary[string] parameters;
 
+	public guid getId();
+	public User setId(guid id);
+
+	public string getLogin();
+	public User setLogin(string login);
+
 	public bool isSystem();
 	public bool isAdministrator();
 
@@ -22,4 +28,8 @@ public class User extends Object {
 	public guid getParameter(string key, guid defaultValue);
 	public int getParameter(string key, int defaultValue);
 	public bool getParameter(string key, bool defaultValue);
+
+	virtual protected bool authenticate(string password);
+
+	virtual protected void onLoad();
 }
