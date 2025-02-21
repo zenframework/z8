@@ -11,7 +11,7 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public interface IUser extends RmiSerializable, Serializable {
-	public guid id();
+	public guid getId();
 	public IUser setId(guid id);
 
 	public String login();
@@ -55,6 +55,7 @@ public interface IUser extends RmiSerializable, Serializable {
 
 	public boolean isAdministrator();
 	public boolean isBuiltinAdministrator();
+	public boolean isBuiltinSystem();
 
 	public Collection<Entry> entries();
 	public void setEntries(Collection<Entry> entries);

@@ -24,6 +24,7 @@ public class User extends OBJECT {
 			super(container);
 			setJavaClass(User.class);
 			setName(ClassName);
+			setDisplayName("User");
 		}
 
 		@Override
@@ -60,7 +61,6 @@ public class User extends OBJECT {
 
 	public RLinkedHashMap<string, primary> parameters;
 
-	private boolean isSystem;
 	private boolean isAdministrator;
 
 	public User(IObject container) {
@@ -73,13 +73,13 @@ public class User extends OBJECT {
 
 		this.user = user;
 
-		if(user.id() == null || !user.hasRoles())
+		if(user.getId() == null || !user.hasRoles())
 			return (User.CLASS<?>)this.getCLASS();
 
 		for(IRole role : user.getRoles())
 			roles.put(role.id(), new string(role.name()));
 
-		id = user.id();
+		id = user.getId();
 		login = new string(user.login());
 
 		firstName = new string(user.firstName());
@@ -92,7 +92,6 @@ public class User extends OBJECT {
 
 		parameters = (RLinkedHashMap<string, primary>)user.parameters();
 
-		isSystem = user.isBuiltinAdministrator();
 		isAdministrator = user.isAdministrator();
 
 		return (User.CLASS<?>)this.getCLASS();
@@ -102,12 +101,20 @@ public class User extends OBJECT {
 		return z8_authenticate(password != null ? new string(password) : null).get();
 	}
 
-	public bool z8_isSystem() {
-		return new bool(isSystem);
+	public void onLoad() {
+		z8_onLoad();
 	}
 
 	public bool z8_isAdministrator() {
 		return new bool(isAdministrator);
+	}
+
+	public bool z8_isBuiltinAdministrator() {
+		return new bool(user.isBuiltinAdministrator());
+	}
+
+	public bool z8_isBuiltinSystem() {
+		return new bool(user.isBuiltinSystem());
 	}
 
 	public string z8_getParameter(string key, string defaultValue) {

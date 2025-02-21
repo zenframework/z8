@@ -8,6 +8,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.json.Json;
@@ -61,10 +62,18 @@ public class Dashboard extends RequestTarget {
 	private void changePassword(String password, String newPassword) {
 		IUser user = ApplicationServer.getUser();
 
+		if (password == null)
+			password = "";
+		if (!ServerConfig.webClientHashPassword())
+			password = Digest.md5(password);
+
+		if (!ServerConfig.webClientHashPassword())
+			newPassword = Digest.md5(newPassword);
+
 		if(!user.password().equals(password))
 			throw new AccessDeniedException();
 
-		Users.changePassword(user.id(), newPassword);
+		Users.changePassword(user.getId(), newPassword);
 	}
 
 	private void changeEmail(String email) {
@@ -73,7 +82,7 @@ public class Dashboard extends RequestTarget {
 		if(!user.email().equalsIgnoreCase(email)) {
 			Users users = Users.newInstance();
 			users.email.get().set(new string(email));
-			users.update(user.id());
+			users.update(user.getId());
 		}
 	}
 
@@ -141,9 +150,9 @@ public class Dashboard extends RequestTarget {
 
 		writer.startObject(Json.user);
 
-		writer.writeProperty(Json.id, user.id());
+		writer.writeProperty(Json.id, user.getId());
 		writer.writeProperty(Json.login, user.login());
-		writer.writeProperty(Json.administrator, user.id().equals(BuiltinUsers.Administrator.guid()));
+		writer.writeProperty(Json.administrator, user.getId().equals(BuiltinUsers.Administrator.guid()));
 		writer.writeProperty(Json.firstName, user.firstName());
 		writer.writeProperty(Json.middleName, user.middleName());
 		writer.writeProperty(Json.lastName, user.lastName());

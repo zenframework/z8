@@ -139,7 +139,7 @@ public class User implements IUser {
 	}
 
 	@Override
-	public guid id() {
+	public guid getId() {
 		return id;
 	}
 
@@ -208,11 +208,6 @@ public class User implements IUser {
 	}
 
 	@Override
-	public boolean isBuiltinAdministrator() {
-		return id != null && id.equals(Users.Administrator) || id.equals(Users.System);
-	}
-
-	@Override
 	public boolean isAdministrator() {
 		if(roles != null) {
 			for(IRole role : roles) {
@@ -221,6 +216,14 @@ public class User implements IUser {
 			}
 		}
 		return isBuiltinAdministrator();
+	}
+
+	public boolean isBuiltinAdministrator() {
+		return Users.isBuiltinAdministrator(getId());
+	}
+
+	public boolean isBuiltinSystem() {
+		return Users.isBuiltinSystem(getId());
 	}
 
 	@Override
@@ -292,7 +295,7 @@ public class User implements IUser {
 		if(isLatestVersion) {
 			user.loadRoles();
 			user.loadEntries();
-		} else if(user.isAdministrator()) {
+		} else if(user.isBuiltinAdministrator()) {
 			user.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
 			user.privileges = new Privileges(Access.administrator());
 		} else
@@ -537,6 +540,8 @@ public class User implements IUser {
 
 			authenticate(user, loginParameters, password);
 
+			onLoad(user);
+
 			return user;
 		} finally {
 			ConnectionManager.release();
@@ -578,6 +583,14 @@ public class User implements IUser {
 
 		if (failed != 0)
 			user.setFailedAuthCount(0);
+	}
+
+	static private void onLoad(IUser user) {
+		try {
+			org.zenframework.z8.server.base.security.User.newInstance(user).onLoad();
+		} catch(Throwable e) {
+			onError(e);
+		}
 	}
 
 	private void addSystemTools() {
@@ -650,7 +663,7 @@ public class User implements IUser {
 	}
 
 	public Collection<IRole> getRoles() {
-		return roles == null ? roles = new UserRoles().get(id()) : roles;
+		return roles == null ? roles = new UserRoles().get(getId()) : roles;
 	}
 
 	public boolean hasRoles() {

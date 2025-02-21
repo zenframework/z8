@@ -21,8 +21,9 @@ public class User extends Object {
 	public string getLogin();
 	public User setLogin(string login);
 
-	public bool isSystem();
 	public bool isAdministrator();
+	public bool isBuiltinAdministrator();
+	public bool isBuiltinSystem();
 
 	public string getParameter(string key, string defaultValue);
 	public guid getParameter(string key, guid defaultValue);

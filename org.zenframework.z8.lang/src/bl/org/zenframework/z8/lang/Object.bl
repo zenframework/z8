@@ -32,4 +32,8 @@ public class Object {
 	virtual protected JsonArray getData(string[string] parameters);
 
 	auto public Object[] objects;
+
+	public Object[] getNamed();
+
+	static public Object newInstance(string name);
 }
