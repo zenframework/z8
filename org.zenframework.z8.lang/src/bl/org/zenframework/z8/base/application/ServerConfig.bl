@@ -1,0 +1,11 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.application.ServerConfig"]
+public class ServerConfig extends Object {
+
+	static public string get(string key);
+	static public string get(string key, string defaultValue);
+	static public bool get(string key, bool defaultValue);
+	static public int get(string key, int defaultValue);
+
+}
