@@ -476,8 +476,8 @@ public class TableGenerator {
 
 		// Никогда не пересоздаем SystemFiles - очень долго. Если что - все изменения руками.
 		if(tableName.equals(Files.TableName)) {
-//			logger.info(Files.TableName + " - skipped.");
-//			return;
+			logger.info(Files.TableName + " - skipped.");
+			return;
 		}
 
 		String name = "" + Math.abs(tableName.hashCode());
