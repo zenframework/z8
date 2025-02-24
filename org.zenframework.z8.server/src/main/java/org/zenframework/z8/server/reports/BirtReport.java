@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -52,6 +53,7 @@ import org.eclipse.birt.report.model.elements.interfaces.ITableColumnModel;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.json.Json;
@@ -999,8 +1001,11 @@ public class BirtReport {
 	}
 
 	private void run(IReportRunnable runnable, File outputFile) {
+		String lang = ServerConfig.language();
+
 		IRunAndRenderTask task = null;
 		task = options.reportEngine().createRunAndRenderTask(runnable);
+		task.setLocale(new Locale(lang, lang.toUpperCase()));
 
 		HashMap<String, Object> contextMap = new HashMap<String, Object>();
 
