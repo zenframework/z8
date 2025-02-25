@@ -39,7 +39,7 @@ public class SessionManager {
 	}
 
 	synchronized public ISession create(IUser user) {
-		String userId = userKey(user.id(), user.database().schema());
+		String userId = userKey(user.getId(), user.database().schema());
 		ISession session = userSessions.get(userId);
 
 		if(session == null) {
@@ -69,9 +69,9 @@ public class SessionManager {
 			if(user.isAdministrator() || !user.database().schema().equals(schema))
 				continue;
 
-			for(IRole role : user.roles()) {
+			for(IRole role : user.getRoles()) {
 				if(role.id().equals(roleId)) {
-					userSessions.remove(userKey(user.id(), schema));
+					userSessions.remove(userKey(user.getId(), schema));
 					sessions.remove(session.id());
 					break;
 				}
@@ -89,7 +89,7 @@ public class SessionManager {
 			if(session.getLastAccessTime() < timeLimit) {
 				synchronized(this) {
 					IUser user = session.user();
-					userSessions.remove(userKey(user.id(), user.database().schema()));
+					userSessions.remove(userKey(user.getId(), user.database().schema()));
 					sessions.remove(session.id());
 				}
 			}

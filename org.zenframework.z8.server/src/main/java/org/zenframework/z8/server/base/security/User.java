@@ -1,8 +1,10 @@
 package org.zenframework.z8.server.base.security;
 
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.security.IRole;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
@@ -11,6 +13,8 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class User extends OBJECT {
+	static public String ClassName = "User";
+
 	public static class CLASS<T extends User> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -19,6 +23,8 @@ public class User extends OBJECT {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(User.class);
+			setName(ClassName);
+			setDisplayName("User");
 		}
 
 		@Override
@@ -26,6 +32,22 @@ public class User extends OBJECT {
 			return new User(container);
 		}
 	}
+
+	static public User newInstance() {
+		return (User)Runtime.instance().getNamed(ClassName).newInstance();
+	}
+
+	static public User.CLASS<? extends User> get(IUser user) {
+		return newInstance().initialize(user);
+	}
+
+	static public User newInstance(IUser user) {
+		return get(user).get();
+	}
+
+	private IUser user = new org.zenframework.z8.server.security.User();
+	private RLinkedHashMap<guid, string> roles = new RLinkedHashMap<guid, string>();
+
 
 	public guid id;
 	public string login;
@@ -39,15 +61,25 @@ public class User extends OBJECT {
 
 	public RLinkedHashMap<string, primary> parameters;
 
-	private boolean isSystem;
 	private boolean isAdministrator;
 
 	public User(IObject container) {
 		super(container);
 	}
 
-	public void initialize(IUser user) {
-		id = user.id();
+	public User.CLASS<? extends User> initialize(IUser user) {
+		if(user == null)
+			return null;
+
+		this.user = user;
+
+		if(user.getId() == null || !user.hasRoles())
+			return (User.CLASS<?>)this.getCLASS();
+
+		for(IRole role : user.getRoles())
+			roles.put(role.id(), new string(role.name()));
+
+		id = user.getId();
 		login = new string(user.login());
 
 		firstName = new string(user.firstName());
@@ -60,16 +92,29 @@ public class User extends OBJECT {
 
 		parameters = (RLinkedHashMap<string, primary>)user.parameters();
 
-		isSystem = user.isBuiltinAdministrator();
 		isAdministrator = user.isAdministrator();
+
+		return (User.CLASS<?>)this.getCLASS();
 	}
 
-	public bool z8_isSystem() {
-		return new bool(isSystem);
+	public boolean authenticate(String password) {
+		return z8_authenticate(password != null ? new string(password) : null).get();
+	}
+
+	public void onLoad() {
+		z8_onLoad();
 	}
 
 	public bool z8_isAdministrator() {
 		return new bool(isAdministrator);
+	}
+
+	public bool z8_isBuiltinAdministrator() {
+		return new bool(user.isBuiltinAdministrator());
+	}
+
+	public bool z8_isBuiltinSystem() {
+		return new bool(user.isBuiltinSystem());
 	}
 
 	public string z8_getParameter(string key, string defaultValue) {
@@ -86,5 +131,12 @@ public class User extends OBJECT {
 
 	public bool z8_getParameter(string key, bool defaultValue) {
 		return parameters.containsKey(key) ? (bool)parameters.get(key) : defaultValue;
+	}
+
+	protected bool z8_authenticate(string password) {
+		return bool.False;
+	}
+
+	protected void z8_onLoad() {
 	}
 }

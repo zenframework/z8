@@ -18,6 +18,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
+import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
@@ -144,7 +145,9 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 	@Override
 	public IUser user(LoginParameters loginParameters, String password) {
-		setRequest(new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema())));
+		IRequest req = new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema()));
+		req.setTarget(Loader.getInstance("org.zenframework.z8.server.base.security.User"));
+		setRequest(req);
 
 		SecurityLog securityLog = Runtime.instance().securityLog().get();
 

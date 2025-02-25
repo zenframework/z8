@@ -98,6 +98,9 @@ public class StartupCodeGenerator {
 			if(startupCodeLines.addExecutable != null)
 				addExecutable += "\t\t" + startupCodeLines.addExecutable + '\n';
 
+			if(startupCodeLines.addNamed != null)
+				addSecurityLog += "\t\t" + startupCodeLines.addNamed + '\n';
+
 			if(startupCodeLines.addSecurityLog != null)
 				addSecurityLog += "\t\t" + startupCodeLines.addSecurityLog + '\n';
 		}
