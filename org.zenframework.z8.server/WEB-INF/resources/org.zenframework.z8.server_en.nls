@@ -121,6 +121,7 @@
 	<entry key="Files.size">File size</entry>
 	<entry key="Files.time">Creation date</entry>
 	<entry key="Files.lastModified">Modification date</entry>
+	<entry key="Files.location">Location</entry>
 	<entry key="Files.extension">Type</entry>
 
 	<entry key="Preview.unsupportedFileFormat">Cannot view the content of file {0}: format is not supported.</entry>
