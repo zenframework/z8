@@ -30,6 +30,9 @@ public class Files extends Table {
 	public static final String TableName = "SystemFiles";
 	public static final String Storage = "storage/";
 
+	public static final long Location_DB = 0;
+	public static final long Location_Storage = 1;
+
 	static public class fieldNames {
 		public final static String Name = "Name";
 		public final static String File = "File";
@@ -37,6 +40,7 @@ public class Files extends Table {
 		public final static String Size = "Size";
 		public final static String Time = "Time";
 		public final static String LastModified = "Last modified";
+		public final static String Location = "Location";
 }
 
 	static public class strings {
@@ -46,6 +50,7 @@ public class Files extends Table {
 		public final static String Size = "Files.size";
 		public final static String Time = "Files.time";
 		public final static String LastModified = "Files.lastModified";
+		public final static String Location = "Files.location";
 	}
 
 	static public class displayNames {
@@ -55,6 +60,7 @@ public class Files extends Table {
 		public final static String Size = Resources.get(strings.Size);
 		public final static String Time = Resources.get(strings.Time);
 		public final static String LastModified = Resources.get(strings.LastModified);
+		public final static String Location = Resources.get(strings.Location);
 	}
 
 	public static class CLASS<T extends Files> extends Table.CLASS<T> {
@@ -81,6 +87,7 @@ public class Files extends Table {
 	public final IntegerField.CLASS<IntegerField> size = new IntegerField.CLASS<IntegerField>(this);
 	public final DatetimeField.CLASS<DatetimeField> time = new DatetimeField.CLASS<DatetimeField>(this);
 	public final DatetimeField.CLASS<DatetimeField> lastModified = new DatetimeField.CLASS<DatetimeField>(this);
+	public final IntegerField.CLASS<IntegerField> location = new IntegerField.CLASS<IntegerField>(this);
 
 	static public Files newInstance() {
 		return new Files.CLASS<Files>().get();
@@ -100,6 +107,7 @@ public class Files extends Table {
 		objects.add(size);
 		objects.add(time);
 		objects.add(lastModified);
+		objects.add(location);
 	}
 
 	@Override
@@ -127,6 +135,9 @@ public class Files extends Table {
 
 		lastModified.setName(fieldNames.LastModified);
 		lastModified.setIndex("lastModified");
+
+		location.setName(fieldNames.Location);
+		location.setIndex("location");
 	}
 
 	@Override
@@ -156,9 +167,10 @@ public class Files extends Table {
 			time.get().set(file.time);
 			lastModified.get().set(file.time);
 
-			if (ServerConfig.filesSaveOnDisk())
+			if (ServerConfig.filesSaveOnDisk()) {
+				location.get().set(Location_Storage);
 				putOnDisk(file, input);
-			else
+			} else
 				data.get().set(input);
 
 			if(create)

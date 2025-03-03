@@ -475,9 +475,9 @@ public class TableGenerator {
 	private void recreateTable() throws SQLException {
 		String tableName = table().name();
 
-		// Никогда не пересоздаем SystemFiles - очень долго. Если что - все изменения руками.
-		if(ServerConfig.generatorSkipSystemFiles() && tableName.equals(Files.TableName)) {
-			logger.info(Files.TableName + " - skipped.");
+		String generatorAttr = table().getAttribute("tableGenerator");
+		if (generatorAttr != null && generatorAttr.equals("skipRecreation")) {
+			logger.info(tableName + " - skipped.");
 			return;
 		}
 

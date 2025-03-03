@@ -140,7 +140,7 @@ public class ConverterAdapter extends Adapter {
 			return "attachment; filename=\"" + toHexString(fileName) + "\"";
 
 		if(agent.contains("webkit"))
-			return "attachment; filename=" + fileName + "; filename*=UTF-8''" + URLEncoder.encode(fileName, encoding.Default.toString());
+			return "attachment; filename=\"" + fileName + "\"; filename*=UTF-8''" + URLEncoder.encode(fileName, encoding.Default.toString()).replace("+", "%20");
 
 		if(agent.contains("opera")) {
 			int version = -1;
