@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.application.Application;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.IResponse;
@@ -414,5 +415,18 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getData(RLinkedHashMap<string, string> parameters) {
 		return null;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public RCollection z8_getNamed() {
+		RCollection named = new RCollection();
+		for(OBJECT.CLASS<? extends OBJECT> cls : Runtime.instance().named())
+			if(getClass().isInstance(cls.get()))
+				named.add(cls);
+		return named;
+	}
+
+	static public OBJECT.CLASS<? extends OBJECT> z8_newInstance(string name) {
+		return (OBJECT.CLASS<?>)Runtime.instance().getNamed(name.get()).newInstance().getCLASS();
 	}
 }
