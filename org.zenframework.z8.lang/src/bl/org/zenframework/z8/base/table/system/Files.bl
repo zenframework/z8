@@ -23,6 +23,9 @@ public class Files extends Table {
 	[name "Last modified"]
 	public DatetimeField lastModified;
 
+	[name "Location"]
+	public IntField location;
+
 	[name "Size"]
 	public IntField size;
 
