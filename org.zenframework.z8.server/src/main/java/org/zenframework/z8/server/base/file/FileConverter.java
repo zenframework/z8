@@ -199,6 +199,7 @@ public class FileConverter {
 		try {
 			InputStream sourceIn = new FileInputStream(source);
 			PdfReader sourceReader = new PdfReader(sourceIn);
+			int pages = sourceReader.getNumberOfPages();
 			Rectangle size = sourceReader.getPageSize(1);
 			Trace.logEvent(size.getWidth() + "x" + size.getHeight());
 			PdfStamper stamper = new PdfStamper(sourceReader, new FileOutputStream(file), '\0', true);
@@ -208,7 +209,7 @@ public class FileConverter {
 			for (int i = 0; i < stamps.length(); ++i) {
 				try {
 					JsonObject stampInfo = stamps.getJsonObject(i);
-					processStamp(stamper, stampInfo);
+					processStamp(stamper, stampInfo, size.getHeight(), pages);
 				} catch (Exception e) {
 					throw new RuntimeException("Can't insert stamp at index " + i + " into " + source, e);
 				}
@@ -218,7 +219,7 @@ public class FileConverter {
 			sourceReader.close();
 			sourceIn.close();
 		} catch (Exception e) {
-			
+			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(null);
 		}
@@ -226,22 +227,40 @@ public class FileConverter {
 		return file;
 	}
 
-	private static void processStamp(PdfStamper stamper, JsonObject stampInfo) throws Exception {
+	private static void processStamp(PdfStamper stamper, JsonObject stampInfo, float pageH, int pages) throws Exception {
 		guid stampId = stampInfo.getGuid("id");
+		file stampFile = Files.get(Files.get(stampId));
+		Image signImg = Image.getInstance(ImageIO.read(stampFile.getInputStream()), null);
+
+		Rectangle loc = getStampPosition(stampInfo, pageH);
+
+		String pageStr = stampInfo.has("page") ? stampInfo.getString("page") : "1";
+		int page = pageStr.equals("last") ? pages : Integer.parseInt(pageStr);
+		if (page > pages)
+			page = pages;
+
+		addStamp(stamper, "Stamp", signImg, loc, page);
+	}
+
+	private static Rectangle getStampPosition(JsonObject stampInfo, float pageH) {
 		int x = stampInfo.getInt("x");
 		int y = stampInfo.getInt("y");
 		int width = stampInfo.getInt("w");
 		int height = stampInfo.getInt("h");
 
-		file stampFile = Files.get(Files.get(stampId));
-		Image signImg = Image.getInstance(ImageIO.read(new FileInputStream(stampFile.getAbsolutePath())), null);
+		String yStart = stampInfo.has("yStart") ? stampInfo.getString("yStart") : "bottom";
+		if (!yStart.equals("bottom") && !yStart.equals("top"))
+			throw new RuntimeException("Unknown 'yStart' value: " + yStart);
 
-		Rectangle location = new Rectangle(x, y, x + width, y + height);
+		float x1 = x;
+		float x2 = x + width;
+		float y1 = yStart.equals("top") ? pageH - y - height : y;
+		float y2 = yStart.equals("top") ? pageH - y : y + height;
 
-		addStamp(stamper, "Stamp", signImg, location);
+		return new Rectangle(x1, y1, x2, y2);
 	}
 
-	private static void addStamp(PdfStamper stamp, String name, com.lowagie.text.Image image, Rectangle location) throws DocumentException {
+	private static void addStamp(PdfStamper stamp, String name, com.lowagie.text.Image image, Rectangle location, int page) throws DocumentException {
 		PdfAnnotation stampAnnot = PdfAnnotation.createStamp(stamp.getWriter(), location, null, name);
 		image.setAbsolutePosition(0, 0);
 		PdfContentByte cb = new PdfContentByte(stamp.getWriter());
@@ -249,7 +268,7 @@ public class FileConverter {
 		app.addImage(image);
 		stampAnnot.setAppearance(PdfName.N, app);
 		stampAnnot.setFlags(PdfAnnotation.FLAGS_PRINT);
-		stamp.addAnnotation(stampAnnot, 1);
+		stamp.addAnnotation(stampAnnot, page);
 	}
 
 	public static string z8_getExtension(file file) {
