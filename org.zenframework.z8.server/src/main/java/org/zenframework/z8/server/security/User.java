@@ -54,8 +54,6 @@ public class User implements IUser {
 	static private final long serialVersionUID = -4955893424674255525L;
 	static private final int verificationTimeHours = 12;
 
-	private boolean authenticated = false;
-
 	private guid id;
 
 	private String login;
@@ -127,15 +125,6 @@ public class User implements IUser {
 
 	public User(IDatabase database) {
 		this.database = database;
-	}
-
-	public boolean getAuthenticated() {
-		return authenticated;
-	}
-
-	public User setAuthenticated(boolean authenticated) {
-		this.authenticated = authenticated;
-		return this;
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public IUser user(LoginParameters loginParameters, String password) {
 		IRequest req = new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema()));
-		req.setTarget(Loader.getInstance("org.zenframework.z8.server.base.security.User"));
+		req.setTarget(Loader.getInstance(org.zenframework.z8.server.base.security.User.class.getCanonicalName()));
 		setRequest(req);
 
 		SecurityLog securityLog = Runtime.instance().securityLog().get();
