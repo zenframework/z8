@@ -145,6 +145,14 @@ public class Users extends Table {
 
 	private boolean notifyBlock = false;
 
+	static public boolean isBuiltinAdministrator(guid recordId) {
+		return Administrator.equals(recordId);
+	}
+
+	static public boolean isBuiltinSystem(guid recordId) {
+		return System.equals(recordId);
+	}
+
 	public Users() {
 		this(null);
 	}
@@ -381,7 +389,7 @@ public class Users extends Table {
 	static public void notifyUserChange(guid userId, boolean force) {
 		try {
 			IUser user = ApplicationServer.getUser();
-			if(force || !user.id().equals(userId) && !System.equals(userId) && !Administrator.equals(userId))
+			if(force || !user.getId().equals(userId) && !System.equals(userId) && !Administrator.equals(userId))
 				ServerConfig.authorityCenter().userChanged(userId, user.database().schema());
 		} catch(Throwable e) {
 			throw new RuntimeException(e);

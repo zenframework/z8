@@ -1,24 +1,28 @@
 package org.zenframework.z8.auth;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.rmi.RemoteException;
+
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.crypto.Digest;
-import org.zenframework.z8.server.engine.*;
+import org.zenframework.z8.server.engine.HubServer;
+import org.zenframework.z8.server.engine.IApplicationServer;
+import org.zenframework.z8.server.engine.IAuthorityCenter;
+import org.zenframework.z8.server.engine.IInterconnectionCenter;
+import org.zenframework.z8.server.engine.IServerInfo;
+import org.zenframework.z8.server.engine.ISession;
+import org.zenframework.z8.server.engine.ServerInfo;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.exceptions.ServerUnavailableException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
-import org.zenframework.z8.server.ldap.LdapAPI;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.LoginParameters;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.utils.StringUtils;
-
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.util.Collection;
 
 public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private static final String serversCache = "authority.center.cache";
@@ -28,10 +32,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	static private AuthorityCenter instance = null;
 
 	private final boolean clientHashPassword;
-	private final String ldapUrl;
-	private final boolean checkLdapLogin;
-	private final Collection<String> ldapUsersIgnore;
-	private final boolean ldapUsersCreateOnSuccessfulLogin;
 	private final boolean cacheEnabled;
 
 	private SessionManager sessionManager;
@@ -47,10 +47,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	public AuthorityCenter() throws RemoteException {
 		super(ServerConfig.authorityCenterPort());
 		clientHashPassword = ServerConfig.webClientHashPassword();
-		checkLdapLogin = ServerConfig.checkLdapLogin();
-		ldapUrl = ServerConfig.ldapUrl();
-		ldapUsersIgnore = ServerConfig.ldapUsersIgnore();
-		ldapUsersCreateOnSuccessfulLogin = ServerConfig.ldapUsersCreateOnSuccessfulLogin();
 		cacheEnabled = ServerConfig.authorityCenterCache();
 	}
 
@@ -69,9 +65,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
 		Trace.logEvent("Authority Center JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
-
-		if (!ldapUrl.isEmpty())
-			Trace.logEvent("Authority Center uses LDAP: " + ldapUrl);
 	}
 
 	@Override
@@ -142,24 +135,11 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			password = "";
 
 		IUser user;
-		// backward compatibility
-		// if ldap flag is true and login is not in the ignore list and login is checked
-		if (checkLdapLogin && !StringUtils.containsIgnoreCase(ldapUsersIgnore, loginParameters.getLogin())) {
-			try {
-				new LdapAPI(ldapUrl, loginParameters.getLogin(), password);
-				user = loginServer.user(loginParameters, null);
-			} catch (UserNotFoundException e) {
-				if (ldapUsersCreateOnSuccessfulLogin)
-					user = loginServer.create(loginParameters);
-				else
-					throw new AccessDeniedException();
-			}
-		} else {
-			try {
-				user = loginServer.user(loginParameters, clientHashPassword ? password : Digest.md5(password));
-			} catch (UserNotFoundException ignored) {
-				throw new AccessDeniedException();
-			}
+
+		try {
+			user = loginServer.user(loginParameters, password);
+		} catch (UserNotFoundException ignored) {
+			throw new AccessDeniedException();
 		}
 
 		return sessionManager.create(user).setServerInfo(serverInfo);
@@ -224,7 +204,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 			return server;
 		}
 
-		return null;
+		throw new ServerUnavailableException();
 	}
 
 	@Override
