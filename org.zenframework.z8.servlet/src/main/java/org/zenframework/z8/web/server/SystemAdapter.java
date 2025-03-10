@@ -61,9 +61,6 @@ public class SystemAdapter extends Adapter {
 		if(password == null)
 			password = "";
 
-		if(!ServerConfig.webClientHashPassword())
-			password = Digest.md5(password);
-
 		return ServerConfig.authorityCenter().login(getLoginParameters(login, request, false), password);
 	}
 

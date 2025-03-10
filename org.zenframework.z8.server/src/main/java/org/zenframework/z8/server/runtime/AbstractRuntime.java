@@ -31,6 +31,8 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	protected Map<String, OBJECT.CLASS<? extends OBJECT>> systemTools = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
 
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> namedClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+
 	protected SecurityLog.CLASS<? extends SecurityLog> securityLog = null;
 
 	protected URL url;
@@ -57,6 +59,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<guid> executableKeys() {
 		return executableKeys.keySet();
+	}
+
+	@Override
+	public Collection<OBJECT.CLASS<? extends OBJECT>> named() {
+		return namedClasses.values();
 	}
 
 	@Override
@@ -160,6 +167,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
+	public OBJECT.CLASS<? extends OBJECT> getNamed(String name) {
+		return namedClasses.get(name);
+	}
+
+	@Override
 	public Class<?> loadClass(String className) throws ClassNotFoundException {
 		return getClass().getClassLoader().loadClass(className);
 	}
@@ -234,6 +246,21 @@ public abstract class AbstractRuntime implements IRuntime {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void addNamed(OBJECT.CLASS<? extends OBJECT> cls) {
+		for(OBJECT.CLASS<? extends OBJECT> named : namedClasses.values().toArray(new OBJECT.CLASS[namedClasses.size()])) {
+			if(cls.getClass().isAssignableFrom(named.getClass()))
+				return;
+
+			if(cls.getClass().isAssignableFrom(cls.getClass()) && named.name().equals(cls.name())) {
+				namedClasses.remove(named.name());
+				break;
+			}
+		}
+
+		namedClasses.put(cls.name(), cls);
+	}
+
 	protected void addSystemTool(OBJECT.CLASS<? extends OBJECT> cls) {
 		if(!systemTools.containsKey(cls.classId()))
 			systemTools.put(cls.classId(), cls);
@@ -253,6 +280,9 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(Executable.CLASS<? extends Executable> executable : runtime.executables())
 			addExecutable(executable);
+
+		for(OBJECT.CLASS<? extends OBJECT> named : runtime.named())
+			addNamed(named);
 
 		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
 			addEntry(entry);

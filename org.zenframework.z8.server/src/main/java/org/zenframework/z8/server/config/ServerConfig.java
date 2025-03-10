@@ -125,6 +125,8 @@ public class ServerConfig extends Properties {
 	static final private String SecurityLogFile = "security.log.file";
 	static final private String SecurityLogFormat = "security.log.format";
 
+	static final private String LdapSslTrusted = "ldap.ssl.trusted";
+
 	static final private String StoragePath = "storage.path";
 	static final private String StoragePreviewPath = "storage.preview.path";
 
@@ -232,6 +234,8 @@ public class ServerConfig extends Properties {
 	static public String[] imageExtensions; // "tif, tiff, jpg, jpeg, gif, png, bmp"
 	static public String[] emailExtensions; // "eml, mime"
 	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
+
+	static private boolean ldapSslTrusted;
 
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
@@ -353,6 +357,8 @@ public class ServerConfig extends Properties {
 
 		securityLogFile = instance.getFile(SecurityLogFile, null);
 		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
+
+		ldapSslTrusted = instance.getProperty(LdapSslTrusted, false);
 
 		storagePath = instance.getFile(StoragePath, "storage");
 		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
@@ -788,6 +794,10 @@ public class ServerConfig extends Properties {
 
 	static public String securityLogFormat() {
 		return securityLogFormat;
+	}
+
+	static public boolean ldapSslTrusted() {
+		return ldapSslTrusted;
 	}
 
 	static public File storagePath() {
