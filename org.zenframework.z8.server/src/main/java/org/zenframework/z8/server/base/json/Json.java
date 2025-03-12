@@ -40,6 +40,7 @@ public class Json extends OBJECT {
 	final static public string users = org.zenframework.z8.server.json.Json.users;
 	final static public string recipient = org.zenframework.z8.server.json.Json.recipient;
 	final static public string sender = org.zenframework.z8.server.json.Json.sender;
+	final static public string domain = org.zenframework.z8.server.json.Json.domain;
 
 	final static public string request = org.zenframework.z8.server.json.Json.request;
 	final static public string requestUrl = org.zenframework.z8.server.json.Json.requestUrl;
