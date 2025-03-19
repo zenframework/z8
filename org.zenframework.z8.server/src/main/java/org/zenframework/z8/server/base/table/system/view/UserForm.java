@@ -43,7 +43,6 @@ public class UserForm extends Form {
 	protected UserEntries.CLASS<UserEntries> userEntries = new UserEntries.CLASS<UserEntries>(this);
 	protected UniqueUserRoles.CLASS<UniqueUserRoles> userRoles = new UniqueUserRoles.CLASS<UniqueUserRoles>(this);
 
-	protected Section.CLASS<Section> section2 = new Section.CLASS<Section>(this);
 	protected Section.CLASS<Section> section3 = new Section.CLASS<Section>(this);
 
 	protected ResetPasswordAction.CLASS<ResetPasswordAction> resetPassword = new ResetPasswordAction.CLASS<ResetPasswordAction>(this);
@@ -60,7 +59,6 @@ public class UserForm extends Form {
 
 		objects.add(resetPassword);
 
-		objects.add(section2);
 		objects.add(section3);
 
 		objects.add(userEntries);
@@ -74,7 +72,6 @@ public class UserForm extends Form {
 		userEntries.setIndex("userEntries");
 		userRoles.setIndex("userRoles");
 
-		section2.setIndex("section2");
 		section3.setIndex("section3");
 		resetPassword.setIndex("resetPassword");
 
@@ -112,15 +109,16 @@ public class UserForm extends Form {
 		users.get().name.get().editable = bool.True;
 		users.get().banned.get().colSpan = new integer(3);
 		users.get().banned.get().setIcon("fa-ban");
+		users.get().bannedUntil.get().colSpan = new integer(3);
 		users.get().changePassword.get().colSpan = new integer(3);
 		users.get().changePassword.get().setIcon("fa-key");
 		resetPassword.get().type = ActionType.Primary;
+		resetPassword.get().colSpan = new integer(3);
 
 		users.get().firstName.get().colSpan = new integer(3);
 		users.get().lastName.get().colSpan = new integer(3);
 		users.get().lastName.get().editable = bool.True;
 		users.get().middleName.get().colSpan = new integer(3);
-		section2.get().colSpan = new integer(3);
 
 		users.get().phone.get().colSpan = new integer(3);
 		users.get().email.get().colSpan = new integer(3);
@@ -137,13 +135,13 @@ public class UserForm extends Form {
 
 		controls.add(users.get().name);
 		controls.add(users.get().banned);
+		controls.add(users.get().bannedUntil);
 		controls.add(users.get().changePassword);
-		controls.add(resetPassword);
 
 		controls.add(users.get().lastName);
 		controls.add(users.get().firstName);
 		controls.add(users.get().middleName);
-		controls.add(section2);
+		controls.add(resetPassword);
 
 		controls.add(users.get().phone);
 		controls.add(users.get().email);
