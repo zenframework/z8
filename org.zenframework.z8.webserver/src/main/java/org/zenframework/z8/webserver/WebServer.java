@@ -53,6 +53,8 @@ public class WebServer extends RmiServer implements IWebServer {
 		ServerConnector connector = new ServerConnector(server);
 		connector.setHost(ServerConfig.webServerHttpHost());
 		connector.setPort(ServerConfig.webServerHttpPort());
+		connector.setIdleTimeout(ServerConfig.webServerHttpIdleTimeout());
+		connector.setStopTimeout(ServerConfig.webServerHttpStopTimeout());
 		server.addConnector(connector);
 		server.setHandler(context);
 

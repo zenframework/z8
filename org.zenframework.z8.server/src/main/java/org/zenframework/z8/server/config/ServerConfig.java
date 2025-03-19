@@ -68,6 +68,8 @@ public class ServerConfig extends Properties {
 	static final private String WebServerPort = "web.server.port";
 	static final private String WebServerHttpHost = "web.server.http.host";
 	static final private String WebServerHttpPort = "web.server.http.port";
+	static final private String WebServerHttpIdleTimeout = "web.server.http.idleTimeout";
+	static final private String WebServerHttpStopTimeout = "web.server.http.stopTimeout";
 	static final private String WebServerWebapp = "web.server.webapp";
 	static final private String WebServerMappings = "web.server.content.map";
 	static final private String WebServerUrlPatterns = "web.server.urlPatterns";
@@ -169,6 +171,8 @@ public class ServerConfig extends Properties {
 	static private int webServerPort;
 	static private String webServerHttpHost;
 	static private int webServerHttpPort;
+	static private int webServerHttpIdleTimeout;
+	static private int webServerHttpStopTimeout;
 	static private File webServerWebapp;
 	static private String webServerMappings;
 	static private String webServerUrlPatterns;
@@ -299,6 +303,8 @@ public class ServerConfig extends Properties {
 		webServerPort = instance.getProperty(WebServerPort, 25000);
 		webServerHttpHost = instance.getProperty(WebServerHttpHost, "0.0.0.0");
 		webServerHttpPort = instance.getProperty(WebServerHttpPort, 9080);
+		webServerHttpIdleTimeout = instance.getProperty(WebServerHttpIdleTimeout, 30000);
+		webServerHttpStopTimeout = instance.getProperty(WebServerHttpStopTimeout, 30000);
 		webServerWebapp = instance.getFile(WebServerWebapp, "..");
 		webServerMappings = instance.getProperty(WebServerMappings);
 		webServerUrlPatterns = instance.getProperty(WebServerUrlPatterns);
@@ -620,6 +626,14 @@ public class ServerConfig extends Properties {
 
 	static public int webServerHttpPort() {
 		return webServerHttpPort;
+	}
+
+	static public int webServerHttpIdleTimeout() {
+		return webServerHttpIdleTimeout;
+	}
+
+	static public int webServerHttpStopTimeout() {
+		return webServerHttpStopTimeout;
 	}
 
 	static public File webServerWebapp() {
