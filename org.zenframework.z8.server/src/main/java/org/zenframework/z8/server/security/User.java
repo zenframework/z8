@@ -525,6 +525,8 @@ public class User implements IUser {
 			return User.system(database);
 
 		try {
+			onBeforeLoad(loginParameters.getLogin());
+
 			IUser user = read(loginParameters);
 
 			authenticate(user, loginParameters, password);
@@ -537,6 +539,16 @@ public class User implements IUser {
 		}
 	}
 
+	static private void onBeforeLoad(String login) {
+		try {
+			IDatabase database = ApplicationServer.getDatabase();
+			User nullUser = new User(database);
+			org.zenframework.z8.server.base.security.User.newInstance(nullUser).onBeforeLoad(login);
+		} catch(Throwable e) {
+			onError(e);
+		}
+	}
+	
 	static private void authenticate(IUser user, LoginParameters loginParameters, String password) {
 		if (user.banned() || user.bannedUntil() > System.currentTimeMillis())
 			throw new AccessDeniedException();
