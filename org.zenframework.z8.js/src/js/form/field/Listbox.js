@@ -564,9 +564,10 @@ Z8.define('Z8.form.field.Listbox', {
 
 			Viewport.open(params, false, { oneRecord: true, sourceLink: link, title: record.get(field.name) });
 		} else if(field.type == Type.File) {
-			var file = record.get(field.name);
+			var files = record.get(field.name);
+			var file = !Z8.isEmpty(files) && Array.isArray(files) ? files[0] : null;
 			if(!Z8.isEmpty(file))
-				DOM.download(window.location.origin + '/' + file[0].path, file[0].id);
+				DOM.download(file.path, file.id, null);
 		}
 	},
 
