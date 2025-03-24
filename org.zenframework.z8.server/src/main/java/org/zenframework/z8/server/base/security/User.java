@@ -97,6 +97,10 @@ public class User extends OBJECT {
 		return (User.CLASS<?>)this.getCLASS();
 	}
 
+	public void onBeforeLoad(String login) {
+		z8_onBeforeLoad(new string(login));
+	}
+
 	public boolean authenticate(String password) {
 		return z8_authenticate(password != null ? new string(password) : null).get();
 	}
@@ -131,6 +135,9 @@ public class User extends OBJECT {
 
 	public bool z8_getParameter(string key, bool defaultValue) {
 		return parameters.containsKey(key) ? (bool)parameters.get(key) : defaultValue;
+	}
+
+	protected void z8_onBeforeLoad(string login) {
 	}
 
 	protected bool z8_authenticate(string password) {
