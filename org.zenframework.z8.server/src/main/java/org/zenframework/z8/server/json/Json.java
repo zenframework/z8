@@ -84,6 +84,7 @@ public interface Json {
 	static public string users = new string("users");
 	static public string recipient = new string("recipient");
 	static public string sender = new string("sender");
+	static public string domain = new string("domain");
 
 	static public string requestUrl = new string("requestUrl");
 	static public string message = new string("message");
