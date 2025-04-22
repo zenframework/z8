@@ -16,6 +16,9 @@ public interface IServerInfo extends RmiSerializable, Serializable {
 	public String[] getDomains();
 	public void setDomains(String[] domains);
 
+	public String getWebAppUrl();
+	public void setWebAppUrl(String webAppUrl);
+
 	public boolean isAlive() throws RemoteException;	// temporary unavailable
 	public boolean isDead() throws RemoteException;		// dead
 }

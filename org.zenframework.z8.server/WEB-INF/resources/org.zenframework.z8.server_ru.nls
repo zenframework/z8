@@ -145,6 +145,7 @@
 	<entry key="HubServerView.active">Up</entry>
 	<entry key="HubServerView.serverId">Server Id</entry>
 	<entry key="HubServerView.domains">Domains</entry>
+	<entry key="HubServerView.webAppUrl">Web App URL</entry>
 	<entry key="HubServerView.unregister">Удалить</entry>
 
 	<!-- AuthorityCenterView -->

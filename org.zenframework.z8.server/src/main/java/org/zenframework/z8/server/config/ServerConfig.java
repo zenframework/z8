@@ -137,6 +137,14 @@ public class ServerConfig extends Properties {
 
 	static final private String FilesSaveOnDisk = "files.saveOnDisk";
 
+	static final private String KeystoreUseCustom = "keystore.use.custom";
+	static final private String KeystorePath = "keystore.path";
+	static final private String KeystorePassword = "keystore.password";
+
+	static final private String CryptoCipherSpec = "crypto.cipher.spec";
+	static final private String CryptoSecretKeySpec = "crypto.secret.key.spec";
+	static final private String CryptoIv = "crypto.iv";
+
 
 	static private File workingPath;
 
@@ -240,6 +248,14 @@ public class ServerConfig extends Properties {
 	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
 
 	static private boolean ldapSslTrusted;
+
+	static private boolean keystoreUseCustom;
+	static private File keystorePath;
+	static private String keystorePassword;
+
+	static private String cryptoCipherSpec;
+	static private String cryptoSecretKeySpec;
+	static private String cryptoIv;
 
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
@@ -373,6 +389,14 @@ public class ServerConfig extends Properties {
 		authFailsBanSeconds = instance.getProperty(AuthFailsBanSeconds, 0);
 
 		filesSaveOnDisk = instance.getProperty(FilesSaveOnDisk, false);
+
+		keystoreUseCustom = instance.getProperty(KeystoreUseCustom, false);
+		keystorePath = instance.getFile(KeystorePath, (String) null);
+		keystorePassword = instance.getProperty(KeystorePassword, "");
+
+		cryptoCipherSpec = instance.getProperty(CryptoCipherSpec, "TripleDES/CBC/PKCS5Padding");
+		cryptoSecretKeySpec = instance.getProperty(CryptoSecretKeySpec, "TripleDES");
+		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -832,6 +856,30 @@ public class ServerConfig extends Properties {
 
 	static public boolean filesSaveOnDisk() {
 		return filesSaveOnDisk;
+	}
+
+	static public boolean keystoreUseCustom() {
+		return keystoreUseCustom;
+	}
+
+	static public File keystorePath() {
+		return keystorePath;
+	}
+
+	static public String keystorePassword() {
+		return keystorePassword;
+	}
+
+	static public String cryptoCipherSpec() {
+		return cryptoCipherSpec;
+	}
+
+	static public String cryptoSecretKeySpec() {
+		return cryptoSecretKeySpec;
+	}
+
+	static public String cryptoIv() {
+		return cryptoIv;
 	}
 
 	static public IApplicationServer applicationServer() {

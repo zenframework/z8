@@ -37,6 +37,7 @@ import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
 import org.zenframework.z8.server.exceptions.InvalidVersionException;
+import org.zenframework.z8.server.exceptions.RedirectException;
 import org.zenframework.z8.server.exceptions.UserNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
@@ -514,6 +515,8 @@ public class User implements IUser {
 	}
 
 	static private void onError(Throwable exception) {
+		if (exception instanceof RedirectException)
+			throw (RedirectException)exception;
 		Trace.logError(exception);
 		throw new AccessDeniedException();
 	}

@@ -25,6 +25,7 @@ public class Settings extends TreeTable {
 	final static public String TableName = "SystemSettings";
 
 	final static public guid Version = guid.create(strings.Version);
+	final static public guid WebAppUrl = guid.create(strings.WebAppUrl);
 
 	static public class fieldNames {
 		public final static String Name = "Name";
@@ -38,6 +39,7 @@ public class Settings extends TreeTable {
 		public final static String Value = "Settings.value";
 
 		public final static String Version = "system.version";
+		public final static String WebAppUrl = "system.webappurl";
 	}
 
 	static public class displayNames {
@@ -112,6 +114,12 @@ public class Settings extends TreeTable {
 			record.put(name.get(), new string(strings.Version));
 			record.put(lock.get(), RecordLock.Full);
 			addRecord(Version, record);
+
+			record = new LinkedHashMap<IField, primary>();
+			record.put(name.get(), new string("Web App URL"));
+			record.put(description.get(), new string("Web Application URL"));
+			record.put(lock.get(), RecordLock.Destroy);
+			addRecord(WebAppUrl, record);
 		}
 	}
 
@@ -226,6 +234,10 @@ public class Settings extends TreeTable {
 
 	static public String version() {
 		return get(Version);
+	}
+
+	static public String webAppUrl() {
+		return get(WebAppUrl, "");
 	}
 
 	static public string z8_get(guid setting, string defaultValue) {

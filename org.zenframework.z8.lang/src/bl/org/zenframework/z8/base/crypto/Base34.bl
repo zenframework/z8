@@ -1,0 +1,7 @@
+[native "org.zenframework.z8.server.crypto.Base34"]
+public class Base34 {
+	static public string encode(int number);
+	static public int decode(string base34);
+
+	static public string random();
+}

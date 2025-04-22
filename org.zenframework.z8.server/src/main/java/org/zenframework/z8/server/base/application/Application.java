@@ -7,6 +7,7 @@ import org.zenframework.z8.server.base.security.User;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.exceptions.RedirectException;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -81,6 +82,10 @@ public class Application {
 
 	static public void z8_print(file file) {
 		ApplicationServer.getMonitor().print(file);
+	}
+
+	static public void z8_redirect(string redirect) {
+		throw new RedirectException(redirect.get());
 	}
 
 	static public RCollection<file> z8_requestFiles() {
