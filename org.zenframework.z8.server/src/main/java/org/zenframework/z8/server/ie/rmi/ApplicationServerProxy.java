@@ -98,4 +98,9 @@ public class ApplicationServerProxy implements IApplicationServer {
 	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public String webAppUrl() throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
 }

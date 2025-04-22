@@ -9,7 +9,8 @@ Z8.define('Z8.data.HttpRequest', {
 
 		status: {
 			AccessDenied: 401,
-			Success: 200
+			Success: 200,
+			Redirect: 302,
 		},
 
 		state: {
@@ -122,6 +123,9 @@ Z8.define('Z8.data.HttpRequest', {
 				this.processResponse(response);
 			} else
 				HttpRequest.send({ retry: response.retry, session: response.session, server: response.server }, this.callback, this.type, this.info);
+		} else if(response.status == HttpRequest.status.Redirect) {
+			var redirect = response.redirect;
+			window.location.href = redirect;
 		} else if(!this.relogin(response.status)) {
 			response.info = response.info || {};
 			Z8.callback(this.callback, response, false, this.info);

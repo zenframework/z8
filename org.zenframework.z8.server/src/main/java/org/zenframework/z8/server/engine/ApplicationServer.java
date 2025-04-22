@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -68,7 +69,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static String getSchema() {
 		return getDatabase().schema();
 	}
-	
+
 	public static void setRequest(IRequest request) {
 		if(request != null)
 			currentRequest.set(request);
@@ -137,6 +138,17 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		try {
 			setRequest(new Request(new Session(getSchema())));
 			return Domains.newInstance().getAddresses().toArray(new String[0]);
+		} finally {
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
+	public String webAppUrl() {
+		try {
+			setRequest(new Request(new Session(getSchema())));
+			return Settings.webAppUrl();
 		} finally {
 			releaseConnections();
 			setRequest(null);

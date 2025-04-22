@@ -27,6 +27,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.exceptions.AccessDeniedException;
+import org.zenframework.z8.server.exceptions.RedirectException;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.logs.Trace;
@@ -71,6 +72,8 @@ public abstract class Adapter {
 			processAccessDenied(response);
 		} catch(ConnectException e) {
 			processAccessDenied(response);
+		} catch (RedirectException e) {
+			processRedirect(response, e.url);
 		} catch(Throwable e) {
 			String className = e.getClass().getCanonicalName();
 			if(!IgnoredExceptions.contains(className)) {
@@ -175,6 +178,17 @@ public abstract class Adapter {
 
 	protected void processAccessDenied(HttpServletResponse response) throws IOException {
 		writeError(response, Resources.get("Exception.accessDenied"), HttpServletResponse.SC_UNAUTHORIZED);
+	}
+
+	protected void processRedirect(HttpServletResponse response, String url) throws IOException {
+		response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+
+		JsonWriter writer = new JsonWriter();
+		writer.startResponse(null, false, 302);
+		writer.writeProperty(Json.redirect, url);
+		writer.finishResponse();
+
+		writeResponse(response, writer.toString());
 	}
 
 	private void writeError(HttpServletResponse response, String errorText, int status) throws IOException {

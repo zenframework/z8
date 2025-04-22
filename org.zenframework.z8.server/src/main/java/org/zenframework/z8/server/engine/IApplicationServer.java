@@ -20,11 +20,12 @@ public interface IApplicationServer extends IServer {
 	public IUser remind(String verification, String schema, String requestHost) throws RemoteException;
 	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException;
 	public IUser user(LoginParameters loginParameters, String password) throws RemoteException;
-	
+
 	public IUser create(LoginParameters loginParameters) throws RemoteException;
-	
+
 
 	public String[] domains() throws RemoteException;
+	public String webAppUrl() throws RemoteException;
 
 	public boolean has(Message message) throws RemoteException;
 	public boolean accept(Message message) throws RemoteException;

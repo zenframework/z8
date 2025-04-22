@@ -41,7 +41,7 @@ public class Dashboard extends RequestTarget {
 
 		if(isLogin) {
 			if(newPassword != null)
-			changePassword(password, newPassword);
+				changePassword(password, newPassword);
 			else if(email != null)
 				changeEmail(email);
 			else

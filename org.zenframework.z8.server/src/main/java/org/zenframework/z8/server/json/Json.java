@@ -17,7 +17,8 @@ public interface Json {
 	static public string service = new string("service");
 	static public string retry = new string("retry");
 	static public string ip = new string("ip");
-	
+	static public string redirect = new string("redirect");
+
 	static public string upload = new string("upload");
 	static public string download = new string("download");
 	static public string maxUploadSize = new string("maxUploadSize");

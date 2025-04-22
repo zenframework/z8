@@ -25,6 +25,7 @@ abstract public class HubServerView extends Query {
 		static public String Active = "HubServerView.active";
 		static public String ServerId = "HubServerView.serverId";
 		static public String Domains = "HubServerView.domains";
+		static public String WebAppUrl = "HubServerView.webAppUrl";
 
 		static public String Unregister = "HubServerView.unregister";
 	}
@@ -35,6 +36,7 @@ abstract public class HubServerView extends Query {
 		static public String Active = Resources.get(strings.Active);
 		static public String ServerId = Resources.get(strings.ServerId);
 		static public String Domains = Resources.get(strings.Domains);
+		static public String WebAppUrl = Resources.get(strings.WebAppUrl);
 
 		static public String Unregister = Resources.get(strings.Unregister);
 	}
@@ -62,6 +64,7 @@ abstract public class HubServerView extends Query {
 	private BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
 	private StringField.CLASS<StringField> domains = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> serverId = new StringField.CLASS<StringField>(this);
+	private StringField.CLASS<StringField> webAppUrl = new StringField.CLASS<StringField>(this);
 
 	private Action.CLASS<Action> unregister = new Action.CLASS<Action>(this);
 
@@ -77,6 +80,7 @@ abstract public class HubServerView extends Query {
 		objects.add(port);
 		objects.add(active);
 		objects.add(serverId);
+		objects.add(webAppUrl);
 		objects.add(domains);
 		objects.add(unregister);
 	}
@@ -86,6 +90,7 @@ abstract public class HubServerView extends Query {
 		super.constructor2();
 
 		readOnly = bool.True;
+		colCount = new integer(6);
 
 		recordId.setIndex("recordId");
 
@@ -97,20 +102,26 @@ abstract public class HubServerView extends Query {
 		port.setDisplayName(displayNames.Port);
 		port.get().width = new integer(60);
 
+		webAppUrl.setIndex("webAppUrl");
+		webAppUrl.setDisplayName(displayNames.WebAppUrl);
+		webAppUrl.get().width = new integer(150);
+
 		serverId.setIndex("serverId");
 		serverId.setDisplayName(displayNames.ServerId);
 		serverId.get().width = new integer(150);
+		serverId.get().colSpan = new integer(2);
 
 		active.setIndex("active");
 		active.setDisplayName(displayNames.Active);
 
 		domains.setIndex("domains");
 		domains.setDisplayName(displayNames.Domains);
-		domains.get().colSpan = new integer(4);
+		domains.get().colSpan = new integer(6);
 
 		registerControl(host);
 		registerControl(port);
 		registerControl(active);
+		registerControl(webAppUrl);
 		registerControl(serverId);
 		registerControl(domains);
 
@@ -132,6 +143,7 @@ abstract public class HubServerView extends Query {
 				JsonObject object = new JsonObject();
 				object.put(recordId.id(), getUrl(server));
 				object.put(serverId.id(), server.getId());
+				object.put(webAppUrl.id(), server.getWebAppUrl());
 				object.put(host.id(), getHost(server));
 				object.put(port.id(), getPort(server));
 				object.put(domains.id(), getDomains(server));

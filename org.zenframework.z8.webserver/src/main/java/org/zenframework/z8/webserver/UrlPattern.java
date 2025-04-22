@@ -8,7 +8,7 @@ public class UrlPattern {
 
 	private final Compare compare;
 	private final String pattern;
-	
+
 	public UrlPattern(String pattern) {
 		if (pattern.length() > 0 && pattern.charAt(0) == '*') {
 			compare = Compare.EndsWith;
