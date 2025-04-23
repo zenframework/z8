@@ -20,6 +20,7 @@ import javax.naming.directory.SearchResult;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.json.parser.JsonPath;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.ssl.TrustedSSLSocketFactory;
 
 public class LdapAPI {
@@ -90,9 +91,13 @@ public class LdapAPI {
 		if (ldapUrl.trim().toLowerCase().startsWith(LDAPS) && ServerConfig.ldapSslTrusted())
 			environment.put("java.naming.ldap.factory.socket", TrustedSSLSocketFactory.class.getName());
 
+		String msg = "LDAP: Connecting to " + ldapUrl + ", user '" + principalName + "': ";
+
 		try {
 			context = new InitialDirContext(environment);
+			Trace.logEvent(msg + "OK");
 		} catch(NamingException e) {
+			Trace.logEvent(msg + "Error");
 			throw new RuntimeException(e);
 		}
 
@@ -193,13 +198,17 @@ public class LdapAPI {
 		SearchControls controls = new SearchControls();
 		controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
+		String msg = "LDAP: Search '" + searchBase + "', filter '" + searchFilter + "': ";
+
 		try {
 			NamingEnumeration<SearchResult> namingEnumeration = context.search(searchBase, searchFilter, controls);
 			Collection<T> result = new HashSet<T>();
 			while (namingEnumeration.hasMore())
 				result.add(extractor.extract(namingEnumeration.next()));
+			Trace.logEvent(msg + "OK");
 			return result;
 		} catch (NamingException e) {
+			Trace.logEvent(msg + "Error");
 			throw new RuntimeException(e);
 		}
 	}
