@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -18,6 +19,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.IResponse;
+import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.request.RequestDispatcher;
 import org.zenframework.z8.server.request.RequestProcessor;
@@ -67,7 +69,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static String getSchema() {
 		return getDatabase().schema();
 	}
-	
+
 	public static void setRequest(IRequest request) {
 		if(request != null)
 			currentRequest.set(request);
@@ -143,8 +145,21 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
+	public String webAppUrl() {
+		try {
+			setRequest(new Request(new Session(getSchema())));
+			return Settings.webAppUrl();
+		} finally {
+			releaseConnections();
+			setRequest(null);
+		}
+	}
+
+	@Override
 	public IUser user(LoginParameters loginParameters, String password) {
-		setRequest(new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema())));
+		IRequest req = new Request(loginParameters.toMap(), Collections.emptyList(), new Session(loginParameters.getSchema()));
+		req.setTarget(Loader.getInstance(org.zenframework.z8.server.base.security.User.class.getCanonicalName()));
+		setRequest(req);
 
 		SecurityLog securityLog = Runtime.instance().securityLog().get();
 

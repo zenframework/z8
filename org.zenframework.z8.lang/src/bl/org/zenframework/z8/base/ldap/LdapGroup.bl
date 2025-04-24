@@ -1,0 +1,9 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.ldap.LdapGroup"]
+class LdapGroup extends Object {
+	public string domainName;
+	public string name;
+	public string[] members;
+	public string[string] parameters;
+}

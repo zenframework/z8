@@ -59,7 +59,10 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 		if(!host.equals("127.0.0.1")) {
 			String[] domains = server.domains();
-			addServer(new ServerInfo(server, domains));
+			String webAppUrl = server.webAppUrl();
+			ServerInfo si = new ServerInfo(server, domains);
+			si.setWebAppUrl(webAppUrl);
+			addServer(si);
 		}
 	}
 

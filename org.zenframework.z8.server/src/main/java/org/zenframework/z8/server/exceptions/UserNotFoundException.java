@@ -6,7 +6,7 @@ import org.zenframework.z8.server.types.exception;
 public class UserNotFoundException extends exception {
 	private static final long serialVersionUID = 4530160455494913676L;
 
-	private static String message = Resources.get("Exception.unserNotFound");
+	private static String message = Resources.get("Exception.userNotFound");
 
 	public UserNotFoundException() {
 		super(message);

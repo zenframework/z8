@@ -17,6 +17,7 @@ public class ServerInfo implements IServerInfo {
 	private IApplicationServer server;
 	private String id;
 	private String[] domains;
+	private String webAppUrl;
 
 	private long firstFailure = 0;
 	private long lastChecked = 0;
@@ -71,6 +72,16 @@ public class ServerInfo implements IServerInfo {
 	}
 
 	@Override
+	public String getWebAppUrl() {
+		return webAppUrl;
+	}
+
+	@Override
+	public void setWebAppUrl(String webAppUrl) {
+		this.webAppUrl = webAppUrl;
+	}
+
+	@Override
 	public boolean isAlive() throws RemoteException {
 		if(lastChecked != 0 && System.currentTimeMillis() - lastChecked < TenMinutes)
 			return false;
@@ -110,6 +121,7 @@ public class ServerInfo implements IServerInfo {
 		RmiIO.writeString(out, id);
 		out.writeObject(domains);
 		out.writeObject(server);
+		out.writeObject(webAppUrl);
 
 		RmiIO.writeLong(out, firstFailure);
 		RmiIO.writeLong(out, lastChecked);
@@ -123,6 +135,7 @@ public class ServerInfo implements IServerInfo {
 		id = RmiIO.readString(in);
 		domains = (String[])in.readObject();
 		server = (IApplicationServer)in.readObject();
+		webAppUrl = (String)in.readObject();
 
 		firstFailure = RmiIO.readLong(in);
 		lastChecked = RmiIO.readLong(in);

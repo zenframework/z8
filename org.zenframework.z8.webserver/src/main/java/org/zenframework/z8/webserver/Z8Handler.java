@@ -32,6 +32,7 @@ public class Z8Handler extends AbstractHandler {
 					new UrlPattern("/apidoc"),
 					new UrlPattern("/logout"),
 					new UrlPattern("/sso_auth"),
+					new UrlPattern("/token_auth"),
 					new UrlPattern("*.json"),
 					new UrlPattern("/storage/*"),
 					new UrlPattern("/files/*"),

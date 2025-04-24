@@ -15,9 +15,7 @@ class UserForm extends Form {
 
 	protected Action resetPassword;
 	resetPassword.type = ActionType.Primary;
-
-	protected Section section2;
-	section2.colSpan = 3;
+	resetPassword.colSpan = 3;
 
 	protected Section section3;
 	section3.colSpan = 3;
@@ -47,6 +45,8 @@ class UserForm extends Form {
 	users.banned.colSpan = 3;
 	[icon "fa-ban"] users.banned;
 
+	users.bannedUntil.colSpan = 3;
+
 	users.changePassword.colSpan = 3;
 	[icon "fa-key"] users.changePassword;
 
@@ -73,8 +73,8 @@ class UserForm extends Form {
 	readOnly = !Application.user().isAdministrator();
 
 	controls = {
-		users.name, users.banned, users.changePassword, resetPassword,
-		users.lastName, users.firstName, users.middleName, section2,
+		users.name, users.banned, users.bannedUntil, users.changePassword,
+		users.lastName, users.firstName, users.middleName, resetPassword,
 		users.phone, users.email, section3,
 		users.company, users.position,
 		users.description,

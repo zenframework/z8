@@ -69,6 +69,7 @@ public class Servlet extends HttpServlet {
 		adapters.add(new APIDocAdapter());
 		adapters.add(new LogoutAdapter());
 		adapters.add(new SingleSignOnAdapter());
+		adapters.add(new TokenAuthAdapter());
 		adapters.add(new SystemAdapter());
 		adapters.add(new RedirectAdapter());
 		adapters.add(new AcceptAdapter());

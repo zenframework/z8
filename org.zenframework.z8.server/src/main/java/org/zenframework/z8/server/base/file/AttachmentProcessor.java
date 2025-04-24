@@ -142,7 +142,7 @@ public class AttachmentProcessor extends OBJECT {
 		IUser user = ApplicationServer.getUser();
 		String name = user.name();
 		file.author = new string(name + (name.isEmpty() ? "" : " - ") + user.login());
-		file.user = user.id();
+		file.user = user.getId();
 	}
 
 	public int getTotalPageCount(guid recordId) {

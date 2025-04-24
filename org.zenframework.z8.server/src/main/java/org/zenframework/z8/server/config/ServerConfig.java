@@ -68,6 +68,8 @@ public class ServerConfig extends Properties {
 	static final private String WebServerPort = "web.server.port";
 	static final private String WebServerHttpHost = "web.server.http.host";
 	static final private String WebServerHttpPort = "web.server.http.port";
+	static final private String WebServerHttpIdleTimeout = "web.server.http.idleTimeout";
+	static final private String WebServerHttpStopTimeout = "web.server.http.stopTimeout";
 	static final private String WebServerWebapp = "web.server.webapp";
 	static final private String WebServerMappings = "web.server.content.map";
 	static final private String WebServerUrlPatterns = "web.server.urlPatterns";
@@ -125,6 +127,8 @@ public class ServerConfig extends Properties {
 	static final private String SecurityLogFile = "security.log.file";
 	static final private String SecurityLogFormat = "security.log.format";
 
+	static final private String LdapSslTrusted = "ldap.ssl.trusted";
+
 	static final private String StoragePath = "storage.path";
 	static final private String StoragePreviewPath = "storage.preview.path";
 
@@ -134,6 +138,14 @@ public class ServerConfig extends Properties {
 	static final private String AuthFailsBanSeconds = "auth.fails.banSeconds";
 
 	static final private String FilesSaveOnDisk = "files.saveOnDisk";
+
+	static final private String KeystoreUseCustom = "keystore.use.custom";
+	static final private String KeystorePath = "keystore.path";
+	static final private String KeystorePassword = "keystore.password";
+
+	static final private String CryptoCipherSpec = "crypto.cipher.spec";
+	static final private String CryptoSecretKeySpec = "crypto.secret.key.spec";
+	static final private String CryptoIv = "crypto.iv";
 
 
 	static private File workingPath;
@@ -169,6 +181,8 @@ public class ServerConfig extends Properties {
 	static private int webServerPort;
 	static private String webServerHttpHost;
 	static private int webServerHttpPort;
+	static private int webServerHttpIdleTimeout;
+	static private int webServerHttpStopTimeout;
 	static private File webServerWebapp;
 	static private String webServerMappings;
 	static private String webServerUrlPatterns;
@@ -237,6 +251,16 @@ public class ServerConfig extends Properties {
 	static public String[] emailExtensions; // "eml, mime"
 	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
 
+	static private boolean ldapSslTrusted;
+
+	static private boolean keystoreUseCustom;
+	static private File keystorePath;
+	static private String keystorePassword;
+
+	static private String cryptoCipherSpec;
+	static private String cryptoSecretKeySpec;
+	static private String cryptoIv;
+
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
 	static private IInterconnectionCenter interconnectionCenter;
@@ -299,6 +323,8 @@ public class ServerConfig extends Properties {
 		webServerPort = instance.getProperty(WebServerPort, 25000);
 		webServerHttpHost = instance.getProperty(WebServerHttpHost, "0.0.0.0");
 		webServerHttpPort = instance.getProperty(WebServerHttpPort, 9080);
+		webServerHttpIdleTimeout = instance.getProperty(WebServerHttpIdleTimeout, 30000);
+		webServerHttpStopTimeout = instance.getProperty(WebServerHttpStopTimeout, 30000);
 		webServerWebapp = instance.getFile(WebServerWebapp, "..");
 		webServerMappings = instance.getProperty(WebServerMappings);
 		webServerUrlPatterns = instance.getProperty(WebServerUrlPatterns);
@@ -358,6 +384,8 @@ public class ServerConfig extends Properties {
 		securityLogFile = instance.getFile(SecurityLogFile, null);
 		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
 
+		ldapSslTrusted = instance.getProperty(LdapSslTrusted, false);
+
 		storagePath = instance.getFile(StoragePath, "storage");
 		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
 
@@ -367,6 +395,14 @@ public class ServerConfig extends Properties {
 		authFailsBanSeconds = instance.getProperty(AuthFailsBanSeconds, 0);
 
 		filesSaveOnDisk = instance.getProperty(FilesSaveOnDisk, false);
+
+		keystoreUseCustom = instance.getProperty(KeystoreUseCustom, false);
+		keystorePath = instance.getFile(KeystorePath, (String) null);
+		keystorePassword = instance.getProperty(KeystorePassword, "");
+
+		cryptoCipherSpec = instance.getProperty(CryptoCipherSpec, "TripleDES/CBC/PKCS5Padding");
+		cryptoSecretKeySpec = instance.getProperty(CryptoSecretKeySpec, "TripleDES");
+		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -622,6 +658,14 @@ public class ServerConfig extends Properties {
 		return webServerHttpPort;
 	}
 
+	static public int webServerHttpIdleTimeout() {
+		return webServerHttpIdleTimeout;
+	}
+
+	static public int webServerHttpStopTimeout() {
+		return webServerHttpStopTimeout;
+	}
+
 	static public File webServerWebapp() {
 		return webServerWebapp;
 	}
@@ -796,6 +840,10 @@ public class ServerConfig extends Properties {
 		return securityLogFormat;
 	}
 
+	static public boolean ldapSslTrusted() {
+		return ldapSslTrusted;
+	}
+
 	static public File storagePath() {
 		return storagePath;
 	}
@@ -818,6 +866,30 @@ public class ServerConfig extends Properties {
 
 	static public boolean filesSaveOnDisk() {
 		return filesSaveOnDisk;
+	}
+
+	static public boolean keystoreUseCustom() {
+		return keystoreUseCustom;
+	}
+
+	static public File keystorePath() {
+		return keystorePath;
+	}
+
+	static public String keystorePassword() {
+		return keystorePassword;
+	}
+
+	static public String cryptoCipherSpec() {
+		return cryptoCipherSpec;
+	}
+
+	static public String cryptoSecretKeySpec() {
+		return cryptoSecretKeySpec;
+	}
+
+	static public String cryptoIv() {
+		return cryptoIv;
 	}
 
 	static public IApplicationServer applicationServer() {

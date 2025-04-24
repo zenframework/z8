@@ -90,7 +90,7 @@ public class Executable extends Action {
 	protected void switchUser(guid user) {
 		if (!defaultSession.user().isBuiltinAdministrator())
 			throw new AccessDeniedException();
-		if (!request.getSession().user().id().equals(user))
+		if (!request.getSession().user().getId().equals(user))
 			request.setSession(new Session("", User.read(user)));
 	}
 

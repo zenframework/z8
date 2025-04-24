@@ -15,11 +15,23 @@ public class User extends Object {
 
 	public primary[string] parameters;
 
-	public bool isSystem();
+	public guid getId();
+	public User setId(guid id);
+
+	public string getLogin();
+	public User setLogin(string login);
+
 	public bool isAdministrator();
+	public bool isBuiltinAdministrator();
+	public bool isBuiltinSystem();
 
 	public string getParameter(string key, string defaultValue);
 	public guid getParameter(string key, guid defaultValue);
 	public int getParameter(string key, int defaultValue);
 	public bool getParameter(string key, bool defaultValue);
+
+	virtual protected void onBeforeLoad(string login);
+	virtual protected bool authenticate(string password);
+
+	virtual protected void onLoad();
 }

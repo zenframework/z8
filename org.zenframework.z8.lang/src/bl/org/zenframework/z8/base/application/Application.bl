@@ -25,6 +25,7 @@ public class Application extends Object {
 	static public void warning(string text);
 
 	static public void print(file file);
+	static public void redirect(string redirect);
 
 	static public file[] requestFiles();
 	static public string[string] requestParameters();

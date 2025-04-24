@@ -1,8 +1,11 @@
 package org.zenframework.z8.server.crypto;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
@@ -12,12 +15,19 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.utils.IOUtils;
+
 public class Crypto {
 
 	private static final String SecretKey = "#This-SAOOG-secret-key!#"; // 24-bytes secret key
-	private static final String CryptoCipherSpec = "TripleDES/CBC/PKCS5Padding";
-	private static final String CryptoSecretKeySpec = "TripleDES";
-	private static final String CryptoIv = "anc96lt1";
+
+	private static final String KeyStoreType = "JCEKS";
+	private static final String DefaultSecretKeyAlias = "Z8";
+
+	private static final File KeyStorePath = ServerConfig.keystorePath();
+	private static final String KeyStorePassword = ServerConfig.keystorePassword();
 
 	public static final Crypto Default = getDefault();
 
@@ -67,7 +77,17 @@ public class Crypto {
 	}
 
 	private static Crypto getDefault() {
-		return new Crypto(CryptoCipherSpec, CryptoSecretKeySpec, SecretKey, CryptoIv);
+		String cipherSpec = ServerConfig.cryptoCipherSpec();
+		String secretKeySpec = ServerConfig.cryptoSecretKeySpec();
+		String iv = ServerConfig.cryptoIv();
+		try {
+			if(ServerConfig.keystoreUseCustom())
+				return new Crypto(cipherSpec, loadSecretKey(), iv);
+			return new Crypto(cipherSpec, secretKeySpec, SecretKey, iv);
+		} catch (Exception e) {
+			Trace.logError("Can't initialize default cipher", e);
+			return null;
+		}
 	}
 
 	private static Cipher getCipher(String cipherSpec, String secretKeySpec, String secretKey, String iv, int mode) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
@@ -83,6 +103,20 @@ public class Crypto {
 			return cipher;
 		} catch (Exception e) {
 			throw new RuntimeException("Error initializing cipher", e);
+		}
+	}
+
+	private static SecretKey loadSecretKey() {
+		FileInputStream fis = null;
+		try {
+			KeyStore keyStore = KeyStore.getInstance(KeyStoreType);
+			fis = new FileInputStream(KeyStorePath);
+			keyStore.load(fis, KeyStorePassword.toCharArray());
+			return (SecretKey) keyStore.getKey(DefaultSecretKeyAlias, KeyStorePassword.toCharArray());
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to load custom secret key from keystore", e);
+		} finally {
+			IOUtils.closeQuietly(fis);
 		}
 	}
 }

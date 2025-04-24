@@ -36,7 +36,7 @@
 	<entry key="Users.position">Должность</entry>
 	<entry key="Users.failedAuthCount">Число неудачных авторизаций</entry>
 	<entry key="Users.banned">Заблокирован</entry>
-	<entry key="Users.bannedUntil">Заблокирован до</entry>
+	<entry key="Users.bannedUntil">Временная блокировка до</entry>
 	<entry key="Users.changePassword">Изменить пароль при следующем входе</entry>
 	<entry key="Users.resetPassword">Сбросить пароль</entry>
 	<entry key="Users.settings">Настройки</entry>
@@ -145,6 +145,7 @@
 	<entry key="HubServerView.active">Up</entry>
 	<entry key="HubServerView.serverId">Server Id</entry>
 	<entry key="HubServerView.domains">Domains</entry>
+	<entry key="HubServerView.webAppUrl">Web App URL</entry>
 	<entry key="HubServerView.unregister">Удалить</entry>
 
 	<!-- AuthorityCenterView -->
