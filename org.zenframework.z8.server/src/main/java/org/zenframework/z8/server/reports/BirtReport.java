@@ -420,7 +420,7 @@ public class BirtReport {
 			} else
 				reportDesignHandle.getBody().add(table);
 
-			table.setPageBreakInterval(0);
+			table.setPageBreakInterval(65000); // xls имеет ограничение в 65 536 строк на каждом листе
 
 			return table;
 		} catch(SemanticException e) {
