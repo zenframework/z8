@@ -13,6 +13,8 @@ import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterInputStream;
@@ -387,5 +389,30 @@ public class IOUtils {
 			detector.handleData(buf, 0, n);
 		detector.dataEnd();
 		return detector.getDetectedCharset() != null ? detector.getDetectedCharset() : defaultCharset;
+	}
+
+	static public Process runJava(Class<?> cls, boolean useClasspath, List<String> javaArgs, List<String> args) {
+		List<String> command = new LinkedList<String>();
+
+		command.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
+
+		for (String arg : javaArgs)
+			command.add(arg);
+
+		if (useClasspath) {
+			command.add("-cp");
+			command.add(System.getProperty("java.class.path"));
+		}
+
+		command.add(cls.getName());
+
+		for (String arg : args)
+			command.add(arg);
+
+		try {
+			return Runtime.getRuntime().exec(command.toArray(new String[command.size()]));
+		} catch (IOException e) {
+			throw new RuntimeException("Could not start Java process", e);
+		}
 	}
 }

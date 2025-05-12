@@ -39,7 +39,7 @@ public class ServerConfig extends Properties {
 
 	static final private String Multitenancy = "application.multitenancy";
 
-	static final private String Language = "application.language";
+	static final public String Language = "application.language";
 	static final private String DefaultLanguage = "ru";
 
 	static final private String DatabaseSchema = "application.database.schema";
@@ -83,8 +83,16 @@ public class ServerConfig extends Properties {
 
 	static final private String WebServerServletConfigPrefix = "web.server.servlet.";
 
+	static final public String WebServerSsoAuthenticator = "web.server.sso.authenticator";
+	static final private String WebServerSsoDomainRealm = "web.server.sso.domainRealm";
+
+	static final public String WebServerCors = "web.server.cors";
+
+	static final private String WebServerRequestHeaderSize = "web.server.request.header.size";
+	static final private String WebServerResponseHeaderSize = "web.server.response.header.size";
+
 	static final private String WebClientDownloadMax = "web.client.download.max";
-	static final private String WebClientHashPassword = "web.client.hashPassword";
+	static final public String WebClientHashPassword = "web.client.hashPassword";
 
 	static final private String SchedulerEnabled = "scheduler.enabled";
 	static final private String MaintenenceJobCron = "maintenance.job.cron";
@@ -108,6 +116,8 @@ public class ServerConfig extends Properties {
 	static final private String OfficeHome = "office.home";
 	static final private String OfficePort = "office.port";
 
+	static final private String SpnegoMultiConfig = "spnego.multi.config";
+
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
 	
@@ -121,6 +131,8 @@ public class ServerConfig extends Properties {
 
 	static final private String LdapUsersIgnore = "ldap.users.ignore";
 	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
+
+	static final private String TrustedUsersAddresses = "trusted.users.addresses";
 
 	static final private String FtsConfiguration = "fts.configuration";
 
@@ -194,6 +206,12 @@ public class ServerConfig extends Properties {
 
 	static private Map<String, String> webServerServletParams;
 
+	static private String webServerSsoAuthenticator;
+	static private String webServerSsoDomainRealm;
+
+	static private int webServerRequestHeaderSize;
+	static private int webServerResponseHeaderSize;
+
 	static private int webClientDownloadMax;
 	static private boolean webClientHashPassword;
 
@@ -216,6 +234,8 @@ public class ServerConfig extends Properties {
 	static private String officeHome;
 	static private int officePort;
 
+	static private File spnegoMultiConfig;
+
 	static private String spnegoDomainRealm;
 	static private String spnegoPropertiesPath;
 	static private boolean ldapCheckLdapLogin;
@@ -228,6 +248,8 @@ public class ServerConfig extends Properties {
 
 	static private Collection<String> ldapUsersIgnore;
 	static private boolean ldapUsersCreateOnSuccessfulLogin;
+
+	static private String trustedUsersAddresses;
 
 	static private String ftsConfiguration;
 
@@ -338,6 +360,12 @@ public class ServerConfig extends Properties {
 
 		webServerServletParams = instance.filterParameters(WebServerServletConfigPrefix);
 
+		webServerSsoAuthenticator = instance.getProperty(WebServerSsoAuthenticator, "");
+		webServerSsoDomainRealm = instance.getProperty(WebServerSsoDomainRealm, "Z8");
+
+		webServerRequestHeaderSize = instance.getProperty(WebServerRequestHeaderSize, 8192);
+		webServerResponseHeaderSize = instance.getProperty(WebServerResponseHeaderSize, 8192);
+
 		webClientDownloadMax = instance.getProperty(WebClientDownloadMax, 1);
 		webClientHashPassword = instance.getProperty(WebClientHashPassword, true);
 
@@ -363,6 +391,8 @@ public class ServerConfig extends Properties {
 		officeHome = instance.getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 		officePort = instance.getProperty(OfficePort, 8100);
 
+		spnegoMultiConfig = instance.getFile(SpnegoMultiConfig, "spnego");
+
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = instance.getProperty(SpnegoPropertiesPath, "");
 		ldapCheckLdapLogin = instance.getProperty(LdapCheckLdapLogin, false);
@@ -374,6 +404,8 @@ public class ServerConfig extends Properties {
 		ldapSearchGroupFilter = instance.getProperty(LdapSearchGroupFilter, "");
 		ldapUsersIgnore = instance.getList(LdapUsersIgnore, "Admin", "\\,");
 		ldapUsersCreateOnSuccessfulLogin = instance.getProperty(LdapUsersCreateOnSuccessfulLogin, false);
+
+		trustedUsersAddresses = instance.getProperty(TrustedUsersAddresses, "");
 
 		ftsConfiguration = instance.getProperty(FtsConfiguration, (String) null);
 
@@ -487,6 +519,21 @@ public class ServerConfig extends Properties {
 		}
 	}
 
+	public File getFile(String key, String defaultValue, File baseDir) {
+		String value = getProperty(key, defaultValue);
+
+		if (value == null)
+			return null;
+
+		File file = new File(value);
+
+		try {
+			return file.isAbsolute() ? file : new File(baseDir, value).getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public List<String> getList(String key, String defaultValue, String delimiter) {
 		return StringUtils.asList(getProperty(key, defaultValue), delimiter);
 	}
@@ -526,6 +573,11 @@ public class ServerConfig extends Properties {
 				effective.setProperty(key, System.getProperty(key));
 		}
 		return effective;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static public Set<String> getKeys() {
+		return (Set)instance.keySet();
 	}
 
 	static public String get(String key) {
@@ -776,6 +828,30 @@ public class ServerConfig extends Properties {
 		return officePort;
 	}
 
+	static public File spnegoMultiConfig() {
+		return spnegoMultiConfig;
+	}
+
+	static public String webServerSsoAuthenticator() {
+		return webServerSsoAuthenticator;
+	}
+
+	static public Boolean isJ2eeEnabled() {
+		return webServerSsoAuthenticator.equalsIgnoreCase("spnego") || webServerSsoAuthenticator.equalsIgnoreCase("multispnego") || webServerSsoAuthenticator.equalsIgnoreCase("trusted");
+	}
+
+	static public String webServerSsoDomainRealm() {
+		return webServerSsoDomainRealm;
+	}
+
+	static public int webServerRequestHeaderSize() {
+		return webServerRequestHeaderSize;
+	}
+
+	static public int webServerResponseHeaderSize() {
+		return webServerResponseHeaderSize;
+	}
+
 	static public boolean webClientHashPassword() {
 		return webClientHashPassword;
 	}
@@ -820,6 +896,10 @@ public class ServerConfig extends Properties {
 
 	static public boolean ldapUsersCreateOnSuccessfulLogin() {
 		return ldapUsersCreateOnSuccessfulLogin;
+	}
+
+	static public String trustedUsersAddresses() {
+		return trustedUsersAddresses;
 	}
 
 	static public String ftsConfiguration() {
