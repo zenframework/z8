@@ -409,4 +409,8 @@ public class Users extends Table {
 	public bool z8_getParameters(LoginParameters.CLASS<? extends LoginParameters> loginParameters, RLinkedHashMap parameters) {
 		return z8_getParameters(loginParameters.get().z8_userId(), loginParameters.get().z8_login(), parameters);
 	}
+
+	static public void z8_notifyUserChange(guid userId) {
+		notifyUserChange(userId);
+	}
 }
