@@ -130,6 +130,7 @@ public class ServerConfig extends Properties {
 	static final private String LdapSslTrusted = "ldap.ssl.trusted";
 
 	static final private String StoragePath = "storage.path";
+	static final private String StoragePathFormat = "storage.path.format";
 	static final private String StoragePreviewPath = "storage.preview.path";
 
 	static final private String AuthFailsLimit = "auth.fails.limit";
@@ -235,6 +236,7 @@ public class ServerConfig extends Properties {
 	static private String securityLogFormat;
 
 	static private File storagePath;
+	static private String storagePathFormat;
 	static private File storagePreviewPath;
 
 	static private int authFailsLimit;
@@ -383,6 +385,7 @@ public class ServerConfig extends Properties {
 		ldapSslTrusted = instance.getProperty(LdapSslTrusted, false);
 
 		storagePath = instance.getFile(StoragePath, "storage");
+		storagePathFormat = instance.getProperty(StoragePathFormat, "yyyy.MM.dd");
 		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
 
 		authFailsLimit = instance.getProperty(AuthFailsLimit, 0);
@@ -840,6 +843,10 @@ public class ServerConfig extends Properties {
 
 	static public File storagePath() {
 		return storagePath;
+	}
+
+	static public String storagePathFormat() {
+		return storagePathFormat;
 	}
 
 	static public File storagePreviewPath() {

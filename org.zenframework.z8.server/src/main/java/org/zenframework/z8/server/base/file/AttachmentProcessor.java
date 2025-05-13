@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.FileField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
@@ -128,7 +129,7 @@ public class AttachmentProcessor extends OBJECT {
 
 		if(path.isEmpty() || !path.startsWith(Files.Storage)) {
 			date time = new date();
-			path = Files.Storage + StringUtils.concat(file.separator, time.format("yyyy.MM.dd"), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), f.name.get());
+			path = Files.Storage + StringUtils.concat(file.separator, time.format(ServerConfig.storagePathFormat()), getTable().name(), recordId.toString(), field.name(), time.format("HH-mm-ss"), f.name.get());
 			f.path = new string(path);
 		}
 	}
