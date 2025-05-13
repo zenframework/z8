@@ -43,7 +43,7 @@ import org.zenframework.z8.server.utils.NumericUtils;
 
 public class file extends primary implements RmiSerializable, Serializable {
 
-	private static final long serialVersionUID = -2542688680678439014L;
+	private static final long serialVersionUID = -5017091353995266541L;
 	static public final String EOL = "\r\n";
 
 	static public final String separator = "/";
