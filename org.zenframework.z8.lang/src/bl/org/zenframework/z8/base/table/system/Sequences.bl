@@ -1,0 +1,18 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.IntField;
+import org.zenframework.z8.base.table.value.StringField;
+import org.zenframework.z8.base.table.value.TextField;
+
+[name "SystemSequences"]
+[native "org.zenframework.z8.server.base.table.system.Sequences"] 
+public class Sequences extends Table {
+
+	[name "Description"]
+	TextField description;
+
+	[name "Key"]
+	StringField key;
+
+	[name "Value"]
+	IntField value;
+}
