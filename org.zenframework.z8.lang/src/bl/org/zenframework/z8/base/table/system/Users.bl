@@ -75,6 +75,7 @@ public class Users extends Table {
 
 	virtual protected bool getParameters(guid id, string login, primary[string] parameters);
 	virtual protected bool getParameters(LoginParameters loginParameters, primary[string] parameters);
+	static public void notifyUserChange(guid userId);
 
 	records {
 		[name "System"]
