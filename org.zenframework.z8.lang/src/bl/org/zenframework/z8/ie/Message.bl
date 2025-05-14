@@ -7,6 +7,11 @@ public class Message extends Object {
 
 	virtual protected void beforeExport();
 	virtual protected void afterExport();
+	
+	//if method returns 'true', message will be deleted from queue
+	//if method returns 'false', message will be skipped and resend next time
+	//if method throws exception, message will block the queue
+	protected bool onFail(exception e);
 
 	public string getAddress();
 	public void setAddress(string address);

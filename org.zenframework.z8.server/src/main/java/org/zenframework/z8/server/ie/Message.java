@@ -30,6 +30,8 @@ import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -155,7 +157,12 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void afterExport() {
 		z8_afterExport();
 	}
-
+	
+	public boolean onFail(Throwable e) {
+		Trace.logError(e);
+		return z8_onFail(new exception(e)).get();
+	}
+	
 	public binary toBinary() {
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -309,8 +316,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			if(connection != null)
 				connection.rollback();
 
-			Trace.logError(e);
-			throw new RuntimeException(e);
+			return onFail(e);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -367,4 +373,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void z8_afterExport() {
 	}
 
+	//if method returns 'true', message will be deleted from queue
+	//if method returns 'false', message will be skipped and resend next time
+	//if method throws exception, message will block the queue
+	public bool z8_onFail(exception e) {
+		throw e;
+	}
 }
