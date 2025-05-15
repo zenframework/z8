@@ -30,6 +30,7 @@ import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
+import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -43,6 +44,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	static private final int MessageSizeThreshold = 10 * MB; // 10MB
 
 	static protected final String FileUrlPrefix = "file:";
+	
+	private static final int Fail = 0;
+	private static final int Retry = 1;
+	private static final int Delete = 2;
 
 	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -66,6 +71,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String description;
 	private String sender;
 	private String address;
+	private int failAction = Fail;
 
 	abstract public void setBytesTransferred(long bytesTransferred);
 
@@ -155,7 +161,11 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void afterExport() {
 		z8_afterExport();
 	}
-
+	
+	public void onFail(Throwable e) {
+		z8_onFail(new exception(e));
+	}
+	
 	public binary toBinary() {
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -309,8 +319,12 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			if(connection != null)
 				connection.rollback();
 
-			Trace.logError(e);
-			throw new RuntimeException(e);
+			onFail(e);
+			if(failAction == Fail) {
+				Trace.logError(e);
+				throw new RuntimeException(e);
+			}
+			return failAction == Delete;
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -366,5 +380,18 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	public void z8_afterExport() {
 	}
+	
+	public void z8_deleteOnFail() {
+		failAction = Delete;
+	}
+	
+	public void z8_abortOnFail() {
+		failAction = Fail;
+	}
+	
+	public void z8_retryOnFail() {
+		failAction = Retry;
+	}
 
+	public void z8_onFail(exception e) { }
 }
