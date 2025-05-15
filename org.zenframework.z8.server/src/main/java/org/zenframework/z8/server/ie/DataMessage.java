@@ -102,7 +102,7 @@ public class DataMessage extends Message {
 		source.exportData();
 
 		for(file file : getSource().files()) {
-			FileMessage fileMessage = FileMessage.newInstance();
+			FileMessage fileMessage = getFileMessage();
 			fileMessage.setName(file.name.get());
 			fileMessage.setDescription(file.json.toString());
 			fileMessage.setSourceId(getId());
@@ -259,6 +259,14 @@ public class DataMessage extends Message {
 	
 	public bool z8_isExportAll() {
 		return new bool(source.isExportAll());
+	}
+	
+	public FileMessage getFileMessage() {
+		return z8_getFileMessage().get();
+	}
+	
+	public FileMessage.CLASS<? extends FileMessage> z8_getFileMessage() {
+		return FileMessage.z8_newInstance();
 	}
 	
 	private void addDescription(Table.CLASS<? extends Table> table, sql_bool where) {
