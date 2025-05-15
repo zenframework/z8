@@ -30,7 +30,6 @@ import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
@@ -68,6 +67,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String description;
 	private String sender;
 	private String address;
+	private Boolean failResult = null;
 
 	abstract public void setBytesTransferred(long bytesTransferred);
 
@@ -158,9 +158,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		z8_afterExport();
 	}
 	
-	public boolean onFail(Throwable e) {
+	public void onFail(Throwable e) {
 		Trace.logError(e);
-		return z8_onFail(new exception(e)).get();
+		z8_onFail(new exception(e));
 	}
 	
 	public binary toBinary() {
@@ -316,7 +316,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			if(connection != null)
 				connection.rollback();
 
-			return onFail(e);
+			onFail(e);
+			if(failResult == null)
+				throw new RuntimeException(e);
+			return failResult;
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -372,11 +375,18 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	public void z8_afterExport() {
 	}
-
-	//if method returns 'true', message will be deleted from queue
-	//if method returns 'false', message will be skipped and resend next time
-	//if method throws exception, message will block the queue
-	public bool z8_onFail(exception e) {
-		throw e;
+	
+	public void z8_deleteOnFail() {
+		failResult = true;
 	}
+	
+	public void z8_abortOnFail() {
+		failResult = null;
+	}
+	
+	public void z8_retryOnFail() {
+		failResult = false;
+	}
+
+	public void z8_onFail(exception e) { }
 }
