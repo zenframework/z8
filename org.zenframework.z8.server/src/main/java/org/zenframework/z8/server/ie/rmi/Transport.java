@@ -102,8 +102,10 @@ public class Transport implements Runnable {
 		try {
 			connection.beginTransaction();
 			messageQueue.beginProcessing(message.getId());
-			message.prepare();
-			connection.commit();
+			if(message.prepare())
+				connection.commit();
+			else
+				connection.rollback();
 		} catch(Throwable e) {
 			connection.rollback();
 			throw e;

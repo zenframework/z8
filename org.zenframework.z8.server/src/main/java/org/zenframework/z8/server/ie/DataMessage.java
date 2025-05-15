@@ -96,13 +96,11 @@ public class DataMessage extends Message {
 	}
 
 	@Override
-	public void prepare() {
-		beforeExport();
-
+	protected void createBody() {
 		source.exportData();
 
 		for(file file : getSource().files()) {
-			FileMessage fileMessage = FileMessage.newInstance();
+			FileMessage fileMessage = getFileMessage();
 			fileMessage.setName(file.name.get());
 			fileMessage.setDescription(file.json.toString());
 			fileMessage.setSourceId(getId());
@@ -126,8 +124,6 @@ public class DataMessage extends Message {
 
 			TransportQueue.newInstance().add(dataMessage);
 		}
-
-		afterExport();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -257,8 +253,20 @@ public class DataMessage extends Message {
 		source.setExportAll(exportAll.get());
 	}
 	
+	public void z8_setSkipFiles(bool skipFiles) {
+		source.setSkipFiles(skipFiles.get());
+	}
+	
 	public bool z8_isExportAll() {
 		return new bool(source.isExportAll());
+	}
+	
+	public FileMessage getFileMessage() {
+		return z8_getFileMessage().get();
+	}
+	
+	public FileMessage.CLASS<? extends FileMessage> z8_getFileMessage() {
+		return FileMessage.z8_newInstance();
 	}
 	
 	private void addDescription(Table.CLASS<? extends Table> table, sql_bool where) {

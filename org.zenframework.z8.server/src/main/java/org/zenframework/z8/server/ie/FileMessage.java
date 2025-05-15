@@ -43,7 +43,11 @@ public class FileMessage extends Message {
 	private file file;
 
 	static public FileMessage newInstance() {
-		return new FileMessage.CLASS<FileMessage>(null).get();
+		return z8_newInstance().get();
+	}
+	
+	static public FileMessage.CLASS<? extends FileMessage> z8_newInstance() {
+		return new FileMessage.CLASS<FileMessage>(null);
 	}
 
 	public FileMessage(IObject container) {
@@ -78,7 +82,7 @@ public class FileMessage extends Message {
 	}
 
 	@Override
-	public void prepare() {
+	protected void createBody() {
 		if (isExportToFile()) {
 			try {
 				exportToFile(Files.get(file));
