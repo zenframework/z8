@@ -82,7 +82,7 @@ public class FileMessage extends Message {
 	}
 
 	@Override
-	public void prepare() {
+	protected void createBody() {
 		if (isExportToFile()) {
 			try {
 				exportToFile(Files.get(file));

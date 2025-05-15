@@ -96,9 +96,7 @@ public class DataMessage extends Message {
 	}
 
 	@Override
-	public void prepare() {
-		beforeExport();
-
+	protected void createBody() {
 		source.exportData();
 
 		for(file file : getSource().files()) {
@@ -126,8 +124,6 @@ public class DataMessage extends Message {
 
 			TransportQueue.newInstance().add(dataMessage);
 		}
-
-		afterExport();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -255,6 +251,10 @@ public class DataMessage extends Message {
 	
 	public void z8_setExportAll(bool exportAll) {
 		source.setExportAll(exportAll.get());
+	}
+	
+	public void z8_setSkipFiles(bool skipFiles) {
+		source.setSkipFiles(skipFiles.get());
 	}
 	
 	public bool z8_isExportAll() {
