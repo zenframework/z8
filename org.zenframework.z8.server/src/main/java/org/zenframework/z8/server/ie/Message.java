@@ -44,6 +44,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	static private final int MessageSizeThreshold = 10 * MB; // 10MB
 
 	static protected final String FileUrlPrefix = "file:";
+	
+	private static final int Fail = 0;
+	private static final int Retry = 1;
+	private static final int Delete = 2;
 
 	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -67,7 +71,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String description;
 	private String sender;
 	private String address;
-	private Boolean failResult = null;
+	private int failAction = Fail;
 
 	abstract public void setBytesTransferred(long bytesTransferred);
 
@@ -159,7 +163,6 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 	
 	public void onFail(Throwable e) {
-		Trace.logError(e);
 		z8_onFail(new exception(e));
 	}
 	
@@ -317,9 +320,11 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				connection.rollback();
 
 			onFail(e);
-			if(failResult == null)
+			if(failAction == Fail) {
+				Trace.logError(e);
 				throw new RuntimeException(e);
-			return failResult;
+			}
+			return failAction == Delete;
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -377,15 +382,15 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 	
 	public void z8_deleteOnFail() {
-		failResult = true;
+		failAction = Delete;
 	}
 	
 	public void z8_abortOnFail() {
-		failResult = null;
+		failAction = Fail;
 	}
 	
 	public void z8_retryOnFail() {
-		failResult = false;
+		failAction = Retry;
 	}
 
 	public void z8_onFail(exception e) { }
