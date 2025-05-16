@@ -31,6 +31,8 @@ public class Servlet extends HttpServlet {
 	static final private String AuthorityCenterClass = "authorityCenterClass";
 	static final private String InterconnectionCenterClass = "interconnectionCenterClass";
 
+	public static final String[] ServletPaths = { "/sso", "/saml", "/oauth", "/apidoc", "*/request.json", "/storage/*", "/files/*", "/reports/*", "*/ws" };
+
 	static {
 		ObjectIO.initialize(new RmiIO());
 	}
