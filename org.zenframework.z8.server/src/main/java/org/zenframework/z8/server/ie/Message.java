@@ -47,7 +47,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	
 	private static final int Fail = 0;
 	private static final int Retry = 1;
-	private static final int Delete = 2;
+	private static final int Cancel = 2;
 
 	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -79,7 +79,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	abstract protected void read(ObjectInputStream in) throws IOException, ClassNotFoundException;
 
-	abstract public void prepare();
+	abstract protected void createBody();
 
 	abstract protected boolean transactive();
 
@@ -162,8 +162,12 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		z8_afterExport();
 	}
 	
-	public void onFail(Throwable e) {
-		z8_onFail(new exception(e));
+	public void onPrepareFail(Throwable e) {
+		z8_onPrepareFail(new exception(e));
+	}
+	
+	public void onAcceptFail(Throwable e) {
+		z8_onAcceptFail(new exception(e));
 	}
 	
 	public binary toBinary() {
@@ -259,6 +263,25 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		else
 			MessageQueue.newInstance().add(this);
 	}
+	
+	public boolean prepare() {
+		try {
+			beforeExport();
+			createBody();
+		} catch(Throwable e) {
+			onPrepareFail(e);
+			if(failAction == Fail) {
+				Trace.logError(e);
+				throw new RuntimeException(e);
+			}
+			return failAction == Cancel;
+		} finally {
+			z8_abortOnFail();
+		}
+		
+		afterExport();
+		return true;
+	}
 
 	public boolean accept() {
 		return accept(false);
@@ -319,12 +342,12 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			if(connection != null)
 				connection.rollback();
 
-			onFail(e);
+			onAcceptFail(e);
 			if(failAction == Fail) {
 				Trace.logError(e);
 				throw new RuntimeException(e);
 			}
-			return failAction == Delete;
+			return failAction == Cancel;
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -381,17 +404,18 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void z8_afterExport() {
 	}
 	
-	public void z8_deleteOnFail() {
-		failAction = Delete;
+	public void z8_cancelOnFail() {
+		failAction = Cancel;
+	}
+	
+	public void z8_retryOnFail() {
+		failAction = Retry;
 	}
 	
 	public void z8_abortOnFail() {
 		failAction = Fail;
 	}
 	
-	public void z8_retryOnFail() {
-		failAction = Retry;
-	}
-
-	public void z8_onFail(exception e) { }
+	public void z8_onPrepareFail(exception e) { }
+	public void z8_onAcceptFail(exception e) { }
 }

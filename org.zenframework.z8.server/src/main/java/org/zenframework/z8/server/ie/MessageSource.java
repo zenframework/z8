@@ -47,6 +47,7 @@ public class MessageSource implements RmiSerializable, Serializable {
 	}
 
 	private boolean exportAll;
+	private boolean skipFiles;
 	private ExportRules exportRules = new ExportRules();
 	private Collection<ExportSource> sources = new ArrayList<ExportSource>();
 	private Map<String, primary> properties = new HashMap<String, primary>();
@@ -198,7 +199,8 @@ public class MessageSource implements RmiSerializable, Serializable {
 				if(!processLink(field, recordId, recordStates))
 					continue;
 
-				processFiles(field);
+				if(!skipFiles)
+					processFiles(field);
 
 				record.add(new FieldInfo(field));
 			}
@@ -397,5 +399,9 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	public void setExportAll(boolean exportAll) {
 		this.exportAll = exportAll;
+	}
+
+	public void setSkipFiles(boolean skipFiles) {
+		this.skipFiles = skipFiles;
 	}
 }

@@ -8,11 +8,12 @@ public class Message extends Object {
 	virtual protected void beforeExport();
 	virtual protected void afterExport();
 	
-	protected void deleteOnFail();
+	protected void cancelOnFail();
 	protected void abortOnFail();
 	protected void retryOnFail();
 	
-	virtual protected bool onFail(exception e);
+	virtual protected bool onPrepareFail(exception e);
+	virtual protected bool onAcceptFail(exception e);
 
 	public string getAddress();
 	public void setAddress(string address);
