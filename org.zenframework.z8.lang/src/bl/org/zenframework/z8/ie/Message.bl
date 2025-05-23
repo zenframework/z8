@@ -8,13 +8,9 @@ public class Message extends Object {
 	virtual protected void beforeExport();
 	virtual protected void afterExport();
 	
-	protected void deleteOnPrepareFail();
-	protected void abortOnPrepareFail();
-	protected void retryOnPrepareFail();
-	
-	protected void deleteOnAcceptFail();
-	protected void abortOnAcceptFail();
-	protected void retryOnAcceptFail();
+	protected void cancelOnFail();
+	protected void abortOnFail();
+	protected void retryOnFail();
 	
 	virtual protected bool onPrepareFail(exception e);
 	virtual protected bool onAcceptFail(exception e);

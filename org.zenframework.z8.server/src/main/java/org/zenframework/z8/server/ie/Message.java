@@ -71,8 +71,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String description;
 	private String sender;
 	private String address;
-	private int prepareFailAction = Fail;
-	private int acceptFailAction = Fail;
+	private int failAction = Fail;
 
 	abstract public void setBytesTransferred(long bytesTransferred);
 
@@ -271,11 +270,13 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			createBody();
 		} catch(Throwable e) {
 			onPrepareFail(e);
-			if(prepareFailAction == Fail) {
+			if(failAction == Fail) {
 				Trace.logError(e);
 				throw new RuntimeException(e);
 			}
-			return prepareFailAction == Cancel;
+			return failAction == Cancel;
+		} finally {
+			z8_abortOnFail();
 		}
 		
 		afterExport();
@@ -342,11 +343,11 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				connection.rollback();
 
 			onAcceptFail(e);
-			if(acceptFailAction == Fail) {
+			if(failAction == Fail) {
 				Trace.logError(e);
 				throw new RuntimeException(e);
 			}
-			return acceptFailAction == Cancel;
+			return failAction == Cancel;
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -403,30 +404,18 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void z8_afterExport() {
 	}
 	
-	public void z8_cancelOnPrepareFail() {
-		prepareFailAction = Cancel;
+	public void z8_cancelOnFail() {
+		failAction = Cancel;
 	}
 	
-	public void z8_retryOnPrepareFail() {
-		prepareFailAction = Retry;
+	public void z8_retryOnFail() {
+		failAction = Retry;
 	}
 	
-	public void z8_abortOnPrepareFail() {
-		prepareFailAction = Fail;
+	public void z8_abortOnFail() {
+		failAction = Fail;
 	}
 	
-	public void z8_deleteOnAcceptFail() {
-		acceptFailAction = Cancel;
-	}
-	
-	public void z8_abortOnAcceptFail() {
-		acceptFailAction = Fail;
-	}
-	
-	public void z8_retryOnAcceptFail() {
-		acceptFailAction = Retry;
-	}
-
 	public void z8_onPrepareFail(exception e) { }
 	public void z8_onAcceptFail(exception e) { }
 }

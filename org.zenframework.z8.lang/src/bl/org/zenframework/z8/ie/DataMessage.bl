@@ -40,5 +40,5 @@ public class DataMessage extends Message {
 	public guid[] getRecords(Table table);
 	
 	virtual protected void onMerge(Table source, Table target);
-	virtual protected FileMessage getFileMessage();
+	virtual protected FileMessage newFileMessage();
 }
