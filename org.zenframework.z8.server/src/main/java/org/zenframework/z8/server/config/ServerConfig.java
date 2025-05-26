@@ -110,7 +110,7 @@ public class ServerConfig extends Properties {
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
-	
+
 	static final private String LdapCheckLdapLogin = "ldap.checkLdapLogin";
 	static final private String LdapUrl = "ldap.url";
 	static final private String LdapPrincipalName = "ldap.principalName";
@@ -128,6 +128,7 @@ public class ServerConfig extends Properties {
 	static final private String SecurityLogFormat = "security.log.format";
 
 	static final private String LdapSslTrusted = "ldap.ssl.trusted";
+	static final private String LdapConnectTimeout = "ldap.connect.timeout";
 
 	static final private String StoragePath = "storage.path";
 	static final private String StoragePathFormat = "storage.path.format";
@@ -250,6 +251,7 @@ public class ServerConfig extends Properties {
 	static public String[] officeExtensions; // "doc, docx, xls, xlsx, ppt, pptx, odt, odp, ods, odf, odg, wpd, sxw, sxi, sxc, sxd, stw, vsd"
 
 	static private boolean ldapSslTrusted;
+	static private int ldapConnectTimeout;
 
 	static private boolean keystoreUseCustom;
 	static private File keystorePath;
@@ -383,6 +385,7 @@ public class ServerConfig extends Properties {
 		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
 
 		ldapSslTrusted = instance.getProperty(LdapSslTrusted, false);
+		ldapConnectTimeout = instance.getProperty(LdapConnectTimeout, 3000);
 
 		storagePath = instance.getFile(StoragePath, "storage");
 		storagePathFormat = instance.getProperty(StoragePathFormat, "yyyy.MM.dd");
@@ -839,6 +842,10 @@ public class ServerConfig extends Properties {
 
 	static public boolean ldapSslTrusted() {
 		return ldapSslTrusted;
+	}
+
+	static public int ldapConnectTimeout() {
+		return ldapConnectTimeout;
 	}
 
 	static public File storagePath() {
