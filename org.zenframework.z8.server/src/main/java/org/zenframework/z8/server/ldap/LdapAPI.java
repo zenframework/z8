@@ -86,7 +86,7 @@ public class LdapAPI {
 		environment.put(Context.SECURITY_PRINCIPAL, principalName);
 		environment.put(Context.SECURITY_CREDENTIALS, credentials);
 		environment.put(Context.REFERRAL, "follow");
-		environment.put("com.sun.jndi.ldap.connect.timeout", "3000");
+		environment.put("com.sun.jndi.ldap.connect.timeout", ServerConfig.ldapConnectTimeout() + "");
 
 		if (ldapUrl.trim().toLowerCase().startsWith(LDAPS) && ServerConfig.ldapSslTrusted())
 			environment.put("java.naming.ldap.factory.socket", TrustedSSLSocketFactory.class.getName());
