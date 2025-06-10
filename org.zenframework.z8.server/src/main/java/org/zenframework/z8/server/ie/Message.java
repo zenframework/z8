@@ -276,7 +276,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			}
 			return failAction == Cancel;
 		} finally {
-			z8_abortOnFail();
+			failAction = Fail;
 		}
 		
 		afterExport();
