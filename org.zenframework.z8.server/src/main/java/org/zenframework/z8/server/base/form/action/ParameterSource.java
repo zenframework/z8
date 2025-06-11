@@ -37,18 +37,28 @@ public class ParameterSource extends OBJECT {
 			return;
 
 		Query query = this.query.get();
-		Query owner = query.owner();
 		String queryId = query.id();
+		boolean queryIdEmpty = queryId.isEmpty();
+		int level = 0;
+		if(!queryIdEmpty)
+			level = queryId.split("\\.").length;
+		IObject owner = query;
+		for(int i = 0; i < level; i++) {
+			IObject nextOwner = owner.getOwner();
+			if(nextOwner == null)
+				break;
+			owner = nextOwner;
+		}
 
 		writer.writeProperty(Json.isCombobox, true);
 		writer.writeProperty(Json.name, displayField.id());
 
 		writer.startObject(Json.query);
-		if (!queryId.isEmpty())
+		if (!queryIdEmpty)
 			writer.writeProperty(Json.name, queryId);
 		writer.writeProperty(Json.lockKey, query.lockKey().id());
 		writer.writeProperty(Json.primaryKey, query.primaryKey().id());
-		writer.writeProperty(Json.request, owner == null ? query.classId() : owner.classId());
+		writer.writeProperty(Json.request, owner.classId());
 
 		if (valueField != null) {
 			writer.startArray(Json.fields);
