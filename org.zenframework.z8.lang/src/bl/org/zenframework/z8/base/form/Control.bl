@@ -1,3 +1,5 @@
+import org.zenframework.z8.base.json.JsonWriter;
+import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.lang.Object;
 
@@ -39,4 +41,6 @@ public class Control extends Object {
 	public Control[] dependencies;
 
 	public Source source;
+
+	virtual protected void writeMeta(JsonWriter writer, Query query, Query context);
 }
