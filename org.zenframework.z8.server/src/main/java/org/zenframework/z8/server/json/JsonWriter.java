@@ -497,7 +497,7 @@ public class JsonWriter {
 		return stream.toString();
 	}
 
-	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> getWrapper() {
+	public org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> getWrapper() {
 		if (wrapper == null) {
 			wrapper = new org.zenframework.z8.server.base.json.JsonWriter.CLASS<org.zenframework.z8.server.base.json.JsonWriter>(null);
 			wrapper.get().set(this);

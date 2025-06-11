@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.form;
 
 import java.util.Collection;
 
+import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
@@ -80,6 +81,7 @@ public class Control extends OBJECT {
 		throw new UnsupportedOperationException();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		writer.writeProperty(Json.name, id());
 		writer.writeProperty(Json.ui, ui());
@@ -104,6 +106,7 @@ public class Control extends OBJECT {
 		}
 
 		writeDependencies(writer);
+		z8_writeMeta(writer.getWrapper(), query != null ? (Query.CLASS<? extends Query>) query.getCLASS() : null, context != null ? (Query.CLASS<? extends Query>) context.getCLASS() : null);
 	}
 
 	protected void writeDependencies(JsonWriter writer) {
@@ -120,4 +123,6 @@ public class Control extends OBJECT {
 			writer.finishArray();
 		}
 	}
+
+	public void z8_writeMeta(org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> writer, Query.CLASS<? extends Query> query, Query.CLASS<? extends Query> context) { }
 }
