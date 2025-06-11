@@ -2,15 +2,17 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.ie.Message"]
 public class Message extends Object {
+	public static final int Fail;
+	public static final int Retry;
+	public static final int Cancel;
+	
 	virtual protected void beforeImport();
 	virtual protected void afterImport();
 
 	virtual protected void beforeExport();
 	virtual protected void afterExport();
 	
-	protected void cancelOnFail();
-	protected void abortOnFail();
-	protected void retryOnFail();
+	protected void setFailAction(int action);
 	
 	virtual protected bool onPrepareFail(exception e);
 	virtual protected bool onAcceptFail(exception e);

@@ -32,6 +32,7 @@ import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 import org.zenframework.z8.server.utils.NumericUtils;
@@ -45,9 +46,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	static protected final String FileUrlPrefix = "file:";
 	
-	private static final int Fail = 0;
-	private static final int Retry = 1;
-	private static final int Cancel = 2;
+	public static final integer Fail = new integer(0);
+	public static final integer Retry = new integer(1);
+	public static final integer Cancel = new integer(2);
 
 	static public class CLASS<T extends Message> extends OBJECT.CLASS<T> {
 		public CLASS() {
@@ -71,7 +72,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String description;
 	private String sender;
 	private String address;
-	private int failAction = Fail;
+	private int failAction = Fail.getInt();
 
 	abstract public void setBytesTransferred(long bytesTransferred);
 
@@ -270,13 +271,13 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			createBody();
 		} catch(Throwable e) {
 			onPrepareFail(e);
-			if(failAction == Fail) {
+			if(failAction == Fail.getInt()) {
 				Trace.logError(e);
 				throw new RuntimeException(e);
 			}
-			return failAction == Cancel;
+			return failAction == Cancel.getInt();
 		} finally {
-			failAction = Fail;
+			failAction = Fail.getInt();
 		}
 		
 		afterExport();
@@ -343,11 +344,11 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				connection.rollback();
 
 			onAcceptFail(e);
-			if(failAction == Fail) {
+			if(failAction == Fail.getInt()) {
 				Trace.logError(e);
 				throw new RuntimeException(e);
 			}
-			return failAction == Cancel;
+			return failAction == Cancel.getInt();
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -404,18 +405,15 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void z8_afterExport() {
 	}
 	
-	public void z8_cancelOnFail() {
-		failAction = Cancel;
+	public void z8_setFailAction(integer action) {
+		if(action.equals(Cancel))
+			failAction = Cancel.getInt();
+		else if(action.equals(Retry))
+			failAction = Retry.getInt();
+		else
+			failAction = Fail.getInt();
 	}
-	
-	public void z8_retryOnFail() {
-		failAction = Retry;
-	}
-	
-	public void z8_abortOnFail() {
-		failAction = Fail;
-	}
-	
+
 	public void z8_onPrepareFail(exception e) { }
 	public void z8_onAcceptFail(exception e) { }
 }
