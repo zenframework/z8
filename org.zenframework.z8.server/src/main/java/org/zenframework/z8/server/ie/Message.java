@@ -271,11 +271,12 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			createBody();
 		} catch(Throwable e) {
 			onPrepareFail(e);
-			if(failAction == Fail.getInt()) {
-				Trace.logError(e);
-				throw new RuntimeException(e);
-			}
-			return failAction == Cancel.getInt();
+			if(failAction == Cancel.getInt())
+				return true;
+			if(failAction == Retry.getInt())
+				return false;
+			Trace.logError(e);
+			throw new RuntimeException(e);
 		} finally {
 			failAction = Fail.getInt();
 		}
@@ -344,11 +345,12 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				connection.rollback();
 
 			onAcceptFail(e);
-			if(failAction == Fail.getInt()) {
-				Trace.logError(e);
-				throw new RuntimeException(e);
-			}
-			return failAction == Cancel.getInt();
+			if(failAction == Cancel.getInt())
+				return true;
+			if(failAction == Retry.getInt())
+				return false;
+			Trace.logError(e);
+			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
 			if(!localSend)
@@ -406,12 +408,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 	
 	public void z8_setFailAction(integer action) {
-		if(action.equals(Cancel))
-			failAction = Cancel.getInt();
-		else if(action.equals(Retry))
-			failAction = Retry.getInt();
-		else
-			failAction = Fail.getInt();
+		failAction = action.getInt();
 	}
 
 	public void z8_onPrepareFail(exception e) { }
