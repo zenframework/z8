@@ -29,7 +29,7 @@ public class Workbook extends OBJECT {
 
 	public void operatorAssign(file file) {
 		try {
-			this.opcPackage = OPCPackage.open(file.getAbsolutePath());
+			this.opcPackage = OPCPackage.open(file.getInputStream());
 			this.workbook = new XSSFWorkbook(this.opcPackage);
 		} catch(Throwable var3) {
 			this.safeClose();
