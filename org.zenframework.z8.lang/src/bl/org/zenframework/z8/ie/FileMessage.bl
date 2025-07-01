@@ -2,5 +2,4 @@
 public class FileMessage extends Message {
 	public file getFile();
 	public void setFile(file file);
-	public static FileMessage newInstance();
 }
