@@ -42,10 +42,6 @@ public class FileMessage extends Message {
 
 	private file file;
 
-	static public FileMessage newInstance() {
-		return new FileMessage.CLASS<FileMessage>(null).get();
-	}
-
 	public FileMessage(IObject container) {
 		super(container);
 	}
@@ -78,7 +74,7 @@ public class FileMessage extends Message {
 	}
 
 	@Override
-	public void prepare() {
+	protected void createBody() {
 		if (isExportToFile()) {
 			try {
 				exportToFile(Files.get(file));

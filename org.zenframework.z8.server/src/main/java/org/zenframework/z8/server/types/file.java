@@ -44,6 +44,7 @@ import org.zenframework.z8.server.utils.NumericUtils;
 public class file extends primary implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -5017091353995266541L;
+	private static final long serialVersionUIDOld = -2542688680678439014L;
 	static public final String EOL = "\r\n";
 
 	static public final String separator = "/";
@@ -352,19 +353,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
-		id = RmiIO.readGuid(in);
-		name = new string(RmiIO.readString(in));
-		path = new string(RmiIO.readString(in).replace("\\", "/"));
-		time = RmiIO.readDate(in);
-		size = RmiIO.readInteger(in);
-		user = RmiIO.readGuid(in);
-		author = new string(RmiIO.readString(in));
-
-		offset = RmiIO.readLong(in);
-		partLength = RmiIO.readInt(in);
+		if(version == serialVersionUID)
+			fillFields(in);
+		else if(version == serialVersionUIDOld)
+			fillFieldsOld(in);
+		else
+			throw new RuntimeException("\"" + version + "\" is unknown serial version UID");
 
 		if(RmiIO.readBoolean(in)) {
 			long size = RmiIO.readLong(in);
@@ -378,6 +374,32 @@ public class file extends primary implements RmiSerializable, Serializable {
 				IOUtils.closeQuietly(out);
 			}
 		}
+	}
+	
+	private void fillFields(ObjectInputStream in) throws IOException {
+		id = RmiIO.readGuid(in);
+		name = new string(RmiIO.readString(in));
+		path = new string(RmiIO.readString(in).replace("\\", "/"));
+		time = RmiIO.readDate(in);
+		size = RmiIO.readInteger(in);
+		user = RmiIO.readGuid(in);
+		author = new string(RmiIO.readString(in));
+
+		offset = RmiIO.readLong(in);
+		partLength = RmiIO.readInt(in);
+	}
+	
+	private void fillFieldsOld(ObjectInputStream in) throws IOException {
+		// MARK in old version 'id' is placed after 'size'
+		// also there's no 'user' and 'author'
+		name = new string(RmiIO.readString(in));
+		path = new string(RmiIO.readString(in).replace("\\", "/"));
+		time = RmiIO.readDate(in);
+		size = RmiIO.readInteger(in);
+		id = RmiIO.readGuid(in);
+
+		offset = RmiIO.readLong(in);
+		partLength = RmiIO.readInt(in);
 	}
 
 	static public file createTempFile(String prefix, String extension) {
