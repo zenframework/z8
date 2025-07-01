@@ -35,5 +35,6 @@ public class Object {
 
 	public Object[] getNamed();
 
-	static public Object newInstance(string name);
+	static public Object newInstance(string className);
+	static public Object newNamedInstance(string name);
 }
