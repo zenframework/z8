@@ -810,9 +810,8 @@ public class Query extends OBJECT {
 		return result;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<Control> controls() {
-		return CLASS.asList(controls.isEmpty() ? (Collection)defaultControls() : controls);
+		return CLASS.asList(controls.isEmpty() ? defaultControls() : controls);
 	}
 
 	public Collection<Field> attachments() {
