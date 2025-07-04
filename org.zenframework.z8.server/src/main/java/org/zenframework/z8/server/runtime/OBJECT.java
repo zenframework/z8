@@ -14,6 +14,7 @@ import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.request.IResponse;
+import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.request.RequestTarget;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
@@ -426,7 +427,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return named;
 	}
 
-	static public OBJECT.CLASS<? extends OBJECT> z8_newInstance(string name) {
-		return (OBJECT.CLASS<?>)Runtime.instance().getNamed(name.get()).newInstance().getCLASS();
+	static public OBJECT.CLASS<? extends OBJECT> z8_newInstance(string className) {
+		return Loader.getInstance(className.get()).getCLASS();
+	}
+
+	static public OBJECT.CLASS<? extends OBJECT> z8_newNamedInstance(string name) {
+		return (OBJECT.CLASS<?>) Runtime.instance().getNamed(name.get()).newInstance().getCLASS();
 	}
 }
