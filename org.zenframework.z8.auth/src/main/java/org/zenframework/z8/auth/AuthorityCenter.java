@@ -31,7 +31,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	static private AuthorityCenter instance = null;
 
-	private final boolean clientHashPassword;
 	private final boolean cacheEnabled;
 
 	private SessionManager sessionManager;
@@ -46,7 +45,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	public AuthorityCenter() throws RemoteException {
 		super(ServerConfig.authorityCenterPort());
-		clientHashPassword = ServerConfig.webClientHashPassword();
 		cacheEnabled = ServerConfig.authorityCenterCache();
 	}
 
@@ -209,7 +207,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	protected File cacheFile() {
-		return cacheEnabled ? new File(Folders.Base, serversCache) : null;
+		return cacheEnabled ? new File(Folders.WorkingPath, serversCache) : null;
 	}
 
 	@Override

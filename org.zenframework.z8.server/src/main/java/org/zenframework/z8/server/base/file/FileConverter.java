@@ -151,7 +151,7 @@ public class FileConverter {
 		boolean toPdf = isPdfExtension(getExtension(file));
 		String background = parameters.get(Background.get());
 		File backgroundFile;
-		if (!toPdf || background == null || !(backgroundFile = new File(Folders.Base, background)).exists())
+		if (!toPdf || background == null || !(backgroundFile = new File(Folders.WorkingPath, background)).exists())
 			return file;
 
 		File source = file;

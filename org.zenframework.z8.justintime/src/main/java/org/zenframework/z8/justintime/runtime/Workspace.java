@@ -1,9 +1,11 @@
 package org.zenframework.z8.justintime.runtime;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -20,36 +22,39 @@ import javax.tools.ToolProvider;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.zenframework.z8.compiler.cmd.Main;
 import org.zenframework.z8.compiler.workspace.Project;
 import org.zenframework.z8.compiler.workspace.ProjectProperties;
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class Workspace {
 
-	private static final File JUST_IN_TIME = new File(Folders.Base, "just-in-time");
-	private static final File SCHEMAS = new File(JUST_IN_TIME, "schemas");
-	private static final File[] DEPENDENCIES = new File(JUST_IN_TIME, "dependencies").listFiles();
+	private static final File DependenciesPath = new File(Folders.ApplicationPath, "just-in-time/dependencies");
+	private static final File WorkspacesPath = new File(Folders.WorkingPath, "just-in-time/workspaces");
 
-	private static final String BL_SOURCES = "bl";
-	private static final String JAVA_SOURCES = "java";
-	private static final String JAVA_CLASSES = "classes";
+	private static final String BlSources = "bl";
+	private static final String JavaSources = "java";
+	private static final String JavaClasses = "classes";
+	private static final String Backup = "backup";
 
-	private static final Map<String, Workspace> WORKSPACES = new HashMap<String, Workspace>();
+	private static final Map<String, Workspace> Workspaces = new HashMap<String, Workspace>();
 
 	public static Workspace workspace(String schema) {
-		synchronized (WORKSPACES) {
-			Workspace workspace = WORKSPACES.get(schema);
+		synchronized (Workspaces) {
+			Workspace workspace = Workspaces.get(schema);
 			if (workspace == null)
-				WORKSPACES.put(schema, (workspace = new Workspace(schema)));
+				Workspaces.put(schema, (workspace = new Workspace(schema)));
 			return workspace;
 		}
 	}
 
 	public static Workspace[] workspaces() {
-		String[] schemas = SCHEMAS.list();
+		String[] schemas = WorkspacesPath.list();
 		if (schemas == null)
 			return new Workspace[0];
 		Workspace[] workspaces = new Workspace[schemas.length];
@@ -61,7 +66,7 @@ public class Workspace {
 	public static String getSchema(URL resource) {
 		try {
 			Path path = Paths.get(resource.toURI());
-			Path schemas = SCHEMAS.toPath();
+			Path schemas = WorkspacesPath.toPath();
 			return path.startsWith(schemas) ? path.getName(schemas.getNameCount()).toString() : null;
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
@@ -73,21 +78,38 @@ public class Workspace {
 	private final File blSources;
 	private final File javaSources;
 	private final File javaClasses;
+	private final File backup;
 
 	private Workspace(String schema) {
 		this.schema = schema;
-		this.workspace = new File(SCHEMAS, schema);
-		this.blSources = new File(workspace, BL_SOURCES);
-		this.javaSources = new File(workspace, JAVA_SOURCES);
-		this.javaClasses = new File(workspace, JAVA_CLASSES);
+		this.workspace = new File(WorkspacesPath, schema);
+		this.blSources = new File(workspace, BlSources);
+		this.javaSources = new File(workspace, JavaSources);
+		this.javaClasses = new File(workspace, JavaClasses);
+		this.backup = new File(workspace, Backup);
 	}
 
-	public boolean recompile(ISource source, JustInTimeListener listener) {
-		cleanWorkspace();
+	public void recompile(ISource source) {
+		JustInTimeListener listener = new JustInTimeListener(this);
 
-		source.exportSources(this);
+		try {
+			backup();
+			cleanWorkspace();
+			exportSources(source);
+			compileBl(listener);
+			compileJava(listener);
+			copyResources();
+			logMessage("JUST-IN-TIME COMPILATION SUCCESSFUL");
+		} catch (Throwable e) {
+			logError("JUST-IN-TIME COMPILATION FAILED. See error messages", e);
+			try {
+				restore();
+			} catch (Throwable e1) {
+				logError("JUST-IN-TIME RESTORE FAILED", e1);
+			}
+		}
 
-		return compileBl(listener) && compileJava(listener) && copyResources();
+		listener.writeMessages(source);
 	}
 
 	public String getSchema() {
@@ -110,36 +132,44 @@ public class Workspace {
 		return javaClasses;
 	}
 
-	private void cleanWorkspace() {
-		try {
-			if (workspace.exists())
-				FileUtils.cleanDirectory(workspace);
-			else
-				workspace.mkdirs();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		javaSources.mkdirs();
-		javaClasses.mkdirs();
+	private void backup() throws IOException {
+		clean(backup);
+		copy(javaClasses, backup);
 	}
 
-	private boolean compileBl(JustInTimeListener listener) {
+	private void restore() throws IOException {
+		clean(javaClasses);
+		copy(backup, javaClasses);
+	}
+
+	private void cleanWorkspace() throws IOException {
+		clean(blSources);
+		clean(javaSources);
+		clean(javaClasses);
+	}
+
+	private void exportSources(ISource source) throws IOException {
+		source.exportSources(this);
+	}
+
+	private void compileBl(JustInTimeListener listener) throws JustInTimeException {
 		ProjectProperties properties = new ProjectProperties(this.workspace);
 		properties.setProjectName(getProjectName());
-		properties.setSourcePaths(BL_SOURCES);
-		properties.setOutputPath(JAVA_SOURCES);
-		properties.setRequiredPaths(DEPENDENCIES);
+		properties.setSourcePaths(BlSources);
+		properties.setOutputPath(JavaSources);
+		properties.setRequiredPaths(DependenciesPath.listFiles());
 
 		try {
 			Project project = Main.initializeProject(properties);
-			project.build(listener);
-			return listener.getErrorCount() == 0;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			project.build(listener.getBuildMessageConsumer());
+		} catch (CoreException e) {
+			throw new JustInTimeException(e);
 		}
+		if (listener.getErrorCount() != 0)
+			throw new JustInTimeException("BL compilation error");
 	}
 
-	private boolean compileJava(JustInTimeListener listener) {
+	private void compileJava(JustInTimeListener listener) throws JustInTimeException {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
 		if (compiler == null)
@@ -147,10 +177,12 @@ public class Workspace {
 
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 		List<String> options = Arrays.asList("-d", javaClasses.getAbsolutePath());
-		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null,
+		StringWriter out = new StringWriter();
+		JavaCompiler.CompilationTask task = compiler.getTask(out, fileManager, listener.getDiagnosticListener(), options, null,
 				fileManager.getJavaFileObjectsFromFiles(getJavaFiles(javaSources, new LinkedList<File>())));
 		try {
-			return task.call();
+			if (!task.call())
+				throw new JustInTimeException("Java compilation error:\n" +  out.toString());
 		} finally {
 			try {
 				fileManager.close();
@@ -158,22 +190,37 @@ public class Workspace {
 		}
 	}
 
-	private boolean copyResources() {
-		copyResources(javaSources, javaClasses);
-		return true;
+	private void copyResources() throws IOException {
+		copy(javaSources, javaClasses, new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return !file.getName().endsWith('.' + JavaSources);
+			}
+		});
 	}
 
-	private static void copyResources(File from, File to) {
+	private static void clean(File folder) throws IOException {
+		if (folder.exists())
+			FileUtils.cleanDirectory(folder);
+		if (!folder.exists() && !folder.mkdirs())
+			throw new IOException("Couldn't create folder '" + folder.getAbsolutePath() + "'");
+	}
+
+	private static void copy(File from, File to) throws IOException {
+		copy(from, to, null);
+	}
+
+	private static void copy(File from, File to, FileFilter filter) throws IOException {
+		if (!from.exists())
+			return;
 		if (from.isDirectory()) {
 			for (File file : from.listFiles())
-				copyResources(file, new File(to, file.getName()));
-		} else if (!from.getName().endsWith('.' + JAVA_SOURCES)) {
-			to.getParentFile().mkdirs();
-			try {
-				IOUtils.copy(new FileInputStream(from), new FileOutputStream(to));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+				copy(file, new File(to, file.getName()), filter);
+		} else if (filter == null || filter.accept(from)) {
+			File folder = to.getParentFile();
+			if (!folder.exists() && !folder.mkdirs())
+				throw new IOException("Couldn't create folder '" + to.getParentFile().getAbsolutePath() + "'");
+			IOUtils.copy(new FileInputStream(from), new FileOutputStream(to));
 		}
 	}
 
@@ -185,10 +232,27 @@ public class Workspace {
 		for (File file : folder.listFiles()) {
 			if (file.isDirectory())
 				getJavaFiles(file, files);
-			else if (FilenameUtils.isExtension(file.getName(), JAVA_SOURCES))
+			else if (FilenameUtils.isExtension(file.getName(), JavaSources))
 				files.add(file);
 		}
 		return files;
 	}
 
+	private static void logMessage(String message) {
+		IMonitor monitor = ApplicationServer.getMonitor();
+		if (monitor != null)
+			monitor.info(message);
+		else
+			Trace.logEvent(message);
+	}
+
+	private static void logError(String message, Throwable e) {
+		IMonitor monitor = ApplicationServer.getMonitor();
+		if (monitor != null) {
+			monitor.error(message);
+			monitor.error(e);
+		} else {
+			Trace.logError(message, e);
+		}
+	}
 }

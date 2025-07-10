@@ -23,7 +23,7 @@ public class AttachmentUtils {
 		
 		String storage = new File(Files.Storage).toString().replace("\\", "/");
 		String pathStr = file.getPath();
-		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length())) : new File(Folders.Base, pathStr);
+		File path = pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length())) : new File(Folders.WorkingPath, pathStr);
 
 		if (!path.exists())
 			return null;

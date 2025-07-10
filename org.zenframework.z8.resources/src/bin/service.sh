@@ -12,15 +12,17 @@
 FORM_CONTENT_SIZE=15000000
 
 HOME="\$( cd "\$(dirname "\$0")/.." ; pwd -P )"
+CONF="\$HOME/conf"
 WEB="\$HOME/web"
 WORK="\$HOME/work"
 
-BOOT_CP="\$HOME/lib/org.zenframework.z8.boot-${project.z8Version}.jar"
+BOOT_CP="\$HOME/lib/${project.z8BootLib}"
 
 JAVA_OPTS="\$JAVA_OPTS -Xmx2048M"
 JAVA_OPTS="\$JAVA_OPTS -Xbootclasspath/p:\$BOOT_CP"
 JAVA_OPTS="\$JAVA_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=\$FORM_CONTENT_SIZE"
 JAVA_OPTS="\$JAVA_OPTS -Dorg.mortbay.http.HttpRequest.maxFormContentSize=\$FORM_CONTENT_SIZE"
+JAVA_OPTS="\$JAVA_OPTS -Dz8.application.working.path=\$WORK"
 JAVA_OPTS="\$JAVA_OPTS -Dz8.web.server.webapp=\$WEB"
 
 if [ "\$DEBUG" == "true" ] ; then
@@ -29,4 +31,4 @@ fi
 
 export JAVA_OPTS
 
-(cd "\$WORK" && "\$HOME/bin/${project.name}" -server webserver)
+(cd "\$CONF" && "\$HOME/bin/${project.name}" -server webserver)

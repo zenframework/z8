@@ -232,7 +232,7 @@ public class PdfUtils {
 	}
 
 	private static Font getFont() throws DocumentException, IOException {
-		return new Font(BaseFont.createFont(new File(Folders.Base, "fonts/times.ttf").getCanonicalPath(),
+		return new Font(BaseFont.createFont(new File(Folders.Fonts, "times.ttf").getCanonicalPath(),
 				BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 14);
 	}
 }

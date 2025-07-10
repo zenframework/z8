@@ -69,7 +69,7 @@ public class PreviewAction extends RequestAction {
 		for (String fileName : unsupported)
 			comment.append(Resources.format(UNSUPPORTED_FILE_FORMAT, fileName)).append(' ');
 		String storage = new File(Files.Storage).toString().replace("\\", "/");
-		File preview = previewRelativePath.startsWith(storage) ? new File(ServerConfig.storagePath(), previewRelativePath.substring(storage.length())) : new File(Folders.Base, previewRelativePath);
+		File preview = previewRelativePath.startsWith(storage) ? new File(ServerConfig.storagePath(), previewRelativePath.substring(storage.length())) : new File(Folders.WorkingPath, previewRelativePath);
 		preview.getParentFile().mkdirs();
 		PdfUtils.merge(converted, preview, comment.toString());
 		writer.writeProperty(Json.source, previewRelativePath);

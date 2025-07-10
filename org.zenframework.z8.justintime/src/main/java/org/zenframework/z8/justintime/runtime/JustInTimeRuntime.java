@@ -8,6 +8,7 @@ public class JustInTimeRuntime extends AbstractRuntime {
 
 	public JustInTimeRuntime() {
 		addTable(new Source.CLASS<Source>(null));
+		addRequest(new SourcesView.CLASS<SourcesView>(null));
 		addSystemTool(new SourcesView.CLASS<SourcesView>(null));
 	}
 

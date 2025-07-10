@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import org.zenframework.z8.justintime.runtime.DynamicRuntime;
 import org.zenframework.z8.justintime.runtime.ISource;
-import org.zenframework.z8.justintime.runtime.JustInTimeListener;
 import org.zenframework.z8.justintime.runtime.Workspace;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
@@ -47,7 +46,7 @@ public class CompileAction extends Action {
 
 	@Override
 	public void execute(Collection<guid> records, Query context, Collection<guid> selected, Query query) {
-		compileAll((Source) query);
+		compileAll((Source) query, true);
 	}
 
 	@Override
@@ -56,34 +55,28 @@ public class CompileAction extends Action {
 		execute((Collection<guid>)records, context.get(), (Collection<guid>)selected, query.get());
 	}
 
-	public static void compileAll(ISource source) {
+	public static void compileAll(ISource source, boolean useTransaction) {
 		IMonitor monitor = ApplicationServer.getMonitor();
-		JustInTimeListener listener = new JustInTimeListener();
+
+		DynamicRuntime.instance().unloadDynamic();
 
 		try {
-			DynamicRuntime.instance().unloadDynamic();
-			ConnectionManager.get().beginTransaction();
-			boolean result = Workspace.workspace(ApplicationServer.getSchema()).recompile(source, listener);
-			listener.writeMessages(source);
-			ConnectionManager.get().commit();
-
-			if (result)
-				DynamicRuntime.instance().loadDynamic();
-
-			if (monitor != null) {
-				if (result)
-					monitor.info("COMPILATION SUCCESSFUL");
-				else
-					monitor.warning("COMPILATION FAILED. See error messages.");
-			}
+			if (useTransaction)
+				ConnectionManager.get().beginTransaction();
+			Workspace.workspace(ApplicationServer.getSchema()).recompile(source);
+			if (useTransaction)
+				ConnectionManager.get().commit();
 		} catch (Throwable e) {
-			ConnectionManager.get().rollback();
+			if (useTransaction)
+				ConnectionManager.get().rollback();
 			if (monitor != null)
 				monitor.error(e);
 		}
+
+		DynamicRuntime.instance().loadDynamic();
 	}
 
 	public static void z8_compileAll(Source.CLASS<? extends Source> source) {
-		compileAll(source.get());
+		compileAll(source.get(), false);
 	}
 }

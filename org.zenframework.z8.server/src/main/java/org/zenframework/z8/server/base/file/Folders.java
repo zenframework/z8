@@ -3,17 +3,21 @@ package org.zenframework.z8.server.base.file;
 import java.io.File;
 
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.types.file;
 
 public class Folders {
-	public static final String Files = "files";
-	public static final String Temp = Files + file.separator + "temp";
-	public static final String Logs = Files + file.separator + "logs";
+	public static final File ApplicationPath = ServerConfig.applicationPath();
+	public static final File Fonts = new File(ApplicationPath, "fonts");
+	public static final File Resources = new File(ApplicationPath, "resources");
+
+	public static final File ConfigPath = ServerConfig.configPath();
+	
+	public static final File WorkingPath = ServerConfig.workingPath();
+	public static final File ReportsOutput = new File(WorkingPath, "reports");
+	public static final File Files = new File(WorkingPath, "files");
+	public static final File PdfCache = new File(WorkingPath, "files");
+	public static final File Temp = new File(Files, "temp");
+	public static final File Logs = new File(Files, "logs");
+
 	public static final String Reports = "reports";
-	public static final String Fonts = "fonts";
-	public static final String DefaultReports = Reports + file.separator + "defaults";
-	public static final String ReportsOutput = Reports + file.separator + "generated";
-
-	public static final File Base = ServerConfig.workingPath();
-
+	public static final String DefaultReports = Reports + File.separator + "defaults";
 }

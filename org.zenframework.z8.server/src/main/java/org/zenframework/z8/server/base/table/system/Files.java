@@ -249,7 +249,7 @@ public class Files extends Table {
 		String storage = new File(Storage).toString().replace("\\", "/");
 		String pathStr = file.getPath();
 		return pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
-				: new File(Folders.Base, pathStr);
+				: new File(Folders.WorkingPath, pathStr);
 	}
 	
 	public static file z8_get(guid fileId) {

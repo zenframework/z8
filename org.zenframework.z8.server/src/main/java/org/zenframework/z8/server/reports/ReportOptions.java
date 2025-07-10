@@ -55,12 +55,6 @@ public class ReportOptions {
 	private static IReportEngine reportEngine = null;
 	private static IDesignEngine designEngine = null;
 
-	static public File getReportOutputFolder() {
-		File folder = new File(Folders.Base, Folders.ReportsOutput);
-		folder.mkdirs();
-		return folder;
-	}
-
 	public ReportOptions() {
 		this(new PrintOptions());
 	}
@@ -95,15 +89,10 @@ public class ReportOptions {
 	}
 
 	private void registerFonts() {
-		File fontsFolder = new File(Folders.Base, Folders.Fonts);
-
-		File[] files = fontsFolder.listFiles();
-
-		for(File file : files) {
+		for(File file : Folders.Fonts.listFiles()) {
 			try {
 				FontFactory.register(file.getPath());
-			} catch(Throwable e) {
-			}
+			} catch(Throwable e) {}
 		}
 	}
 
@@ -122,12 +111,12 @@ public class ReportOptions {
 	public File getReportDesign() {
 		String fileName = getReportDesignFileName(format);
 
-		File file = FileUtils.getFile(Folders.Base, templateFolder, fileName);
+		File file = FileUtils.getFile(Folders.ApplicationPath, templateFolder, fileName);
 
 		if(file.exists())
 			return file;
 
-		return FileUtils.getFile(Folders.Base, templateFolder, template);
+		return FileUtils.getFile(Folders.ApplicationPath, templateFolder, template);
 	}
 
 	public float pageWidth() {

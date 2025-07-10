@@ -403,11 +403,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public file createTempFile(String prefix, String extension) {
-		return createTempFile(new File(Folders.Base, Folders.Temp), prefix, extension);
+		return createTempFile(Folders.Temp, prefix, extension);
 	}
 
 	static public file createLogFile(String folder, String extension) {
-		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, ApplicationServer.getSchema(), folder), null, extension);
+		return createTempFile(FileUtils.getFile(Folders.Logs, ApplicationServer.getSchema(), folder), null, extension);
 	}
 
 	static public file createTempFile(File folder, String prefix, String extension) {
@@ -485,7 +485,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		if(file.isAbsolute())
 			return file;
 
-		file = new File(Folders.Base, file.getPath());
+		file = new File(Folders.WorkingPath, file.getPath());
 		return file;
 	}
 
@@ -494,8 +494,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public String getRelativePath(String path) {
-		String base = Folders.Base != null ? Folders.Base.getPath() : null;
-		if(path != null && base != null && path.startsWith(base))
+		String base = Folders.WorkingPath.getPath();
+
+		if(path != null && path.startsWith(base))
 			path = path.substring(base.length() + 1);
 
 		return path;

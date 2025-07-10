@@ -61,7 +61,7 @@ public class Z8Handler extends AbstractHandler {
 			throw new RuntimeException("Z8 Servlet init failed", e);
 		}
 		resourceHandler = getWebResourceHandler();
-		resourceHandler.init(Folders.Base, ServerConfig.webServerWebapp(), ServerConfig.language());
+		resourceHandler.init(Folders.ApplicationPath, ServerConfig.webServerWebapp(), ServerConfig.language());
 
 		addLifeCycleListener(new LifeCycleListener());
 	}

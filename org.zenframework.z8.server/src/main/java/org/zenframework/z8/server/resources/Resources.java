@@ -59,15 +59,13 @@ public class Resources {
 		if(bundles.containsKey(language))
 			return true;
 
-		File resourcesFolder = new File(Folders.Base, "resources");
-
 		String os_name = System.getProperty("os.name");
 		Trace.logEvent("Loading resource boundles for '" + language + "'. System locale: '" + java.util.Locale.getDefault().toString() + "'. OS name: '" + os_name + "'.");
 
 		final String nls = "_" + language + ".nls";
 		final String xml = "_" + language + ".xml";
 
-		File[] files = resourcesFolder.listFiles(new FileFilter() {
+		File[] files = Folders.Resources.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
 				if(!file.isFile())

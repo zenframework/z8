@@ -50,6 +50,7 @@ import org.eclipse.birt.report.model.elements.interfaces.IGroupElementModel;
 import org.eclipse.birt.report.model.elements.interfaces.IMasterPageModel;
 import org.eclipse.birt.report.model.elements.interfaces.IStyleModel;
 import org.eclipse.birt.report.model.elements.interfaces.ITableColumnModel;
+import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.query.QueryUtils;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -939,14 +940,13 @@ public class BirtReport {
 	}
 
 	private File generateAndSplit(IReportRunnable reportRunnable) {
-		File outputFile = null;
-		File splittedFile = null;
+		File outputFolder = Folders.ReportsOutput;
 
-		File folder = ReportOptions.getReportOutputFolder();
+		outputFolder.mkdirs();
 
 		String documentName = options.name();
 
-		outputFile = getUniqueFileName(folder, documentName, format());
+		File outputFile = getUniqueFileName(outputFolder, documentName, format());
 
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction(); // for large cursors
@@ -958,7 +958,7 @@ public class BirtReport {
 		}
 
 		if(isSplitNeeded()) {
-			splittedFile = getUniqueFileName(folder, documentName, format());
+			File splittedFile = getUniqueFileName(outputFolder, documentName, format());
 
 			FileOutputStream output = null;
 			FileInputStream input = null;

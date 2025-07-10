@@ -89,7 +89,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	protected File cacheFile() {
-		return cacheEnabled ? new File(Folders.Base, cache) : null;
+		return cacheEnabled ? new File(Folders.WorkingPath, cache) : null;
 	}
 
 	private IServerInfo findServer(String domain) throws RemoteException {

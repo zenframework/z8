@@ -23,7 +23,7 @@ public class SpnegoWebServer extends org.zenframework.z8.webserver.WebServer imp
 	@Override
 	protected SecurityHandler getSecurityHandler() {
 		final String domainRealm = ServerConfig.domainRealm();
-		final String spnegoPropertiesPath = ServerConfig.spnegoPropertiesPath();
+		final String spnegoPropertiesPath = ServerConfig.spnegoPropertiesPath().getAbsolutePath();
 
 		Constraint constraint = new Constraint();
 		constraint.setName(Constraint.__SPNEGO_AUTH);

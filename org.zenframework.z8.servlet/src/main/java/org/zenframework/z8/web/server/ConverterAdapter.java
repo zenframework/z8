@@ -64,7 +64,7 @@ public class ConverterAdapter extends Adapter {
 		if (requestUrl.startsWith(Files.Storage))
 			absolutePath = new File(ServerConfig.storagePath(), requestUrl.substring(Files.Storage.length()));
 		else
-			absolutePath = new File(Folders.Base, requestUrl);
+			absolutePath = new File(Folders.WorkingPath, requestUrl);
 
 		boolean preview = parameters.containsKey(Json.preview.get());
 		boolean noCache = parameters.containsKey(Json.noCache.get());

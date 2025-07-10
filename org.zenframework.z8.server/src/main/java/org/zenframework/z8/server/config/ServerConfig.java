@@ -21,10 +21,13 @@ import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.utils.StringUtils;
+import org.zenframework.z8.server.logs.Trace;
 
-public class ServerConfig extends Properties {
+public class ServerConfig extends Config {
 
 	static private final long serialVersionUID = 3564936578688816088L;
+
+	static private final String LibFolder = "lib";
 
 	static private final String Z8SystemPrefix = "z8.";
 
@@ -36,6 +39,8 @@ public class ServerConfig extends Properties {
 	static final public String DefaultConfigurationFileName = "server.properties";
 
 	static final private String InstanceId = "instance.id";
+
+	static final public String WorkingPath = "application.working.path";
 
 	static final private String Multitenancy = "application.multitenancy";
 
@@ -148,7 +153,9 @@ public class ServerConfig extends Properties {
 	static final private String CryptoIv = "crypto.iv";
 
 
+	static private File configPath;
 	static private File workingPath;
+	static private File applicationPath;
 
 	static private String language;
 
@@ -219,7 +226,7 @@ public class ServerConfig extends Properties {
 	static private int officePort;
 
 	static private String spnegoDomainRealm;
-	static private String spnegoPropertiesPath;
+	static private File spnegoPropertiesPath;
 	static private boolean ldapCheckLdapLogin;
 	static private String ldapUrl;
 	static private String ldapPrincipalName;
@@ -266,31 +273,25 @@ public class ServerConfig extends Properties {
 	static private IInterconnectionCenter interconnectionCenter;
 	static private IWebServer webServer;
 
-	private ServerConfig() {}
+	private ServerConfig(File file) {
+		super(file);
+	}
 
-	public static void load(String configFilePath) throws IOException {
+	public static void load(String path) throws IOException {
 		if(instance != null)
 			return;
 
-		instance = new ServerConfig();
+		File file = new File(path != null ? path : DefaultConfigurationFileName);
 
-		File configFile = new File(configFilePath != null ? configFilePath : DefaultConfigurationFileName);
-		workingPath = configFile.getCanonicalFile().getParentFile();
+		instance = new ServerConfig(file);
 
-		try {
-			instance.load(new FileInputStream(configFile));
-		} catch(Throwable e) {
-/*
-			throw new RuntimeException(e);
-*/
-/* >>>>>>>>>>>>>>>>> to remove */
-			try {
-				instance.loadFromXML(new FileInputStream(new File(workingPath, "project.xml")));
-			} catch(Throwable e1) {
-				throw new RuntimeException(e);
-			}
-/* <<<<<<<<<<<<<<<<< to remove */
-		}
+		configPath = file.getCanonicalFile().getParentFile();
+		applicationPath = getApplicationPath(configPath);
+		workingPath = instance.getFile(WorkingPath, ".", applicationPath);
+
+		Trace.logEvent("Config path:      " + configPath);
+		Trace.logEvent("Application path: " + applicationPath);
+		Trace.logEvent("Working path:     " + workingPath);
 
 		language = instance.getProperty(Language, DefaultLanguage);
 
@@ -325,7 +326,7 @@ public class ServerConfig extends Properties {
 		webServerHttpPort = instance.getProperty(WebServerHttpPort, 9080);
 		webServerHttpIdleTimeout = instance.getProperty(WebServerHttpIdleTimeout, 30000);
 		webServerHttpStopTimeout = instance.getProperty(WebServerHttpStopTimeout, 30000);
-		webServerWebapp = instance.getFile(WebServerWebapp, "..");
+		webServerWebapp = instance.getFile(WebServerWebapp, "..", applicationPath);
 		webServerMappings = instance.getProperty(WebServerMappings);
 		webServerUrlPatterns = instance.getProperty(WebServerUrlPatterns);
 		webServerUploadMax = instance.getProperty(WebServerUploadMax, 5);
@@ -355,9 +356,9 @@ public class ServerConfig extends Properties {
 		transportJobLogStackTrace = instance.getProperty(TransportJobLogStackTrace, false);
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
-		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in");
-		exchangeFolderOut = instance.getFile(ExchangeFolderOut, "exchange/out");
-		exchangeFolderErr = instance.getFile(ExchangeFolderErr, "exchange/err");
+		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in", workingPath);
+		exchangeFolderOut = instance.getFile(ExchangeFolderOut, "exchange/out", workingPath);
+		exchangeFolderErr = instance.getFile(ExchangeFolderErr, "exchange/err", workingPath);
 
 		textExtensions = instance.getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = instance.getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -368,7 +369,7 @@ public class ServerConfig extends Properties {
 		officePort = instance.getProperty(OfficePort, 8100);
 
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
-		spnegoPropertiesPath = instance.getProperty(SpnegoPropertiesPath, "");
+		spnegoPropertiesPath = instance.getFile(SpnegoPropertiesPath, "", configPath);
 		ldapCheckLdapLogin = instance.getProperty(LdapCheckLdapLogin, false);
 		ldapUrl = instance.getProperty(LdapUrl, "");
 		ldapPrincipalName = instance.getProperty(LdapPrincipalName, "");
@@ -381,15 +382,15 @@ public class ServerConfig extends Properties {
 
 		ftsConfiguration = instance.getProperty(FtsConfiguration, (String) null);
 
-		securityLogFile = instance.getFile(SecurityLogFile, null);
+		securityLogFile = instance.getFile(SecurityLogFile, (String) null, workingPath);
 		securityLogFormat = instance.getProperty(SecurityLogFormat, "[%1$tF %1$tT] User{%2$s %3$s} Object{%4$s} Action{%5$s} Params%6$s Success: %7$b - %8$s %n");
 
 		ldapSslTrusted = instance.getProperty(LdapSslTrusted, false);
 		ldapConnectTimeout = instance.getProperty(LdapConnectTimeout, 3000);
 
-		storagePath = instance.getFile(StoragePath, "storage");
+		storagePath = instance.getFile(StoragePath, "storage", workingPath);
 		storagePathFormat = instance.getProperty(StoragePathFormat, "yyyy.MM.dd");
-		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache");
+		storagePreviewPath = instance.getFile(StoragePreviewPath, "pdf.cache", workingPath);
 
 		authFailsLimit = instance.getProperty(AuthFailsLimit, 0);
 		authFailsBanSeconds = instance.getProperty(AuthFailsBanSeconds, 0);
@@ -397,12 +398,28 @@ public class ServerConfig extends Properties {
 		filesSaveOnDisk = instance.getProperty(FilesSaveOnDisk, false);
 
 		keystoreUseCustom = instance.getProperty(KeystoreUseCustom, false);
-		keystorePath = instance.getFile(KeystorePath, (String) null);
+		keystorePath = instance.getFile(KeystorePath, (String) null, configPath);
 		keystorePassword = instance.getProperty(KeystorePassword, "");
 
 		cryptoCipherSpec = instance.getProperty(CryptoCipherSpec, "TripleDES/CBC/PKCS5Padding");
 		cryptoSecretKeySpec = instance.getProperty(CryptoSecretKeySpec, "TripleDES");
 		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
+	}
+
+	private static File getApplicationPath(File defaultValue) {
+		try {
+			File codeBasePath = new File(ServerConfig.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getCanonicalFile();
+			File parentPath = codeBasePath.getParentFile();
+
+			if (codeBasePath.isFile() && parentPath.getName().equals(LibFolder))
+				return parentPath.getParentFile();
+
+			Trace.logEvent("Application is started in develop mode");
+		} catch (Throwable e) {
+			Trace.logError("Application path detection failed", e);
+		}
+
+		return defaultValue;
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -478,7 +495,12 @@ public class ServerConfig extends Properties {
 		return result;
 	}
 
-	public File getFile(String key, String defaultValue) {
+	public File getFile(String key, File defaultValue, File baseDir) {
+		File value = getFile(key, (String) null, baseDir);
+		return value != null ? value : defaultValue;
+	}
+
+	public File getFile(String key, String defaultValue, File baseDir) {
 		String value = getProperty(key, defaultValue);
 
 		if (value == null)
@@ -487,7 +509,7 @@ public class ServerConfig extends Properties {
 		File file = new File(value);
 
 		try {
-			return file.isAbsolute() ? file : new File(workingPath, value).getCanonicalFile();
+			return file.isAbsolute() ? file : new File(baseDir, value).getCanonicalFile();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -592,6 +614,14 @@ public class ServerConfig extends Properties {
 
 	static public encoding databaseCharset() {
 		return databaseCharset;
+	}
+
+	static public File configPath() {
+		return configPath;
+	}
+
+	static public File applicationPath() {
+		return applicationPath;
 	}
 
 	static public File workingPath() {
@@ -790,7 +820,7 @@ public class ServerConfig extends Properties {
 		return spnegoDomainRealm;
 	}
 
-	static public String spnegoPropertiesPath() {
+	static public File spnegoPropertiesPath() {
 		return spnegoPropertiesPath;
 	}
 

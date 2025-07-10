@@ -326,17 +326,18 @@ public class Source extends TreeTable implements ISource {
 	}
 
 	@Override
-	public void exportSources(Workspace workspace) {
-		read(Arrays.asList(sourcePath.get(), source.get()), new IsNot(isPackage.get()));
+	public void exportSources(Workspace workspace) throws IOException {
+		read(Arrays.asList(sourcePath.get(), source.get(), isJava.get()), new IsNot(isPackage.get()));
 		while (next()) {
-			File file = new File(workspace.getBlSources(), sourcePath.get().string().get());
-			file.getParentFile().mkdirs();
+			File file = new File(isJava.get().bool().get() ? workspace.getJavaSources() : workspace.getBlSources(),
+					sourcePath.get().string().get());
+			File folder = file.getParentFile();
+			if (!folder.exists() && !folder.mkdirs())
+				throw new IOException("Couldn't create folder '" + folder.getAbsolutePath() + "'");
 			Writer writer = null;
 			try {
 				writer = new OutputStreamWriter(new FileOutputStream(file));
 				writer.write(source.get().string().get());
-			} catch (IOException e) {
-				throw new RuntimeException(e);
 			} finally {
 				IOUtils.closeQuietly(writer);
 			}
