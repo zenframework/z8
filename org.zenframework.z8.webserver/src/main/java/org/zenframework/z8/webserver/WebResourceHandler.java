@@ -45,7 +45,7 @@ public class WebResourceHandler {
 					file = getLocalizedFile(path + WELCOME_FILE);
 				}
 			}
-			if (file.exists()) {
+			if (file != null && file.exists()) {
 				copy(new FileInputStream(file), response.getOutputStream());
 				return;
 			}
