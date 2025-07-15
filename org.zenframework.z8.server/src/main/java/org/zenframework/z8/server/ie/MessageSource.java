@@ -51,11 +51,11 @@ public class MessageSource implements RmiSerializable, Serializable {
 		}
 	}
 
-	private boolean exportAll;
-	private boolean skipFiles;
-	private ExportRules exportRules = new ExportRules();
-	private Collection<ExportSource> sources = new ArrayList<ExportSource>();
-	private Map<String, primary> properties = new HashMap<String, primary>();
+	protected boolean exportAll;
+	protected boolean skipFiles;
+	protected ExportRules exportRules = new ExportRules();
+	protected Collection<ExportSource> sources = new ArrayList<ExportSource>();
+	protected Map<String, primary> properties = new HashMap<String, primary>();
 
 	protected Collection<RecordInfo> inserts = new ArrayList<RecordInfo>();
 	protected Collection<RecordInfo> updates = new ArrayList<RecordInfo>();
