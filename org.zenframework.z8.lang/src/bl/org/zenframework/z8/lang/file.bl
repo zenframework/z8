@@ -18,6 +18,9 @@ public class file extends primary {
 
 	public void operator = (string path);
 
+	public bool operator == (file path);
+	public bool operator != (file path);
+
 	public bool exists();
 	public bool isEmpty();
 	public bool isFolder();

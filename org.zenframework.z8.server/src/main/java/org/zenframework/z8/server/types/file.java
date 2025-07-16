@@ -668,6 +668,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 		this.name = new string(file.getName());
 	}
 
+	public bool operatorEqu(file path) {
+		return path != null && toFile().getAbsolutePath().equals(path.toFile().getAbsolutePath()) ? bool.True : bool.False;
+	}
+
+	public bool operatorNotEqu(file path) {
+		return path == null || !toFile().getAbsolutePath().equals(path.toFile().getAbsolutePath()) ? bool.True : bool.False;
+	}
+
 	public bool z8_isEmpty() {
 		File file = toFile();
 		if(!file.exists())
