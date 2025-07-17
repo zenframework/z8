@@ -248,7 +248,7 @@ public class Scheduler implements Runnable {
 
 		initialzeSystemJobs();
 
-		ScheduledJobs scheduledJobs = new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
+		ScheduledJobs scheduledJobs = ScheduledJobs.newInstance();
 
 		GuidField user = scheduledJobs.user.get();
 		StringField cron = scheduledJobs.cron.get();

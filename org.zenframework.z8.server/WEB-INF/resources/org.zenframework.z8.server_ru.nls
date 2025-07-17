@@ -182,6 +182,7 @@
 	<entry key="ScheduledJobs.logErrorsOnly">Логировать только ошибки</entry>
 	<entry key="ScheduledJobs.active">Активно</entry>
 	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
+	<entry key="ScheduledJobs.lastStart">Последнее завершение</entry>
 	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
 
 	<!-- ScheduledJobLogs -->

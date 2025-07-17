@@ -79,6 +79,7 @@ public class JobsView extends ScheduledJobs {
 
 		logs.get().start.get().sortDirection = SortDirection.Desc;
 
+		lastFinish.get().readOnly = bool.True;
 		nextStart.get().readOnly = bool.True;
 
 		jobs.get().name.get().colSpan = new integer(4);
@@ -89,6 +90,7 @@ public class JobsView extends ScheduledJobs {
 		logErrorsOnly.get().colSpan = new integer(2);
 
 		lastStart.get().colSpan = new integer(2);
+		lastFinish.get().colSpan = new integer(2);
 		nextStart.get().colSpan = new integer(2);
 
 		jobs.get().name.setDisplayName(displayNames.Job);
@@ -100,6 +102,7 @@ public class JobsView extends ScheduledJobs {
 		registerControl(active);
 		registerControl(logErrorsOnly);
 		registerControl(lastStart);
+		registerControl(lastFinish);
 		registerControl(nextStart);
 		registerControl(logsListbox);
 

@@ -125,14 +125,21 @@ public class ScheduledJob implements Runnable {
 	}
 
 	private void afterFinish(IMonitor monitor) {
-		boolean hasErrors = monitor.hasErrors();
-
-		if(id == null || !hasErrors && logErrorsOnly)
+		if(id == null)
 			return;
 
 		ApplicationServer.setRequest(new Request(new Session(database.schema())));
 
 		try {
+			ScheduledJobs jobs = ScheduledJobs.newInstance();
+			jobs.lastFinish.get().set(new date());
+			jobs.update(id);
+
+			boolean hasErrors = monitor.hasErrors();
+
+			if(!hasErrors && logErrorsOnly)
+				return;
+
 			ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
 			logs.scheduledJob.get().set(id);
 			logs.start.get().set(lastStart);
