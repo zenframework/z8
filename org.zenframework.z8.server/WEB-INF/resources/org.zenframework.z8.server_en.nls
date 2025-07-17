@@ -182,6 +182,7 @@
 	<entry key="ScheduledJobs.logErrorsOnly">Log only errors</entry>
 	<entry key="ScheduledJobs.active">Active</entry>
 	<entry key="ScheduledJobs.lastStart">Last start</entry>
+	<entry key="ScheduledJobs.lastFinish">Last finish</entry>
 	<entry key="ScheduledJobs.nextStart">Next Start</entry>
 
 	<!-- ScheduledJobLogs -->

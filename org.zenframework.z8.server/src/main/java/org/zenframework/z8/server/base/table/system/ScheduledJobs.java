@@ -30,6 +30,7 @@ public class ScheduledJobs extends Table {
 		public final static String Active = "Active";
 		public final static String LogErrorsOnly = "Log errors only";
 		public final static String LastStart = "LastStart";
+		public final static String LastFinish = "LastFinish";
 		public final static String NextStart = "NextStart";
 	}
 
@@ -42,6 +43,7 @@ public class ScheduledJobs extends Table {
 		public final static String Active = "ScheduledJobs.active";
 		public final static String LogErrorsOnly = "ScheduledJobs.logErrorsOnly";
 		public final static String LastStart = "ScheduledJobs.lastStart";
+		public final static String LastFinish = "ScheduledJobs.lastFinish";
 		public final static String NextStart = "ScheduledJobs.nextStart";
 	}
 
@@ -54,6 +56,7 @@ public class ScheduledJobs extends Table {
 		public final static String Active = Resources.get(strings.Active);
 		public final static String LogErrorsOnly = Resources.get(strings.LogErrorsOnly);
 		public final static String LastStart = Resources.get(strings.LastStart);
+		public final static String LastFinish = Resources.get(strings.LastFinish);
 		public final static String NextStart = Resources.get(strings.NextStart);
 	}
 
@@ -75,6 +78,10 @@ public class ScheduledJobs extends Table {
 		}
 	}
 
+	static public ScheduledJobs newInstance() {
+		return new ScheduledJobs.CLASS<ScheduledJobs>(null).get();
+	}
+
 	public Jobs.CLASS<Jobs> jobs = new Jobs.CLASS<Jobs>(this);
 	public Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 
@@ -83,6 +90,7 @@ public class ScheduledJobs extends Table {
 
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public DatetimeField.CLASS<DatetimeField> lastStart = new DatetimeField.CLASS<DatetimeField>(this);
+	public DatetimeField.CLASS<DatetimeField> lastFinish = new DatetimeField.CLASS<DatetimeField>(this);
 	public DatetimeField.CLASS<DatetimeField> nextStart = new DatetimeField.CLASS<DatetimeField>(this);
 	public StringField.CLASS<StringField> cron = new StringField.CLASS<StringField>(this);
 	public BoolField.CLASS<BoolField> active = new BoolField.CLASS<BoolField>(this);
@@ -107,6 +115,7 @@ public class ScheduledJobs extends Table {
 		objects.add(user);
 		objects.add(cron);
 		objects.add(lastStart);
+		objects.add(lastFinish);
 		objects.add(nextStart);
 		objects.add(active);
 		objects.add(logErrorsOnly);
@@ -141,6 +150,10 @@ public class ScheduledJobs extends Table {
 		lastStart.setName(fieldNames.LastStart);
 		lastStart.setIndex("lastStart");
 		lastStart.setDisplayName(displayNames.LastStart);
+
+		lastFinish.setName(fieldNames.LastFinish);
+		lastFinish.setIndex("lastFinish");
+		lastFinish.setDisplayName(displayNames.LastFinish);
 
 		nextStart.setName(fieldNames.NextStart);
 		nextStart.setIndex("nextStart");
