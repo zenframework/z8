@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,9 +18,9 @@ import org.zenframework.z8.server.engine.IAuthorityCenter;
 import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 import org.zenframework.z8.server.utils.StringUtils;
-import org.zenframework.z8.server.logs.Trace;
 
 public class ServerConfig extends Config {
 

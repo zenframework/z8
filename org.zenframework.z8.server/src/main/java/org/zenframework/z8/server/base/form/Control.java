@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.form;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
