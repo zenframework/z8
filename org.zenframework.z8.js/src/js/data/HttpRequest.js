@@ -122,7 +122,7 @@ Z8.define('Z8.data.HttpRequest', {
 				Z8.callback(this.callback, response, true, this.info);
 				this.processResponse(response);
 			} else
-				HttpRequest.send({ retry: response.retry, session: response.session, server: response.server }, this.callback, this.type, this.info);
+				Z8.create(this.$className, {}).send({ retry: response.retry, session: response.session, server: response.server }, this.callback, this.type, this.info);
 		} else if(response.status == HttpRequest.status.Redirect) {
 			var redirect = response.redirect;
 			window.location.href = redirect;
@@ -158,12 +158,10 @@ Z8.define('Z8.data.HttpRequest', {
 	},
 
 	onRelogin: function() {
-		HttpRequest.send(this.data, this.callback, this.type, this.info);
+		Z8.create(this.$className, {}).send(this.data, this.callback, this.type, this.info);
 	},
 
 	encodeData: function(data) {
-		var result = [];
-
 		var isLogin = this.isLogin = data.request == 'login';
 
 		if(!isLogin)
