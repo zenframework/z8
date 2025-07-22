@@ -234,7 +234,9 @@ public class Files extends Table {
 
 			path.getParentFile().mkdirs();
 			long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(path));
-			if (copiedSize != file.size.get()) {
+			long fileSize = file.size.get();
+			//изменено из-за ошибок с нулевым size на объекте
+			if (fileSize != 0 && copiedSize != fileSize) {
 				path.delete();
 				throw new RuntimeException("Files.java:get(file file) file broken, fileId: " + file.id.get() +  ", path: " + path.getAbsolutePath());
 			}

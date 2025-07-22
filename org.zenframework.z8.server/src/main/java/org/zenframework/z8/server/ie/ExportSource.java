@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.value.Aggregation;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.RmiIO;
@@ -67,12 +68,12 @@ public class ExportSource implements RmiSerializable, Serializable {
 		records = new ArrayList<guid>();
 
 		Table table = table();
+		table.recordId.get().aggregation = Aggregation.Array;
 
 		table.saveState();
 
-		table.read(Arrays.asList((Field)table.recordId.get()), where);
-		while(table.next())
-			records.add(table.recordId());
+		if(table.aggregate(Arrays.asList((Field)table.recordId.get()), where)) 
+			records = table.recordId.get().z8_array(); 
 
 		table.restoreState();
 	}
