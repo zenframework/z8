@@ -93,6 +93,10 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.colSpan, colSpan);
 		writer.writeProperty(Json.flex, flex);
 
+		writer.startObject(Json.label);
+		writer.writeProperty(Json.align, getAttribute("labelAlign"));
+		writer.finishObject();
+
 		writer.writeProperty(Json.readOnly, readOnly());
 		writer.writeProperty(Json.required, required());
 		writer.writeProperty(Json.editable, editable);
