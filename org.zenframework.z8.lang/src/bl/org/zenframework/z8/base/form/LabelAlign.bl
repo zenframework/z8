@@ -1,0 +1,8 @@
+public class LabelAlign {
+
+	public static final string None = "none";
+	public static final string Top = "top";
+	public static final string Left = "left";
+	public static final string Right = "right";
+
+}
