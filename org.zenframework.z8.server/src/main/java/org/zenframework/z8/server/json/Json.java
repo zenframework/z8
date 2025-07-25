@@ -251,6 +251,7 @@ public interface Json {
 	static public string ui = new string("ui");
 	static public string presentation = new string("presentation");
 	static public string label = new string("label");
+	static public string align = new string("align");
 	static public string legend = new string("legend");
 	static public string header = new string("header");
 	static public string columnHeader = new string("columnHeader");

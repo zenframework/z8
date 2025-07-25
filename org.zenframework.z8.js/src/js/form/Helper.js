@@ -16,7 +16,7 @@ Z8.define('Z8.form.Helper', {
 				return cls != null ? Z8.create(cls, config) : (field.isReport ? new Z8.form.action.Report(config) : new Z8.form.action.Action(config));
 			}
 
-			var label = field.label !== false ? { text: field.header || field.text, icon: field.icon, align: 'top' } : false;
+			var label = (field.label !== false && field.label.align !== 'none') ? { text: field.header || field.text, icon: field.icon, align: field.label.align || (field.type != Type.Boolean ? 'top' : 'right') } : false;
 			var config = { label: label, placeholder: field.header || field.text, name: field.name, field: field, colSpan: field.colSpan, flex: field.flex, readOnly: field.readOnly, editable: field.editable, required: field.required, enterOnce: field.enterOnce, source: field.source, length: field.length };
 
 			if(field.displayName != null)
@@ -69,7 +69,6 @@ Z8.define('Z8.form.Helper', {
 			var type = field.type;
 
 			if(type == Type.Boolean) {
-				label.align = 'right';
 				return cls != null ? Z8.create(cls, config) : new CheckBox(config);
 			}
 

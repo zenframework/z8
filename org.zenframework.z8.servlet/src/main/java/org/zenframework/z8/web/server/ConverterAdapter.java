@@ -56,7 +56,7 @@ public class ConverterAdapter extends Adapter {
 		if(requestUrl.startsWith(contextPath))
 			requestUrl = requestUrl.substring(contextPath.length());
 
-		if (requestUrl.contains(".."))
+		if (requestUrl.contains("../"))
 			throw new IOException();
 
 		File relativePath = new File(requestUrl);
