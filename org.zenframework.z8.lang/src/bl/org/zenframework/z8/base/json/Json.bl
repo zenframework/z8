@@ -190,6 +190,7 @@ public class Json extends Object {
 	static public string feedback;
 
 	static public string text;
+	static public string align;
 	static public string description;
 	static public string label;
 	static public string header;

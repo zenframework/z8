@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.form;
 
 import java.util.Collection;
 
-import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
@@ -93,6 +92,10 @@ public class Control extends OBJECT {
 		writer.writeProperty(Json.height, height);
 		writer.writeProperty(Json.colSpan, colSpan);
 		writer.writeProperty(Json.flex, flex);
+
+		writer.startObject(Json.label);
+		writer.writeProperty(Json.align, getAttribute("labelAlign"));
+		writer.finishObject();
 
 		writer.writeProperty(Json.readOnly, readOnly());
 		writer.writeProperty(Json.required, required());
