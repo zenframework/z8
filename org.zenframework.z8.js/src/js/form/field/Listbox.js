@@ -276,6 +276,7 @@ Z8.define('Z8.form.field.Listbox', {
 			this.reloadStore();
 		} else {
 			this.store.removeAll();
+			this.store.setWhere({ property: this.store.getQuery() + '.recordId', value: guid.Null });
 			loadCallback.call(this, this.store, [], true);
 			this.onSelect(null);
 		}
