@@ -61,7 +61,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	private FileItem value;
 
-	private long offset = 0;
+	private long offset = -1;
 	private int partLength = 0;
 
 	public JsonObject json;
@@ -495,6 +495,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		if(offset == size.get())
 			return null;
+		if(offset == -1)
+			offset = 0;
 
 		byte[] bytes = new byte[512 * NumericUtils.Kilobyte];
 		partLength = readPart(offset, bytes);
