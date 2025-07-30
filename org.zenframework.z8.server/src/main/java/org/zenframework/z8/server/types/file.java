@@ -217,6 +217,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public void setOffset(long offset) {
+		if(this.offset == -1 && offset == 0) 
+			return;
 		this.offset = offset;
 	}
 
