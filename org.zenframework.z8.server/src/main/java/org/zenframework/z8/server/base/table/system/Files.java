@@ -246,12 +246,16 @@ public class Files extends Table {
 	}
 
 	private static File getFullStoragePath(file file) {
+		return getAbsolutePath(file.getPath());
+	}
+
+	public static File getAbsolutePath(String path) {
 		String storage = new File(Storage).toString().replace("\\", "/");
-		String pathStr = file.getPath();
+		String pathStr = path;
 		return pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
 				: new File(Folders.WorkingPath, pathStr);
 	}
-	
+
 	public static file z8_get(guid fileId) {
 		return get(fileId);
 	}

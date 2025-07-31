@@ -485,8 +485,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		if(file.isAbsolute())
 			return file;
 
-		file = new File(Folders.WorkingPath, file.getPath());
-		return file;
+		return Files.getAbsolutePath(file.getPath());
 	}
 
 	static public String getRelativePath(File file) {
