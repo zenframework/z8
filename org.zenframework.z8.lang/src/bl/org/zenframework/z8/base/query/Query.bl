@@ -86,6 +86,7 @@ public class Query extends Object {
 	public void read(Field[] fields, sql_bool where);
 	public void read(Field[] fields, Field[] sortFields);
 	public void read(Field[] fields, Field[] sortFields, sql_bool where);
+	public void read(Field[] fields, Field[] sortFields, sql_bool where, int start, int limit);
 
 	public bool readFirst(Field[] fields);
 	public bool readFirst(Field[] fields, sql_bool where);
@@ -93,11 +94,6 @@ public class Query extends Object {
 	public bool readFirst(Field[] fields, Field[] sortFields, sql_bool where);
 
 	public bool readRecord(guid id, Field[] fields);
-
-	public void sort(Field[] sortFields);
-	public void sort(Field[] sortFields, sql_bool where);
-	public void sort(Field[] sortFields, Field[] fields);
-	public void sort(Field[] sortFields, Field[] fields, sql_bool where);
 
 	public void group(Field[] groupFields);
 	public void group(Field[] groupFields, sql_bool where);
@@ -107,6 +103,7 @@ public class Query extends Object {
 	public void group(Field[] groupFields, Field[] fields, Field[] sortFields);
 	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where);
 	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where, sql_bool having);
+	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where, sql_bool having, int start, int limit);
 
 	public bool next();
 	public guid recordId();
