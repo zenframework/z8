@@ -392,11 +392,11 @@ public class Query extends OBJECT {
 		return read(fields, -1);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int limit) {
+	public Collection<Field> read(Collection<Field> fields, int limit) {
 		return read(fields, 0, limit);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int start, int limit) {
+	public Collection<Field> read(Collection<Field> fields, int start, int limit) {
 		return read(fields, null, start, limit);
 	}
 
@@ -435,24 +435,8 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-		read(fields, sortFields, null, where, null);
+		read(fields, sortFields, null, where, null, 0, 1);
 		return next();
-	}
-
-	public void sort(Collection<Field> sortFields, SqlToken where) {
-		read(sortFields, where, -1);
-	}
-
-	public void sort(Collection<Field> sortFields, SqlToken where, int limit) {
-		read(sortFields, where, 0, limit);
-	}
-
-	public void sort(Collection<Field> sortFields, SqlToken where, int start, int limit) {
-		read(null, sortFields, where);
-	}
-
-	public void sort(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-		read(fields, null, sortFields, where, null);
 	}
 
 	public void group(Collection<Field> groupFields, SqlToken where) {
@@ -480,15 +464,11 @@ public class Query extends OBJECT {
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
-		group(fields, groupFields, where, -1);
+		group(fields, groupFields, where, 0, -1);
 	}
-
+	
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		read(fields, null, groupFields, where, having);
-	}
-
-	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int limit) {
-		group(fields, groupFields, where, 0, limit);
+		read(fields, null, groupFields, where, having, 0, -1);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int start, int limit) {
@@ -513,12 +493,8 @@ public class Query extends OBJECT {
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		read(fields, sortFields, groupFields, where, having);
+		read(fields, sortFields, groupFields, where, having, 0, 1);
 		return next();
-	}
-
-	protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		read(fields, sortFields, groupFields, where, having, 0, -1);
 	}
 
 	protected Collection<Field> read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
@@ -532,7 +508,7 @@ public class Query extends OBJECT {
 		action.addFilter(where);
 		action.addGroupFilter(having);
 
-		action.setLimit(limit);
+		action.setLimit(limit >= 0 ? limit : this.limit != null ? this.limit.getInt() : -1);
 		action.setStart(start);
 
 		if(cursor != null)
@@ -618,7 +594,7 @@ public class Query extends OBJECT {
 		return readRecord(id, fields);
 	}
 
-	private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having) {
+	private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having, integer start, integer limit) {
 		Collection<Field> fields = CLASS.asList(fieldClasses);
 		Collection<Field> sortFields = CLASS.asList(sortClasses);
 		Collection<Field> groupFields = CLASS.asList(groupClasses);
@@ -627,7 +603,7 @@ public class Query extends OBJECT {
 		sortFields = sortFields.isEmpty() ? null : sortFields;
 		groupFields = groupFields.isEmpty() ? null : groupFields;
 
-		read(fields, sortFields, groupFields, where, having);
+		read(fields, sortFields, groupFields, where, having, start != null ? start.getInt() : 0, limit != null ? limit.getInt() : -1);
 	}
 
 	public boolean next() {
@@ -1333,106 +1309,96 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses) {
-		read1(fieldClasses, null, null, null, null);
+		read1(fieldClasses, null, null, null, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses) {
-		read1(fieldClasses, null, null, null, null);
+		read1(fieldClasses, null, null, null, null, null, new integer(1));
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, null, null, null);
+		read1(fieldClasses, sortClasses, null, null, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, null, null, null);
+		read1(fieldClasses, sortClasses, null, null, null, null, new integer(1));
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, null, where, null);
+		read1(fieldClasses, null, null, where, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, null, where, null);
+		read1(fieldClasses, null, null, where, null, null, new integer(1));
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null);
+		read1(fieldClasses, sortClasses, null, where, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null);
+		read1(fieldClasses, sortClasses, null, where, null, null, new integer(1));
 		return new bool(next());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_sort(RCollection sortClasses) {
-		read1(null, sortClasses, null, null, null);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_sort(RCollection sortClasses, sql_bool where) {
-		read1(null, sortClasses, null, where, null);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_sort(RCollection sortClasses, RCollection fieldClasses) {
-		read1(fieldClasses, sortClasses, null, null, null);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_sort(RCollection sortClasses, RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null);
+	public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where, integer start, integer limit) {
+		read1(fieldClasses, sortClasses, null, where, null, start, limit);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses) {
-		read1(null, null, groupByClasses, null, null);
+		read1(null, null, groupByClasses, null, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, sql_bool where) {
-		read1(null, null, groupByClasses, where, null);
+		read1(null, null, groupByClasses, where, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, RCollection fieldClasses) {
-		read1(fieldClasses, null, groupByClasses, null, null);
+		read1(fieldClasses, null, groupByClasses, null, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, groupByClasses, where, null);
+		read1(fieldClasses, null, groupByClasses, where, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupByClasses, RCollection fieldClasses, sql_bool where, sql_bool having) {
-		read1(fieldClasses, null, groupByClasses, where, having);
+		read1(fieldClasses, null, groupByClasses, where, having, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, groupClasses, null, null);
+		read1(fieldClasses, sortClasses, groupClasses, null, null, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, groupClasses, where, null);
+		read1(fieldClasses, sortClasses, groupClasses, where, null, null, null);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having) {
+		read1(fieldClasses, sortClasses, groupClasses, where, having, null, null);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having) {
-		read1(fieldClasses, sortClasses, groupClasses, where, having);
+	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having, integer start, integer limit) {
+		read1(fieldClasses, sortClasses, groupClasses, where, having, start, limit);
 	}
 
 	public integer z8_update(guid id) {
