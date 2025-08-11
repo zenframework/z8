@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.base.table.system.view;
 
 import org.zenframework.z8.server.base.form.Listbox;
+import org.zenframework.z8.server.base.form.report.Report;
 import org.zenframework.z8.server.base.table.system.Fields;
 import org.zenframework.z8.server.base.table.system.Tables;
 import org.zenframework.z8.server.runtime.IObject;
@@ -22,7 +23,8 @@ public class TablesView extends Tables {
 	}
 
 	public Listbox.CLASS<Listbox> fieldsListbox = new Listbox.CLASS<Listbox>(this);
-	private Fields.CLASS<Fields> fields = new Fields.CLASS<Fields>(this);
+	public final Fields.CLASS<Fields> fields = new Fields.CLASS<Fields>(this);
+	public Report.CLASS<? extends Report> download = new TablesReport.CLASS<TablesReport>(this);
 
 	public TablesView(IObject container) {
 		super(container);
@@ -32,6 +34,7 @@ public class TablesView extends Tables {
 	public void initMembers() {
 		super.initMembers();
 		objects.add(this.fields);
+		objects.add(download);
 	}
 
 	@Override
@@ -42,6 +45,8 @@ public class TablesView extends Tables {
 
 		readOnly = bool.True;
 		colCount = new integer(6);
+
+		download.setIndex("download");
 
 		fieldsListbox.setIndex("fieldsListbox");
 		fieldsListbox.setDisplayName(Fields.displayNames.Title);
@@ -56,6 +61,7 @@ public class TablesView extends Tables {
 		fields.columns.add(fields.name);
 		fields.columns.add(fields.type);
 		fields.columns.add(fields.displayName);
+		fields.columns.add(fields.description);
 
 		classId.get().colSpan = new integer(2);
 
@@ -80,5 +86,6 @@ public class TablesView extends Tables {
 		names.add(displayName);
 		names.add(name);
 		sortFields.add(name);
+		reports.add(download);
 	}
 }
