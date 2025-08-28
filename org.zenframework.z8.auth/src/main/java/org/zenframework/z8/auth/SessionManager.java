@@ -39,22 +39,30 @@ public class SessionManager {
 	}
 
 	synchronized public ISession create(IUser user) {
-		String userId = userKey(user.getId(), user.database().schema());
-		ISession session = userSessions.get(userId);
+		String userKey = userKey(user.getId(), user.database().schema());
+		ISession session = userSessions.get(userKey);
+
+		if (session != null && ServerConfig.oneSessionPerUser()) {
+			dropUserSessions(userKey);
+			session = null;
+		}
 
 		if(session == null) {
 			String sessionId = guid.create().toString();
 			session = new Session(sessionId, user);
 			sessions.put(sessionId, session);
-			userSessions.put(userId, session);
+			userSessions.put(userKey, session);
 		} else
 			session.setUser(user);
 
 		return session;
 	}
 
-	synchronized public void dropUserSessions(guid userId, String schema) {
-		String userKey = userKey(userId, schema);
+	public void dropUserSessions(guid userId, String schema) {
+		dropUserSessions(userKey(userId, schema));
+	}
+
+	synchronized public void dropUserSessions(String userKey) {
 		ISession session = userSessions.get(userKey);
 
 		if(session != null) {

@@ -64,6 +64,7 @@ public class ServerConfig extends Config {
 	static final private String AuthorityCenterPort = "authority.center.port";
 	static final private String AuthorityCenterCache = "authority.center.cache";
 	static final private String AuthorityCenterSessionTimeout = "authority.center.session.timeout";
+	static final private String AuthorityCenterSessionOnePerUser = "authority.center.session.onePerUser";
 
 	static final private String InterconnectionCenterHost = "interconnection.center.host";
 	static final private String InterconnectionCenterPort = "interconnection.center.port";
@@ -179,6 +180,7 @@ public class ServerConfig extends Config {
 	static private int authorityCenterPort;
 	static private boolean authorityCenterCache;
 	static private int authorityCenterSessionTimeout;
+	static private boolean authorityCenterSessionOnePerUser;
 
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
@@ -315,6 +317,7 @@ public class ServerConfig extends Config {
 		authorityCenterPort = instance.getProperty(AuthorityCenterPort, 10000);
 		authorityCenterCache = instance.getProperty(AuthorityCenterCache, false);
 		authorityCenterSessionTimeout = instance.getProperty(AuthorityCenterSessionTimeout, 24 * 60);
+		authorityCenterSessionOnePerUser = instance.getProperty(AuthorityCenterSessionOnePerUser, false);
 
 		interconnectionCenterHost = instance.getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = instance.getProperty(InterconnectionCenterPort, 20000);
@@ -655,6 +658,10 @@ public class ServerConfig extends Config {
 		return authorityCenterSessionTimeout;
 	}
 
+	static public boolean oneSessionPerUser() {
+		return authorityCenterSessionOnePerUser;
+	}
+	
 	static public String interconnectionCenterHost() {
 		return interconnectionCenterHost;
 	}
