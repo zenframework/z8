@@ -4,6 +4,8 @@ Z8.define('Z8.form.Tabs', {
 
 	isTabControl: true,
 
+	tabTagCls: null,
+
 	mixins: ['Z8.form.field.Field'],
 
 	getCls: function() {
@@ -47,83 +49,9 @@ Z8.define('Z8.form.Tabs', {
 	},
 
 	initializeTab: function(tab) {
-		tab.getTabs = function() {
-			return this.tabs; 
-		};
-
-		tab.getTabTag = function() {
-			return this.tabTag;
-		};
-
-		tab.setIcon = function(icon) {
-			this.getTabTag().setIcon(icon);
-			return this;
-		};
-
-		tab.setTitle = function(title) {
-			this.getTabTag().setText(title);
-			return this;
-		};
-
-		tab.setBusy = function(busy) {
-			return this.getTabTag().setBusy(busy);
-		};
-
-		tab.protoShow = tab.show;
-		tab.show = function(show) {
-			this.getTabTag().show(show);
-			this.protoShow(show);
-
-			if(show !== undefined && !show && tab == this.getTabs().getActiveTab())
-				tab.deactivate();
-
-			return this;
-		};
-
-		tab.protoHide = tab.hide;
-		tab.hide = function(hide) {
-			this.getTabTag().hide(hide);
-			this.protoHide(hide);
-
-			if((hide === undefined || !hide) && tab == this.getTabs().getActiveTab())
-				tab.deactivate();
-
-			return this;
-		};
-
-		tab.activate = function() {
-			var tabs = this.getTabs();
-			var activeTab = tabs.getActiveTab();
-
-			if(activeTab == this)
-				return this;
-
-			if(activeTab != null)
-				activeTab.deactivate();
-
-			DOM.removeCls(this, 'inactive');
-			tabs.setActiveTab(this);
-
-			this.show();
-			this.getTabTag().setToggled(true, true);
-
-			tabs.onActivateTab(this);
-			return this;
-		};
-
-		tab.deactivate = function() {
-			this.getTabs().onDeactivateTab(this);
-			DOM.addCls(this, 'inactive');
-			return this;
-		};
-
-		tab.protoOnDestroy = tab.onDestroy;
-		tab.onDestroy = function() {
-			this.getTabTag().destroy();
-			this.protoOnDestroy();
-		};
-
-		tab.tabTag = new Z8.button.Button({ cls: DOM.parseCls(tab.cls).pushIf('tag'), visible: tab.visible, toggle: true, text: tab.getTitle(), icon: tab.icon, tab: tab, toggleHandler: this.onTabToggle, scope: this });
+		var tabTagConfig = { cls: DOM.parseCls(tab.cls).pushIf('tag'), visible: tab.visible, toggle: true, text: tab.getTitle(), icon: tab.icon, tab: tab, toggleHandler: this.onTabToggle, scope: this };
+		var tabTagCls = this.tabTagCls;
+		tab.tabTag = !Z8.isEmpty(tabTagCls) ? Z8.create(tabTagCls, tabTagConfig) : new Z8.button.Button(tabTagConfig);
 		tab.cls = DOM.parseCls(tab.cls).pushIf('tab', 'inactive');
 		tab.icon = null;
 		tab.tabs = this;
