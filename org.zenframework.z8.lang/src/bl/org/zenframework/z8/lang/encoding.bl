@@ -2,6 +2,7 @@
 public enum encoding {
 	Default,
 
+	Cp866,
 	KOI8R,
 	USASCII,
 	UTF8,

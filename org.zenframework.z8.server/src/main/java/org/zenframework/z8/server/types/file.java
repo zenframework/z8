@@ -549,8 +549,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file unzip(File directory) {
+		return unzip(directory, encoding.UTF8);
+	}
+
+	public file unzip(File directory, encoding charset) {
 		try {
-			unzip(getBinaryInputStream(), directory);
+			unzip(getBinaryInputStream(), directory, charset);
 			return this;
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -558,13 +562,17 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	static public void unzip(InputStream input, File directory) {
+		unzip(input, directory, encoding.UTF8);
+	}
+
+	static public void unzip(InputStream input, File directory, encoding charset) {
 		OutputStream output = null;
 
 		ZipInputStream zipInput = null;
 		ZipEntry entry = null;
 
 		try {
-			zipInput = new ZipInputStream(input);
+			zipInput = new ZipInputStream(input, Charset.forName(charset.toString()));
 
 			while((entry = zipInput.getNextEntry()) != null) {
 				File file = new File(directory, entry.getName().replace('\\', '/'));
@@ -787,6 +795,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public file z8_unzip(file directory) {
 		return unzip(directory.getAbsolutePath());
+	}
+
+	public file z8_unzip(file directory, encoding charset) {
+		return unzip(directory.getAbsolutePath(), charset);
 	}
 
 	static public RCollection<file> z8_parse(string json) {

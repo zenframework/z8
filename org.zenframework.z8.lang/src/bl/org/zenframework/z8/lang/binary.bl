@@ -3,6 +3,7 @@ public final class binary extends primary {
 	public int length(); 
 
 	public void unzip(file directory);
+	public void unzip(file directory, encoding charset);
 
 	public static binary zip(file fileOrDirectory);
 

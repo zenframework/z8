@@ -127,6 +127,10 @@ public class binary extends primary {
 		file.unzip(get(), directory.getAbsoluteFile());
 	}
 
+	public void unzip(File directory, encoding charset) {
+		file.unzip(get(), directory.getAbsoluteFile(), charset);
+	}
+
 	public static binary zip(File fileOrDirectory) {
 		file temp = file.createTempFile(FilenameUtils.getBaseName(fileOrDirectory.getName()), ".zip");
 		temp.zip(fileOrDirectory);
@@ -147,6 +151,10 @@ public class binary extends primary {
 
 	public void z8_unzip(file directory) {
 		file.unzip(get(), directory.getAbsolutePath());
+	}
+
+	public void z8_unzip(file directory, encoding charset) {
+		file.unzip(get(), directory.getAbsolutePath(), charset);
 	}
 
 	public static binary z8_zip(file fileOrDirectory) {
