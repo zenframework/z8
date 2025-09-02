@@ -64,8 +64,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 	private long offset = -1;
 	private int partLength = 0;
 
-	public JsonObject json;
-
 	public static FileItem createFileItem() {
 		return createFileItem("");
 	}	
@@ -149,7 +147,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		author = file.author;
 		value = file.value;
 		details = file.details;
-		json = file.json;
 	}
 
 	public FileItem get() {
@@ -187,8 +184,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 		} catch(NumberFormatException e) {
 			time = new date();
 		}
-
-		this.json = json;
 	}
 
 	static public Collection<file> parse(String json) {
@@ -226,7 +221,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public JsonObject toJsonObject() {
-		json = new JsonObject();
+		JsonObject json = new JsonObject();
 		json.put(Json.name, name);
 		json.put(Json.time, time);
 		json.put(Json.size, size);

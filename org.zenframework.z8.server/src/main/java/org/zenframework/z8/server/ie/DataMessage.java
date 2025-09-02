@@ -102,7 +102,7 @@ public class DataMessage extends Message {
 		for(file file : getSource().files()) {
 			FileMessage fileMessage = newFileMessage();
 			fileMessage.setName(file.name.get());
-			fileMessage.setDescription(file.json.toString());
+			fileMessage.setDescription(file.toJsonObject().toString());
 			fileMessage.setSourceId(getId());
 			fileMessage.setAddress(getAddress());
 			fileMessage.setSender(getSender());
