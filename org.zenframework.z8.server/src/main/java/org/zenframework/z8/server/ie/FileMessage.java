@@ -132,7 +132,7 @@ public class FileMessage extends Message {
 	@Override
 	protected void initDescription() {
 		setName(file.name.get());
-		setDescription(file.json.toString());
+		setDescription(file.toJsonObject().toString());
 	}
 
 	public file z8_getFile() {
