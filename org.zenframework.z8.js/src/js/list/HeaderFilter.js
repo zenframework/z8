@@ -25,15 +25,23 @@ Z8.define('Z8.list.HeaderFilter', {
 		switch(field.type) {
 		case Type.String:
 		case Type.Text:
-			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon  });
+			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list });
+			break;
+		case Type.Date:
+			searchBox = new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Date });
+			break;
+		case Type.Datetime:
+			searchBox = new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Datetime });
+			break;
+		}
+
+		if (searchBox != null) {
 			searchBox.on('search', this.onSearch, this);
 			searchBox.on('cancel', this.onCancel, this);
 			searchBox.on('focusIn', this.onFocusIn, this);
 			searchBox.on('focusOut', this.onFocusOut, this);
 			searchBox.on('keyDown', this.onKeyDown, this);
-			break;
 		}
-
 		this.searchBox = searchBox;
 
 		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: searchBox != null ? [searchBox.htmlMarkup()] : [] };
