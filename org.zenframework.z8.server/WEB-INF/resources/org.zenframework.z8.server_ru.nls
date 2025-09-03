@@ -235,6 +235,7 @@
 	<entry key="Generator.displayName">Генерация схемы данных</entry>
 	<entry key="Generator.schedulerStopped">Планировщик заданий остановлен</entry>
 	<entry key="Generator.schedulerStarted">Планировщик заданий запущен</entry>
+	<entry key="Generator.createTableError">Ошибка. Таблица ''{0}''({1}) - создание не выполнено. {2}</entry>
 	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено. {1}</entry>
 	<entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей. {2}</entry>
 	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей. {2}</entry>
