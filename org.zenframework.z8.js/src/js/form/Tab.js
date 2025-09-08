@@ -39,8 +39,8 @@ Z8.define('Z8.form.Tab', {
 		this.getTabTag().show(show);
 		this.callParent(show);
 
-		if(show !== undefined && !show && tab == this.getTabs().getActiveTab())
-			deactivate();
+		if(show !== undefined && !show && this == this.getTabs().getActiveTab())
+			this.deactivate();
 
 		return this;
 	},
@@ -49,8 +49,8 @@ Z8.define('Z8.form.Tab', {
 		this.getTabTag().hide(hide);
 		this.callParent(hide);
 
-		if((hide === undefined || !hide) && tab == this.getTabs().getActiveTab())
-			deactivate();
+		if((hide === undefined || !hide) && this == this.getTabs().getActiveTab())
+			this.deactivate();
 
 		return this;
 	},
