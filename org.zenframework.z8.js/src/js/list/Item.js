@@ -175,7 +175,9 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.File)
 			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
-			value = Format.nl2br(value);
+			value = Format.nl2br(Format.htmlEncode(value));
+		else if(type == Type.String)
+			value = Format.htmlEncode(value);
 
 		return String.htmlText(value);
 	},
