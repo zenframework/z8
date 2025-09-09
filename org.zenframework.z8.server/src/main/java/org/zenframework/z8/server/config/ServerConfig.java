@@ -287,6 +287,11 @@ public class ServerConfig extends Config {
 		instance = new ServerConfig(file);
 
 		configPath = file.getCanonicalFile().getParentFile();
+
+		File loggingProperties = new File(configPath, "logging.properties");
+		if (loggingProperties.exists())
+			System.setProperty("java.util.logging.config.file", loggingProperties.getAbsolutePath());
+
 		applicationPath = getApplicationPath(configPath);
 		workingPath = instance.getFile(WorkingPath, ".", applicationPath);
 
