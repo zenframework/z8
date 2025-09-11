@@ -16,6 +16,7 @@ import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 
 public class FileMessage extends Message {
@@ -114,13 +115,16 @@ public class FileMessage extends Message {
 		}
 
 		try {
-			Files files = Files.newInstance();
-			file.set(new InputOnlyFileItem(target, file.name.get()));
+			guid fileId = file.id;
+			if(!fileId.isNull()) {
+				Files files = Files.newInstance();
+				file.set(new InputOnlyFileItem(target, file.name.get()));
 
-			if(!files.hasRecord(file.id))
-				files.add(file);
-			else
-				files.updateFile(file);
+				if(!files.hasRecord(fileId))
+					files.add(file);
+				else
+					files.updateFile(file);
+			}
 
 			return true;
 		} finally {
