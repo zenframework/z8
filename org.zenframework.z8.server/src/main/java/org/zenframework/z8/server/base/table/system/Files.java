@@ -20,6 +20,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -225,18 +226,21 @@ public class Files extends Table {
 
 	public static file get(file file) throws IOException {
 		File path = getFullStoragePath(file);
+		boolean notFound = !path.exists();
 
-		if(!path.exists()) {
+		if(notFound || path.length() == 0) {
 			InputStream inputStream = getInputStream(file);
 
-			if(inputStream == null)
-				throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
+			if(inputStream == null) {
+				if(notFound)
+					throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
+				return file;
+			}
 
 			path.getParentFile().mkdirs();
 			long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(path));
 			long fileSize = file.size.get();
-			//изменено из-за ошибок с нулевым size на объекте
-			if (fileSize != 0 && copiedSize != fileSize) {
+			if(fileSize != 0 && copiedSize != fileSize) {
 				path.delete();
 				throw new RuntimeException("Files.java:get(file file) file broken, fileId: " + file.id.get() +  ", path: " + path.getAbsolutePath());
 			}
@@ -244,13 +248,13 @@ public class Files extends Table {
 
 		file.set(new InputOnlyFileItem(path, file.name.get()));
 		file.size = new integer(path.length());
+		file.storage = bool.True;
 		return file;
 	}
 
-	private static File getFullStoragePath(file file) {
-		String storage = new File(Storage).toString().replace("\\", "/");
+	public static File getFullStoragePath(file file) {
 		String pathStr = file.getPath();
-		return pathStr.startsWith(storage) ? new File(ServerConfig.storagePath(), pathStr.substring(storage.length()))
+		return pathStr.startsWith(Storage) ? new File(ServerConfig.storagePath(), pathStr.substring(Storage.length()))
 				: new File(Folders.Base, pathStr);
 	}
 	

@@ -56,6 +56,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public integer size = integer.Zero;
 	public guid user = guid.Null;
 	public string author = new string();
+	public bool storage = bool.False;
 
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
@@ -289,12 +290,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public boolean isFolder() {
-		File file = getAbsolutePath(getPath());
+		File file = getAbsolutePath();
 		return file.isDirectory();
 	}
 
 	public File toFile() {
-		return getAbsolutePath(path.get());
+		return getAbsolutePath();
 	}
 
 	public InputStream getInputStream() {
@@ -441,10 +442,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		try {
 			if(path.isEmpty()) {
 				set(createTempFile(null, "txt"));
-				path = new string(getRelativePath(path.get()));
+				path = new string(getRelativePath(getPath()));
 			}
 
-			File file = getAbsolutePath(path.get());
+			File file = getAbsolutePath();
 			file.getParentFile().mkdirs();
 
 			IOUtils.copyLarge(input, new FileOutputStream(file, append));
@@ -455,26 +456,23 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public File getAbsolutePath() {
-		return getAbsolutePath(path.get());
-	}
-
-	static public File getAbsolutePath(String path) {
-		return getAbsolutePath(new File(path));
-	}
-
-	static public File getAbsolutePath(File file) {
+		File file = new File(getPath());
 		if(file.isAbsolute())
 			return file;
 
-		file = new File(Folders.Base, file.getPath());
+		String pathStr = file.getPath();
+		if(pathStr.startsWith(Files.Storage) && storage.operatorNot().get())
+			throw new RuntimeException("Call Files.get()");
+
+		file = Files.getFullStoragePath(this);
 		return file;
 	}
 
-	static public String getRelativePath(File file) {
+	public static String getRelativePath(File file) {
 		return getRelativePath(file.getPath());
 	}
 
-	static public String getRelativePath(String path) {
+	public static String getRelativePath(String path) {
 		String base = Folders.Base != null ? Folders.Base.getPath() : null;
 		if(path != null && base != null && path.startsWith(base))
 			path = path.substring(base.length() + 1);
@@ -610,7 +608,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public InputStream getBinaryInputStream() throws IOException {
 		InputStream input = getInputStream();
 		if(input == null) {
-			File file = getAbsolutePath(getPath());
+			File file = getAbsolutePath();
 			input = new FileInputStream(file);
 		}
 		return input;
@@ -619,7 +617,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public OutputStream getBinaryOutputStream() throws IOException {
 		OutputStream output = getOutputStream();
 		if(output == null) {
-			File file = getAbsolutePath(getPath());
+			File file = getAbsolutePath();
 			file.getParentFile().mkdirs();
 			output = new FileOutputStream(file);
 		}
@@ -627,7 +625,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String getPath() {
-		return getNormalizedPath(path.get());
+		return getNormalizedPath(getPath());
 	}
 
 	public static String getNormalizedPath(String path) {
@@ -702,12 +700,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public file z8_parent() {
-		File file = getAbsolutePath(getPath());
+		File file = getAbsolutePath();
 		return new file(file.getParentFile());
 	}
 
 	public RCollection<file> z8_listFiles() {
-		File[] files = getAbsolutePath(getPath()).listFiles();
+		File[] files = getAbsolutePath().listFiles();
 
 		RCollection<file> result = new RCollection<file>();
 
