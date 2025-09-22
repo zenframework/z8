@@ -18,6 +18,7 @@ public class Reports {
 	public static final String Pdf = "pdf";
 	public static final String Excel = "xls";
 	public static final String Word = "doc";
+	public static final String WordX = "docx";
 	public static final String Html = "html";
 	public static final String Powerpoint = "ppt";
 

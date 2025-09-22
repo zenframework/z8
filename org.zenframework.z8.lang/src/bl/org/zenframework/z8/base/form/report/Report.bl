@@ -5,6 +5,7 @@ public class Report extends Object {
 	static public final string Pdf;
 	static public final string Excel;
 	static public final string Word;
+	static public final string WordX;
 	static public final string Html;
 	static public final string Powerpoint;
 

@@ -39,6 +39,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 	static public final string Pdf = new string(Reports.Pdf);
 	static public final string Excel = new string(Reports.Excel);
 	static public final string Word = new string(Reports.Word);
+	static public final string WordX = new string(Reports.WordX);
 	static public final string Html = new string(Reports.Html);
 	static public final string Powerpoint = new string(Reports.Powerpoint);
 
