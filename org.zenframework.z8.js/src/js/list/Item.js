@@ -107,7 +107,7 @@ Z8.define('Z8.list.Item', {
 
 			for(var i = 0, length = fields.length; i < length; i++) {
 				var field = fields[i];
-				var text = this.renderText(field, record.get(field.name));
+				var text = this.renderText(field, record.get(field.name), true);
 
 
 				text = this.textMarkup(text, DOM.parseCls(this.getTextCls(field, record)).pushIf('text').join(' '), field);
@@ -153,15 +153,15 @@ Z8.define('Z8.list.Item', {
 		return DOM.parseCls(this.cellCls).pushIf('cell');
 	},
 
-	renderText: function(field, value) {
+	renderText: function(field, value, htmlSafe) {
 		var renderer = field.renderer;
 		if(renderer != null)
 			return String.htmlText(renderer.call(field, value));
 
-		return this.format(field.type, value, field.format);
+		return this.format(field.type, value, field.format, htmlSafe);
 	},
 
-	format: function(type, value, format) {
+	format: function(type, value, format, htmlSafe) {
 		if(type == Type.Date)
 			value = Format.date(value, format);
 		else if(type == Type.Datetime)
@@ -175,8 +175,8 @@ Z8.define('Z8.list.Item', {
 		else if(type == Type.File)
 			value = value != null && Array.isArray(value) && value.length > 0 ? value[0].name : null;
 		else if(type == Type.Text)
-			value = Format.nl2br(Format.htmlEncode(value));
-		else if(type == Type.String)
+			value = Format.nl2br(htmlSafe ? Format.htmlEncode(value) : value);
+		else if(type == Type.String && htmlSafe)
 			value = Format.htmlEncode(value);
 
 		return String.htmlText(value);
@@ -184,7 +184,7 @@ Z8.define('Z8.list.Item', {
 
 	formatField: function(field) {
 		field = this.getField(field);
-		return this.format(field.type, this.record.get(field.name), field.format);
+		return this.format(field.type, this.record.get(field.name), field.format, true);
 	},
 
 	getCls: function() {
@@ -331,7 +331,7 @@ Z8.define('Z8.list.Item', {
 	getText: function(fieldName) {
 		if(this.record != null) {
 			var field = this.getField(fieldName);
-			return field != null ? this.renderText(field, this.record.get(fieldName)) : '';
+			return field != null ? this.renderText(field, this.record.get(fieldName), false) : '';
 		} else
 			return this.text;
 	},
@@ -419,7 +419,7 @@ Z8.define('Z8.list.Item', {
 
 	updateText: function(index, field) {
 		var field = field || this.getFieldByIndex(index);
-		this.setText(index, this.renderText(field, this.record.get(field.name)));
+		this.setText(index, this.renderText(field, this.record.get(field.name), false));
 	},
 
 	ensureVisible: function() {
