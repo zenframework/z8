@@ -417,6 +417,8 @@ public class Project extends Folder {
 		long memoryUsed = getMemoryUsage();
 
 		if(memoryUsed > memoryUsedInitially + 300 * 1024) {
+/*
+			// Закомментировано, т.к. уходим в дедлок в большом проекте
 			final boolean[] cleaned = new boolean[] { false };
 
 			getWorkspace().iterate(new ResourceVisitor() {
@@ -432,10 +434,11 @@ public class Project extends Folder {
 					return true;
 				}
 			});
-
-			if(cleaned[0]) {
+*/
+			if(true /* cleaned[0] */) {
 				System.gc();
-				System.out.println("Heap: " + memoryUsed + "K; after GC " + getMemoryUsage() + 'K');
+				memoryUsedInitially = getMemoryUsage();
+				System.out.println("Heap: " + memoryUsed + "K; after GC " + memoryUsedInitially + 'K');
 			}
 		}
 	}
