@@ -625,7 +625,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String getPath() {
-		return getNormalizedPath(getPath());
+		return getNormalizedPath(path.get());
 	}
 
 	public static String getNormalizedPath(String path) {
