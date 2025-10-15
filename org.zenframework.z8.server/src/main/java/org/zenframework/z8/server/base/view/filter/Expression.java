@@ -233,7 +233,7 @@ public class Expression implements IFilter {
 					values = new String[] { '%' + value };
 				else if(operation == Operation.Contains || operation == Operation.NotContains) {
 					value = value.trim();
-					if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+					if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
 						values = new String[] { '%' + value.substring(1, value.length() - 1) + '%' };
 					} else {
 						values = value.split("\\s+");
