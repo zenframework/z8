@@ -2,6 +2,8 @@ package org.zenframework.z8.server.base.table.system;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.TreeTable;
@@ -9,10 +11,13 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -134,6 +139,24 @@ public class Settings extends TreeTable {
 		}
 	}
 
+	static public Map<guid, primary> get(List<guid> properties, List<primary> defaultValues) {
+		Map<guid, primary> values = new RLinkedHashMap<guid, primary>();
+
+		for (int i = 0; i < properties.size(); i++)
+			values.put(properties.get(i), defaultValues.get(i));
+
+		try {
+			Settings settings = new Settings.CLASS<Settings>().get();
+			Field value = settings.value.get();
+			settings.read(Arrays.asList(value), new InVector(settings.recordId.get(), properties));
+			while (settings.next())
+				values.put(settings.recordId(), parse(value.string(), values.get(settings.recordId())));
+		} catch(Throwable e) {
+			Trace.logError(e);
+		}
+		return values;
+	}
+
 	static public String get(guid setting, String defaultValue) {
 		String value = get(setting);
 		return value != null ? value : defaultValue;
@@ -240,6 +263,24 @@ public class Settings extends TreeTable {
 		return get(WebAppUrl, "");
 	}
 
+	static private primary parse(string value, primary defaultValue) {
+		if (value == null || value.isEmpty())
+			return defaultValue;
+		if (defaultValue instanceof string)
+			return value;
+		if (defaultValue instanceof guid)
+			return new guid(value.get());
+		if (defaultValue instanceof date)
+			return new date(value.get());
+		if (defaultValue instanceof integer)
+			return new integer(value.get());
+		if (defaultValue instanceof decimal)
+			return new decimal(value.get());
+		if (defaultValue instanceof bool)
+			return new bool(value.get());
+		throw new IllegalArgumentException(value.get());
+	}
+
 	static public string z8_get(guid setting, string defaultValue) {
 		return get(setting, defaultValue);
 	}
@@ -262,6 +303,10 @@ public class Settings extends TreeTable {
 
 	static public bool z8_get(guid setting, bool defaultValue) {
 		return get(setting, defaultValue);
+	}
+
+	static public RLinkedHashMap<guid, primary> z8_get(RCollection<guid> settings, RCollection<primary> defaultValues) {
+		return (RLinkedHashMap<guid, primary>) get(settings, defaultValues);
 	}
 
 	static public string z8_string(guid setting) {

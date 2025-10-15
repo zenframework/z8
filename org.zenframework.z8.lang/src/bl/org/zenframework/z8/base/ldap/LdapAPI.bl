@@ -15,9 +15,9 @@ class LdapAPI extends Object {
 	public LdapGroup getGroup(string searchBase, string searchFilter);
 	public LdapGroup[] getGroups(string searchBase, string searchFilter);
 
+	public bool isOpened();
 	public void close();
 
 	public static LdapAPI getLdapAPI(string url, string principalName, string credentials);
 	public static LdapAPI getLdapAPI(string url, string principalName, string credentials, string config);
-
 }

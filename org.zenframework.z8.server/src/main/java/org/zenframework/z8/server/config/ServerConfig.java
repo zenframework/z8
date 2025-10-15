@@ -2,7 +2,6 @@ package org.zenframework.z8.server.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,17 +115,6 @@ public class ServerConfig extends Config {
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
 
-	static final private String LdapCheckLdapLogin = "ldap.checkLdapLogin";
-	static final private String LdapUrl = "ldap.url";
-	static final private String LdapPrincipalName = "ldap.principalName";
-	static final private String LdapCredentials = "ldap.credentials";
-	static final private String LdapSearchBase = "ldap.searchBase";
-	static final private String LdapSearchUserFilter = "ldap.searchUserFilter";
-	static final private String LdapSearchGroupFilter = "ldap.searchGroupFilter";
-
-	static final private String LdapUsersIgnore = "ldap.users.ignore";
-	static final private String LdapUsersCreateOnSuccessfulLogin = "ldap.users.createOnSuccessfulLogin";
-
 	static final private String FtsConfiguration = "fts.configuration";
 
 	static final private String SecurityLogFile = "security.log.file";
@@ -134,6 +122,7 @@ public class ServerConfig extends Config {
 
 	static final private String LdapSslTrusted = "ldap.ssl.trusted";
 	static final private String LdapConnectTimeout = "ldap.connect.timeout";
+	static final private String LdapReadPageSize = "ldap.read.pageSize";
 
 	static final private String StoragePath = "storage.path";
 	static final private String StoragePathFormat = "storage.path.format";
@@ -228,16 +217,6 @@ public class ServerConfig extends Config {
 
 	static private String spnegoDomainRealm;
 	static private File spnegoPropertiesPath;
-	static private boolean ldapCheckLdapLogin;
-	static private String ldapUrl;
-	static private String ldapPrincipalName;
-	static private String ldapCredentials;
-	static private String ldapSearchBase;
-	static private String ldapSearchUserFilter;
-	static private String ldapSearchGroupFilter;
-
-	static private Collection<String> ldapUsersIgnore;
-	static private boolean ldapUsersCreateOnSuccessfulLogin;
 
 	static private String ftsConfiguration;
 
@@ -260,6 +239,7 @@ public class ServerConfig extends Config {
 
 	static private boolean ldapSslTrusted;
 	static private int ldapConnectTimeout;
+	static private int ldapReadPageSize;
 
 	static private boolean keystoreUseCustom;
 	static private File keystorePath;
@@ -377,15 +357,6 @@ public class ServerConfig extends Config {
 
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = instance.getFile(SpnegoPropertiesPath, "", configPath);
-		ldapCheckLdapLogin = instance.getProperty(LdapCheckLdapLogin, false);
-		ldapUrl = instance.getProperty(LdapUrl, "");
-		ldapPrincipalName = instance.getProperty(LdapPrincipalName, "");
-		ldapCredentials = instance.getProperty(LdapCredentials, "");
-		ldapSearchBase = instance.getProperty(LdapSearchBase, "");
-		ldapSearchUserFilter = instance.getProperty(LdapSearchUserFilter, "");
-		ldapSearchGroupFilter = instance.getProperty(LdapSearchGroupFilter, "");
-		ldapUsersIgnore = instance.getList(LdapUsersIgnore, "Admin", "\\,");
-		ldapUsersCreateOnSuccessfulLogin = instance.getProperty(LdapUsersCreateOnSuccessfulLogin, false);
 
 		ftsConfiguration = instance.getProperty(FtsConfiguration, (String) null);
 
@@ -394,6 +365,7 @@ public class ServerConfig extends Config {
 
 		ldapSslTrusted = instance.getProperty(LdapSslTrusted, false);
 		ldapConnectTimeout = instance.getProperty(LdapConnectTimeout, 3000);
+		ldapReadPageSize = instance.getProperty(LdapReadPageSize, 500);
 
 		storagePath = instance.getFile(StoragePath, "storage", workingPath);
 		storagePathFormat = instance.getProperty(StoragePathFormat, "yyyy.MM.dd");
@@ -835,40 +807,6 @@ public class ServerConfig extends Config {
 		return spnegoPropertiesPath;
 	}
 
-	static public boolean checkLdapLogin() {
-		return ldapCheckLdapLogin;
-	}
-
-	static public String ldapUrl() {
-		return ldapUrl;
-	}
-
-	static public String principalName() {
-		return ldapPrincipalName;
-	}
-
-	static public String credentials() {
-		return ldapCredentials;
-	}
-
-	static public String searchBase() {
-		return ldapSearchBase;
-	}
-	static public String searchUserFilter() {
-		return ldapSearchUserFilter;
-	}
-	static public String searchGroupFilter() {
-		return ldapSearchGroupFilter;
-	}
-
-	static public Collection<String> ldapUsersIgnore() {
-		return ldapUsersIgnore;
-	}
-
-	static public boolean ldapUsersCreateOnSuccessfulLogin() {
-		return ldapUsersCreateOnSuccessfulLogin;
-	}
-
 	static public String ftsConfiguration() {
 		return ftsConfiguration;
 	}
@@ -887,6 +825,10 @@ public class ServerConfig extends Config {
 
 	static public int ldapConnectTimeout() {
 		return ldapConnectTimeout;
+	}
+
+	static public int ldapReadPageSize() {
+		return ldapReadPageSize;
 	}
 
 	static public File storagePath() {

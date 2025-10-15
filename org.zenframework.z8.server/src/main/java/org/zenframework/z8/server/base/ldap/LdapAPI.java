@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 @SuppressWarnings("all")
@@ -20,7 +22,7 @@ public class LdapAPI extends OBJECT {
 		}
 	}
 
-	private org.zenframework.z8.server.ldap.LdapAPI ldap;
+	private org.zenframework.z8.server.ldap.LdapAPI ldap = null;
 
 	public LdapAPI(IObject container) {
 		super(container);
@@ -82,18 +84,24 @@ public class LdapAPI extends OBJECT {
 		return result;
 	}
 
+	public bool z8_isOpened() {
+		return ldap != null && ldap.isOpened() ? bool.True : bool.False;
+	}
+
 	public void z8_close() {
 		if (ldap != null)
 			ldap.close();
 	}
 
 	public static LdapAPI.CLASS<LdapAPI> z8_getLdapAPI(string url, string principalName, string credentials) {
-		return z8_getLdapAPI(url, principalName, credentials, string.Empty);
+		LdapAPI.CLASS<LdapAPI> connector = new LdapAPI.CLASS<LdapAPI>(null);
+		connector.get().ldap = new org.zenframework.z8.server.ldap.LdapAPI(url.get(), principalName.get(), credentials.get());
+		return connector;
 	}
 
 	public static LdapAPI.CLASS<LdapAPI> z8_getLdapAPI(string url, string principalName, string credentials, string config) {
-		LdapAPI.CLASS<LdapAPI> connector = new LdapAPI.CLASS<LdapAPI>(null);
-		connector.get().ldap = new org.zenframework.z8.server.ldap.LdapAPI(url.get(), principalName.get(), credentials.get(), config.get());
+		LdapAPI.CLASS<LdapAPI> connector = z8_getLdapAPI(url, principalName, credentials);
+		connector.get().ldap.setConfig(config != null ? config.get() : null);
 		return connector;
 	}
 }

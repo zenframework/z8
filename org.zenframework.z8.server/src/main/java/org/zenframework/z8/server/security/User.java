@@ -85,6 +85,8 @@ public class User implements IUser {
 	private Collection<Entry> entries = new ArrayList<Entry>();
 	private RLinkedHashMap<string, primary> parameters = new RLinkedHashMap<string, primary>();
 
+	private org.zenframework.z8.server.base.security.User wrapper = null;
+
 	static public IUser system(String scheme) {
 		return system(Database.get(scheme));
 	}
@@ -268,33 +270,36 @@ public class User implements IUser {
 		return parameters;
 	}
 
-	static public IUser read(guid userId) {
-		return userId.isNull() ? null : read(new LoginParameters(userId));
+	private org.zenframework.z8.server.base.security.User getWrapper() {
+		if (wrapper == null)
+			wrapper = org.zenframework.z8.server.base.security.User.newInstance(this);
+		return wrapper.initialize(this).get();
 	}
 
-	static private IUser read(LoginParameters loginParameters) {
-		IDatabase database = ApplicationServer.getDatabase();
-		User user = new User(database);
-
+	private IUser read(LoginParameters loginParameters) {
 		boolean isLatestVersion = database.isLatestVersion();
 
-		boolean exists = user.readInfo(loginParameters, !isLatestVersion);
-		if(!exists)
+		if(!readInfo(loginParameters, !isLatestVersion))
 			throw new UserNotFoundException();
 
 		if(isLatestVersion) {
-			user.loadRoles();
-			user.loadEntries();
-		} else if(user.isBuiltinAdministrator()) {
-			user.roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
-			user.privileges = new Privileges(Access.administrator());
+			loadRoles();
+			loadEntries();
+		} else if(isBuiltinAdministrator()) {
+			roles = new HashSet<IRole>(Arrays.asList(Role.administrator()));
+			privileges = new Privileges(Access.administrator());
 		} else
 			throw new InvalidVersionException();
 
-		if(user.isBuiltinAdministrator())
-			user.addSystemTools();
+		if(isBuiltinAdministrator())
+			addSystemTools();
 
-		return user;
+		return this;
+	}
+
+	static public IUser read(guid userId) {
+		return userId.isNull() ? null
+				: new User(ApplicationServer.getDatabase()).read(new LoginParameters(userId));
 	}
 
 	private static String getVerificationLink(String host, String hashPrefix, String verification) {
@@ -316,7 +321,7 @@ public class User implements IUser {
 		user.id = users.create();
 
 		try {
-			return read(loginParameters.setUserId(user.id));
+			return user.read(loginParameters.setUserId(user.id));
 		} finally {
 			ConnectionManager.release();
 		}
@@ -366,7 +371,7 @@ public class User implements IUser {
 				.setButtonLink(getVerificationLink(host, "verify", verification)));
 		return user;
 	}
-	
+
 	public static IUser verify(String verification, String host) {
 		Users users = Users.newInstance();
 		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
@@ -410,7 +415,7 @@ public class User implements IUser {
 		
 		return user;
 	}
-	
+
 	public static IUser remindInit(String login, String host) {
 		Users users = Users.newInstance();
 		if (login == null || login.isEmpty() || !users.readFirst(Arrays.asList(users.verification.get(), users.firstName.get(), users.banned.get(), users.email.get()), new Equ(users.name.get(), login)))
@@ -439,7 +444,7 @@ public class User implements IUser {
 				.setButtonLink(getVerificationLink(host, "remind", verification)));
 		return user;
 	}
-	
+
 	public static IUser remind(String verification, String host) {
 		Users users = Users.newInstance();
 		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.verification.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
@@ -478,7 +483,7 @@ public class User implements IUser {
 		
 		return user;
 	}
-	
+
 	public static IUser changePassword(String verification, String password, String host) {
 		Users users = Users.newInstance();
 		if (verification == null || verification.isEmpty() || !users.readFirst(Arrays.asList(users.banned.get(), users.firstName.get(), users.changePassword.get(), users.email.get(), users.name.get(), users.verificationModAt.get()), new Equ(users.verification.get(), verification)))
@@ -528,70 +533,63 @@ public class User implements IUser {
 			return User.system(database);
 
 		try {
-			onBeforeLoad(loginParameters.getLogin());
-
-			IUser user = read(loginParameters);
-
-			authenticate(user, loginParameters, password);
-
-			onLoad(user);
-
+			User user = new User(database);
+			user.onBeforeLoad(loginParameters.getLogin());
+			user.read(loginParameters);
+			user.authenticate(loginParameters, password);
+			user.onLoad();
 			return user;
 		} finally {
 			ConnectionManager.release();
 		}
 	}
 
-	static private void onBeforeLoad(String login) {
+	private void onBeforeLoad(String login) {
 		try {
-			IDatabase database = ApplicationServer.getDatabase();
-			User nullUser = new User(database);
-			org.zenframework.z8.server.base.security.User.newInstance(nullUser).onBeforeLoad(login);
+			getWrapper().onBeforeLoad(login);
 		} catch(Throwable e) {
 			onError(e);
 		}
 	}
-	
-	static private void authenticate(IUser user, LoginParameters loginParameters, String password) {
-		if (user.banned() || user.bannedUntil() > System.currentTimeMillis())
+
+	private void authenticate(LoginParameters loginParameters, String password) {
+		if (banned() || bannedUntil() > System.currentTimeMillis())
 			throw new AccessDeniedException();
 
 		boolean authenticated = false;
 
 		try {
-			org.zenframework.z8.server.base.security.User u = org.zenframework.z8.server.base.security.User.newInstance(user);
-			authenticated = u.authenticate(password);
+			authenticated = getWrapper().authenticate(password);
 		} catch(Throwable e) {
 			onError(e);
 		}
 
-
-		int failed = user.failedAuthCount();
+		int failed = failedAuthCount();
 
 		if(!authenticated) {
 			if (password != null && !ServerConfig.webClientHashPassword())
 				password = Digest.md5(password);
 
-			if (password != null && !password.equals(user.password())) /*&& !password.equals(MD5.hex(""))*/ {
+			if (password != null && !password.equals(password())) /*&& !password.equals(MD5.hex(""))*/ {
 				int failsLimit = ServerConfig.authFailsLimit();
 				if (failsLimit > 0) {
 					if (++failed >= failsLimit) {
 						failed = 0;
-						user.saveBannedUntil(System.currentTimeMillis() + ServerConfig.authFailsBanSeconds() * 1000);
+						saveBannedUntil(System.currentTimeMillis() + ServerConfig.authFailsBanSeconds() * 1000);
 					}
-					user.setFailedAuthCount(failed);
+					setFailedAuthCount(failed);
 				}
 				throw new AccessDeniedException();
 			}
 		}
 
 		if (failed != 0)
-			user.setFailedAuthCount(0);
+			setFailedAuthCount(0);
 	}
 
-	static private void onLoad(IUser user) {
+	private void onLoad() {
 		try {
-			org.zenframework.z8.server.base.security.User.newInstance(user).onLoad();
+			getWrapper().onLoad();
 		} catch(Throwable e) {
 			onError(e);
 		}

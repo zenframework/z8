@@ -30,8 +30,8 @@ public class User extends Object {
 	public int getParameter(string key, int defaultValue);
 	public bool getParameter(string key, bool defaultValue);
 
-	virtual protected void onBeforeLoad(string login);
 	virtual protected bool authenticate(string password);
 
+	virtual protected void onBeforeLoad(string login);
 	virtual protected void onLoad();
 }
