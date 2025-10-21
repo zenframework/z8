@@ -329,58 +329,58 @@ public class BirtReport {
 		return name.equals(Reports.PageNumber) || name.equals(Reports.PageTimestamp);
 	}
 
-    private void setReportCaption(ReportDesignHandle reportDesignHandle, TableHandle table) throws SemanticException {
-        setAutoText(reportDesignHandle, Reports.PageNumber);
-        setAutoText(reportDesignHandle, Reports.PageTimestamp);
+	private void setReportCaption(ReportDesignHandle reportDesignHandle, TableHandle table) throws SemanticException {
+		setAutoText(reportDesignHandle, Reports.PageNumber);
+		setAutoText(reportDesignHandle, Reports.PageTimestamp);
 
-        String header = options.header();
+		String header = options.header();
 
-        if (table == null || columns == null || columns.isEmpty()) {
-            setHeaderInPageHeader(reportDesignHandle, header);
-            return;
-        }
+		if (table == null || columns == null || columns.isEmpty()) {
+			setHeaderInPageHeader(reportDesignHandle, header);
+			return;
+		}
 
-        addHeaderToTable(table, header);
-    }
+		addHeaderToTable(table, header);
+	}
 
-    private void setHeaderInPageHeader(ReportDesignHandle reportDesignHandle, String header) {
-        DesignElementHandle element = getElement(reportDesignHandle, Reports.FirstPageHeader);
-        if (element == null)
-            return;
+	private void setHeaderInPageHeader(ReportDesignHandle reportDesignHandle, String header) {
+		DesignElementHandle element = getElement(reportDesignHandle, Reports.FirstPageHeader);
+		if (element == null)
+			return;
 
-        try {
-            element.setProperty("content", header);
-        } catch (SemanticException e) {
-            try {
-                element.setProperty("text", header);
-            } catch (SemanticException e1) {
-            }
-        }
-    }
+		try {
+			element.setProperty("content", header);
+		} catch (SemanticException e) {
+			try {
+				element.setProperty("text", header);
+			} catch (SemanticException e1) {
+			}
+		}
+	}
 
-    private void addHeaderToTable(TableHandle table, String header) {
-        try {
-            int totalColumns = columns.size();
-            if (totalColumns == 0)
-                return;
+	private void addHeaderToTable(TableHandle table, String header) {
+		try {
+			int totalColumns = columns.size();
+			if (totalColumns == 0)
+				return;
 
-            RowHandle titleRow = elementFactory.newTableRow();
-            CellHandle titleCell = createCell(totalColumns, 1, HeaderCellStyle, -1);
+			RowHandle titleRow = elementFactory.newTableRow();
+			CellHandle titleCell = createCell(totalColumns, 1, HeaderCellStyle, -1);
 
-            LabelHandle label = createLabel(header);
-            label.setProperty("fontSize", "11pt");
+			LabelHandle label = createLabel(header);
+			label.setProperty("fontSize", "11pt");
 
-            titleCell.getContent().add(label);
-            titleCell.setProperty("textAlign", "center");
-            titleCell.setProperty("verticalAlign", "middle");
+			titleCell.getContent().add(label);
+			titleCell.setProperty("textAlign", "center");
+			titleCell.setProperty("verticalAlign", "middle");
 
-            titleRow.getCells().add(titleCell);
-            table.getHeader().add(titleRow, 0);
+			titleRow.getCells().add(titleCell);
+			table.getHeader().add(titleRow, 0);
 
-        } catch (SemanticException e) {
-            throw new RuntimeException("Failed to add header to table", e);
-        }
-    }
+		} catch (SemanticException e) {
+			throw new RuntimeException("Failed to add header to table", e);
+		}
+	}
 
 	private Collection<Column> scaleColumns() {
 		Collection<Column> columns = getColumns();
