@@ -329,24 +329,56 @@ public class BirtReport {
 		return name.equals(Reports.PageNumber) || name.equals(Reports.PageTimestamp);
 	}
 
-	private void setReportCaption(ReportDesignHandle reportDesignHandle) throws SemanticException {
+	private void setReportCaption(ReportDesignHandle reportDesignHandle, TableHandle table) throws SemanticException {
 		setAutoText(reportDesignHandle, Reports.PageNumber);
 		setAutoText(reportDesignHandle, Reports.PageTimestamp);
 
-		DesignElementHandle element = getElement(reportDesignHandle, Reports.FirstPageHeader);
-
-		if(element == null)
-			return;
-
 		String header = options.header();
+
+		if (table == null || columns == null || columns.isEmpty()) {
+			setHeaderInPageHeader(reportDesignHandle, header);
+			return;
+		}
+
+		addHeaderToTable(table, header);
+	}
+
+	private void setHeaderInPageHeader(ReportDesignHandle reportDesignHandle, String header) {
+		DesignElementHandle element = getElement(reportDesignHandle, Reports.FirstPageHeader);
+		if (element == null)
+			return;
 
 		try {
 			element.setProperty("content", header);
-		} catch(SemanticException e) {
+		} catch (SemanticException e) {
 			try {
 				element.setProperty("text", header);
-			} catch(SemanticException e1) {
+			} catch (SemanticException e1) {
 			}
+		}
+	}
+
+	private void addHeaderToTable(TableHandle table, String header) {
+		try {
+			int totalColumns = columns.size();
+			if (totalColumns == 0)
+				return;
+
+			RowHandle titleRow = elementFactory.newTableRow();
+			CellHandle titleCell = createCell(totalColumns, 1, HeaderCellStyle, -1);
+
+			LabelHandle label = createLabel(header);
+			label.setProperty("fontSize", "11pt");
+
+			titleCell.getContent().add(label);
+			titleCell.setProperty("textAlign", "center");
+			titleCell.setProperty("verticalAlign", "middle");
+
+			titleRow.getCells().add(titleCell);
+			table.getHeader().add(titleRow, 0);
+
+		} catch (SemanticException e) {
+			throw new RuntimeException("Failed to add header to table", e);
 		}
 	}
 
@@ -411,7 +443,7 @@ public class BirtReport {
 				tableColumn.getElement().setProperty(ITableColumnModel.WIDTH_PROP, new DimensionValue(width, DesignChoiceConstants.UNITS_PT));
 			}
 
-			setReportCaption(reportDesignHandle);
+			setReportCaption(reportDesignHandle, table);
 
 			DesignElementHandle reportBody = getElement(reportDesignHandle, Reports.ReportBody);
 
