@@ -168,16 +168,23 @@ public class Files extends Table {
 			time.get().set(file.time);
 			lastModified.get().set(file.time);
 
-			if (ServerConfig.filesSaveOnDisk()) {
-				location.get().set(Location_Storage);
-				putOnDisk(file, input);
-			} else
-				data.get().set(input);
+			if(input != null) {
+				if (ServerConfig.filesSaveOnDisk()) {
+					location.get().set(Location_Storage);
+					putOnDisk(file, input);
+				} else
+					data.get().set(input);
+			}
 
-			if(create)
+			if(create) {
+				if(file.id == null || file.id.equals(guid.Null))
+					file.id = guid.create();
 				create(file.id);
-			else
+			} else {
+				if(file.id == null || file.id.equals(guid.Null))
+					throw new RuntimeException("File \"" + file.path + "\" has no id");
 				update(file.id);
+			}
 
 			ConnectionManager.get().flush();
 		} finally {
@@ -232,8 +239,11 @@ public class Files extends Table {
 			InputStream inputStream = getInputStream(file);
 
 			if(inputStream == null) {
-				if(notFound)
+				if(file.id == null || file.id.equals(guid.Null)) {
+					newInstance().add(file);
+				} else if(notFound) {
 					throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
+				}
 				return file;
 			}
 
