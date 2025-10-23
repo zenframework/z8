@@ -150,15 +150,15 @@ public class Files extends Table {
 		lastModified.get().set(now);
 	}
 
-	public void add(file file) {
-		change(file, true);
+	public file add(file file) {
+		return change(file, true);
 	}
 
-	public void updateFile(file file) {
-		change(file, false);
+	public file updateFile(file file) {
+		return change(file, false);
 	}
 
-	private void change(file file, boolean create) {
+	private file change(file file, boolean create) {
 		InputStream input = file.getInputStream();
 
 		try {
@@ -187,6 +187,7 @@ public class Files extends Table {
 			}
 
 			ConnectionManager.get().flush();
+			return file;
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
@@ -240,7 +241,7 @@ public class Files extends Table {
 
 			if(inputStream == null) {
 				if(file.id == null || file.id.equals(guid.Null)) {
-					newInstance().add(file);
+					file = newInstance().add(file);
 					file.storage = bool.True;
 				} else if(notFound) {
 					throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
