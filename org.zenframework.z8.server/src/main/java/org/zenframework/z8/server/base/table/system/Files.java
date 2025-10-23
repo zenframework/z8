@@ -241,6 +241,7 @@ public class Files extends Table {
 			if(inputStream == null) {
 				if(file.id == null || file.id.equals(guid.Null)) {
 					newInstance().add(file);
+					file.storage = bool.True;
 				} else if(notFound) {
 					throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
 				}
