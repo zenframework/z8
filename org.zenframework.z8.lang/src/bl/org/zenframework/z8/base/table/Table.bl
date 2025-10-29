@@ -2,6 +2,7 @@ import org.zenframework.z8.base.query.Query;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.GuidField;
 import org.zenframework.z8.base.table.value.IntField;
+import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.table.Table"]
 public class Table extends Query {
@@ -23,4 +24,5 @@ public class Table extends Query {
 	[name "Lock"]
 	public IntField lock;
 
+	static public Object newInstance(string name);
 }

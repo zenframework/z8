@@ -12,6 +12,7 @@ import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.string;
 
 public class Table extends TableBase {
 	static public class fieldNames {
@@ -148,4 +149,7 @@ public class Table extends TableBase {
 		return priority != null ? priority.getInt() : Runtime.modelGraph().getTablePriority(this);
 	}
 
+	static public Table.CLASS<? extends Table> z8_newInstance(string name) {
+		return (Table.CLASS<?>)Runtime.instance().getTableByName(name.get()).newInstance().getCLASS();
+	}
 }
