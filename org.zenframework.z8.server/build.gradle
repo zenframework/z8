@@ -11,16 +11,22 @@ configurations {
 					project.objects.named(LibraryElements, 'bl'))
 		}
 	}
+
+	antlr
 }
 
 dependencies {
 	boot project(':org.zenframework.z8.boot')
+
+	compile 'org.antlr:antlr4-runtime:4.13.2'
 
 	compile project(':org.zenframework.z8.boot')
 
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-commons:${dependenciesVersion}@pom") { transitive = true }
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-libreoffice:${dependenciesVersion}@pom") { transitive = true }
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-birt:${dependenciesVersion}@pom") { transitive = true }
+
+	antlr 'org.antlr:antlr4:4.13.2'
 }
 
 eclipse.classpath.file.whenMerged {
@@ -36,6 +42,28 @@ tasks.withType(JavaCompile) {
 		options.compilerArgs.add '-Xbootclasspath/p:' + configurations.boot.singleFile.toPath()
 	}
 }
+
+/* >>> Antlr grammar generator - execute if grammar changed only >>> */
+
+ext.antlrJava = '/usr/lib/jvm/java-17-openjdk/bin/java' // Java 17 needed for Antlr v4
+ext.antlrPackage = 'org.zenframework.z8.server.expression.generated'
+ext.antlrOutput = "${projectDir}/src/main/java/${antlrPackage.replace('.', '/')}"
+
+task generateAntlr(type: Exec) {
+	workingDir = "${projectDir}/src/main/grammar"
+	commandLine = [
+		antlrJava, '-cp', configurations.antlr.files.collect() { it.path }.join(':'), 'org.antlr.v4.Tool',
+		'-no-listener', '-visitor', /*'-package', antlrPackage,*/ '-o', antlrOutput, 'Expression.g', 'Text.g'
+	]
+
+	doLast {
+		delete(fileTree(antlrOutput) {
+			exclude '*.java'
+		})
+	}
+}
+
+/* <<< Antlr grammar generator - execute if grammar changed only <<< */
 
 task assembleBl(type: Zip, group: 'build') {
 	description "Assemble archive ${archiveName} into ${relativePath(destinationDir)}"

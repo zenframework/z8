@@ -1,0 +1,21 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.report.Range"]
+public class Range extends Object {
+
+	// Records insertion direction
+	public static final int Vertical = 0;
+	public static final int Horizontal = 1;
+
+	public Object source;
+	public string range;
+	public int direction;
+	public Range[] ranges;
+
+	public Range addRange(Object source, string range);
+	public Range addRange(Object source, string range, int direction);
+
+	public static Range create(Object source, string range);
+	public static Range create(Object source, string range, int direction);
+	public static Range create(Object source, string range, int direction, Range[] ranges);
+}
