@@ -4,12 +4,14 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.zenframework.z8.server.expression.Expression;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.types.integer;
 
 public abstract class DataSource {
+	private static final String Index = "index";
 
 	protected final Range range;
 
-	protected Counter counter;
+	protected Wrapper<integer> index;
 	private boolean initialized = false;
 
 	protected DataSource(Range range) {
@@ -20,8 +22,8 @@ public abstract class DataSource {
 		return getObject().id();
 	}
 
-	public int getCounter() {
-		return counter.getInt();
+	public int getIndex() {
+		return index.get().getInt();
 	}
 
 	public Expression getExpression() {
@@ -34,11 +36,11 @@ public abstract class DataSource {
 	}
 
 	public void open() {
-		counter.reset();
+		index.set(new integer(-1));
 	}
 
 	public boolean next() {
-		counter.inc();
+		index.set(new integer(index.get().getInt() + 1));
 		return internalNext();
 	}
 
@@ -57,13 +59,10 @@ public abstract class DataSource {
 	protected void initialize() {
 		initialized = true;
 
-		counter = getObjectMember(Counter.Index);
+		index = getObjectMember(Index);
 
-		if (counter == null) {
-			OBJECT source = getObject();
-			counter = new Counter.CLASS<Counter>(source).get();
-			source.objects.add(counter.getCLASS());
-		}
+		if (index == null)
+			index = Wrapper.instance(getObject(), Index);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
