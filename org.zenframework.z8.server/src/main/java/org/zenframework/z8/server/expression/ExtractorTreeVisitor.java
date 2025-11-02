@@ -10,39 +10,35 @@ import org.zenframework.z8.server.expression.generated.ExpressionParser.Identifi
 import org.zenframework.z8.server.expression.generated.ExpressionParser.MemberReferenceExpressionContext;
 import org.zenframework.z8.server.expression.generated.TextBaseVisitor;
 import org.zenframework.z8.server.expression.generated.TextParser.ExpressionTextPartContext;
-import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 public class ExtractorTreeVisitor extends TextBaseVisitor<Object> {
-	private class ExpressionTreeVisitor extends ExpressionBaseVisitor<Object> {
+	private class ExpressionTreeVisitor extends ExpressionBaseVisitor<Value> {
 		@Override
-		@SuppressWarnings("rawtypes")
-		public Object visitMemberReferenceExpression(MemberReferenceExpressionContext ctx) {
-			Object object = ctx.property != null ? visit(ctx.object) : null;
-			Object property = object != null ? Operator.getProperty(object, ctx.property.getText()) : null;
+		public Value visitMemberReferenceExpression(MemberReferenceExpressionContext ctx) {
+			Value object = ctx.property != null ? visit(ctx.object) : null;
+			String property = ctx.property.getText();
+			Object value = object != null ? calculator.getProperty(object.get(), property) : null;
 
-			if (property instanceof CLASS)
-				property = ((CLASS) property).get();
+			if (value instanceof OBJECT)
+				extractor.onObject((OBJECT) value);
 
-			if (property instanceof OBJECT)
-				extractor.onObject((OBJECT) property);
-
-			return property;
+			return new Value().setValue(value);
 		}
 
 		@Override
-		public Object visitIdentifier(IdentifierContext ctx) {
-			return expression.getVariableValue(ctx.getText(), false);
+		public Value visitIdentifier(IdentifierContext ctx) {
+			return calculator.getVariableValue(ctx.getText());
 		}
 	}
 
 	private final ExpressionTreeVisitor expressionVisitor = new ExpressionTreeVisitor();
 
-	private final Expression expression;
+	private final Calculator calculator;
 	private final Expression.Extractor extractor;
 
-	public ExtractorTreeVisitor(Expression expression, Expression.Extractor extractor) {
-		this.expression = expression;
+	public ExtractorTreeVisitor(Calculator calculator, Expression.Extractor extractor) {
+		this.calculator = calculator;
 		this.extractor = extractor;
 	}
 
@@ -54,9 +50,9 @@ public class ExtractorTreeVisitor extends TextBaseVisitor<Object> {
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			ExpressionParser parser = new ExpressionParser(tokens);
 
-			expressionVisitor.visit(parser.expression());
+			expressionVisitor.visit(parser.rootExpression());
 		} catch (Throwable e) {
-			expression.addError(e.getMessage());
+			calculator.addError(e.getMessage());
 		}
 
 		return null;

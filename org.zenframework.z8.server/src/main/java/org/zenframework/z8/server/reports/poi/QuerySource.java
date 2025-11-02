@@ -1,22 +1,23 @@
 package org.zenframework.z8.server.reports.poi;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.expression.Expression;
-import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 public class QuerySource extends DataSource {
 
+	private final Map<String, Field> fields = new HashMap<String, Field>();
 	private final Query query;
+
+	private int count = -1;
 
 	public QuerySource(Range range, Query query) {
 		super(range);
@@ -29,25 +30,27 @@ public class QuerySource extends DataSource {
 	}
 
 	@Override
-	public void prepare(XSSFWorkbook workbook) {
-		super.prepare(workbook);
+	public void prepare(Sheet sheet) {
+		super.prepare(sheet);
+		collectFields(sheet);
+	}
 
-		expression.setGetter(new Expression.Getter() {
-			@Override
-			@SuppressWarnings("rawtypes")
-			public Object getValue(Object value) {
-				if (value instanceof CLASS)
-					value = ((CLASS) value).get();
-				return value instanceof Field ? ((Field) value).get() : value;
-			}
-		});
+	@Override
+	public void open() {
+		super.open();
+		query.saveState();
+		query.read(fields.values());
+	}
 
-		query.read(collectFields(workbook));
+	@Override
+	public void close() {
+		super.close();
+		query.restoreState();
 	}
 
 	@Override
 	public int count() {
-		return query.count();
+		return count >= 0 ? count : (count = query.count());
 	}
 
 	@Override
@@ -55,9 +58,7 @@ public class QuerySource extends DataSource {
 		return query.next();
 	}
 
-	private Collection<Field> collectFields(XSSFWorkbook workbook) {
-		Map<String, Field> fields = new HashMap<String, Field>();
-
+	private void collectFields(Sheet sheet) {
 		Expression.Extractor extractor = new Expression.Extractor() {
 			@Override
 			public void onObject(OBJECT object) {
@@ -70,12 +71,13 @@ public class QuerySource extends DataSource {
 			@Override
 			public void visit(Row row, int colNum, Cell cell) {
 				if (cell != null && cell.getCellTypeEnum() == CellType.STRING)
-					expression.extractObjects(cell.getStringCellValue(), extractor);
+					getExpression().extractObjects(cell.getStringCellValue(), extractor);
 			}
 		};
 
-		Util.visitCells(workbook.getSheetAt(range.getSheetIndex()), range.getAddress(), visitor);
+		Util.visitCells(sheet, range.getTemplateBlock(), visitor);
 
-		return fields.values();
+		for (Field.CLASS<? extends Field> field : query.extraFields)
+			fields.put(field.id(), field.get());
 	}
 }

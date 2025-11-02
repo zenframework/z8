@@ -13,13 +13,16 @@ import org.zenframework.z8.server.expression.generated.TextParser.TextContext;
 
 public class TextTreeVisitor extends TextBaseVisitor<StringBuilder> {
 
+	private static final String ExpStart = "${";
+	private static final String ExpFinish = "}";
+
 	private final StringBuilder str = new StringBuilder();
 	private final ExpressionTreeVisitor expressionVisitor;
-	private final Expression expression;
+	private final Calculator calculator;
 
-	public TextTreeVisitor(Expression expression) {
-		this.expressionVisitor = new ExpressionTreeVisitor(expression);
-		this.expression = expression;
+	public TextTreeVisitor(Calculator calculator) {
+		this.expressionVisitor = new ExpressionTreeVisitor(calculator);
+		this.calculator = calculator;
 	}
 
 	@Override
@@ -41,9 +44,11 @@ public class TextTreeVisitor extends TextBaseVisitor<StringBuilder> {
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			ExpressionParser parser = new ExpressionParser(tokens);
 
-			str.append(Format.format(expressionVisitor.visit(parser.rootExpression())));
+			Value expression = expressionVisitor.visit(parser.rootExpression());
+
+			str.append(expression.isEvaluated() ? Format.format(expression.get()) : ExpStart + expression.toString() + ExpFinish);
 		} catch (Throwable e) {
-			expression.addError(e.getMessage());
+			calculator.addError(e.getMessage());
 			str.append(ctx.getText());
 		}
 

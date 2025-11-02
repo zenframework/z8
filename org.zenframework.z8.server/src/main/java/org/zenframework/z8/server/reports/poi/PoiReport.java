@@ -10,23 +10,55 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.db.Select;
+import org.zenframework.z8.server.expression.Expression;
+import org.zenframework.z8.server.expression.ObjectContext;
+import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class PoiReport {
 
 	private final List<Range> ranges = new LinkedList<Range>();
 	private final ReportOptions options;
+	private final Expression expression;
 
-	public PoiReport(ReportOptions options) {
+	public PoiReport(ReportOptions options, OBJECT context) {
 		this.options = options;
+		this.expression = new Expression()
+			.setContext(new ObjectContext(context))
+			.setGetter(new Expression.Getter() {
+				@Override
+				@SuppressWarnings("rawtypes")
+				public Object getValue(Object value) {
+					if (value instanceof Wrapper)
+						return ((Wrapper) value).get();
+
+					if (value instanceof Field) {
+						Field field = (Field) value;
+						Select cursor = field.getCursor();
+						return cursor == null || cursor.isClosed() ? field : field.get();
+					}
+
+					return value;
+				}
+			});
 	}
 
 	public PoiReport setRanges(List<Range> ranges) {
 		this.ranges.clear();
 		this.ranges.addAll(ranges);
+
+		for (Range range : ranges)
+			range.setReport(this);
+
 		return this;
+	}
+
+	public Expression getExpression() {
+		return expression;
 	}
 
 	public File execute() {
@@ -40,6 +72,10 @@ public class PoiReport {
 		} finally {
 			connection.rollback();
 		}
+	}
+
+	public List<String> getErrors() {
+		return expression.getErrors();
 	}
 
 	private File run() throws IOException, InvalidFormatException {
@@ -76,5 +112,4 @@ public class PoiReport {
 			IOUtils.closeQuietly(workbook);
 		}
 	}
-
 }

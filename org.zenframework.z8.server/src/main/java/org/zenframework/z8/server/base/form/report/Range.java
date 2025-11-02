@@ -7,7 +7,6 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.string;
 
 public class Range extends OBJECT {
 	static public class CLASS<T extends Range> extends OBJECT.CLASS<T> {
@@ -30,59 +29,35 @@ public class Range extends OBJECT {
 		super(container);
 	}
 
+	// Attributes
+	public static final String Address = "address";
+	public static final String Direction = "direction";
+
 	// Records insertion direction
 	public static final integer Vertical = new integer(0);
 	public static final integer Horizontal = new integer(1);
 
 	public OBJECT.CLASS<? extends OBJECT> source = new OBJECT.CLASS<OBJECT>(null);
-	public string address = new string();
-	public integer direction = Vertical;
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
 
-	public org.zenframework.z8.server.reports.poi.Range asPoiRange(OBJECT context) {
-		return new org.zenframework.z8.server.reports.poi.Range().setContext(context).setSource(source.get()).setAddress(address.get())
-				.setDirection(direction.getInt()).setRanges(asPoiRanges(ranges, context));
+	public String getAddress() {
+		return getAttribute(Address);
 	}
 
-	public static List<org.zenframework.z8.server.reports.poi.Range> asPoiRanges(RCollection<Range.CLASS<Range>> ranges, OBJECT context) {
+	public int getDirection() {
+		String attribute = getAttribute(Direction);
+		return attribute != null ? Integer.parseInt(attribute) : Vertical.getInt();
+	}
+
+	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
+		return new org.zenframework.z8.server.reports.poi.Range().setSource(source.get()).setAddress(getAddress())
+				.setDirection(getDirection()).setRanges(asPoiRanges(ranges));
+	}
+
+	public static List<org.zenframework.z8.server.reports.poi.Range> asPoiRanges(RCollection<Range.CLASS<Range>> ranges) {
 		List<org.zenframework.z8.server.reports.poi.Range> result = new ArrayList<org.zenframework.z8.server.reports.poi.Range>(ranges.size());
 		for (Range.CLASS<Range> range : ranges)
-			result.add(range.get().asPoiRange(context));
+			result.add(range.get().asPoiRange());
 		return result;
 	}
-
-	@SuppressWarnings("unchecked")
-	public Range.CLASS<Range> z8_addRange(Range.CLASS<Range> range) {
-		ranges.add(range);
-		return (Range.CLASS<Range>) this.getCLASS();
-	}
-
-	public Range.CLASS<Range> z8_addRange(OBJECT.CLASS<? extends OBJECT> source, string address) {
-		return z8_addRange(z8_create(source, address));
-	}
-
-	public Range.CLASS<Range> z8_addRange(OBJECT.CLASS<? extends OBJECT> source, string address, integer direction) {
-		return z8_addRange(z8_create(source, address, direction));
-	}
-
-	public static Range.CLASS<Range> z8_create(OBJECT.CLASS<? extends OBJECT> source, string address) {
-		return z8_create(source, address, Vertical);
-	}
-
-	public static Range.CLASS<Range> z8_create(OBJECT.CLASS<? extends OBJECT> source, string address, integer direction) {
-		return z8_create(source, address, direction, null);
-	}
-
-	public static Range.CLASS<Range> z8_create(OBJECT.CLASS<? extends OBJECT> source, string address, integer direction, RCollection<Range.CLASS<Range>> ranges) {
-		Range.CLASS<Range> range = new Range.CLASS<Range>(null);
-		range.get().source = source;
-		range.get().address = address;
-		range.get().direction = direction;
-
-		if (ranges != null)
-			range.get().ranges = ranges;
-
-		return range;
-	}
-
 }

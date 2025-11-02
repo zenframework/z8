@@ -21,9 +21,8 @@ public class ExpressionParser extends Parser {
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
-		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, IDENTIFIER=24, 
-		INTEGER_LITERAL=25, FLOAT_LITERAL=26, BOOL_LITERAL=27, STRING_LITERAL=28, 
-		WS=29;
+		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, INTEGER_LITERAL=24, 
+		FLOAT_LITERAL=25, BOOL_LITERAL=26, STRING_LITERAL=27, IDENTIFIER=28, WS=29;
 	public static final int
 		RULE_rootExpression = 0, RULE_expression = 1, RULE_expressionList = 2, 
 		RULE_methodCall = 3, RULE_primary = 4, RULE_priority = 5, RULE_literal = 6, 
@@ -48,8 +47,8 @@ public class ExpressionParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			"IDENTIFIER", "INTEGER_LITERAL", "FLOAT_LITERAL", "BOOL_LITERAL", "STRING_LITERAL", 
-			"WS"
+			"INTEGER_LITERAL", "FLOAT_LITERAL", "BOOL_LITERAL", "STRING_LITERAL", 
+			"IDENTIFIER", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -986,10 +985,10 @@ public class ExpressionParser extends Parser {
 		"\u0000\u0000\u0000WU\u0001\u0000\u0000\u0000WV\u0001\u0000\u0000\u0000"+
 		"X\t\u0001\u0000\u0000\u0000YZ\u0005\u0016\u0000\u0000Z[\u0003\u0002\u0001"+
 		"\u0000[\\\u0005\u0017\u0000\u0000\\\u000b\u0001\u0000\u0000\u0000]b\u0005"+
-		"\u0019\u0000\u0000^b\u0005\u001a\u0000\u0000_b\u0005\u001c\u0000\u0000"+
-		"`b\u0005\u001b\u0000\u0000a]\u0001\u0000\u0000\u0000a^\u0001\u0000\u0000"+
+		"\u0018\u0000\u0000^b\u0005\u0019\u0000\u0000_b\u0005\u001b\u0000\u0000"+
+		"`b\u0005\u001a\u0000\u0000a]\u0001\u0000\u0000\u0000a^\u0001\u0000\u0000"+
 		"\u0000a_\u0001\u0000\u0000\u0000a`\u0001\u0000\u0000\u0000b\r\u0001\u0000"+
-		"\u0000\u0000cd\u0005\u0018\u0000\u0000d\u000f\u0001\u0000\u0000\u0000"+
+		"\u0000\u0000cd\u0005\u001c\u0000\u0000d\u000f\u0001\u0000\u0000\u0000"+
 		"\b\u0018>@BJPWa";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());

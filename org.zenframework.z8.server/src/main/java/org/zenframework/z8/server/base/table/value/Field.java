@@ -244,7 +244,7 @@ abstract public class Field extends Control implements IField {
 		this.wasNull = wasNull;
 	}
 
-	protected Select getCursor() {
+	public Select getCursor() {
 		return cursor;
 	}
 

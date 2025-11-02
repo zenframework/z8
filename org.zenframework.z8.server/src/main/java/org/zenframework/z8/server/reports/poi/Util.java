@@ -8,7 +8,6 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.zenframework.z8.server.reports.poi.Range.Direction;
 
 public class Util {
 
@@ -18,110 +17,95 @@ public class Util {
 		void visit(Row row, int colNum, Cell cell);
 	}
 
-	public static void multiplyBlock(Sheet sheet, CellRangeAddress address, int count, Range.Direction direction) {
-		int width = address.getLastColumn() - address.getFirstColumn() + 1;
-		int height = address.getLastRow() - address.getFirstRow() + 1;
-
+	public static Block multiplyBlock(Sheet sheet, Block block, int count, Block.Direction direction) {
 		if (count < 1)
-			return; // TODO Delete cells
+			return block; // TODO Delete cells
 
-		if (direction == Range.Direction.Horizontal)
-			insertBlockHorizShift(sheet, address.getFirstRow(), address.getLastColumn() + 1, height, width * (count - 1));
-		else
-			insertBlockVertShift(sheet, address.getLastRow() + 1, address.getFirstColumn(), height * (count - 1), width);
+		insertBlock(sheet, block.shift(direction, 1).stretch(direction, count - 1), direction);
 
 		for (int i = 1; i < count; i++)
-			copy(sheet, address, direction == Direction.Horizontal ? address.getFirstRow() : address.getFirstRow() + height * i,
-					direction == Direction.Horizontal ? address.getFirstColumn() + width * i : address.getFirstColumn());
+			copy(sheet, block, block.shift(direction, i));
+
+		return block.stretch(direction, count);
 	}
 
-	public static void insertBlock(Sheet sheet, int rowStart, int colStart, int rowCount, int colCount, Range.Direction direction) {
-		if (direction == Range.Direction.Horizontal)
-			insertBlockHorizShift(sheet, rowStart, colStart, rowCount, colCount);
+	public static void insertBlock(Sheet sheet, Block block, Block.Direction direction) {
+		if (direction == Block.Direction.Horizontal)
+			insertBlockHorizShift(sheet, block);
 		else
-			insertBlockVertShift(sheet, rowStart, colStart, rowCount, colCount);
+			insertBlockVertShift(sheet, block);
 	}
 
-	private static void insertBlockHorizShift(Sheet sheet, int rowStart, int colStart, int rowCount, int colCount) {
-		if (colCount < 0)
-			throw new RuntimeException("PoiReport.insertBlockHorizShift()");
+	private static void insertBlockHorizShift(Sheet sheet, Block block) {
+		Block updatedRange = new Block(block.startRow(), block.startCol(),
+				block.height(), sheet.getRow(block.startRow()).getLastCellNum() + 1 - block.startCol());
 
-		int colEnd = sheet.getRow(rowStart).getLastCellNum() + 1;
-		int rowEnd = rowCount >= 0 ? rowStart + rowCount : sheet.getLastRowNum() + 1;
-
-		for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+		for (int rowNum = block.startRow(), endRow = block.endRow(), endCol = block.endCol(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
 			if (row == null)
 				row = sheet.createRow(rowNum);
 
 			// Ensure columns exist
-			for (int i = 0; i < colCount; i++) {
-				Cell cell = row.getCell(colEnd + i);
+			for (int i = 0; i < block.width(); i++) {
+				Cell cell = row.getCell(endCol + i);
 
 				if (cell == null)
-					cell = row.createCell(colEnd + i, CellType.BLANK);
+					cell = row.createCell(endCol + i, CellType.BLANK);
 			}
 
-			for (int colNum = colEnd - 1; colNum >= colStart; colNum--)
-				copy(row, colNum, row, colNum + colCount);
-
-			for (int i = 0; i < colCount; i++) {
-				Cell cell = row.getCell(colStart + i);
-				if (cell != null)
-					cell.setCellType(CellType.BLANK);
-			}
+			for (int colNum = endCol - 1; colNum >= block.startCol(); colNum--)
+				copy(row, colNum, row, colNum + block.width());
 		}
 
-		updateMergedRegions(sheet, rowStart, colStart, rowEnd, colEnd, 0, colCount);
+		clear(sheet, block);
+		moveMergedRegions(sheet, updatedRange, 0, block.width());
 	}
 
-	private static void insertBlockVertShift(Sheet sheet, int rowStart, int colStart, int rowCount, int colCount) {
-		if (rowCount < 0)
-			throw new RuntimeException("PoiReport.insertBlockVertShift()");
-
-		int colEnd = colCount >= 0 ? colStart + colCount : sheet.getRow(rowStart).getLastCellNum() + 1;
-		int rowEnd = sheet.getLastRowNum() + 1;
+	private static void insertBlockVertShift(Sheet sheet, Block block) {
+		Block updatedRange = new Block(block.startRow(), block.startCol(),
+				sheet.getLastRowNum() + 1 - block.startRow(), block.width());
 
 		// Ensure rows exist
-		for (int i = 0; i < rowCount; i++) {
-			Row row = sheet.getRow(rowEnd + i);
+		for (int i = 0; i < block.height(); i++) {
+			Row row = sheet.getRow(updatedRange.endRow() + i);
 
 			if (row != null)
 				continue;
 
-			row = sheet.createRow(rowEnd + i);
+			row = sheet.createRow(updatedRange.endRow() + i);
 
-			for (int colNum = 0; colNum < colEnd; colNum++)
+			for (int colNum = 0; colNum < updatedRange.endCol(); colNum++)
 				row.createCell(colNum, CellType.BLANK);
 		}
 
-		// Copy rows from bottom to top
-		for (int rowNum = rowEnd - 1; rowNum >= rowStart; rowNum--)
-			copy(sheet.getRow(rowNum), colStart, sheet.getRow(rowNum + rowCount), colStart, colCount);
+		// Copy rows from end to start
+		for (int rowNum = updatedRange.endRow() - 1; rowNum >= block.startRow(); rowNum--)
+			copy(sheet.getRow(rowNum), block.startCol(), sheet.getRow(rowNum + block.height()), block.startCol(), block.width());
 
-		for (int i = 0; i < rowCount; i++)
-			clear(sheet.getRow(rowStart + i), colStart, colEnd);
-
-		updateMergedRegions(sheet, rowStart, colStart, rowEnd, colEnd, rowCount, 0);
+		clear(sheet, block);
+		moveMergedRegions(sheet, updatedRange, block.height(), 0);
 	}
 
-	public static void clear(Row row, int colStart, int colEnd) {
-		for (int colNum = colStart; colNum < colEnd; colNum++) {
-			Cell cell = row.getCell(colNum);
-			if (cell != null)
-				cell.setCellType(CellType.BLANK);
+	public static void clear(Sheet sheet, Block block) {
+		for (int rowNum = block.startRow(), endRow = block.endRow(); rowNum < endRow; rowNum++) {
+			Row row = sheet.getRow(rowNum);
+			for (int colNum = block.startCol(), endCol = block.endCol(); colNum < endCol; colNum++) {
+				Cell cell = row.getCell(colNum);
+				if (cell != null)
+					cell.setCellType(CellType.BLANK);
+			}
 		}
 	}
 
-	public static void copy(Sheet sheet, CellRangeAddress source, int destRow, int destCol) {
-		for (int i = 0, n = source.getLastRow() - source.getFirstRow() + 1; i < n; i++)
-			copy(sheet.getRow(source.getFirstRow() + i), source.getFirstColumn(), sheet.getRow(destRow + i), destCol, source.getLastColumn() - source.getFirstColumn() + 1);
+	public static void copy(Sheet sheet, Block source, Block target) {
+		for (int i = 0, n = source.height(); i < n; i++)
+			copy(sheet.getRow(source.startRow() + i), source.startCol(), sheet.getRow(target.startRow() + i), target.startCol(), source.width());
 	}
 
-	public static void copy(Row source, int sourceColStart, Row target, int targetColStart, int colCount) {
+	public static void copy(Row source, int sourceStartCol, Row target, int targetStartCol, int colCount) {
 		for (int i = 0; i < colCount; i++)
-			copy(source, sourceColStart + i, target, targetColStart + i);
+			copy(source, sourceStartCol + i, target, targetStartCol + i);
 	}
 
 	public static void copy(Row sourceRow, int sourceCol, Row targetRow, int targetCol) {
@@ -158,58 +142,30 @@ public class Util {
 		}
 	}
 
-	public static void visitCells(Sheet sheet, CellRangeAddress address, CellVisitor visitor) {
-		visitCells(sheet, address.getFirstRow(), address.getFirstColumn(), address.getLastRow() + 1, address.getLastColumn() + 1, visitor);
-	}
-
-	public static void visitCells(Sheet sheet, int rowStart, int colStart, int rowEnd, int colEnd, CellVisitor visitor) {
-		for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+	public static void visitCells(Sheet sheet, Block block, CellVisitor visitor) {
+		for (int rowNum = block.startRow(), endRow = block.endRow(), endCol = block.endCol(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
 			if (row == null)
 				continue;
 
-			for (int colNum = colStart; colNum < colEnd; colNum++)
+			for (int colNum = block.startCol(); colNum < endCol; colNum++)
 				visitor.visit(row, colNum, row.getCell(colNum));
 		}
 	}
 
-	public static boolean regionIn(CellRangeAddress region, int rowStart, int colStart, int rowEnd, int colEnd) {
-		return region.getFirstColumn() >= colStart && region.getFirstRow() >= rowStart
-				&& region.getLastColumn() < colEnd && region.getLastRow() < rowEnd;
-	}
-
-	public static boolean regionOut(CellRangeAddress region, int rowStart, int colStart, int rowEnd, int colEnd) {
-		return region.getFirstColumn() >= colEnd || region.getLastColumn() < colStart
-				|| region.getFirstRow() >= rowEnd || region.getLastRow() < rowStart;
-	}
-
-	public static String toString(CellRangeAddress region) {
-		return new StringBuilder(100).append('[').append(toLetter(region.getFirstColumn())).append(region.getFirstRow() + 1)
-				.append(':').append(toLetter(region.getLastColumn())).append(region.getLastRow() + 1).append(']').toString();
-	}
-
-	public static String toLetter(int n) {
-		StringBuilder str = new StringBuilder(10);
-		while (n > 0) {
-			str.insert(0, (char) ('A' + (n % 26)));
-			n = n / 26;
-		}
-		return str.toString();
-	}
-
-	private static void updateMergedRegions(Sheet sheet, int rowStart, int colStart, int rowEnd, int colEnd,
-			int rowShift, int colShift) {
+	private static void moveMergedRegions(Sheet sheet, Block block, int rowShift, int colShift) {
 		List<CellRangeAddress> updated = new ArrayList<CellRangeAddress>(sheet.getNumMergedRegions());
 
 		for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
 			CellRangeAddress region = sheet.getMergedRegion(i);
+			Block regionRange = new Block(region);
 
-			boolean in = regionIn(region, rowStart, colStart, rowEnd, colEnd);
-			boolean out = regionOut(region, rowStart, colStart, rowEnd, colEnd);
+			boolean in = regionRange.in(block);
+			boolean out = regionRange.out(block);
 
 			if (!in && !out)
-				throw new RuntimeException("PoiReport.updateMergedRegions(): " + toString(region));
+				throw new RuntimeException("PoiReport.updateMergedRegions(): " + regionRange.toAddress());
 
 			if (in) {
 				region.setFirstColumn(region.getFirstColumn() + colShift);

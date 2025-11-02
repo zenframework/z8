@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.reports.poi;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,37 +16,28 @@ import org.zenframework.z8.server.runtime.OBJECT;
 
 public class Range {
 
-	public static enum Direction {
-		Vertical(0), Horizontal(1);
-
-		private final int value;
-
-		private Direction(int value) {
-			this.value = value;
-		}
-
-		public static Direction valueOf(int value) {
-			return value == Horizontal.value ? Horizontal : Vertical;
-		}
-	}
-
 	private static final String SheetSplitter = "!";
 
-	private OBJECT context;
+	private PoiReport report;
+
 	private DataSource source;
 	private int sheetIndex;
-	private CellRangeAddress address;
-	private Direction direction;
+	private Block templateBlock, targetBlock;
+	private Block.Direction direction;
 
 	private final List<Range> ranges = new LinkedList<Range>();
 
-	public OBJECT getContext() {
-		return context;
+	public Range setReport(PoiReport report) {
+		this.report = report;
+
+		for (Range range : ranges)
+			range.setReport(report);
+
+		return this;
 	}
 
-	public Range setContext(OBJECT context) {
-		this.context = context;
-		return this;
+	public PoiReport getReport() {
+		return report;
 	}
 
 	public DataSource getSource() {
@@ -65,13 +57,17 @@ public class Range {
 		return sheetIndex;
 	}
 
-	public CellRangeAddress getAddress() {
-		return address;
+	public Block getTemplateBlock() {
+		return templateBlock;
+	}
+
+	public Block getTargetBlock() {
+		return targetBlock;
 	}
 
 	public Range setAddress(int sheetIndex, CellRangeAddress address) {
 		this.sheetIndex = sheetIndex;
-		this.address = address;
+		this.templateBlock = new Block(address);
 		return this;
 	}
 
@@ -80,17 +76,17 @@ public class Range {
 		return setAddress(parts.length > 1 ? Integer.parseInt(parts[0]) : 0, CellRangeAddress.valueOf(parts[parts.length - 1]));
 	}
 
-	public Direction getDirection() {
+	public Block.Direction getDirection() {
 		return direction;
 	}
 
-	public Range setDirection(Direction direction) {
+	public Range setDirection(Block.Direction direction) {
 		this.direction = direction;
 		return this;
 	}
 
 	public Range setDirection(int direction) {
-		return setDirection(Direction.valueOf(direction));
+		return setDirection(Block.Direction.valueOf(direction));
 	}
 
 	public List<Range> getRanges() {
@@ -103,26 +99,34 @@ public class Range {
 		return this;
 	}
 
-	public void apply(XSSFWorkbook workbook) {
-		for (Range range : ranges)
-			range.apply(workbook);
+	public Range apply(XSSFWorkbook workbook) {
+		Sheet sheet = workbook.getSheetAt(sheetIndex);
+		prepare(sheet);
+		fill(sheet, new Block.Diff());
+		return this;
+	}
 
-		source.prepare(workbook);
-
-		int rowStart = address.getFirstRow(), colStart = address.getFirstColumn();
-		int rowEnd = address.getLastRow() + 1, colEnd = address.getLastColumn() + 1;
-		int height = rowEnd - rowStart, width = colEnd - colStart;
-		int rowShift = 0, colShift = 0;
+	protected Block prepare(Sheet sheet) {
 		int count = source.count();
 
-		Sheet sheet = workbook.getSheetAt(sheetIndex);
+		source.prepare(sheet);
 
-		Util.multiplyBlock(sheet, address, count, direction);
+		// TODO Check inner ranges intersections, update ranges
+		for (Range range : ranges) {
+			if (!range.getTemplateBlock().in(templateBlock))
+				throw new RuntimeException("Incorrect ranges: " + range.getTemplateBlock() + " is not in " + templateBlock);
 
+			templateBlock = templateBlock.stretch(range.prepare(sheet).diffSize(range.getTemplateBlock()));
+		}
+
+		return targetBlock = Util.multiplyBlock(sheet, templateBlock, count, direction);
+	}
+
+	protected void fill(Sheet sheet, Block.Diff shift) {
 		Util.CellVisitor visitor = new Util.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell) {
-				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
+				if (inOneOf(row.getRowNum(), colNum, shift, ranges) || cell == null || cell.getCellTypeEnum() != CellType.STRING)
 					return;
 
 				Object value = source.evaluate(cell.getStringCellValue());
@@ -130,13 +134,19 @@ public class Range {
 			}
 		};
 
-		while (source.next()) {
-			Util.visitCells(sheet, rowStart + rowShift, colStart + colShift, rowEnd + rowShift, colEnd + colShift, visitor);
+		try {
+			source.open();
 
-			if (direction == Direction.Horizontal)
-				colShift += width;
-			else
-				rowShift += height;
+			while (source.next()) {
+				for (Range range : ranges)
+					range.fill(sheet, shift.copy());
+
+				Util.visitCells(sheet, templateBlock.shift(shift), visitor);
+
+				shift.add(direction, templateBlock);
+			}
+		} finally {
+			source.close();
 		}
 	}
 
@@ -146,5 +156,12 @@ public class Range {
 		if (source instanceof JsonArray)
 			return new JsonSource(this, (JsonArray) source);
 		return null;
+	}
+
+	private static boolean inOneOf(int row, int col, Block.Diff shift, Collection<Range> ranges) {
+		for (Range range : ranges)
+			if (range.getTargetBlock().shift(shift).has(row, col))
+				return true;
+		return false;
 	}
 }

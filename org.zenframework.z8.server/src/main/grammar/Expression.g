@@ -65,8 +65,6 @@ literal
 
 identifier : IDENTIFIER ;
 
-IDENTIFIER : Letter LetterOrDigit* ;
-
 INTEGER_LITERAL : ('0' | [1-9] (Digits? | '_'+ Digits)) [lL]? ;
 
 FLOAT_LITERAL
@@ -82,6 +80,8 @@ STRING_LITERAL
 	| '«' (~[«»\\\r\n] | EscapeSequence)* '»'
 	| '„'  (~[„“\\\r\n] | EscapeSequence)* '“'
 	;
+
+IDENTIFIER : Letter LetterOrDigit* ;
 
 fragment ExponentPart : [eE] [+-]? Digits ;
 

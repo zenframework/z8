@@ -23,93 +23,160 @@ import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
-public class ExpressionTreeVisitor extends ExpressionBaseVisitor<Object> {
+public class ExpressionTreeVisitor extends ExpressionBaseVisitor<Value> {
 
-	private final Expression expression;
+	private static final char LeftIndex = '[';
+	private static final char RightIndex = ']';
 
-	public ExpressionTreeVisitor(Expression expression) {
-		this.expression = expression;
+	private static final char LeftBracket = '(';
+	private static final char RightBracket = ')';
+
+	private static final char Member = '.';
+
+	private static final char Question = '?';
+	private static final char Colon = ':';
+
+	private static final String Elvis = "?:";
+
+	private final Calculator calculator;
+
+	public ExpressionTreeVisitor(Calculator calculator) {
+		this.calculator = calculator;
 	}
 
 	@Override
-	public Object visitRootExpression(RootExpressionContext ctx) {
+	public Value visitRootExpression(RootExpressionContext ctx) {
 		return visit(ctx.getChild(0));
 	}
 
 	@Override
-	public Object visitMemberReferenceExpression(MemberReferenceExpressionContext ctx) {
-		Object value = null;
+	public Value visitMemberReferenceExpression(MemberReferenceExpressionContext ctx) {
+		Value object = visit(ctx.object);
 
 		if (ctx.property != null) {
-			value = Operator.getProperty(visit(ctx.object), ctx.property.getText());
+			String property = ctx.property.getText();
+
+			if (object.isEvaluated())
+				return new Value().setValue(calculator.getProperty(object.get(), property));
+
+			return new Value().setExpression(object.toString() + Member + property);
+
 		} else if (ctx.method != null) {
 			MethodCallContext methodCall = ctx.methodCall();
-			value = Operator.callMethod(visit(ctx.object), methodCall.function.getText(), evaluateArguments(methodCall));
+			String function = methodCall.function.getText();
+			Value[] arguments = evaluateArguments(methodCall);
+
+			if (object.isEvaluated() && Value.isEvaluated(arguments))
+				return new Value().setValue(calculator.callMethod(object.get(), function, Value.get(arguments)));
+
+			return new Value().setExpression(object.toString() + Member + function + LeftBracket + Value.toString(arguments) + RightBracket);
 		}
 
-		return expression.getValue(value);
+		throw new IllegalStateException("[null] member");
 	}
 
 	@Override
-	public Object visitBinaryOperatorExpression(BinaryOperatorExpressionContext ctx) {
-		return expression.getValue(Operator.binary(visit(ctx.left), visit(ctx.right), Operator.parse(ctx.op)));
+	public Value visitBinaryOperatorExpression(BinaryOperatorExpressionContext ctx) {
+		Value left = visit(ctx.left);
+		Value right = visit(ctx.right);
+		Operator op = Operator.parse(ctx.op);
+
+		if (left.isEvaluated() && right.isEvaluated())
+			return new Value().setValue(calculator.binary(left.get(), right.get(), op));
+
+		return new Value().setExpression(left.toString() + ' ' + op + ' ' + right.toString());
 	}
 
 	@Override
-	public Object visitUnaryOperatorExpression(UnaryOperatorExpressionContext ctx) {
-		return expression.getValue(Operator.unary(visit(ctx.expression()), Operator.parse(ctx.prefix.getText())));
+	public Value visitUnaryOperatorExpression(UnaryOperatorExpressionContext ctx) {
+		Value expression = visit(ctx.expression());
+		Operator op = Operator.parse(ctx.prefix);
+
+		if (expression.isEvaluated())
+			return new Value().setValue(calculator.unary(expression.get(), op));
+
+		return new Value().setExpression((op != null ? op.toString() : "") + expression.toString());
 	}
 
 	@Override
-	public Object visitMethodCallExpression(MethodCallExpressionContext ctx) {
+	public Value visitMethodCallExpression(MethodCallExpressionContext ctx) {
 		MethodCallContext methodCall = ctx.methodCall();
-		return expression.getValue(Functions.call(methodCall.function.getText(), evaluateArguments(methodCall)));
+		String function = methodCall.function.getText();
+		Value[] arguments = evaluateArguments(methodCall);
+
+		if (Value.isEvaluated(arguments))
+			return new Value().setValue(calculator.callFunction(function, Value.get(arguments)));
+
+		return new Value().setExpression(function + LeftBracket + Value.toString(arguments) + RightBracket);
 	}
 
 	@Override
-	public Object visitSquareBracketExpression(SquareBracketExpressionContext ctx) {
-		return expression.getValue(Operator.index(visit(ctx.array), visit(ctx.index)));
+	public Value visitSquareBracketExpression(SquareBracketExpressionContext ctx) {
+		Value array = visit(ctx.array);
+		Value index = visit(ctx.index);
+
+		if (array.isEvaluated() && index.isEvaluated())
+			return new Value().setValue(calculator.getItem(array.get(), index.get()));
+
+		return new Value().setExpression(array.toString() + LeftIndex + index.toString() + RightIndex);
 	}
 
 	@Override
-	public Object visitTernaryExpression(TernaryExpressionContext ctx) {
-		return expression.getValue(Operator.isTrue(expression.getValue(visit(ctx.condition)))
-				? visit(ctx.trueExp) : visit(ctx.falseExp));
+	public Value visitTernaryExpression(TernaryExpressionContext ctx) {
+		Value condition = visit(ctx.condition);
+
+		if (condition.isEvaluated())
+			return Calculator.isTrue(condition.get()) ? visit(ctx.trueExp) : visit(ctx.falseExp);
+
+		Value trueExp = visit(ctx.trueExp);
+		Value falseExp = visit(ctx.falseExp);
+
+		return new Value().setExpression(condition.toString() + ' ' + Question + trueExp.toString() + ' ' + Colon + ' ' + falseExp.toString());
 	}
 
 	@Override
-	public Object visitElvisExpression(ElvisExpressionContext ctx) {
-		Object value = expression.getValue(visit(ctx.value));
-		return value != null ? value : expression.getValue(visit(ctx.alternative));
+	public Value visitElvisExpression(ElvisExpressionContext ctx) {
+		Value value = visit(ctx.value);
+
+		if (value.isEvaluated() && value.get() != null)
+			return value;
+
+		Value alternative = visit(ctx.alternative);
+
+		if (!value.isEvaluated())
+			return new Value().setExpression(value.toString() + ' ' + Elvis + ' ' + alternative.toString());
+
+		return alternative;
 	}
 
 	@Override
-	public Object visitPriority(PriorityContext ctx) {
-		return visit(ctx.expression());
+	public Value visitPriority(PriorityContext ctx) {
+		Value expression = visit(ctx.expression());
+		return expression.isEvaluated() ? expression : new Value().setExpression(LeftBracket + expression.toString() + RightBracket);
 	}
 
 	@Override
-	public Object visitLiteral(LiteralContext ctx) {
+	public Value visitLiteral(LiteralContext ctx) {
 		if (ctx.integer != null)
-			return new integer(ctx.integer.getText());
+			return new Value().setValue(new integer(ctx.integer.getText()));
 		if (ctx.decimal != null)
-			return new decimal(ctx.decimal.getText());
+			return new Value().setValue(new decimal(ctx.decimal.getText()));
 		if (ctx.string != null)
-			return new string(unquote(ctx.string.getText()));
+			return new Value().setValue(new string(unquote(ctx.string.getText())));
 		if (ctx.bool != null)
-			return new bool(ctx.bool.getText());
+			return new Value().setValue(new bool(ctx.bool.getText()));
 		return null;
 	}
 
 	@Override
-	public Object visitIdentifier(IdentifierContext ctx) {
-		return expression.getVariableValue(ctx.getText(), true);
+	public Value visitIdentifier(IdentifierContext ctx) {
+		return calculator.getVariableValue(ctx.getText());
 	}
 
-	private Object[] evaluateArguments(MethodCallContext methodCall) {
+	private Value[] evaluateArguments(MethodCallContext methodCall) {
 		ExpressionListContext argumentsList = methodCall.arguments;
 		List<ExpressionContext> arguments = argumentsList != null ? argumentsList.expression() : Collections.emptyList();
-		Object[] values = new Object[arguments.size()];
+		Value[] values = new Value[arguments.size()];
 		int index = 0;
 
 		for (ExpressionContext argument : arguments)

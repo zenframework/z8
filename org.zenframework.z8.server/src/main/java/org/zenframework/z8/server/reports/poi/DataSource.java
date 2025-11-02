@@ -1,57 +1,74 @@
 package org.zenframework.z8.server.reports.poi;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.zenframework.z8.server.expression.Expression;
-import org.zenframework.z8.server.expression.Variable;
+import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.types.integer;
 
 public abstract class DataSource {
 
-	private static final String Counter = "counter";
-
 	protected final Range range;
-	protected Expression expression;
-	private int counter;
+
+	protected Counter counter;
+	private boolean initialized = false;
 
 	protected DataSource(Range range) {
 		this.range = range;
 	}
 
-	public String getIndex() {
-		String contextId = range.getContext().id();
-		String id = getObject().id();
-		return id.startsWith(contextId + ".") ? id.substring(contextId.length() + 1) : id;
+	public String getId() {
+		return getObject().id();
 	}
 
 	public int getCounter() {
-		return counter;
+		return counter.getInt();
 	}
 
-	public void prepare(XSSFWorkbook workbook) {
-		counter = -1;
+	public Expression getExpression() {
+		return range.getReport().getExpression();
+	}
 
-		if (expression == null)
-			expression = new Expression().setVariable(new Variable(Counter) {
-				@Override
-				public Object getValue() {
-					return new integer(counter);
-				}
-			}).setVariable(getIndex(), getObject());
+	public void prepare(Sheet sheet) {
+		if (!initialized)
+			initialize();
+	}
+
+	public void open() {
+		counter.reset();
 	}
 
 	public boolean next() {
-		counter++;
+		counter.inc();
 		return internalNext();
 	}
 
+	public void close() {}
+
+	protected abstract boolean internalNext();
+
 	public Object evaluate(String value) {
-		return expression.evaluateText(value);
+		return getExpression().evaluateText(value);
 	}
 
 	public abstract OBJECT getObject();
 
 	public abstract int count();
 
-	protected abstract boolean internalNext();
+	protected void initialize() {
+		initialized = true;
+
+		counter = getObjectMember(Counter.Index);
+
+		if (counter == null) {
+			OBJECT source = getObject();
+			counter = new Counter.CLASS<Counter>(source).get();
+			source.objects.add(counter.getCLASS());
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected <T extends OBJECT> T getObjectMember(String id) {
+		CLASS value = (CLASS) getObject().getMember(id);
+		return value != null ? (T) value.get() : null;
+	}
 }

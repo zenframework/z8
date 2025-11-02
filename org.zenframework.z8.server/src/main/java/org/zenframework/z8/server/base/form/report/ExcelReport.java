@@ -3,8 +3,10 @@ package org.zenframework.z8.server.base.form.report;
 import java.io.File;
 
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.PoiReport;
 import org.zenframework.z8.server.reports.poi.ReportOptions;
+import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.file;
@@ -38,9 +40,18 @@ public class ExcelReport extends Report {
 		options.setTemplate(template.get());
 		options.setName(name != null ? name.get() : null);
 
-		File diskFile = new PoiReport(options).setRanges(Range.asPoiRanges(ranges, this)).execute();
+		PoiReport report = new PoiReport(options, this).setRanges(Range.asPoiRanges(ranges));
+
+		File diskFile = report.execute();
 		file file = new file(diskFile);
 		file.set(new InputOnlyFileItem(diskFile, diskFile.getName()));
+
+		IMonitor monitor = ApplicationServer.getMonitor();
+
+		if (monitor != null) {
+			for (String error : report.getErrors())
+				monitor.warning(error);
+		}
 
 		return file;
 	}
