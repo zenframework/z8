@@ -1,4 +1,5 @@
 [native "org.zenframework.z8.server.base.form.report.ExcelReport"]
 public class ExcelReport extends Report {
 	public Range[] ranges;
+	public string[] hiddenColumns;
 }

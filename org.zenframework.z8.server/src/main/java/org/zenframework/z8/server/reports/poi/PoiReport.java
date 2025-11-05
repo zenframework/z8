@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
@@ -22,6 +26,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 public class PoiReport {
 
 	private final List<Range> ranges = new LinkedList<Range>();
+	private final Set<Integer> hiddenColumns = new HashSet<Integer>();
 	private final ReportOptions options;
 	private final Expression expression;
 
@@ -57,6 +62,21 @@ public class PoiReport {
 		return this;
 	}
 
+	public PoiReport setHiddenColumns(Collection<Integer> hiddenColumns) {
+		this.hiddenColumns.clear();
+		this.hiddenColumns.addAll(hiddenColumns);
+		return this;
+	}
+
+	public PoiReport addHiddenColumn(int hiddenColumn) {
+		this.hiddenColumns.add(hiddenColumn);
+		return this;
+	}
+
+	public PoiReport addHiddenColumn(String hiddenColumn) {
+		return addHiddenColumn(Util.columnToInt(hiddenColumn));
+	}
+
 	public Expression getExpression() {
 		return expression;
 	}
@@ -89,9 +109,18 @@ public class PoiReport {
 		for (Range range : ranges)
 			range.apply(workbook);
 
+		hideColumns(workbook);
+
 		saveXlsx(workbook, outputFile);
 
 		return outputFile;
+	}
+
+	private void hideColumns(XSSFWorkbook workbook) {
+		Sheet sheet = workbook.getSheetAt(0);
+
+		for (int hiddenColumn : hiddenColumns)
+			sheet.setColumnHidden(hiddenColumn, true);
 	}
 
 	private static XSSFWorkbook loadXlsx(File file) throws IOException {

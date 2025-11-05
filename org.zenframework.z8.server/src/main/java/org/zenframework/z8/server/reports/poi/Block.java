@@ -115,8 +115,8 @@ public class Block {
 	}
 
 	public String toAddress() {
-		return new StringBuilder(100).append(toLetter(startCol())).append(startRow() + 1)
-				.append(':').append(toLetter(endCol() - 1)).append(endRow()).toString();
+		return new StringBuilder(100).append(Util.columnToString(startCol())).append(startRow() + 1)
+				.append(':').append(Util.columnToString(endCol() - 1)).append(endRow()).toString();
 	}
 
 	@Override
@@ -161,20 +161,6 @@ public class Block {
 
 	public Block copy() {
 		return new Block(this);
-	}
-
-	private static String toLetter(int n) {
-		if (n == 0)
-			return "A";
-
-		StringBuilder str = new StringBuilder(10);
-
-		while (n >= 0) {
-			str.insert(0, (char) ('A' + n % 26));
-			n = n / 26 - 1;
-		}
-
-		return str.toString();
 	}
 
 	private static void checkPositive(int... values) {
