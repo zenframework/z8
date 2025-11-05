@@ -384,6 +384,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		getCLASS().setId(value.toString());
 	}
 
+	public guid z8_key() {
+		return key();
+	}
+
 	public string z8_index() {
 		return new string(index());
 	}

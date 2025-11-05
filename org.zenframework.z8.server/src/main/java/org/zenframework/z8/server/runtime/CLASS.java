@@ -268,7 +268,8 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 
 	@Override
 	public guid key() {
-		return key == null ? key = guid.create(keyString()) : key;
+		String keyString = keyString();
+		return keyString != null ? (key == null ? key = guid.create(keyString) : key) : null;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ public class Object {
 
 	virtual protected void constructor();
 
+	public guid key();
 	public string index();
 	public string name();
 	public string className();
