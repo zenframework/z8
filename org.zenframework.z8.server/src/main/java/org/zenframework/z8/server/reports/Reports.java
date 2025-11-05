@@ -5,6 +5,10 @@ public class Reports {
 
 	public static final String DefaultDesign = "default.rptdesign";
 
+	// Engines
+	public static final String BIRT = "birt";
+	public static final String POI = "poi";
+
 	// for Layout:
 	public static final String FirstPageHeader = "CaptionCenter";
 	public static final String ReportBody = "ReportBody";

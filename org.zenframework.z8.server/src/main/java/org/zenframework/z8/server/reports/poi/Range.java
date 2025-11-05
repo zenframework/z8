@@ -17,7 +17,7 @@ public class Range {
 
 	private static final String SheetSplitter = "!";
 
-	private PoiReport report;
+	private ReportOptions options;
 
 	private DataSource source;
 	private int sheetIndex;
@@ -26,17 +26,17 @@ public class Range {
 
 	private final List<Range> ranges = new LinkedList<Range>();
 
-	public Range setReport(PoiReport report) {
-		this.report = report;
+	public Range setReport(ReportOptions options) {
+		this.options = options;
 
 		for (Range range : ranges)
-			range.setReport(report);
+			range.setReport(options);
 
 		return this;
 	}
 
-	public PoiReport getReport() {
-		return report;
+	public ReportOptions getOptions() {
+		return options;
 	}
 
 	public DataSource getSource() {

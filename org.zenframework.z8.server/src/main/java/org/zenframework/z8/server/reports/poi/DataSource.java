@@ -26,7 +26,7 @@ public abstract class DataSource {
 	}
 
 	public Expression getExpression() {
-		return range.getReport().getExpression();
+		return range.getOptions().getExpression();
 	}
 
 	public void prepare(SheetModifier sheet) {

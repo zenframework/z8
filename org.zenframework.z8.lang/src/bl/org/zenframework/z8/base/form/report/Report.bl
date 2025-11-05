@@ -2,6 +2,11 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.form.report.Report"]
 public class Report extends Object {
+	// Engines
+	static public final string BIRT;
+	static public final string POI;
+
+	// Formats
 	static public final string Pdf;
 	static public final string Excel;
 	static public final string Word;
@@ -9,9 +14,14 @@ public class Report extends Object {
 	static public final string Html;
 	static public final string Powerpoint;
 
+	public string engine;
 	public string name;
 	public string template;
 	public string format;
+
+	// POI-only options
+	public Range[] ranges;
+	public string[] hiddenColumns;
 
 	public file run(guid recordId);
 
