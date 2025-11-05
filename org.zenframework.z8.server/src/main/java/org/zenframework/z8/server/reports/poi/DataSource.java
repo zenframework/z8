@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.reports.poi;
 
-import org.apache.poi.ss.usermodel.Sheet;
 import org.zenframework.z8.server.expression.Expression;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -30,7 +29,7 @@ public abstract class DataSource {
 		return range.getReport().getExpression();
 	}
 
-	public void prepare(Sheet sheet) {
+	public void prepare(SheetModifier sheet) {
 		if (!initialized)
 			initialize();
 	}
@@ -58,16 +57,12 @@ public abstract class DataSource {
 
 	protected void initialize() {
 		initialized = true;
-
-		index = getObjectMember(Index);
-
-		if (index == null)
-			index = Wrapper.instance(getObject(), Index);
+		index = getObjectProperty(Index);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected <T extends OBJECT> T getObjectMember(String id) {
+	protected <V> Wrapper<V> getObjectProperty(String id) {
 		CLASS value = (CLASS) getObject().getMember(id);
-		return value != null ? (T) value.get() : null;
+		return value != null ? (Wrapper<V>) value.get() : Wrapper.instance(getObject(), id);
 	}
 }

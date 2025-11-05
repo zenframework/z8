@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
@@ -100,33 +99,49 @@ public class Range {
 	}
 
 	public Range apply(XSSFWorkbook workbook) {
-		Sheet sheet = workbook.getSheetAt(sheetIndex);
-		prepare(sheet);
+		SheetModifier sheet = new SheetModifier().setSheet(workbook.getSheetAt(sheetIndex));
+		prepare(sheet, null);
 		fill(sheet, new Block.Diff());
 		return this;
 	}
 
-	protected Block prepare(Sheet sheet) {
+	// Returns modified boundaries
+	protected Block prepare(SheetModifier sheet, Block boundaries) {
 		int count = source.count();
 
 		source.prepare(sheet);
 
 		// TODO Check inner ranges intersections, update ranges
 		for (Range range : ranges) {
-			if (!range.getTemplateBlock().in(templateBlock))
-				throw new RuntimeException("Incorrect ranges: " + range.getTemplateBlock() + " is not in " + templateBlock);
+			//if (!range.getTemplateBlock().in(templateBlock))
+			//	throw new RuntimeException("Incorrect ranges: " + range.getTemplateBlock() + " is not in " + templateBlock);
 
-			templateBlock = templateBlock.stretch(range.prepare(sheet).diffSize(range.getTemplateBlock()));
+			templateBlock = range.prepare(sheet, templateBlock);
 		}
 
-		return targetBlock = Util.multiplyBlock(sheet, templateBlock, count, direction);
+		if (count < 1) {
+			// TODO Delete cells
+		}
+
+		Block multiplied = /*boundaries != null ? boundaries.band(direction, templateBlock) :*/ templateBlock;
+
+		sheet.insertBlock(multiplied.shift(direction, 1).stretch(direction, count - 1), direction);
+
+		for (int i = 1; i < count; i++)
+			sheet.copy(templateBlock, templateBlock.shift(direction, i));
+
+		targetBlock = templateBlock.stretch(direction, count);
+
+		sheet.updateMergedRegions(boundaries, multiplied, direction, count);
+
+		return boundaries != null ? boundaries.stretch(targetBlock.diffSize(templateBlock)) : null;
 	}
 
-	protected void fill(Sheet sheet, Block.Diff shift) {
-		Util.CellVisitor visitor = new Util.CellVisitor() {
+	protected void fill(SheetModifier sheet, Block.Diff baseShift) {
+		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell) {
-				if (inOneOf(row.getRowNum(), colNum, shift, ranges) || cell == null || cell.getCellTypeEnum() != CellType.STRING)
+				if (inOneOf(row.getRowNum(), colNum, baseShift, ranges) || cell == null || cell.getCellTypeEnum() != CellType.STRING)
 					return;
 
 				Object value = source.evaluate(cell.getStringCellValue());
@@ -138,12 +153,12 @@ public class Range {
 			source.open();
 
 			while (source.next()) {
+				Block.Diff shift = baseShift.add(templateBlock.vector(direction, source.getIndex()));
+
 				for (Range range : ranges)
-					range.fill(sheet, shift.copy());
+					range.fill(sheet, shift);
 
-				Util.visitCells(sheet, templateBlock.shift(shift), visitor);
-
-				shift.add(direction, templateBlock);
+				sheet.visitCells(templateBlock.shift(shift), visitor);
 			}
 		} finally {
 			source.close();

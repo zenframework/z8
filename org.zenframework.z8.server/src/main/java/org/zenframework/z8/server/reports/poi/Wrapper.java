@@ -40,4 +40,8 @@ public class Wrapper<V> extends OBJECT {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		return "Wrapper[" + (value != null ? value.toString() : "null") + ']';
+	}
 }

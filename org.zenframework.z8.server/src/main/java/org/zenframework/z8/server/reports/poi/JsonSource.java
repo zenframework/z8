@@ -34,11 +34,7 @@ public class JsonSource extends DataSource {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
-		item = getObjectMember(Item);
-
-		if (item == null)
-			item = Wrapper.<Object>instance(getObject(), Item);
+		item = getObjectProperty(Item);
 	}
 
 	@Override

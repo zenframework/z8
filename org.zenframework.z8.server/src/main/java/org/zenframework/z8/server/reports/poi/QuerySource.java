@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.expression.Expression;
@@ -30,7 +29,7 @@ public class QuerySource extends DataSource {
 	}
 
 	@Override
-	public void prepare(Sheet sheet) {
+	public void prepare(SheetModifier sheet) {
 		super.prepare(sheet);
 		collectFields(sheet);
 	}
@@ -58,7 +57,7 @@ public class QuerySource extends DataSource {
 		return query.next();
 	}
 
-	private void collectFields(Sheet sheet) {
+	private void collectFields(SheetModifier sheet) {
 		Expression.Extractor extractor = new Expression.Extractor() {
 			@Override
 			public void onObject(OBJECT object) {
@@ -67,7 +66,7 @@ public class QuerySource extends DataSource {
 			}
 		};
 
-		Util.CellVisitor visitor = new Util.CellVisitor() {
+		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell) {
 				if (cell != null && cell.getCellTypeEnum() == CellType.STRING)
@@ -75,7 +74,7 @@ public class QuerySource extends DataSource {
 			}
 		};
 
-		Util.visitCells(sheet, range.getTemplateBlock(), visitor);
+		sheet.visitCells(range.getTemplateBlock(), visitor);
 
 		for (Field.CLASS<? extends Field> field : query.extraFields)
 			fields.put(field.id(), field.get());

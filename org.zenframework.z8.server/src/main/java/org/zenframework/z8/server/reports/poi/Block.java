@@ -34,22 +34,13 @@ public class Block {
 			return new Diff(rows, cols);
 		}
 
-		public Diff add(Direction direction, Block block) {
-			if (direction == Block.Direction.Horizontal)
-				cols += block.width();
-			else
-				rows += block.height();
-			return this;
-		}
-
-		public Diff addCols(int cols) {
-			this.cols += cols;
-			return this;
+		public Diff add(Diff diff) {
+			return new Diff(rows + diff.rows, cols + diff.cols);
 		}
 
 		@Override
 		public String toString() {
-			return new StringBuilder(20).append("{r:").append(rows).append(", c:").append(cols).append('}').toString();
+			return new StringBuilder(20).append("{r:").append(rows).append(",c:").append(cols).append('}').toString();
 		}
 	}
 
@@ -133,13 +124,21 @@ public class Block {
 		return toAddress();
 	}
 
+	public CellRangeAddress toCellRangeAddress() {
+		return new CellRangeAddress(startRow(), endRow() - 1, startCol(), endCol() - 1);
+	}
+
+	public Diff vector(Direction direction, int count) {
+		return new Diff(direction == Direction.Horizontal ? 0 : height * count,
+				direction == Direction.Horizontal ? width * count : 0);
+	}
+
 	public Block shift(Diff shift) {
 		return shift != null ? copy().setStart(startRow + shift.rows, startCol + shift.cols) : this;
 	}
 
 	public Block shift(Direction direction, int count) {
-		return shift(new Diff(direction == Direction.Horizontal ? 0 : height * count,
-				direction == Direction.Horizontal ? width * count : 0));
+		return shift(vector(direction, count));
 	}
 
 	public Block stretch(Diff diff) {
@@ -149,6 +148,11 @@ public class Block {
 	public Block stretch(Direction direction, int count) {
 		return copy().setSize(height * (direction == Direction.Horizontal ? 1 : count),
 				width * (direction == Direction.Horizontal ? count : 1));
+	}
+
+	public Block band(Direction direction, Block block) {
+		return direction == Direction.Horizontal ? new Block(startRow(), block.startCol(), height(), block.width())
+				: new Block(block.startRow(), startCol(), block.height(), width());
 	}
 
 	public Diff diffSize(Block block) {
