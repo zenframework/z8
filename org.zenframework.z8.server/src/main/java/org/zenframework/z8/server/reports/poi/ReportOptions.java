@@ -105,6 +105,15 @@ public class ReportOptions {
 		return addHiddenColumn(Util.columnToInt(hiddenColumn));
 	}
 
+	public ReportOptions setContext(OBJECT context) {
+		this.context = context;
+		return this;
+	}
+
+	public OBJECT getContext() {
+		return context;
+	}
+
 	public Expression getExpression() {
 		if (expression == null)
 			expression = new Expression()

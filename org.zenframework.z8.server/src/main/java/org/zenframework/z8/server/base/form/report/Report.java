@@ -135,6 +135,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 
 	private File executePoi() {
 		org.zenframework.z8.server.reports.poi.ReportOptions options = new org.zenframework.z8.server.reports.poi.ReportOptions()
+				.setContext(this)
 				.setTemplate(template.get())
 				.setName(name != null ? name.get() : null)
 				.setRanges(Range.asPoiRanges(ranges))
