@@ -37,5 +37,6 @@ public class Files extends Table {
 
 	public static file get(guid fileId);
 	public static file get(file file);
+	public static file addToStorage(string path, string name, file file);
 
 }

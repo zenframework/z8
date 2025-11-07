@@ -387,12 +387,20 @@ public class file extends primary implements RmiSerializable, Serializable {
 	static public file createTempFile(String prefix, String extension) {
 		return createTempFile(new File(Folders.Base, Folders.Temp), prefix, extension);
 	}
+	
+	static public File createTempJavaFile(String prefix, String extension) {
+		return createTempJavaFile(new File(Folders.Base, Folders.Temp), prefix, extension);
+	}
 
 	static public file createLogFile(String folder, String extension) {
 		return createTempFile(FileUtils.getFile(Folders.Base, Folders.Logs, ApplicationServer.getSchema(), folder), null, extension);
 	}
-
+	
 	static public file createTempFile(File folder, String prefix, String extension) {
+		return new file(createTempJavaFile(folder, prefix, extension));
+	}
+
+	static public File createTempJavaFile(File folder, String prefix, String extension) {
 		folder.mkdirs();
 
 		if(extension != null && !extension.isEmpty())
@@ -403,7 +411,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		String name = (prefix != null ? prefix : "") + new date().format("Y-MM-dd HH-mm-ss") + extension;
 		File temp = new File(folder, name);
 		temp.deleteOnExit();
-		return new file(temp);
+		return temp;
 	}
 
 	public String read() {

@@ -25,6 +25,7 @@ import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class Files extends Table {
@@ -153,6 +154,15 @@ public class Files extends Table {
 	public file add(file file) {
 		return change(file, true);
 	}
+	
+	public file addToStorage(string path, string name, file file) {
+		String pathStr = path.get();
+		if(!pathStr.startsWith(Storage))
+			throw new RuntimeException("Path \"" + pathStr + "\" doesn't belong to storage");
+		file.name = name;
+		file.path = path;
+		return change(file, true);
+	}
 
 	public file updateFile(file file) {
 		return change(file, false);
@@ -240,12 +250,10 @@ public class Files extends Table {
 			InputStream inputStream = getInputStream(file);
 
 			if(inputStream == null) {
-				if(file.id == null || file.id.equals(guid.Null)) {
-					file = newInstance().add(file);
-					file.storage = bool.True;
-				} else if(notFound) {
+				if(notFound) {
 					throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
 				}
+				file.storage = bool.True;
 				return file;
 			}
 
@@ -280,5 +288,9 @@ public class Files extends Table {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static file z8_addToStorage(string path, string name, file file) {
+		return newInstance().addToStorage(path, name, file);
 	}
 }
