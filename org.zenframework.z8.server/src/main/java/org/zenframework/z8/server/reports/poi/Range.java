@@ -11,6 +11,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 public class Range {
@@ -100,9 +101,18 @@ public class Range {
 
 	public Range apply(XSSFWorkbook workbook) {
 		SheetModifier sheet = new SheetModifier().setSheet(workbook.getSheetAt(sheetIndex));
+
 		prepare(sheet, null);
-		fill(sheet, new Block.Diff());
+		fill(sheet, new Block.Vector());
+
+		ApplicationServer.getMonitor().logInfo("Report '" + options.getName() + "', range " + templateBlock.toAddress() + " stat: " + sheet.getStat());
+
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "Range[" + templateBlock.toAddress() + ']';
 	}
 
 	// Returns modified boundaries
@@ -125,19 +135,19 @@ public class Range {
 
 		Block multiplied = /*boundaries != null ? boundaries.band(direction, templateBlock) :*/ templateBlock;
 
-		sheet.insertBlock(multiplied.shift(direction, 1).stretch(direction, count - 1), direction);
+		sheet.insertBlock(multiplied.shiftMe(direction, 1).stretchMe(direction, count - 1), direction);
 
 		for (int i = 1; i < count; i++)
-			sheet.copy(templateBlock, templateBlock.shift(direction, i));
+			sheet.copy(templateBlock, templateBlock.shiftMe(direction, i));
 
-		targetBlock = templateBlock.stretch(direction, count);
+		targetBlock = templateBlock.stretchMe(direction, count);
 
 		sheet.updateMergedRegions(boundaries, multiplied, direction, count);
 
 		return boundaries != null ? boundaries.stretch(targetBlock.diffSize(templateBlock)) : null;
 	}
 
-	protected void fill(SheetModifier sheet, Block.Diff baseShift) {
+	protected void fill(SheetModifier sheet, Block.Vector baseShift) {
 		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell) {
@@ -153,7 +163,7 @@ public class Range {
 			source.open();
 
 			while (source.next()) {
-				Block.Diff shift = baseShift.add(templateBlock.vector(direction, source.getIndex()));
+				Block.Vector shift = baseShift.add(templateBlock.vector(direction, source.getIndex()));
 
 				for (Range range : ranges)
 					range.fill(sheet, shift);
@@ -173,7 +183,7 @@ public class Range {
 		return null;
 	}
 
-	private static boolean inOneOf(int row, int col, Block.Diff shift, Collection<Range> ranges) {
+	private static boolean inOneOf(int row, int col, Block.Vector shift, Collection<Range> ranges) {
 		for (Range range : ranges)
 			if (range.getTargetBlock().shift(shift).has(row, col))
 				return true;

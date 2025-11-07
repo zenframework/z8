@@ -1,103 +1,99 @@
 package org.zenframework.z8.server.reports.poi;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 public class Block {
 
 	public static enum Direction {
-		Vertical(0), Horizontal(1);
-
-		private final int value;
-
-		private Direction(int value) {
-			this.value = value;
-		}
+		Vertical, Horizontal;
 
 		public static Direction valueOf(int value) {
-			return value == Horizontal.value ? Horizontal : Vertical;
+			return values()[value];
 		}
 	}
 
-	public static class Diff {
-		private int rows, cols;
+	public static class Vector {
+		private final int row, col;
 
-		public Diff() {
+		public Vector() {
 			this(0, 0);
 		}
 
-		public Diff(int rows, int cols) {
-			this.rows = rows;
-			this.cols = cols;
+		public Vector(Cell cell) {
+			this(cell.getRowIndex(), cell.getColumnIndex());
 		}
 
-		public Diff copy() {
-			return new Diff(rows, cols);
+		public Vector(int row, int col) {
+			this.row = row;
+			this.col = col;
 		}
 
-		public Diff add(Diff diff) {
-			return new Diff(rows + diff.rows, cols + diff.cols);
+		public Vector copy() {
+			return new Vector(row, col);
+		}
+
+		public Vector add(Vector vector) {
+			return new Vector(row + vector.row, col + vector.col);
+		}
+
+		public Vector checkPositive() {
+			if (row < 0 || col < 0)
+				throw new IllegalStateException();
+			return this;
+		}
+
+		public String toAddress() {
+			return new StringBuilder(10).append(Util.columnToString(col)).append(row + 1).toString();
 		}
 
 		@Override
 		public String toString() {
-			return new StringBuilder(20).append("{r:").append(rows).append(",c:").append(cols).append('}').toString();
+			return new StringBuilder(20).append("{r:").append(row).append(",c:").append(col).append('}').toString();
 		}
 	}
 
-	private int startRow, startCol, height, width;
-
-	public Block() {}
+	private final Vector start, size;
 
 	public Block(Block block) {
 		this(block.startRow(), block.startCol(), block.height(), block.width());
 	}
 
+	public Block(Vector start, Vector size) {
+		this.start = start;
+		this.size = size;
+	}
+
 	public Block(int startRow, int startCol, int height, int width) {
-		checkPositive(startRow, startCol, height, width);
-		this.startRow = startRow;
-		this.startCol = startCol;
-		this.height = height;
-		this.width = width;
+		this(new Vector(startRow, startCol).checkPositive(), new Vector(height, width).checkPositive());
 	}
 
 	public Block(CellRangeAddress address) {
 		this(address.getFirstRow(), address.getFirstColumn(), address.getLastRow() - address.getFirstRow() + 1, address.getLastColumn() - address.getFirstColumn() + 1);
 	}
 
-	public Block setStart(int startRow, int startCol) {
-		this.startRow = startRow;
-		this.startCol = startCol;
-		return this;
-	}
-
-	public Block setSize(int height, int width) {
-		this.height = height;
-		this.width = width;
-		return this;
-	}
-
 	public int startRow() {
-		return startRow;
+		return start.row;
 	}
 
 	public int startCol() {
-		return startCol;
+		return start.col;
 	}
 
 	public int endRow() {
-		return startRow + height;
+		return start.row + size.row;
 	}
 
 	public int endCol() {
-		return startCol + width;
+		return start.col + size.col;
 	}
 
 	public int height() {
-		return height;
+		return size.row;
 	}
 
 	public int width() {
-		return width;
+		return size.col;
 	}
 
 	public boolean in(Block block) {
@@ -128,26 +124,31 @@ public class Block {
 		return new CellRangeAddress(startRow(), endRow() - 1, startCol(), endCol() - 1);
 	}
 
-	public Diff vector(Direction direction, int count) {
-		return new Diff(direction == Direction.Horizontal ? 0 : height * count,
-				direction == Direction.Horizontal ? width * count : 0);
+	public Vector vector(Direction direction, int count) {
+		return new Vector(direction == Direction.Horizontal ? 0 : height() * count,
+				direction == Direction.Horizontal ? width() * count : 0);
 	}
 
-	public Block shift(Diff shift) {
-		return shift != null ? copy().setStart(startRow + shift.rows, startCol + shift.cols) : this;
+	public Block shift(Vector shift) {
+		return new Block(start.add(shift), size);
 	}
 
-	public Block shift(Direction direction, int count) {
+	public Block shift(Direction direction, int shift) {
+		return shift(new Vector(direction == Direction.Horizontal ? 0 : shift,
+				direction == Direction.Horizontal ? shift : 0));
+	}
+
+	public Block shiftMe(Direction direction, int count) {
 		return shift(vector(direction, count));
 	}
 
-	public Block stretch(Diff diff) {
-		return copy().setSize(height + diff.rows, width + diff.cols);
+	public Block stretch(Vector vector) {
+		return new Block(start, size.add(vector));
 	}
 
-	public Block stretch(Direction direction, int count) {
-		return copy().setSize(height * (direction == Direction.Horizontal ? 1 : count),
-				width * (direction == Direction.Horizontal ? count : 1));
+	public Block stretchMe(Direction direction, int count) {
+		return new Block(start, new Vector(height() * (direction == Direction.Horizontal ? 1 : count),
+				width() * (direction == Direction.Horizontal ? count : 1)));
 	}
 
 	public Block band(Direction direction, Block block) {
@@ -155,17 +156,11 @@ public class Block {
 				: new Block(block.startRow(), startCol(), block.height(), width());
 	}
 
-	public Diff diffSize(Block block) {
-		return new Diff(height() - block.height(), width() - block.width());
+	public Vector diffSize(Block block) {
+		return new Vector(height() - block.height(), width() - block.width());
 	}
 
 	public Block copy() {
 		return new Block(this);
-	}
-
-	private static void checkPositive(int... values) {
-		for (int value : values)
-			if (value < 0)
-				throw new IllegalArgumentException();
 	}
 }

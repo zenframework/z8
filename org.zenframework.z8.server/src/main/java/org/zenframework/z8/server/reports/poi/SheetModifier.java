@@ -9,10 +9,13 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.zenframework.z8.server.utils.Counter;
 
 public class SheetModifier {
 
 	private final List<String> errors = new LinkedList<String>();
+
+	private int rowsCreated = 0, rowsCopied = 0, cellsCreated = 0, cellsRemoved = 0, cellsCopied = 0;
 
 	private Sheet sheet;
 
@@ -35,64 +38,29 @@ public class SheetModifier {
 		return this;
 	}
 
+	public String getStat() {
+		return "{ rows (created/copied): " + rowsCreated + '/' + rowsCopied
+				+ ", cells (created/removed/copied): " + cellsCreated + '/' + cellsRemoved + '/' + cellsCopied + " }";
+	}
+
 	public void insertBlock(Block block, Block.Direction direction) {
-		if (direction == Block.Direction.Horizontal)
-			insertBlockHorizShift(block);
-		else
-			insertBlockVertShift(block);
-	}
+		Block moved = direction == Block.Direction.Horizontal
+				? new Block(block.startRow(), block.startCol(), block.height(), getLastCellNum(block.startRow(), block.endRow()) - block.startCol())
+				: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
 
-	private void insertBlockHorizShift(Block block) {
-		int endCol = getLastCellNum(block.startRow(), block.endRow());
+		int shift = direction == Block.Direction.Horizontal ? block.width() : block.height();
 
-		for (int rowNum = block.startRow(), endRow = block.endRow(); rowNum < endRow; rowNum++) {
-			Row row = sheet.getRow(rowNum);
-
-			if (row == null)
-				row = sheet.createRow(rowNum);
-
-			// Ensure columns exist
-			for (int i = 0; i < block.width(); i++) {
-				Cell cell = row.getCell(endCol + i);
-
-				if (cell == null)
-					cell = row.createCell(endCol + i, CellType.BLANK);
-			}
-
-			// Copy cols from end to start
-			for (int colNum = endCol - 1; colNum >= block.startCol(); colNum--)
-				copy(row, colNum, row, colNum + block.width());
-		}
-
-		clear(block);
-	}
-
-	private void insertBlockVertShift(Block block) {
-		int endRow = sheet.getLastRowNum() + 1 - block.startRow();
-
-		// Ensure rows exist
-		for (int i = 0; i < block.height(); i++) {
-			Row row = sheet.getRow(endRow + i);
-
-			if (row != null)
-				continue;
-
-			row = sheet.createRow(endRow + i);
-
-			for (int colNum = 0; colNum < block.endCol(); colNum++)
-				row.createCell(colNum, CellType.BLANK);
-		}
-
-		// Copy rows from end to start
-		for (int rowNum = endRow - 1; rowNum >= block.startRow(); rowNum--)
-			copy(sheet.getRow(rowNum), block.startCol(), sheet.getRow(rowNum + block.height()), block.startCol(), block.width());
-
+		copy(moved, moved.shift(direction, shift));
 		clear(block);
 	}
 
 	public void clear(Block block) {
 		for (int rowNum = block.startRow(), endRow = block.endRow(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
+
+			if (row == null)
+				continue;
+
 			for (int colNum = block.startCol(), endCol = block.endCol(); colNum < endCol; colNum++) {
 				Cell cell = row.getCell(colNum);
 				if (cell != null)
@@ -102,48 +70,23 @@ public class SheetModifier {
 	}
 
 	public void copy(Block source, Block target) {
-		for (int i = 0, n = source.height(); i < n; i++)
-			copy(sheet.getRow(source.startRow() + i), source.startCol(), sheet.getRow(target.startRow() + i), target.startCol(), source.width());
-	}
+		// Copy direction (start-to-end / end-to-start)
+		Counter counter = source.startRow() < target.startRow() ? new Counter(source.height() - 1, -1, source.height()) : new Counter(0, 1, source.height());
 
-	private void copy(Row source, int sourceStartCol, Row target, int targetStartCol, int colCount) {
-		for (int i = 0; i < colCount; i++)
-			copy(source, sourceStartCol + i, target, targetStartCol + i);
-	}
+		while (counter.next()) {
+			Row sourceRow = sheet.getRow(source.startRow() + counter.get());
+			Row targetRow = sheet.getRow(target.startRow() + counter.get());
 
-	private void copy(Row sourceRow, int sourceCol, Row targetRow, int targetCol) {
-		Cell sourceCell = sourceRow.getCell(sourceCol);
-		Cell targetCell = targetRow.getCell(targetCol);
+			if (sourceRow == null) {
+				if (targetRow != null)
+					removeCells(targetRow, target.startCol(), source.width());
+				continue;
+			}
 
-		if (targetCell == null)
-			targetCell = targetRow.createCell(targetCol);
+			if (targetRow == null)
+				targetRow = createRow(target.startRow() + counter.get());
 
-		targetCell.setCellType(sourceCell != null ? sourceCell.getCellTypeEnum() : CellType.BLANK);
-
-		if (sourceCell == null)
-			return;
-
-		targetCell.setCellStyle(sourceCell.getCellStyle());
-
-		switch (sourceCell.getCellTypeEnum()) {
-		case BOOLEAN:
-			targetCell.setCellValue(sourceCell.getBooleanCellValue());
-			break;
-		case ERROR:
-			targetCell.setCellErrorValue(sourceCell.getErrorCellValue());
-			break;
-		case FORMULA:
-			targetCell.setCellFormula(sourceCell.getCellFormula());
-			break;
-		case NUMERIC:
-			targetCell.setCellValue(sourceCell.getNumericCellValue());
-			break;
-		case STRING:
-			targetCell.setCellValue(sourceCell.getStringCellValue());
-			break;
-		case BLANK:
-		case _NONE:
-			break;
+			copyNonNull(sourceRow, source.startCol(), targetRow, target.startCol(), source.width());
 		}
 	}
 
@@ -163,7 +106,7 @@ public class SheetModifier {
 		List<CellRangeAddress> regions = new ArrayList<CellRangeAddress>(sheet.getNumMergedRegions());
 		Block affected = direction == Block.Direction.Horizontal
 				? new Block(block.startRow(), block.startCol(), block.height(), getLastCellNum(block.startRow(), block.endRow()) + 1 - block.startCol())
-				: new Block(block.startRow(), block.startCol(), sheet.getLastRowNum() + 1 - block.startRow(), block.width());
+				: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
 
 		for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
 			CellRangeAddress region = sheet.getMergedRegion(i);
@@ -230,12 +173,90 @@ public class SheetModifier {
 			sheet.addMergedRegion(region);
 	}
 */
+	private void copyNonNull(Row sourceRow, int sourceStartCol, Row targetRow, int targetStartCol, int count) {
+		rowsCopied++;
+
+		// Copy direction (start-to-end / end-to-start)
+		Counter counter = sourceStartCol < targetStartCol ? new Counter(count - 1, -1, count) : new Counter(0, 1, count);
+
+		while (counter.next()) {
+			Cell sourceCell = sourceRow.getCell(sourceStartCol + counter.get());
+			Cell targetCell = targetRow.getCell(targetStartCol + counter.get());
+
+			if (sourceCell == null) {
+				if (targetCell != null)
+					targetRow.removeCell(targetCell);
+				continue;
+			}
+
+			if (targetCell == null)
+				targetCell = createCell(targetRow, targetStartCol + counter.get());
+
+			copyNonNull(sourceCell, targetCell);
+		}
+	}
+
+	private void copyNonNull(Cell source, Cell target) {
+		cellsCopied++;
+
+		target.setCellType(source.getCellTypeEnum());
+		target.setCellStyle(source.getCellStyle());
+
+		switch (source.getCellTypeEnum()) {
+		case BOOLEAN:
+			target.setCellValue(source.getBooleanCellValue());
+			break;
+		case ERROR:
+			target.setCellErrorValue(source.getErrorCellValue());
+			break;
+		case FORMULA:
+			target.setCellFormula(source.getCellFormula());
+			break;
+		case NUMERIC:
+			target.setCellValue(source.getNumericCellValue());
+			break;
+		case STRING:
+			target.setCellValue(source.getStringCellValue());
+			break;
+		case BLANK:
+		case _NONE:
+			break;
+		}
+	}
+
+	private Row createRow(int rowNum) {
+		rowsCreated++;
+		return sheet.createRow(rowNum);
+	}
+
+	private Cell createCell(Row row, int col) {
+		cellsCreated++;
+		return row.createCell(col);
+	}
+
+	private int getLastRowNum() {
+		return Math.min(sheet.getLastRowNum() + 1, 1000);
+	}
+
 	private int getLastCellNum(int startRow, int endRow) {
 		int max = 0;
 
-		for (int i = startRow; i < endRow; i++)
-			max = Math.max(max, sheet.getRow(i).getLastCellNum());
+		for (int i = startRow; i < endRow; i++) {
+			Row row = sheet.getRow(i);
+			if (row != null)
+				max = Math.max(max, row.getLastCellNum());
+		}
 
-		return max;
+		return Math.min(max + 1, 1000);
+	}
+
+	private void removeCells(Row row, int start, int count) {
+		for (int i = 0; i < count; i++) {
+			Cell cell = row.getCell(start + i);
+			if (cell != null) {
+				row.removeCell(cell);
+				cellsRemoved++;
+			}
+		}
 	}
 }
