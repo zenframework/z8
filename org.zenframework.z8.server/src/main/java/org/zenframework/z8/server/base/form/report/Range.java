@@ -10,10 +10,6 @@ import org.zenframework.z8.server.types.integer;
 
 public class Range extends OBJECT {
 	static public class CLASS<T extends Range> extends OBJECT.CLASS<T> {
-		public CLASS() {
-			this(null);
-		}
-
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Range.class);
@@ -37,8 +33,9 @@ public class Range extends OBJECT {
 	public static final integer Vertical = new integer(0);
 	public static final integer Horizontal = new integer(1);
 
-	public OBJECT.CLASS<? extends OBJECT> source = new OBJECT.CLASS<OBJECT>(null);
+	public OBJECT.CLASS<? extends OBJECT> source = new OBJECT.CLASS<OBJECT>(this);
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
+	public Condition.CLASS<? extends Condition> on = new Condition.CLASS<Condition>(this);
 
 	public String getAddress() {
 		return getAttribute(Address);

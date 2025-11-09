@@ -27,10 +27,6 @@ import org.zenframework.z8.server.types.string;
 
 public class Report extends OBJECT implements Runnable, IReport {
 	static public class CLASS<T extends Report> extends OBJECT.CLASS<T> {
-		public CLASS() {
-			this(null);
-		}
-
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Report.class);
