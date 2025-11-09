@@ -38,7 +38,8 @@ public class QuerySource extends DataSource {
 	public void open() {
 		super.open();
 		query.saveState();
-		query.read(fields.values());
+		query.read(fields.values(), query.sortFields(), null);
+		//query.read(fields.values(), query.sortFields(), query.groupFields(), null, null, 0, -1);
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class QuerySource extends DataSource {
 			}
 		};
 
-		sheet.visitCells(range.getTemplateBlock(), visitor);
+		sheet.visitCells(range.getBlock(), visitor);
 
 		for (Field.CLASS<? extends Field> field : query.extraFields)
 			fields.put(field.id(), field.get());

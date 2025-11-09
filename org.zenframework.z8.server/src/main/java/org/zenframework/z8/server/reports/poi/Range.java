@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.reports.poi;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,11 +18,24 @@ public class Range {
 
 	private static final String SheetSplitter = "!";
 
+	public static java.util.Comparator<Range> Comparator = new java.util.Comparator<Range>() {
+		@Override
+		public int compare(Range o1, Range o2) {
+			if (o1.getDirection() == Block.Direction.Horizontal && o1.getBlock().startCol() < o2.getBlock().startCol()
+					|| o1.getDirection() == Block.Direction.Vertical && o1.getBlock().startRow() < o2.getBlock().startRow())
+				return -1;
+			if (o2.getDirection() == Block.Direction.Horizontal && o2.getBlock().startCol() < o1.getBlock().startCol()
+					|| o2.getDirection() == Block.Direction.Vertical && o2.getBlock().startRow() < o1.getBlock().startRow())
+				return 1;
+			return 0;
+		}
+	};
+
 	private ReportOptions options;
 
 	private DataSource source;
 	private int sheetIndex;
-	private Block templateBlock, targetBlock;
+	private Block block;
 	private Block.Direction direction;
 
 	private final List<Range> ranges = new LinkedList<Range>();
@@ -57,17 +70,13 @@ public class Range {
 		return sheetIndex;
 	}
 
-	public Block getTemplateBlock() {
-		return templateBlock;
-	}
-
-	public Block getTargetBlock() {
-		return targetBlock;
+	public Block getBlock() {
+		return block;
 	}
 
 	public Range setAddress(int sheetIndex, CellRangeAddress address) {
 		this.sheetIndex = sheetIndex;
-		this.templateBlock = new Block(address);
+		this.block = new Block(address);
 		return this;
 	}
 
@@ -99,59 +108,25 @@ public class Range {
 		return this;
 	}
 
-	public Range apply(XSSFWorkbook workbook) {
-		SheetModifier sheet = new SheetModifier().setSheet(workbook.getSheetAt(sheetIndex));
+	public Block apply(XSSFWorkbook workbook) {
+		SheetModifier sheet = new SheetModifier().setWorkbook(workbook);
 
-		prepare(sheet, null);
-		fill(sheet, new Block.Vector());
-
-		ApplicationServer.getMonitor().logInfo("Report '" + options.getName() + "', range " + templateBlock.toAddress() + " stat: " + sheet.getStat());
-
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		return "Range[" + templateBlock.toAddress() + ']';
-	}
-
-	// Returns modified boundaries
-	protected Block prepare(SheetModifier sheet, Block boundaries) {
-		int count = source.count();
-
-		source.prepare(sheet);
-
-		// TODO Check inner ranges intersections, update ranges
-		for (Range range : ranges) {
-			//if (!range.getTemplateBlock().in(templateBlock))
-			//	throw new RuntimeException("Incorrect ranges: " + range.getTemplateBlock() + " is not in " + templateBlock);
-
-			templateBlock = range.prepare(sheet, templateBlock);
+		try {
+			return apply(sheet.open(sheetIndex).clearMergedRegion(), null, new Block.Vector());
+		} finally {
+			sheet.close();
 		}
-
-		if (count < 1) {
-			// TODO Delete cells
-		}
-
-		Block multiplied = /*boundaries != null ? boundaries.band(direction, templateBlock) :*/ templateBlock;
-
-		sheet.insertBlock(multiplied.shiftMe(direction, 1).stretchMe(direction, count - 1), direction);
-
-		for (int i = 1; i < count; i++)
-			sheet.copy(templateBlock, templateBlock.shiftMe(direction, i));
-
-		targetBlock = templateBlock.stretchMe(direction, count);
-
-		sheet.updateMergedRegions(boundaries, multiplied, direction, count);
-
-		return boundaries != null ? boundaries.stretch(targetBlock.diffSize(templateBlock)) : null;
 	}
 
-	protected void fill(SheetModifier sheet, Block.Vector baseShift) {
+	protected Block apply(SheetModifier sheet, Block boundaries, Block.Vector baseShift) {
+		Collections.sort(ranges, Comparator);
+
+		ApplicationServer.getMonitor().logInfo("Ranges sorted: " + ranges);
+
 		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell) {
-				if (inOneOf(row.getRowNum(), colNum, baseShift, ranges) || cell == null || cell.getCellTypeEnum() != CellType.STRING)
+				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
 					return;
 
 				Object value = source.evaluate(cell.getStringCellValue());
@@ -159,20 +134,70 @@ public class Range {
 			}
 		};
 
+		source.prepare(sheet);
+
+		Block targetBoundaries = boundaries != null ? boundaries.shift(baseShift) : null;
+		Block target = block.shift(baseShift);
+		Block filled = new Block(target.start(), new Block.Vector());
+		Block.Vector shift = baseShift;
+
+		//sheet.clearMergedRegion(boundaries);
+
 		try {
 			source.open();
 
 			while (source.next()) {
-				Block.Vector shift = baseShift.add(templateBlock.vector(direction, source.getIndex()));
+				if (source.getIndex() > 0) {
+					if (targetBoundaries != null)
+						for (Block band : targetBoundaries.bandExclusive(target, direction))
+							sheet.clear(band);
+					sheet.copy(block, target.start(), false);
+				}
 
 				for (Range range : ranges)
-					range.fill(sheet, shift);
+					target = Block.boundaries(range.apply(sheet, block, shift), target);
 
-				sheet.visitCells(templateBlock.shift(shift), visitor);
+				sheet.visitCells(target, visitor);
+
+				filled = Block.boundaries(filled, target);
+				shift = shift.add(target.vector(direction, 1));
+				target = block.shift(shift);
 			}
 		} finally {
 			source.close();
 		}
+
+		Block.Vector stretch = filled.diffSize(block);
+
+		// Spread static cells AFTER inserted cells
+		for (Block.Direction direction : Block.Direction.values()) {
+			Block source = boundaries != null ? boundaries.bandAfter(block, direction) : sheet.getBoundariesAfter(block, direction);
+			Block.Vector component = stretch.component(direction);
+			if (!component.isZero()) {
+				//sheet.clearMergedRegion(source);
+				shift = baseShift.add(component);
+				sheet.copy(source, shift, true);
+				if (boundaries != null)
+					sheet.clearMergedRegion(source); //.copyMergedRegions(source, shift, true);
+			}
+		}
+
+		if (targetBoundaries != null)
+			targetBoundaries = targetBoundaries.stretch(stretch);
+
+		//sheet.applyMergedRegions(boundaries, block, targetBoundaries, filled, direction);
+
+		ApplicationServer.getMonitor().logInfo("Report '" + options.getName() + "':"
+				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
+				+ "\n\t- boundaries " + boundaries + " -> " + targetBoundaries
+				+ "\n\t- stat: " + sheet.getStat());
+
+		return targetBoundaries;
+	}
+
+	@Override
+	public String toString() {
+		return "Range[" + block.toAddress() + ']';
 	}
 
 	private DataSource toDataSource(OBJECT source) {
@@ -181,12 +206,5 @@ public class Range {
 		if (source instanceof JsonArray)
 			return new JsonSource(this, (JsonArray) source);
 		return null;
-	}
-
-	private static boolean inOneOf(int row, int col, Block.Vector shift, Collection<Range> ranges) {
-		for (Range range : ranges)
-			if (range.getTargetBlock().shift(shift).has(row, col))
-				return true;
-		return false;
 	}
 }

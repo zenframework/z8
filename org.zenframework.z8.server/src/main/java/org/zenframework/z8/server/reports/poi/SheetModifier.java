@@ -5,11 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.zenframework.z8.server.utils.Counter;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class SheetModifier {
 
@@ -17,7 +16,8 @@ public class SheetModifier {
 
 	private int rowsCreated = 0, rowsCopied = 0, cellsCreated = 0, cellsRemoved = 0, cellsCopied = 0;
 
-	private Sheet sheet;
+	private XSSFWorkbook workbook;
+	private Sheet sheet, origin;
 
 	public SheetModifier() {}
 
@@ -33,9 +33,22 @@ public class SheetModifier {
 		return sheet;
 	}
 
-	public SheetModifier setSheet(Sheet sheet) {
-		this.sheet = sheet;
+	public SheetModifier setWorkbook(XSSFWorkbook workbook) {
+		this.workbook = workbook;
 		return this;
+	}
+
+	public SheetModifier open(int sheet) {
+		if (origin != null)
+			workbook.removeSheetAt(workbook.getSheetIndex(origin));
+
+		this.sheet = sheet >= 0 ? workbook.getSheetAt(sheet) : null;
+		this.origin = sheet >= 0 ? workbook.cloneSheet(sheet) : null;
+		return this;
+	}
+
+	public SheetModifier close() {
+		return open(-1);
 	}
 
 	public String getStat() {
@@ -43,18 +56,26 @@ public class SheetModifier {
 				+ ", cells (created/removed/copied): " + cellsCreated + '/' + cellsRemoved + '/' + cellsCopied + " }";
 	}
 
-	public void insertBlock(Block block, Block.Direction direction) {
-		Block moved = direction == Block.Direction.Horizontal
-				? new Block(block.startRow(), block.startCol(), block.height(), getLastCellNum(block.startRow(), block.endRow()) - block.startCol())
-				: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
-
-		int shift = direction == Block.Direction.Horizontal ? block.width() : block.height();
-
-		copy(moved, moved.shift(direction, shift));
-		clear(block);
+	public Block getBoundaries() {
+		int rows = getLastRowNum();
+		return new Block(0, 0, rows, getLastColNum(0, rows));
 	}
 
-	public void clear(Block block) {
+	public Block getBoundariesAfter(Block block, Block.Direction direction) {
+		Block boundaries = getBoundaries();
+		return direction == Block.Direction.Horizontal ? new Block(block.startRow(), block.endCol(), block.height(), boundaries.width() - block.endCol())
+				: new Block(block.endRow(), block.startCol(), boundaries.height() - block.endRow(), block.width());
+	}
+
+	public SheetModifier insertBlock(Block block, Block.Direction direction) {
+		Block moved = direction == Block.Direction.Horizontal
+				? new Block(block.startRow(), block.startCol(), block.height(), getLastColNum(block.startRow(), block.endRow()) - block.startCol())
+				: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
+
+		return copy(moved, moved.vector(direction, 1), true).clear(block); // TODO check
+	}
+
+	public SheetModifier clear(Block block) {
 		for (int rowNum = block.startRow(), endRow = block.endRow(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
@@ -64,33 +85,38 @@ public class SheetModifier {
 			for (int colNum = block.startCol(), endCol = block.endCol(); colNum < endCol; colNum++) {
 				Cell cell = row.getCell(colNum);
 				if (cell != null)
-					cell.setCellType(CellType.BLANK);
+					row.removeCell(cell);
+					// cell.setCellType(CellType.BLANK);
 			}
 		}
+
+		return this;
 	}
 
-	public void copy(Block source, Block target) {
-		// Copy direction (start-to-end / end-to-start)
-		Counter counter = source.startRow() < target.startRow() ? new Counter(source.height() - 1, -1, source.height()) : new Counter(0, 1, source.height());
+	public SheetModifier copy(Block source, Block.Vector target, boolean relative) {
+		if (relative)
+			target = target.add(source.start());
 
-		while (counter.next()) {
-			Row sourceRow = sheet.getRow(source.startRow() + counter.get());
-			Row targetRow = sheet.getRow(target.startRow() + counter.get());
+		for (int i = 0; i < source.height(); i++) {
+			Row sourceRow = origin.getRow(source.startRow() + i);
+			Row targetRow = sheet.getRow(target.row() + i);
 
 			if (sourceRow == null) {
 				if (targetRow != null)
-					removeCells(targetRow, target.startCol(), source.width());
+					removeCells(targetRow, target.col(), source.width());
 				continue;
 			}
 
 			if (targetRow == null)
-				targetRow = createRow(target.startRow() + counter.get());
+				targetRow = createRow(target.row() + i);
 
-			copyNonNull(sourceRow, source.startCol(), targetRow, target.startCol(), source.width());
+			copyNonNull(sourceRow, source.startCol(), targetRow, target.col(), source.width());
 		}
+
+		return this;
 	}
 
-	public void visitCells(Block block, CellVisitor visitor) {
+	public SheetModifier visitCells(Block block, CellVisitor visitor) {
 		for (int rowNum = block.startRow(), endRow = block.endRow(), endCol = block.endCol(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
@@ -100,16 +126,51 @@ public class SheetModifier {
 			for (int colNum = block.startCol(); colNum < endCol; colNum++)
 				visitor.visit(row, colNum, row.getCell(colNum));
 		}
+
+		return this;
 	}
 
-	public void updateMergedRegions(Block boundaries, Block block, Block.Direction direction, int count) {
-		List<CellRangeAddress> regions = new ArrayList<CellRangeAddress>(sheet.getNumMergedRegions());
-		Block affected = direction == Block.Direction.Horizontal
-				? new Block(block.startRow(), block.startCol(), block.height(), getLastCellNum(block.startRow(), block.endRow()) + 1 - block.startCol())
-				: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
+	public SheetModifier clearMergedRegion() {
+		for (int i = sheet.getNumMergedRegions() - 1; i >= 0; i--)
+			sheet.removeMergedRegion(i);
 
-		for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
-			CellRangeAddress region = sheet.getMergedRegion(i);
+		return this;
+	}
+
+	public SheetModifier clearMergedRegion(Block block) {
+		for (int i = sheet.getNumMergedRegions() - 1; i >= 0; i--)
+			if (new Block(sheet.getMergedRegion(i)).intersects(block))
+				sheet.removeMergedRegion(i);
+
+		return this;
+	}
+
+	public SheetModifier copyMergedRegions(Block source, Block.Vector target, boolean relative) {
+		if (!relative)
+			target = target.sub(source.start());
+
+		for (int i = origin.getNumMergedRegions() - 1; i >= 0; i--) {
+			Block region = new Block(origin.getMergedRegion(i));
+			if (region.intersects(source))
+				sheet.addMergedRegion(region.shift(target).toCellRangeAddress());
+		}
+
+		return this;
+	}
+
+	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Block target, Block.Direction direction) {
+		
+		return this;
+	}
+/*
+	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Block target, Block.Direction direction) {
+		List<CellRangeAddress> regions = new ArrayList<CellRangeAddress>(origin.getNumMergedRegions());
+		//Block affected = direction == Block.Direction.Horizontal
+		//		? new Block(block.startRow(), block.startCol(), block.height(), getLastColNum(block.startRow(), block.endRow()) + 1 - block.startCol())
+		//		: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
+
+		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
+			CellRangeAddress region = origin.getMergedRegion(i);
 			Block regionBlock = new Block(region);
 
 			if (regionBlock.out(affected)) {
@@ -141,8 +202,10 @@ public class SheetModifier {
 				errors.add(e.toString());
 			}
 		}
+
+		return this;
 	}
-/*
+*//*
 	private static void moveMergedRegions(Block block, int rowShift, int colShift) {
 		List<CellRangeAddress> updated = new ArrayList<CellRangeAddress>(sheet.getNumMergedRegions());
 
@@ -176,12 +239,9 @@ public class SheetModifier {
 	private void copyNonNull(Row sourceRow, int sourceStartCol, Row targetRow, int targetStartCol, int count) {
 		rowsCopied++;
 
-		// Copy direction (start-to-end / end-to-start)
-		Counter counter = sourceStartCol < targetStartCol ? new Counter(count - 1, -1, count) : new Counter(0, 1, count);
-
-		while (counter.next()) {
-			Cell sourceCell = sourceRow.getCell(sourceStartCol + counter.get());
-			Cell targetCell = targetRow.getCell(targetStartCol + counter.get());
+		for (int i = 0; i < count; i++) {
+			Cell sourceCell = sourceRow.getCell(sourceStartCol + i);
+			Cell targetCell = targetRow.getCell(targetStartCol + i);
 
 			if (sourceCell == null) {
 				if (targetCell != null)
@@ -190,7 +250,7 @@ public class SheetModifier {
 			}
 
 			if (targetCell == null)
-				targetCell = createCell(targetRow, targetStartCol + counter.get());
+				targetCell = createCell(targetRow, targetStartCol + i);
 
 			copyNonNull(sourceCell, targetCell);
 		}
@@ -238,7 +298,7 @@ public class SheetModifier {
 		return Math.min(sheet.getLastRowNum() + 1, 1000);
 	}
 
-	private int getLastCellNum(int startRow, int endRow) {
+	private int getLastColNum(int startRow, int endRow) {
 		int max = 0;
 
 		for (int i = startRow; i < endRow; i++) {

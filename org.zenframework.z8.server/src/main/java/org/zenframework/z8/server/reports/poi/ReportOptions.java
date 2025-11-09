@@ -2,6 +2,7 @@ package org.zenframework.z8.server.reports.poi;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +74,7 @@ public class ReportOptions {
 	}
 
 	public List<Range> getRanges() {
+		Collections.sort(ranges, Range.Comparator);
 		return ranges;
 	}
 
