@@ -178,7 +178,7 @@ public class Range {
 
 		Block targetBoundaries = boundaries.shift(baseShift);
 		Block target = block.shift(baseShift);
-		Block filled = new Block(target.start(), new Block.Vector());
+		Block filled = new Block(target.start(), target.size().component(direction.orthogonal()));
 		Block.Vector shift = baseShift;
 
 		if (!baseShift.isZero())
@@ -201,7 +201,7 @@ public class Range {
 				sheet.visitCells(target, visitor);
 
 				filled = Block.boundaries(filled, target);
-				shift = shift.add(target.vector(direction, 1));
+				shift = shift.add(target.size(direction));
 				target = block.shift(shift);
 			}
 		} finally {
@@ -214,15 +214,18 @@ public class Range {
 		for (Block.Direction direction : Block.Direction.values()) {
 			Block source = boundaries.bandAfter(block, direction);
 			Block.Vector component = stretch.component(direction);
-			if (!component.isZero())
+			int mod = component.mod();
+			if (mod != 0)
 				sheet.copy(source, baseShift.add(component), true);
+			if (mod < 0)
+				sheet.clear(targetBoundaries.part(mod, direction));
 		}
 
 		targetBoundaries = targetBoundaries.stretch(stretch);
 
-		sheet.applyMergedRegions(boundaries, block, targetBoundaries, filled, direction);
+		sheet.applyMergedRegions(boundaries, block, targetBoundaries, direction, !ranges.isEmpty());
 
-		if (!stretchDir.isZero())
+		if (stretchDir.mod() > 0)
 			for (Block merge : merges)
 				sheet.addMergedRegion(merge.shift(baseShift).stretch(stretchDir));
 

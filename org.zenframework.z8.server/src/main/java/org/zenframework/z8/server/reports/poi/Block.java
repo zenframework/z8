@@ -12,6 +12,10 @@ public class Block {
 	public static enum Direction {
 		Vertical, Horizontal;
 
+		public Direction orthogonal() {
+			return this == Vertical ? Horizontal : Vertical;
+		}
+
 		public static Direction valueOf(int value) {
 			return values()[value];
 		}
@@ -28,6 +32,10 @@ public class Block {
 			this(cell.getRowIndex(), cell.getColumnIndex());
 		}
 
+		public Vector(int value, Direction direction) {
+			this(direction == Direction.Horizontal ? 0 : value, direction == Direction.Horizontal ? value : 0);
+		}
+
 		public Vector(int row, int col) {
 			this.row = row;
 			this.col = col;
@@ -41,8 +49,12 @@ public class Block {
 			return col;
 		}
 
-		public Vector copy() {
-			return new Vector(row, col);
+		public int mod() {
+			return row + col;
+		}
+
+		public Vector mul(int n) {
+			return new Vector(row * n, col * n);
 		}
 
 		public Vector add(Vector vector) {
@@ -55,6 +67,10 @@ public class Block {
 
 		public Vector component(Direction direction) {
 			return direction == Direction.Horizontal ? new Vector(0, col) : new Vector(row, 0);
+		}
+
+		public Vector inverse() {
+			return new Vector(-row, -col);
 		}
 
 		public boolean isZero() {
@@ -113,10 +129,6 @@ public class Block {
 		this(0, 0, 0, 0);
 	}
 
-	public Block(Block block) {
-		this(block.startRow(), block.startCol(), block.height(), block.width());
-	}
-
 	public Block(Vector start, Vector size) {
 		this.start = start;
 		this.size = size;
@@ -140,6 +152,14 @@ public class Block {
 
 	public Vector size() {
 		return size;
+	}
+
+	public Vector end() {
+		return start.add(size);
+	}
+
+	public Vector size(Direction direction) {
+		return size.component(direction);
 	}
 
 	public int startRow() {
@@ -186,7 +206,8 @@ public class Block {
 
 	public String toAddress() {
 		return new StringBuilder(100).append(Util.columnToString(startCol())).append(startRow() + 1)
-				.append(':').append(Util.columnToString(endCol() - 1)).append(endRow()).toString();
+				.append(':').append(width() > 0 ? Util.columnToString(endCol() - 1) : "#")
+						.append(height() > 0 ? endRow() : "#").toString();
 	}
 
 	@Override
@@ -211,31 +232,12 @@ public class Block {
 		return new CellRangeAddress(startRow(), endRow() - 1, startCol(), endCol() - 1);
 	}
 
-	public Vector vector(Direction direction, int count) {
-		return new Vector(direction == Direction.Horizontal ? 0 : height() * count,
-				direction == Direction.Horizontal ? width() * count : 0);
-	}
-
 	public Block shift(Vector shift) {
 		return new Block(start.add(shift), size);
 	}
 
-	public Block shift(Direction direction, int shift) {
-		return shift(new Vector(direction == Direction.Horizontal ? 0 : shift,
-				direction == Direction.Horizontal ? shift : 0));
-	}
-
-	public Block shiftMe(Direction direction, int count) {
-		return shift(vector(direction, count));
-	}
-
 	public Block stretch(Vector vector) {
 		return new Block(start, size.add(vector));
-	}
-
-	public Block stretchMe(Direction direction, int count) {
-		return new Block(start, new Vector(height() * (direction == Direction.Horizontal ? 1 : count),
-				width() * (direction == Direction.Horizontal ? count : 1)));
 	}
 
 	public Block band(Block block, Direction direction) {
@@ -271,16 +273,17 @@ public class Block {
 		return blocks;
 	}
 
+	public Block part(int size, Direction direction) {
+		return size >= 0 ? new Block(start(), size().component(direction.orthogonal()).add(new Vector(size, direction)))
+				: new Block(start().add(size(direction)).add(new Vector(size, direction)), size().component(direction.orthogonal()).add(new Vector(-size, direction)));
+	}
+
 	public Vector diffStart(Block block) {
 		return start().sub(block.start());
 	}
 
 	public Vector diffSize(Block block) {
 		return size().sub(block.size());
-	}
-
-	public Block copy() {
-		return new Block(this);
 	}
 
 	public static Block boundaries(Block... blocks) {

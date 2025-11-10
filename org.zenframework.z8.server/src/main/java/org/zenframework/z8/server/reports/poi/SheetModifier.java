@@ -73,33 +73,11 @@ public class SheetModifier {
 		return new Block(0, 0, rows, getLastColNum(0, rows));
 	}
 
-	public Block getBoundariesAfter(Block block, Block.Direction direction) {
-		Block boundaries = getBoundaries();
-		return direction == Block.Direction.Horizontal ? new Block(block.startRow(), block.endCol(), block.height(), boundaries.width() - block.endCol())
-				: new Block(block.endRow(), block.startCol(), boundaries.height() - block.endRow(), block.width());
-	}
-
-	public SheetModifier insertBlock(Block block, Block.Direction direction) {
-		Block moved = direction == Block.Direction.Horizontal
-				? new Block(block.startRow(), block.startCol(), block.height(), getLastColNum(block.startRow(), block.endRow()) - block.startCol())
-				: new Block(block.startRow(), block.startCol(), getLastRowNum() - block.startRow(), block.width());
-
-		return copy(moved, moved.vector(direction, 1), true).clear(block); // TODO check
-	}
-
 	public SheetModifier clear(Block block) {
-		for (int rowNum = block.startRow(), endRow = block.endRow(); rowNum < endRow; rowNum++) {
-			Row row = sheet.getRow(rowNum);
-
-			if (row == null)
-				continue;
-
-			for (int colNum = block.startCol(), endCol = block.endCol(); colNum < endCol; colNum++) {
-				Cell cell = row.getCell(colNum);
-				if (cell != null)
-					row.removeCell(cell);
-					// cell.setCellType(CellType.BLANK);
-			}
+		for (int i = 0; i < block.height(); i++) {
+			Row row = sheet.getRow(block.startRow() + i);
+			if (row != null)
+				removeCells(row, block.startCol(), block.width());
 		}
 
 		return this;
@@ -175,7 +153,7 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Block target, Block.Direction direction) {
+	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Block.Direction direction, boolean hasChildren) {
 		Block bandBefore = sourceBoundaries.bandBefore(source, direction);
 		Block bandAfter = sourceBoundaries.bandAfter(source, direction);
 		Block band = sourceBoundaries.band(source, direction);
@@ -185,10 +163,10 @@ public class SheetModifier {
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
 			Block region = new Block(origin.getMergedRegion(i));
 
-			if (!region.in(sourceBoundaries) || region.in(source))
+			if (hasChildren && region.in(source) || !region.in(sourceBoundaries))
 				continue;
 
-			if (region.in(bandBefore))
+			if (!hasChildren && region.in(source) || region.in(bandBefore))
 				addMergedRegion(region.shift(shift));
 			else if (region.in(bandAfter))
 				addMergedRegion(region.shift(shift).shift(stretch.component(direction)));

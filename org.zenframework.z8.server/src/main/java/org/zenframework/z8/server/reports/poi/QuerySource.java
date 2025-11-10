@@ -62,7 +62,7 @@ public class QuerySource extends DataSource {
 		Expression.Extractor extractor = new Expression.Extractor() {
 			@Override
 			public void onObject(OBJECT object) {
-				if (object instanceof Field)
+				if (object instanceof Field && object.id().startsWith(query.id()))
 					fields.put(object.id(), (Field) object);
 			}
 		};
