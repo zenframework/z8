@@ -7,6 +7,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 
 public class Range extends OBJECT {
 	static public class CLASS<T extends Range> extends OBJECT.CLASS<T> {
@@ -37,10 +38,12 @@ public class Range extends OBJECT {
 
 	public OBJECT.CLASS<? extends OBJECT> source = new OBJECT.CLASS<OBJECT>(this);
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
+	public RCollection<string> merges = new RCollection<string>();
 	public Condition.CLASS<? extends Condition> on = new Condition.CLASS<Condition>(this);
 
-	public String getSheet() {
-		return getAttribute(Sheet);
+	public int getSheet() {
+		String sheet = getAttribute(Sheet);
+		return sheet != null ? Integer.parseInt(sheet) : 0;
 	}
 
 	public String getAddress() {
@@ -57,8 +60,9 @@ public class Range extends OBJECT {
 	}
 
 	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
-		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range().setSource(source.get())
-				.setSheetIndex(Integer.parseInt(getSheet())).setBlock(getAddress()).setBoundaries(getBoundaries()).setDirection(getDirection());
+		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range()
+				.setSource(source.get()).setSheetIndex(getSheet()).setBlock(getAddress()).setBoundaries(getBoundaries())
+				.setDirection(getDirection()).setMergesAddress(string.unwrap(merges));
 
 		for (Range.CLASS<Range> subrange : ranges)
 			range.addRange(subrange.get().asPoiRange());

@@ -195,7 +195,14 @@ public class SheetModifier {
 			else if (region.intersects(band))
 				addMergedRegion(region.shift(shift).stretch(stretch.component(direction)));
 		}
-
+/*
+		// TODO Exclude existing merged regions
+		for (Block part : targetBoundaries.bandExclusive(target, direction)) {
+			try {
+				addMergedRegion(part);
+			} catch (IllegalStateException e) {}
+		}
+*/
 		return this;
 	}
 

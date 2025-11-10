@@ -13,4 +13,6 @@ public class Range extends Object {
 
 	public Object source;
 	public Range[] ranges;
+	public string[] merges;
+	public Condition on;
 }

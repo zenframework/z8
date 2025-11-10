@@ -1,14 +1,16 @@
 package org.zenframework.z8.server.reports.poi;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -31,7 +33,8 @@ public class Range {
 	private Block.Direction direction;
 	private Range parent;
 
-	private final List<Range> ranges = new LinkedList<Range>();
+	private final List<Range> ranges = new ArrayList<Range>();
+	private final Set<Block> merges = new HashSet<Block>();
 
 	public Range setReport(ReportOptions options) {
 		this.options = options;
@@ -78,7 +81,7 @@ public class Range {
 	}
 
 	public Range setBlock(String address) {
-		return setBlock(new Block(CellRangeAddress.valueOf(address)));
+		return setBlock(new Block(address));
 	}
 
 	public Block getBoundaries() {
@@ -95,7 +98,7 @@ public class Range {
 	}
 
 	public Range setBoundaries(String boundaries) {
-		return setBoundaries(boundaries != null ? new Block(CellRangeAddress.valueOf(boundaries)) : null);
+		return setBoundaries(boundaries != null ? new Block(boundaries) : null);
 	}
 
 	public Block.Direction getDirection() {
@@ -127,6 +130,30 @@ public class Range {
 	public Range addRange(Range range) {
 		this.ranges.add(range.setParent(this));
 		return this;
+	}
+
+	public Range setMerges(Collection<Block> merges) {
+		this.merges.clear();
+		this.merges.addAll(merges);
+		return this;
+	}
+
+	public Range setMergesAddress(Collection<String> merges) {
+		this.merges.clear();
+
+		for (String merge : merges)
+			addMerge(merge);
+
+		return this;
+	}
+
+	public Range addMerge(Block merge) {
+		merges.add(merge);
+		return this;
+	}
+
+	public Range addMerge(String merge) {
+		return addMerge(new Block(merge));
 	}
 
 	protected Block apply(SheetModifier sheet, Block.Vector baseShift) {
@@ -181,7 +208,7 @@ public class Range {
 			source.close();
 		}
 
-		Block.Vector stretch = filled.diffSize(block);
+		Block.Vector stretch = filled.diffSize(block), stretchDir = stretch.component(direction);
 
 		// Spread static cells AFTER inserted cells
 		for (Block.Direction direction : Block.Direction.values()) {
@@ -194,6 +221,10 @@ public class Range {
 		targetBoundaries = targetBoundaries.stretch(stretch);
 
 		sheet.applyMergedRegions(boundaries, block, targetBoundaries, filled, direction);
+
+		if (!stretchDir.isZero())
+			for (Block merge : merges)
+				sheet.addMergedRegion(merge.shift(baseShift).stretch(stretchDir));
 
 		ApplicationServer.getMonitor().logInfo("Report '" + options.getName() + "':"
 				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled

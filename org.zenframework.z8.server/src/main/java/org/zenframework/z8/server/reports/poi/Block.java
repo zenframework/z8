@@ -126,6 +126,10 @@ public class Block {
 		this(new Vector(startRow, startCol).checkPositive(), new Vector(height, width).checkPositive());
 	}
 
+	public Block(String address) {
+		this(CellRangeAddress.valueOf(address));
+	}
+
 	public Block(CellRangeAddress address) {
 		this(address.getFirstRow(), address.getFirstColumn(), address.getLastRow() - address.getFirstRow() + 1, address.getLastColumn() - address.getFirstColumn() + 1);
 	}
