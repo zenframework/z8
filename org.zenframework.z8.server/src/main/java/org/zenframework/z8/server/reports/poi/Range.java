@@ -14,6 +14,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.reports.poi.math.Block;
+import org.zenframework.z8.server.reports.poi.math.Direction;
+import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.runtime.OBJECT;
 
 public class Range {
@@ -30,7 +33,7 @@ public class Range {
 	private DataSource source;
 	private int sheetIndex = 0;
 	private Block block, boundaries;
-	private Block.Direction direction;
+	private Direction direction;
 	private Range parent;
 
 	private final List<Range> ranges = new ArrayList<Range>();
@@ -101,17 +104,17 @@ public class Range {
 		return setBoundaries(boundaries != null ? new Block(boundaries) : null);
 	}
 
-	public Block.Direction getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 
-	public Range setDirection(Block.Direction direction) {
+	public Range setDirection(Direction direction) {
 		this.direction = direction;
 		return this;
 	}
 
 	public Range setDirection(int direction) {
-		return setDirection(Block.Direction.valueOf(direction));
+		return setDirection(Direction.valueOf(direction));
 	}
 
 	public Range getParent() {
@@ -156,7 +159,7 @@ public class Range {
 		return addMerge(new Block(merge));
 	}
 
-	protected Block apply(SheetModifier sheet, Block.Vector baseShift) {
+	protected Block apply(SheetModifier sheet, Vector baseShift) {
 		Block boundaries = getBoundaries(sheet);
 
 		Collections.sort(ranges, Comparator);
@@ -176,10 +179,10 @@ public class Range {
 
 		source.prepare(sheet);
 
-		Block targetBoundaries = boundaries.shift(baseShift);
-		Block target = block.shift(baseShift);
+		Block targetBoundaries = boundaries.move(baseShift);
+		Block target = block.move(baseShift);
 		Block filled = new Block(target.start(), target.size().component(direction.orthogonal()));
-		Block.Vector shift = baseShift;
+		Vector shift = baseShift;
 
 		if (!baseShift.isZero())
 			sheet.copy(boundaries, targetBoundaries.start(), false);
@@ -202,18 +205,18 @@ public class Range {
 
 				filled = Block.boundaries(filled, target);
 				shift = shift.add(target.size(direction));
-				target = block.shift(shift);
+				target = block.move(shift);
 			}
 		} finally {
 			source.close();
 		}
 
-		Block.Vector stretch = filled.diffSize(block), stretchDir = stretch.component(direction);
+		Vector stretch = filled.diffSize(block), stretchDir = stretch.component(direction);
 
 		// Spread static cells AFTER inserted cells
-		for (Block.Direction direction : Block.Direction.values()) {
+		for (Direction direction : Direction.values()) {
 			Block source = boundaries.bandAfter(block, direction);
-			Block.Vector component = stretch.component(direction);
+			Vector component = stretch.component(direction);
 			int mod = component.mod();
 			if (mod != 0)
 				sheet.copy(source, baseShift.add(component), true);
@@ -221,13 +224,13 @@ public class Range {
 				sheet.clear(targetBoundaries.part(mod, direction));
 		}
 
-		targetBoundaries = targetBoundaries.stretch(stretch);
+		targetBoundaries = targetBoundaries.resize(stretch);
 
 		sheet.applyMergedRegions(boundaries, block, targetBoundaries, direction, !ranges.isEmpty());
 
 		if (stretchDir.mod() > 0)
 			for (Block merge : merges)
-				sheet.addMergedRegion(merge.shift(baseShift).stretch(stretchDir));
+				sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
 
 		ApplicationServer.getMonitor().logInfo("Report '" + options.getName() + "':"
 				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled

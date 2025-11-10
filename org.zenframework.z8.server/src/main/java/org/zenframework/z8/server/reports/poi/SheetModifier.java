@@ -7,6 +7,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.zenframework.z8.server.reports.poi.math.Block;
+import org.zenframework.z8.server.reports.poi.math.Direction;
+import org.zenframework.z8.server.reports.poi.math.Vector;
 
 public class SheetModifier {
 
@@ -83,7 +86,7 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier copy(Block source, Block.Vector target, boolean relative) {
+	public SheetModifier copy(Block source, Vector target, boolean relative) {
 		if (relative)
 			target = target.add(source.start());
 
@@ -140,25 +143,25 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier copyMergedRegions(Block source, Block.Vector target, boolean relative) {
+	public SheetModifier copyMergedRegions(Block source, Vector target, boolean relative) {
 		if (!relative)
 			target = target.sub(source.start());
 
 		for (int i = origin.getNumMergedRegions() - 1; i >= 0; i--) {
 			Block region = new Block(origin.getMergedRegion(i));
 			if (region.in(source))
-				sheet.addMergedRegion(region.shift(target).toCellRangeAddress());
+				sheet.addMergedRegion(region.move(target).toCellRangeAddress());
 		}
 
 		return this;
 	}
 
-	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Block.Direction direction, boolean hasChildren) {
+	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Direction direction, boolean hasChildren) {
 		Block bandBefore = sourceBoundaries.bandBefore(source, direction);
 		Block bandAfter = sourceBoundaries.bandAfter(source, direction);
 		Block band = sourceBoundaries.band(source, direction);
-		Block.Vector shift = targetBoundaries.diffStart(sourceBoundaries);
-		Block.Vector stretch = targetBoundaries.diffSize(sourceBoundaries);
+		Vector shift = targetBoundaries.diffStart(sourceBoundaries);
+		Vector stretch = targetBoundaries.diffSize(sourceBoundaries);
 
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
 			Block region = new Block(origin.getMergedRegion(i));
@@ -167,11 +170,11 @@ public class SheetModifier {
 				continue;
 
 			if (!hasChildren && region.in(source) || region.in(bandBefore))
-				addMergedRegion(region.shift(shift));
+				addMergedRegion(region.move(shift));
 			else if (region.in(bandAfter))
-				addMergedRegion(region.shift(shift).shift(stretch.component(direction)));
+				addMergedRegion(region.move(shift).move(stretch.component(direction)));
 			else if (region.intersects(band))
-				addMergedRegion(region.shift(shift).stretch(stretch.component(direction)));
+				addMergedRegion(region.move(shift).resize(stretch.component(direction)));
 		}
 /*
 		// TODO Exclude existing merged regions

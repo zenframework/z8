@@ -15,6 +15,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.expression.Expression;
+import org.zenframework.z8.server.reports.poi.math.Block;
+import org.zenframework.z8.server.reports.poi.math.Direction;
+import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class PoiReport {
@@ -57,14 +60,14 @@ public class PoiReport {
 		SheetModifier sheet = new SheetModifier().open(workbook);
 
 		Block boundaries = new Block();
-		Block.Vector shift = new Block.Vector();
+		Vector shift = new Vector();
 
 		try {
 			for (Range range : options.getRanges()) {
 				Block modified = range.apply(sheet.setSheet(range.getSheetIndex()), shift);
 				boundaries = Block.boundaries(boundaries, modified);
 				// TODO Correct shift calculation
-				shift = shift.add(modified.diffSize(range.getBoundaries(sheet)).component(Block.Direction.Vertical));
+				shift = shift.add(modified.diffSize(range.getBoundaries(sheet)).component(Direction.Vertical));
 			}
 		} finally {
 			sheet.close();
