@@ -134,13 +134,12 @@ public class Report extends OBJECT implements Runnable, IReport {
 
 	private File executePoi() {
 		org.zenframework.z8.server.reports.poi.ReportOptions options = new org.zenframework.z8.server.reports.poi.ReportOptions()
-				.setContext(this)
-				.setTemplate(template.get())
-				.setName(name != null ? name.get() : null)
-				.setRanges(Range.asPoiRanges(ranges))
-				.setHiddenColumns(hiddenColumnsToInt());
+				.setTemplate(template.get()).setName(name != null ? name.get() : null);
 
-		PoiReport report = new PoiReport(options);
+		PoiReport report = new PoiReport(options).setContext(this).setHiddenColumns(hiddenColumnsToInt());
+
+		for (Range.CLASS<Range> range : ranges)
+			report.addRange(range.get().getSheet(), range.get().asPoiRange());
 
 		IMonitor monitor = ApplicationServer.getMonitor();
 

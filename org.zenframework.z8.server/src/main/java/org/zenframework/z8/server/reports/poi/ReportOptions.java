@@ -1,23 +1,11 @@
 package org.zenframework.z8.server.reports.poi;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
-import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.Select;
-import org.zenframework.z8.server.expression.Expression;
-import org.zenframework.z8.server.expression.ObjectContext;
 import org.zenframework.z8.server.reports.ReportUtils;
 import org.zenframework.z8.server.reports.Reports;
-import org.zenframework.z8.server.runtime.OBJECT;
 
 public class ReportOptions {
 
@@ -25,15 +13,9 @@ public class ReportOptions {
 
 	private static final String Ext = "." + Xlsx;
 
-	private final List<Range> ranges = new LinkedList<Range>();
-	private final Map<Integer, Collection<Integer>> hiddenColumns = new HashMap<Integer, Collection<Integer>>();
-
 	private String templateFolder = Folders.Reports;
 	private String template = Reports.DefaultDesign;
 	private String name = null;
-	private OBJECT context;
-
-	private Expression expression;
 
 	public String getTemplateFolder() {
 		return templateFolder;
@@ -72,78 +54,5 @@ public class ReportOptions {
 		File outputFolder = Folders.ReportsOutput;
 		outputFolder.mkdirs();
 		return ReportUtils.getUniqueFileName(outputFolder, getName(), ReportOptions.Xlsx);
-	}
-
-	public List<Range> getRanges() {
-		Collections.sort(ranges, Range.Comparator);
-		return ranges;
-	}
-
-	public ReportOptions setRanges(List<Range> ranges) {
-		this.ranges.clear();
-		this.ranges.addAll(ranges);
-
-		for (Range range : ranges)
-			range.setReport(this);
-
-		return this;
-	}
-
-	public Map<Integer, Collection<Integer>> getHiddenColumns() {
-		return hiddenColumns;
-	}
-
-	public ReportOptions setHiddenColumns(Map<Integer, Collection<Integer>> hiddenColumns) {
-		this.hiddenColumns.clear();
-		this.hiddenColumns.putAll(hiddenColumns);
-		return this;
-	}
-
-	public ReportOptions addHiddenColumn(int sheet, int hiddenColumn) {
-		Collection<Integer> sheetColumns = hiddenColumns.get(sheet);
-
-		if (sheetColumns == null)
-			hiddenColumns.put(sheet, sheetColumns = new HashSet<Integer>());
-
-		sheetColumns.add(hiddenColumn);
-
-		return this;
-	}
-
-	public ReportOptions addHiddenColumn(int sheet, String hiddenColumn) {
-		return addHiddenColumn(sheet, Util.columnToInt(hiddenColumn));
-	}
-
-	public ReportOptions setContext(OBJECT context) {
-		this.context = context;
-		return this;
-	}
-
-	public OBJECT getContext() {
-		return context;
-	}
-
-	public Expression getExpression() {
-		if (expression == null)
-			expression = new Expression()
-					.setContext(new ObjectContext(context))
-					.setGetter(new Expression.Getter() {
-						@Override
-						@SuppressWarnings("rawtypes")
-						public Object getValue(Object value) {
-							if (value instanceof Wrapper)
-								return ((Wrapper) value).get();
-
-							if (value instanceof Field) {
-								Field field = (Field) value;
-								Select cursor = field.getCursor();
-								return cursor == null || cursor.isClosed() ? field : field.get();
-							}
-
-							return value;
-						}
-					});
-
-		return expression;
 	}
 }

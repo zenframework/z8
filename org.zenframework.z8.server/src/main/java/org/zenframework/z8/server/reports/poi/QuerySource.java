@@ -18,8 +18,7 @@ public class QuerySource extends DataSource {
 
 	private int count = -1;
 
-	public QuerySource(Range range, Query query) {
-		super(range);
+	public QuerySource(Query query) {
 		this.query = query;
 	}
 

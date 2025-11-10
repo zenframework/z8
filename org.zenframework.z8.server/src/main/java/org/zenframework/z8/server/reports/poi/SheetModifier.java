@@ -14,12 +14,38 @@ import org.zenframework.z8.server.reports.poi.math.Vector;
 
 public class SheetModifier {
 
+	private static class SearchConfig {
+		final Block[] bandBefore = new Block[Direction.values().length];
+		final Block[] bandAfter = new Block[Direction.values().length];
+		final Block[] band = new Block[Direction.values().length];
+
+		SearchConfig(Block source, Block boundaries) {
+			for (Direction direction : Direction.values()) {
+				bandBefore[direction.ordinal()] = boundaries.bandBefore(source, direction);
+				bandAfter[direction.ordinal()] = boundaries.bandAfter(source, direction);
+				band[direction.ordinal()] = boundaries.band(source, direction);
+			}
+		}
+
+		boolean isBefore(Block region, Direction direction) {
+			return region.in(bandBefore[direction.ordinal()]);
+		}
+
+		boolean isAfter(Block region, Direction direction) {
+			return region.in(bandAfter[direction.ordinal()]);
+		}
+
+		boolean intersectsBand(Block region, Direction direction) {
+			return region.intersects(band[direction.ordinal()]);
+		}
+	}
+
 	private final List<String> errors = new LinkedList<String>();
 
 	private int rowsCreated = 0, rowsCopied = 0, cellsCreated = 0, cellsRemoved = 0, cellsCopied = 0;
 
 	private XSSFWorkbook workbook;
-	private Sheet sheet, origin, origins[];
+	private Sheet sheet, origin;
 
 	public SheetModifier() {}
 
@@ -31,31 +57,21 @@ public class SheetModifier {
 		return errors;
 	}
 
-	public SheetModifier open(XSSFWorkbook workbook) {
-		if (this.workbook != null) {
-			for (Sheet origin : origins)
-				this.workbook.removeSheetAt(this.workbook.getSheetIndex(origin));
-			sheet = origin = null;
-		}
-
+	public SheetModifier setWorkbook(XSSFWorkbook workbook) {
 		this.workbook = workbook;
-
-		if (workbook != null) {
-			origins = new Sheet[workbook.getNumberOfSheets()];
-			for (int i = 0; i < origins.length; i++) {
-				origins[i] = workbook.cloneSheet(i);
-				Sheet sheet = workbook.getSheetAt(i);
-				for (int j = sheet.getNumMergedRegions() - 1; j >= 0; j--)
-					sheet.removeMergedRegion(j);
-			}
-		}
-
 		return this;
 	}
 
 	public SheetModifier setSheet(int sheetIndex) {
-		sheet = workbook.getSheetAt(sheetIndex);
-		origin = origins[sheetIndex];
+		if (origin != null)
+			workbook.removeSheetAt(workbook.getSheetIndex(origin));
+
+		sheet = sheetIndex >= 0 ? workbook.getSheetAt(sheetIndex) : null;
+		origin = sheetIndex >= 0 ? workbook.cloneSheet(sheetIndex) : null;
+
+		if (sheet != null)
+			removeMergedRegions();
+
 		return this;
 	}
 
@@ -64,7 +80,7 @@ public class SheetModifier {
 	}
 
 	public SheetModifier close() {
-		return open(null);
+		return setSheet(-1);
 	}
 
 	public String getStat() {
@@ -168,23 +184,40 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier applyOuterMergedRegions(Block source, Block boundaries, Vector shift, Vector stretch, Direction direction) {
-		Block bandBefore = boundaries.bandBefore(source, direction);
-		Block bandAfter = boundaries.bandAfter(source, direction);
-		Block band = boundaries.band(source, direction);
+	public SheetModifier applyOuterMergedRegions(Block block, Block boundaries, Vector shift, Vector stretch) {
+		SearchConfig search = new SearchConfig(block, boundaries);
 
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
 			Block region = new Block(origin.getMergedRegion(i));
 
-			if (region.in(source) || !region.in(boundaries))
+			if (region.in(block) || !region.in(boundaries))
 				continue;
 
-			if (region.in(bandBefore))
-				addMergedRegion(region.move(shift));
-			else if (region.in(bandAfter))
-				addMergedRegion(region.move(shift).move(stretch.component(direction)));
-			else if (region.intersects(band))
-				addMergedRegion(region.move(shift).resize(stretch.component(direction)));
+			boolean applied = false;
+
+			for (Direction direction : Direction.values()) {
+				if (search.isBefore(region, direction))
+					region = region.move(shift);
+				else if (search.isAfter(region, direction))
+					region = region.move(shift).move(stretch.component(direction));
+				else
+					continue;
+
+				addMergedRegion(region);
+
+				applied = true;
+				break;
+			}
+
+			if (applied)
+				continue;
+
+			for (Direction direction : Direction.values()) {
+				if (search.intersectsBand(region, direction)) {
+					addMergedRegion(region.move(shift).resize(stretch.component(direction)));
+					break;
+				}
+			}
 		}
 /*
 		// TODO Exclude existing merged regions

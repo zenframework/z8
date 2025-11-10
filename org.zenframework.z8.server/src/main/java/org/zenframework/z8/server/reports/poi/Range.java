@@ -11,8 +11,6 @@ import java.util.Set;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.zenframework.z8.server.base.json.parser.JsonArray;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Direction;
@@ -28,28 +26,26 @@ public class Range {
 		}
 	};
 
-	private ReportOptions options;
-
+	private PoiReport report;
 	private DataSource source;
-	private int sheetIndex = 0;
 	private Block block, boundaries;
-	private Direction direction;
+	private Direction direction = Direction.Vertical;
 	private Range parent;
 
 	private final List<Range> ranges = new ArrayList<Range>();
 	private final Set<Block> merges = new HashSet<Block>();
 
-	public Range setReport(ReportOptions options) {
-		this.options = options;
+	public Range setReport(PoiReport report) {
+		this.report = report;
 
 		for (Range range : ranges)
-			range.setReport(options);
+			range.setReport(report);
 
 		return this;
 	}
 
-	public ReportOptions getOptions() {
-		return options;
+	public PoiReport getReport() {
+		return report;
 	}
 
 	public DataSource getSource() {
@@ -57,21 +53,12 @@ public class Range {
 	}
 
 	public Range setSource(DataSource source) {
-		this.source = source;
+		this.source = source.setRange(this);
 		return this;
 	}
 
 	public Range setSource(OBJECT source) {
-		return setSource(toDataSource(source));
-	}
-
-	public int getSheetIndex() {
-		return sheetIndex;
-	}
-
-	public Range setSheetIndex(int sheetIndex) {
-		this.sheetIndex = sheetIndex;
-		return this;
+		return setSource(DataSource.toDataSource(source));
 	}
 
 	public Block getBlock() {
@@ -89,11 +76,6 @@ public class Range {
 
 	public Block getBoundaries() {
 		return boundaries != null ? boundaries : parent == null ? null : parent.getRanges().size() == 1 ? parent.getBlock() : block;
-	}
-
-	public Block getBoundaries(SheetModifier sheet) {
-		Block boundaries = getBoundaries();
-		return boundaries != null ? boundaries : sheet.getBoundaries();
 	}
 
 	public Range setBoundaries(Block boundaries) {
@@ -132,7 +114,12 @@ public class Range {
 	}
 
 	public Range addRange(Range range) {
-		this.ranges.add(range.setParent(this));
+		ranges.add(range.setParent(this).setReport(report));
+
+		for (Range r : ranges)
+			if (r != range && range.getBoundaries().intersects(r.getBoundaries()))
+				throw new IllegalStateException(range + "  intersect " + r + " by boundaries");
+
 		return this;
 	}
 
@@ -169,8 +156,24 @@ public class Range {
 		return addMerge(new Block(merge));
 	}
 
+	public void apply(SheetModifier sheet) {
+		apply(sheet, new Vector());
+	}
+
 	protected Block apply(SheetModifier sheet, Vector baseShift) {
-		Block boundaries = getBoundaries(sheet);
+		Block boundaries = getBoundaries();
+
+		if (boundaries == null)
+			boundaries = sheet.getBoundaries();
+
+		if (block == null) {
+			if (parent != null)
+				throw new IllegalStateException("Range block is not set");
+			block = boundaries;
+		}
+
+		if (!block.in(boundaries))
+			throw new IllegalStateException("Range address " + block + " is out of boundaries " + boundaries);
 
 		Collections.sort(ranges, Comparator);
 
@@ -238,13 +241,13 @@ public class Range {
 
 		targetBoundaries = targetBoundaries.resize(stretch);
 
-		sheet.applyOuterMergedRegions(block, boundaries, baseShift, stretch, direction);
+		sheet.applyOuterMergedRegions(block, boundaries, baseShift, stretch);
 
 		if (stretchDir.mod() > 0)
 			for (Block merge : merges)
 				sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
 
-		ApplicationServer.getMonitor().logInfo("Report '" + options.getName() + "':"
+		ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
 				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
 				+ "\n\t- boundaries " + boundaries + " -> " + targetBoundaries
 				+ "\n\t- stat: " + sheet.getStat());
@@ -254,14 +257,6 @@ public class Range {
 
 	@Override
 	public String toString() {
-		return "Range[" + block.toAddress() + ']';
-	}
-
-	private DataSource toDataSource(OBJECT source) {
-		if (source instanceof Query)
-			return new QuerySource(this, (Query) source);
-		if (source instanceof JsonArray)
-			return new JsonSource(this, (JsonArray) source);
-		return null;
+		return "Range[" + block.toAddress() + " / " + getBoundaries() + ']';
 	}
 }

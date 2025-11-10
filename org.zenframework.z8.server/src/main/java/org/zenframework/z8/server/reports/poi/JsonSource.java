@@ -10,8 +10,7 @@ public class JsonSource extends DataSource {
 
 	private Wrapper<Object> item;
 
-	public JsonSource(Range range, JsonArray json) {
-		super(range);
+	public JsonSource(JsonArray json) {
 		this.json = json;
 	}
 

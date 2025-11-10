@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.reports.poi;
 
+import org.zenframework.z8.server.base.json.parser.JsonArray;
+import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.expression.Expression;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -8,13 +10,21 @@ import org.zenframework.z8.server.types.integer;
 public abstract class DataSource {
 	private static final String Index = "index";
 
-	protected final Range range;
-
+	protected Range range;
 	protected Wrapper<integer> index;
 	private boolean initialized = false;
 
-	protected DataSource(Range range) {
+	public static DataSource toDataSource(OBJECT source) {
+		if (source instanceof Query)
+			return new QuerySource((Query) source);
+		if (source instanceof JsonArray)
+			return new JsonSource((JsonArray) source);
+		return new SimpleSource(source);
+	}
+
+	public DataSource setRange(Range range) {
 		this.range = range;
+		return this;
 	}
 
 	public String getId() {
@@ -26,7 +36,7 @@ public abstract class DataSource {
 	}
 
 	public Expression getExpression() {
-		return range.getOptions().getExpression();
+		return range.getReport().getExpression();
 	}
 
 	public void prepare(SheetModifier sheet) {
