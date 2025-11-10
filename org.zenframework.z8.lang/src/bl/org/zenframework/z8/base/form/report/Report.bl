@@ -21,7 +21,7 @@ public class Report extends Object {
 
 	// POI-only options
 	public Range[] ranges;
-	public string[] hiddenColumns;
+	public string[][int] hiddenColumns;
 
 	public file run(guid recordId);
 

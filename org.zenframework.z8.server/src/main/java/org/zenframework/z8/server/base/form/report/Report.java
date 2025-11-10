@@ -3,8 +3,9 @@ package org.zenframework.z8.server.base.form.report;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
@@ -21,8 +22,10 @@ import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class Report extends OBJECT implements Runnable, IReport {
@@ -54,7 +57,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 	public string format;
 
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
-	public RCollection<string> hiddenColumns = new RCollection<string>();
+	public RLinkedHashMap<integer, RCollection<string>> hiddenColumns = new RLinkedHashMap<integer, RCollection<string>>();
 
 	public Report(IObject container) {
 		super(container);
@@ -135,7 +138,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 				.setTemplate(template.get())
 				.setName(name != null ? name.get() : null)
 				.setRanges(Range.asPoiRanges(ranges))
-				.setHiddenColumns(columnsToInt(hiddenColumns));
+				.setHiddenColumns(hiddenColumnsToInt());
 
 		PoiReport report = new PoiReport(options);
 
@@ -153,11 +156,15 @@ public class Report extends OBJECT implements Runnable, IReport {
 		return run(recordId);
 	}
 
-	private static Set<Integer> columnsToInt(Collection<string> columns) {
-		Set<Integer> result = new HashSet<Integer>();
+	private Map<Integer, Collection<Integer>> hiddenColumnsToInt() {
+		Map<Integer, Collection<Integer>> result = new HashMap<Integer, Collection<Integer>>();
 
-		for (string column : columns)
-			result.add(Util.columnToInt(column.get()));
+		for (Map.Entry<integer, RCollection<string>> entry : hiddenColumns.entrySet()) {
+			Collection<Integer> sheetColumns = new HashSet<Integer>();
+			result.put(entry.getKey().getInt(), sheetColumns);
+			for (string column : entry.getValue())
+				sheetColumns.add(Util.columnToInt(column.get()));
+		}
 
 		return result;
 	}

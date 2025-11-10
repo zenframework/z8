@@ -26,7 +26,9 @@ public class Range extends OBJECT {
 	}
 
 	// Attributes
+	public static final String Sheet = "sheet";
 	public static final String Address = "address";
+	public static final String Boundaries = "boundaries";
 	public static final String Direction = "direction";
 
 	// Records insertion direction
@@ -37,8 +39,16 @@ public class Range extends OBJECT {
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
 	public Condition.CLASS<? extends Condition> on = new Condition.CLASS<Condition>(this);
 
+	public String getSheet() {
+		return getAttribute(Sheet);
+	}
+
 	public String getAddress() {
 		return getAttribute(Address);
+	}
+
+	public String getBoundaries() {
+		return getAttribute(Boundaries);
 	}
 
 	public int getDirection() {
@@ -47,8 +57,13 @@ public class Range extends OBJECT {
 	}
 
 	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
-		return new org.zenframework.z8.server.reports.poi.Range().setSource(source.get()).setAddress(getAddress())
-				.setDirection(getDirection()).setRanges(asPoiRanges(ranges));
+		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range().setSource(source.get())
+				.setSheetIndex(Integer.parseInt(getSheet())).setBlock(getAddress()).setBoundaries(getBoundaries()).setDirection(getDirection());
+
+		for (Range.CLASS<Range> subrange : ranges)
+			range.addRange(subrange.get().asPoiRange());
+
+		return range;
 	}
 
 	public static List<org.zenframework.z8.server.reports.poi.Range> asPoiRanges(RCollection<Range.CLASS<Range>> ranges) {

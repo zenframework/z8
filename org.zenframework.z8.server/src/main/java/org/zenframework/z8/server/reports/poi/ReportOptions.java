@@ -3,10 +3,11 @@ package org.zenframework.z8.server.reports.poi;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.zenframework.z8.server.base.file.Folders;
@@ -25,7 +26,7 @@ public class ReportOptions {
 	private static final String Ext = "." + Xlsx;
 
 	private final List<Range> ranges = new LinkedList<Range>();
-	private final Set<Integer> hiddenColumns = new HashSet<Integer>();
+	private final Map<Integer, Collection<Integer>> hiddenColumns = new HashMap<Integer, Collection<Integer>>();
 
 	private String templateFolder = Folders.Reports;
 	private String template = Reports.DefaultDesign;
@@ -88,23 +89,29 @@ public class ReportOptions {
 		return this;
 	}
 
-	public Set<Integer> getHiddenColumns() {
+	public Map<Integer, Collection<Integer>> getHiddenColumns() {
 		return hiddenColumns;
 	}
 
-	public ReportOptions setHiddenColumns(Collection<Integer> hiddenColumns) {
+	public ReportOptions setHiddenColumns(Map<Integer, Collection<Integer>> hiddenColumns) {
 		this.hiddenColumns.clear();
-		this.hiddenColumns.addAll(hiddenColumns);
+		this.hiddenColumns.putAll(hiddenColumns);
 		return this;
 	}
 
-	public ReportOptions addHiddenColumn(int hiddenColumn) {
-		this.hiddenColumns.add(hiddenColumn);
+	public ReportOptions addHiddenColumn(int sheet, int hiddenColumn) {
+		Collection<Integer> sheetColumns = hiddenColumns.get(sheet);
+
+		if (sheetColumns == null)
+			hiddenColumns.put(sheet, sheetColumns = new HashSet<Integer>());
+
+		sheetColumns.add(hiddenColumn);
+
 		return this;
 	}
 
-	public ReportOptions addHiddenColumn(String hiddenColumn) {
-		return addHiddenColumn(Util.columnToInt(hiddenColumn));
+	public ReportOptions addHiddenColumn(int sheet, String hiddenColumn) {
+		return addHiddenColumn(sheet, Util.columnToInt(hiddenColumn));
 	}
 
 	public ReportOptions setContext(OBJECT context) {

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -52,8 +54,21 @@ public class PoiReport {
 
 		XSSFWorkbook workbook = loadXlsx(outputFile);
 
-		for (Range range : options.getRanges())
-			range.apply(workbook);
+		SheetModifier sheet = new SheetModifier().open(workbook);
+
+		Block boundaries = new Block();
+		Block.Vector shift = new Block.Vector();
+
+		try {
+			for (Range range : options.getRanges()) {
+				Block modified = range.apply(sheet.setSheet(range.getSheetIndex()), shift);
+				boundaries = Block.boundaries(boundaries, modified);
+				// TODO Correct shift calculation
+				shift = shift.add(modified.diffSize(range.getBoundaries(sheet)).component(Block.Direction.Vertical));
+			}
+		} finally {
+			sheet.close();
+		}
 
 		hideColumns(workbook);
 
@@ -63,10 +78,11 @@ public class PoiReport {
 	}
 
 	private void hideColumns(XSSFWorkbook workbook) {
-		Sheet sheet = workbook.getSheetAt(0);
-
-		for (int hiddenColumn : options.getHiddenColumns())
-			sheet.setColumnHidden(hiddenColumn, true);
+		for (Map.Entry<Integer, Collection<Integer>> entry : options.getHiddenColumns().entrySet()) {
+			Sheet sheet = workbook.getSheetAt(entry.getKey());
+			for (int hiddenColumn : entry.getValue())
+				sheet.setColumnHidden(hiddenColumn, true);
+		}
 	}
 
 	private static XSSFWorkbook loadXlsx(File file) throws IOException {

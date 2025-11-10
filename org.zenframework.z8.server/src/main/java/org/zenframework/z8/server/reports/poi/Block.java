@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.reports.poi;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -89,7 +90,28 @@ public class Block {
 		}
 	}
 
+	public static final Comparator<Block> Comparator = new Comparator<Block>() {
+		@Override
+		public int compare(Block o1, Block o2) {
+			if (o1 == o2)
+				return 0;
+			if (o1 == null)
+				return -1;
+			if (o2 == null)
+				return 1;
+			if (o1.startRow() < o2.endRow() && o2.startRow() < o1.endRow())
+				return Integer.compare(o1.startCol(), o2.startCol());
+			if (o1.startCol() < o2.endCol() && o2.startCol() < o1.endCol())
+				return Integer.compare(o1.startRow(), o2.startRow());
+			return Integer.compare(o1.startCol(), o2.startCol()) + Integer.compare(o1.startRow(), o2.startRow());
+		}
+	};
+
 	private final Vector start, size;
+
+	public Block() {
+		this(0, 0, 0, 0);
+	}
 
 	public Block(Block block) {
 		this(block.startRow(), block.startCol(), block.height(), block.width());
@@ -217,10 +239,14 @@ public class Block {
 				: new Block(block.startRow(), startCol(), block.height(), width());
 	}
 
+	public Block bandBefore(Block block, Direction direction) {
+		return direction == Direction.Horizontal ? new Block(startRow(), startCol(), height(), block.startCol() - startCol())
+				: new Block(startRow(), startCol(), block.startRow() - startRow(), width());
+	}
+
 	public Block bandAfter(Block block, Direction direction) {
 		return direction == Direction.Horizontal ? new Block(startRow(), block.endCol(), height(), endCol() - block.endCol())
 				: new Block(block.endRow(), startCol(), endRow() - block.endRow(), width());
-
 	}
 
 	public List<Block> bandExclusive(Block block, Direction direction) {
@@ -241,8 +267,12 @@ public class Block {
 		return blocks;
 	}
 
+	public Vector diffStart(Block block) {
+		return start().sub(block.start());
+	}
+
 	public Vector diffSize(Block block) {
-		return new Vector(height() - block.height(), width() - block.width());
+		return size().sub(block.size());
 	}
 
 	public Block copy() {
