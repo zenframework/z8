@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.reports.poi;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -156,20 +157,29 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier applyMergedRegions(Block sourceBoundaries, Block source, Block targetBoundaries, Direction direction, boolean hasChildren) {
-		Block bandBefore = sourceBoundaries.bandBefore(source, direction);
-		Block bandAfter = sourceBoundaries.bandAfter(source, direction);
-		Block band = sourceBoundaries.band(source, direction);
-		Vector shift = targetBoundaries.diffStart(sourceBoundaries);
-		Vector stretch = targetBoundaries.diffSize(sourceBoundaries);
+	public SheetModifier applyInnerMergedRegions(Block source, Vector shift, Collection<Block> exclusions) {
+		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
+			Block region = new Block(origin.getMergedRegion(i));
+
+			if (region.in(source) && !region.inOneOf(exclusions))
+				addMergedRegion(region.move(shift));
+		}
+
+		return this;
+	}
+
+	public SheetModifier applyOuterMergedRegions(Block source, Block boundaries, Vector shift, Vector stretch, Direction direction) {
+		Block bandBefore = boundaries.bandBefore(source, direction);
+		Block bandAfter = boundaries.bandAfter(source, direction);
+		Block band = boundaries.band(source, direction);
 
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
 			Block region = new Block(origin.getMergedRegion(i));
 
-			if (hasChildren && region.in(source) || !region.in(sourceBoundaries))
+			if (region.in(source) || !region.in(boundaries))
 				continue;
 
-			if (!hasChildren && region.in(source) || region.in(bandBefore))
+			if (region.in(bandBefore))
 				addMergedRegion(region.move(shift));
 			else if (region.in(bandAfter))
 				addMergedRegion(region.move(shift).move(stretch.component(direction)));

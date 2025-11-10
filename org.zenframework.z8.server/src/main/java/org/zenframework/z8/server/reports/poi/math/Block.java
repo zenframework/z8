@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.reports.poi.math;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -92,6 +93,13 @@ public class Block {
 	public boolean in(Block block) {
 		return startRow() >= block.startRow() && startCol() >= block.startCol()
 				&& endRow() <= block.endRow() && endCol() <= block.endCol();
+	}
+
+	public boolean inOneOf(Collection<Block> blocks) {
+		for (Block block : blocks)
+			if (in(block))
+				return true;
+		return false;
 	}
 
 	public boolean out(Block block) {

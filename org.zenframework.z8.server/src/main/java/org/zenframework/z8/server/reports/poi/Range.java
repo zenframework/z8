@@ -88,11 +88,12 @@ public class Range {
 	}
 
 	public Block getBoundaries() {
-		return boundaries;
+		return boundaries != null ? boundaries : parent != null ? parent.getBlock() : null;
 	}
 
 	public Block getBoundaries(SheetModifier sheet) {
-		return boundaries != null ? boundaries : parent != null ? parent.getBlock() : sheet.getBoundaries();
+		Block boundaries = getBoundaries();
+		return boundaries != null ? boundaries : sheet.getBoundaries();
 	}
 
 	public Range setBoundaries(Block boundaries) {
@@ -133,6 +134,15 @@ public class Range {
 	public Range addRange(Range range) {
 		this.ranges.add(range.setParent(this));
 		return this;
+	}
+
+	public Collection<Block> getInnerBoundaries() {
+		Set<Block> boundaries = new HashSet<Block>();
+
+		for (Range range : ranges)
+			boundaries.add(range.getBoundaries());
+
+		return boundaries;
 	}
 
 	public Range setMerges(Collection<Block> merges) {
@@ -199,7 +209,9 @@ public class Range {
 					sheet.copy(block, target.start(), false);
 
 				for (Range range : ranges)
-					target = Block.boundaries(range.apply(sheet, shift), target);
+					target = Block.boundaries(range.apply(sheet, shift), target); // TODO No data, stretch -1
+
+				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries());
 
 				sheet.visitCells(target, visitor);
 
@@ -226,7 +238,7 @@ public class Range {
 
 		targetBoundaries = targetBoundaries.resize(stretch);
 
-		sheet.applyMergedRegions(boundaries, block, targetBoundaries, direction, !ranges.isEmpty());
+		sheet.applyOuterMergedRegions(block, boundaries, baseShift, stretch, direction);
 
 		if (stretchDir.mod() > 0)
 			for (Block merge : merges)
