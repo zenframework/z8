@@ -88,7 +88,7 @@ public class Range {
 	}
 
 	public Block getBoundaries() {
-		return boundaries != null ? boundaries : parent != null ? parent.getBlock() : null;
+		return boundaries != null ? boundaries : parent == null ? null : parent.getRanges().size() == 1 ? parent.getBlock() : block;
 	}
 
 	public Block getBoundaries(SheetModifier sheet) {
