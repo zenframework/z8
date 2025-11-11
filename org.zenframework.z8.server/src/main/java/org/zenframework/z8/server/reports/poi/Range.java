@@ -234,12 +234,12 @@ public class Range {
 		Vector resize = filled.diffSize(block);
 
 		afterApply(sheet, baseShift, resize, filled);
-
+/*
 		ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
 				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
 				+ "\n\t- boundaries " + boundaries + " -> " + boundaries.move(baseShift).resize(resize)
 				+ "\n\t- stat: " + sheet.getStat());
-
+*/
 		return resize;
 	}
 
@@ -274,10 +274,8 @@ public class Range {
 			// Clear cells around new filled cells
 			if (resize.component(axis).mod() > 0) {
 				for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), axis), axis)) {
-					if (band.square() > 0) {
-						System.out.println(">>> " + this + ": clear " + band);
+					if (band.square() > 0)
 						sheet.clear(band);
-					}
 				}
 			}
 
