@@ -193,6 +193,11 @@ public class SheetModifier {
 			if (region.in(block) || !region.in(boundaries))
 				continue;
 
+			if (block.in(region)) {
+				addMergedRegion(region.move(shift).resize(stretch));
+				continue;
+			}
+
 			boolean applied = false;
 
 			for (Direction direction : Direction.values()) {

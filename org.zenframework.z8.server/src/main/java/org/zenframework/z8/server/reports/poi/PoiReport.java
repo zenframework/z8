@@ -74,7 +74,7 @@ public class PoiReport {
 		Range sheetRange = ranges.get(sheet);
 
 		if (sheetRange == null)
-			ranges.put(sheet, sheetRange = new Range().setReport(this).setSource(new OBJECT.CLASS<OBJECT>(null).get()));
+			ranges.put(sheet, sheetRange = new Range().setReport(this).setName("Sheet[" + sheet + ']').setSource(new OBJECT.CLASS<OBJECT>(null).get()));
 
 		sheetRange.addRange(range);
 
@@ -142,8 +142,9 @@ public class PoiReport {
 		SheetModifier sheet = new SheetModifier().setWorkbook(workbook);
 
 		try {
-			for (Map.Entry<Integer, Range> entry : ranges.entrySet())
+			for (Map.Entry<Integer, Range> entry : ranges.entrySet()) {
 				entry.getValue().apply(sheet.setSheet(entry.getKey()));
+			}
 		} finally {
 			sheet.close();
 		}

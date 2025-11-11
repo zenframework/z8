@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class Range {
 	};
 
 	private PoiReport report;
+	private String name;
 	private DataSource source;
 	private Block block, boundaries;
 	private Direction direction = Direction.Vertical;
@@ -46,6 +48,15 @@ public class Range {
 
 	public PoiReport getReport() {
 		return report;
+	}
+
+	public Range setName(String name) {
+		this.name = name;
+		return this;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public DataSource getSource() {
@@ -160,20 +171,20 @@ public class Range {
 		apply(sheet, new Vector());
 	}
 
-	protected Block apply(SheetModifier sheet, Vector baseShift) {
-		Block boundaries = getBoundaries();
+	protected Vector apply(SheetModifier sheet, Vector baseShift) {
+		boundaries = getBoundaries();
 
 		if (boundaries == null)
-			boundaries = sheet.getBoundaries();
+			boundaries = boundariesFromChildren(sheet);
 
 		if (block == null) {
 			if (parent != null)
-				throw new IllegalStateException("Range block is not set");
+				throw new IllegalStateException(this + " block is not set");
 			block = boundaries;
 		}
 
 		if (!block.in(boundaries))
-			throw new IllegalStateException("Range address " + block + " is out of boundaries " + boundaries);
+			throw new IllegalStateException(this + " address " + block + " is out of boundaries " + boundaries);
 
 		Collections.sort(ranges, Comparator);
 
@@ -194,7 +205,7 @@ public class Range {
 
 		Block targetBoundaries = boundaries.move(baseShift);
 		Block target = block.move(baseShift);
-		Block filled = new Block(target.start(), target.size().component(direction.orthogonal()));
+		Block filled = new Block(target.start(), block.size().component(direction.orthogonal()));
 		Vector shift = baseShift;
 
 		if (!baseShift.isZero())
@@ -204,15 +215,24 @@ public class Range {
 			source.open();
 
 			while (source.next()) {
-				if (source.getIndex() > 0)
-					for (Block band : targetBoundaries.bandExclusive(target, direction))
-						sheet.clear(band);
-
 				if (!shift.isZero())
 					sheet.copy(block, target.start(), false);
 
-				for (Range range : ranges)
-					target = Block.boundaries(range.apply(sheet, shift), target); // TODO No data, stretch -1
+				List<Vector> resizes = new ArrayList<Vector>(ranges.size());
+
+				for (Range range : ranges) {
+					Vector rangeShift = shift;
+
+					for (int i = 0; i < resizes.size(); i++) {
+						for (Direction direction : Direction.values())
+							if (range.getBlock().start(direction).mod() >= ranges.get(i).getBlock().end(direction).mod())
+								rangeShift = rangeShift.add(resizes.get(i).component(direction));
+					}
+
+					Vector rangeResize = range.apply(sheet, rangeShift);
+					resizes.add(rangeResize);
+					target = Block.boundaries(range.getBoundaries().move(rangeShift).resize(rangeResize), target);
+				}
 
 				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries());
 
@@ -226,12 +246,20 @@ public class Range {
 			source.close();
 		}
 
-		Vector stretch = filled.diffSize(block), stretchDir = stretch.component(direction);
+		Vector resize = filled.diffSize(block);
 
-		// Spread static cells AFTER inserted cells
 		for (Direction direction : Direction.values()) {
+			// Clear cells around new filled cells
+			for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), direction), direction)) {
+				if (band.square() > 0) {
+					System.out.println(">>> " + this + ": clear " + band);
+					sheet.clear(band);
+				}
+			}
+
+			// Spread static cells AFTER inserted cells
 			Block source = boundaries.bandAfter(block, direction);
-			Vector component = stretch.component(direction);
+			Vector component = resize.component(direction);
 			int mod = component.mod();
 			if (mod != 0)
 				sheet.copy(source, baseShift.add(component), true);
@@ -239,24 +267,36 @@ public class Range {
 				sheet.clear(targetBoundaries.part(mod, direction));
 		}
 
-		targetBoundaries = targetBoundaries.resize(stretch);
-
-		sheet.applyOuterMergedRegions(block, boundaries, baseShift, stretch);
-
+		sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
+/*
 		if (stretchDir.mod() > 0)
 			for (Block merge : merges)
 				sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
-
+*/
 		ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
 				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
-				+ "\n\t- boundaries " + boundaries + " -> " + targetBoundaries
+				+ "\n\t- boundaries " + boundaries + " -> " + targetBoundaries.resize(resize)
 				+ "\n\t- stat: " + sheet.getStat());
 
-		return targetBoundaries;
+		return resize;
 	}
 
 	@Override
 	public String toString() {
-		return "Range[" + block.toAddress() + " / " + getBoundaries() + ']';
+		return new StringBuilder(30).append("Range[").append(name != null ? name : "?").append(": ")
+				.append(block != null ? block.toAddress() : '-').append(" / ").append(boundaries != null ? boundaries : '-').append(']').toString();
+	}
+
+	private Block boundariesFromChildren(SheetModifier sheet) {
+		if (ranges.size() == 1)
+			return sheet.getBoundaries();
+
+		Collection<Block> boundaries = new LinkedList<Block>();
+
+		for (Range range : ranges)
+			if (range.boundaries != null)
+				boundaries.add(range.boundaries);
+
+		return Block.boundaries(boundaries);
 	}
 }

@@ -35,6 +35,10 @@ public class Vector {
 		return row + col;
 	}
 
+	public int scalar() {
+		return row() * col();
+	}
+
 	public Vector mul(int n) {
 		return new Vector(row * n, col * n);
 	}
@@ -49,6 +53,10 @@ public class Vector {
 
 	public Vector component(Direction direction) {
 		return direction == Direction.Horizontal ? new Vector(0, col) : new Vector(row, 0);
+	}
+
+	public int coordinate(Direction direction) {
+		return direction == Direction.Horizontal ? col : row;
 	}
 
 	public Vector inverse() {

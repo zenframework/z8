@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.reports.poi.math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -54,16 +55,8 @@ public class Block {
 		return start;
 	}
 
-	public Vector size() {
-		return size;
-	}
-
-	public Vector end() {
-		return start.add(size);
-	}
-
-	public Vector size(Direction direction) {
-		return size.component(direction);
+	public Vector start(Direction direction) {
+		return start.component(direction);
 	}
 
 	public int startRow() {
@@ -74,12 +67,12 @@ public class Block {
 		return start.col();
 	}
 
-	public int endRow() {
-		return start.row() + size.row();
+	public Vector size() {
+		return size;
 	}
 
-	public int endCol() {
-		return start.col() + size.col();
+	public Vector size(Direction direction) {
+		return size.component(direction);
 	}
 
 	public int height() {
@@ -88,6 +81,26 @@ public class Block {
 
 	public int width() {
 		return size.col();
+	}
+
+	public Vector end() {
+		return start.add(size);
+	}
+
+	public Vector end(Direction direction) {
+		return end().component(direction);
+	}
+
+	public int endRow() {
+		return start.row() + size.row();
+	}
+
+	public int endCol() {
+		return start.col() + size.col();
+	}
+
+	public int square() {
+		return size.scalar();
 	}
 
 	public boolean in(Block block) {
@@ -194,18 +207,21 @@ public class Block {
 	}
 
 	public static Block boundaries(Block... blocks) {
-		if (blocks.length == 0)
-			return null;
+		return boundaries(Arrays.asList(blocks));
+	}
 
+	public static Block boundaries(Iterable<Block> blocks) {
 		int startRow = Integer.MAX_VALUE, startCol = Integer.MAX_VALUE, endRow = 0, endCol = 0;
+		boolean empty = true;
 
 		for (Block block : blocks) {
 			startRow = Math.min(startRow, block.startRow());
 			startCol = Math.min(startCol, block.startCol());
 			endRow = Math.max(endRow, block.endRow());
 			endCol = Math.max(endCol, block.endCol());
+			empty = false;
 		}
 
-		return new Block(startRow, startCol, endRow - startRow, endCol - startCol);
+		return empty ? null : new Block(startRow, startCol, endRow - startRow, endCol - startCol);
 	}
 }

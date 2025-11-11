@@ -58,7 +58,7 @@ public class Range extends OBJECT {
 
 	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
 		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range()
-				.setSource(source.get()).setBlock(getAddress()).setBoundaries(getBoundaries())
+				.setName(index()).setSource(source.get()).setBlock(getAddress()).setBoundaries(getBoundaries())
 				.setDirection(getDirection()).setMergesAddress(string.unwrap(merges));
 
 		for (Range.CLASS<Range> subrange : ranges)
