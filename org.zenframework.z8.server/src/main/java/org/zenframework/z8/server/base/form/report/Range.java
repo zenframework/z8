@@ -27,9 +27,9 @@ public class Range extends OBJECT {
 	public static final String Sheet = "sheet";
 	public static final String Address = "address";
 	public static final String Boundaries = "boundaries";
-	public static final String Direction = "direction";
+	public static final String Axis = "axis";
 
-	// Records insertion direction
+	// Records insertion axis
 	public static final integer Vertical = new integer(0);
 	public static final integer Horizontal = new integer(1);
 
@@ -51,15 +51,15 @@ public class Range extends OBJECT {
 		return getAttribute(Boundaries);
 	}
 
-	public int getDirection() {
-		String attribute = getAttribute(Direction);
+	public int getAxis() {
+		String attribute = getAttribute(Axis);
 		return attribute != null ? Integer.parseInt(attribute) : Vertical.getInt();
 	}
 
 	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
 		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range()
 				.setName(index()).setSource(source.get()).setBlock(getAddress()).setBoundaries(getBoundaries())
-				.setDirection(getDirection()).setMergesAddress(string.unwrap(merges));
+				.setAxis(getAxis()).setMergesAddress(string.unwrap(merges));
 
 		for (Range.CLASS<Range> subrange : ranges)
 			range.addRange(subrange.get().asPoiRange());

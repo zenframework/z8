@@ -288,7 +288,7 @@ public class Range {
 */
 		}
 
-		//sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
+		sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
 	}
 
 	@Override

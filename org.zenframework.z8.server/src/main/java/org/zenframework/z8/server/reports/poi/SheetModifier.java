@@ -3,42 +3,18 @@ package org.zenframework.z8.server.reports.poi;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Axis;
+import org.zenframework.z8.server.reports.poi.math.Block;
+import org.zenframework.z8.server.reports.poi.math.Direction;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 
 public class SheetModifier {
-
-	private static class SearchConfig {
-		final Block[] bandBefore = new Block[Axis.values().length];
-		final Block[] bandAfter = new Block[Axis.values().length];
-		final Block[] band = new Block[Axis.values().length];
-
-		SearchConfig(Block source, Block boundaries) {
-			for (Axis axis : Axis.values()) {
-				bandBefore[axis.ordinal()] = boundaries.bandBefore(source, axis);
-				bandAfter[axis.ordinal()] = boundaries.bandAfter(source, axis);
-				band[axis.ordinal()] = boundaries.band(source, axis);
-			}
-		}
-
-		boolean isBefore(Block region, Axis axis) {
-			return region.in(bandBefore[axis.ordinal()]);
-		}
-
-		boolean isAfter(Block region, Axis axis) {
-			return region.in(bandAfter[axis.ordinal()]);
-		}
-
-		boolean intersectsBand(Block region, Axis axis) {
-			return region.intersects(band[axis.ordinal()]);
-		}
-	}
 
 	private final List<String> errors = new LinkedList<String>();
 
@@ -185,7 +161,7 @@ public class SheetModifier {
 	}
 
 	public SheetModifier applyOuterMergedRegions(Block block, Block boundaries, Vector shift, Vector resize) {
-		SearchConfig search = new SearchConfig(block, boundaries);
+		Map<Direction, Block> bands = boundaries.bands(block);
 
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
 			Block region = new Block(origin.getMergedRegion(i));
@@ -198,40 +174,26 @@ public class SheetModifier {
 				continue;
 			}
 
-			boolean applied = false;
-
-			for (Axis axis : Axis.values()) {
-				if (search.isBefore(region, axis))
-					region = region.move(shift);
-				else if (search.isAfter(region, axis))
-					region = region.move(shift).move(resize.component(axis));
-				else
-					continue;
-
-				addMergedRegion(region);
-
-				applied = true;
-				break;
-			}
-
-			if (applied)
+			if (block.intersects(region))
 				continue;
 
-			for (Axis axis : Axis.values()) {
-				if (search.intersectsBand(region, axis)) {
-					addMergedRegion(region.move(shift).resize(resize.component(axis)));
-					break;
-				}
-			}
+			boolean inTop = region.in(bands.get(Direction.Top));
+			boolean inBottom = region.in(bands.get(Direction.Bottom));
+			boolean inLeft = region.in(bands.get(Direction.Left));
+			boolean inRight = region.in(bands.get(Direction.Right));
+
+			if (inLeft || inRight)
+				region = region.resize(resize.component(Axis.Vertical));
+			else if (inTop || inBottom)
+				region = region.resize(resize.component(Axis.Horizontal));
+			if (inRight)
+				region = region.move(resize.component(Axis.Horizontal));
+			if (inBottom)
+				region = region.move(resize.component(Axis.Vertical));
+
+			addMergedRegion(region.move(shift));
 		}
-/*
-		// TODO Exclude existing merged regions
-		for (Block part : targetBoundaries.bandExclusive(target, axis)) {
-			try {
-				addMergedRegion(part);
-			} catch (IllegalStateException e) {}
-		}
-*/
+
 		return this;
 	}
 

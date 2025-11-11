@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.zenframework.z8.server.reports.poi.Util;
@@ -168,6 +170,11 @@ public class Block {
 		return size().sub(block.size());
 	}
 
+	public Block part(int size, Axis axis) {
+		return size >= 0 ? new Block(start(), size().component(axis.orthogonal()).add(new Vector(size, axis)))
+				: new Block(start().add(size(axis)).add(new Vector(size, axis)), size().component(axis.orthogonal()).add(new Vector(-size, axis)));
+	}
+
 	public Block band(Block block, Axis axis) {
 		return axis == Axis.Horizontal ? new Block(startRow(), block.startCol(), height(), block.width())
 				: new Block(block.startRow(), startCol(), block.height(), width());
@@ -201,13 +208,35 @@ public class Block {
 		return blocks;
 	}
 
-	public Block part(int size, Axis axis) {
-		return size >= 0 ? new Block(start(), size().component(axis.orthogonal()).add(new Vector(size, axis)))
-				: new Block(start().add(size(axis)).add(new Vector(size, axis)), size().component(axis.orthogonal()).add(new Vector(-size, axis)));
+	public Map<Direction, Block> bands(Block block) {
+		Map<Direction, Block> grid = new HashMap<Direction, Block>();
+
+		grid.put(Direction.Top, new Block(startRow(), startCol(), block.startRow() - startRow(), width()));
+		grid.put(Direction.Right, new Block(startRow(), block.endCol(), height(), endCol() - block.endCol()));
+		grid.put(Direction.Bottom, new Block(block.endRow(), startCol(), endRow() - block.endRow(), width()));
+		grid.put(Direction.Left, new Block(startRow(), startCol(), height(), block.startCol() - startCol()));
+
+		return grid;
 	}
 
-	public List<Block> grid(Block block) {
-		List<Block> grid = new ArrayList<Block>(8);
+	public Map<Direction, Block> grid(Block block) {
+		Map<Direction, Block> grid = new HashMap<Direction, Block>();
+
+		int topHeight = block.startRow() - startRow();
+		int bottomHeight = endRow() - block.endRow();
+		int leftWidth = block.startCol() - startCol();
+		int rightWidth = endCol() - block.endCol();
+
+		grid.put(Direction.None, block);
+		grid.put(Direction.TopLeft, new Block(startRow(), startCol(), topHeight, leftWidth));
+		grid.put(Direction.Top, new Block(startRow(), block.startCol(), topHeight, block.width()));
+		grid.put(Direction.TopRight, new Block(startRow(), block.endCol(), topHeight, rightWidth));
+		grid.put(Direction.Right, new Block(block.startRow(), block.endCol(), block.height(), rightWidth));
+		grid.put(Direction.BottomRight, new Block(block.endRow(), block.endCol(), bottomHeight, rightWidth));
+		grid.put(Direction.Bottom, new Block(block.endRow(), block.startCol(), bottomHeight, block.width()));
+		grid.put(Direction.BottomLeft, new Block(block.endRow(), startCol(), bottomHeight, leftWidth));
+		grid.put(Direction.Left, new Block(block.startRow(), startCol(), block.height(), leftWidth));
+
 		return grid;
 	}
 
