@@ -102,13 +102,13 @@ public class Range {
 		return axis;
 	}
 
-	public Range setDirection(Axis axis) {
+	public Range setAxis(Axis axis) {
 		this.axis = axis;
 		return this;
 	}
 
-	public Range setDirection(int axis) {
-		return setDirection(Axis.valueOf(axis));
+	public Range setAxis(int axis) {
+		return setAxis(Axis.valueOf(axis));
 	}
 
 	public Range getParent() {
