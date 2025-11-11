@@ -160,6 +160,14 @@ public class Block {
 		return new Block(start, size.add(vector));
 	}
 
+	public Vector diffStart(Block block) {
+		return start().sub(block.start());
+	}
+
+	public Vector diffSize(Block block) {
+		return size().sub(block.size());
+	}
+
 	public Block band(Block block, Direction direction) {
 		return direction == Direction.Horizontal ? new Block(startRow(), block.startCol(), height(), block.width())
 				: new Block(block.startRow(), startCol(), block.height(), width());
@@ -196,14 +204,6 @@ public class Block {
 	public Block part(int size, Direction direction) {
 		return size >= 0 ? new Block(start(), size().component(direction.orthogonal()).add(new Vector(size, direction)))
 				: new Block(start().add(size(direction)).add(new Vector(size, direction)), size().component(direction.orthogonal()).add(new Vector(-size, direction)));
-	}
-
-	public Vector diffStart(Block block) {
-		return start().sub(block.start());
-	}
-
-	public Vector diffSize(Block block) {
-		return size().sub(block.size());
 	}
 
 	public static Block boundaries(Block... blocks) {

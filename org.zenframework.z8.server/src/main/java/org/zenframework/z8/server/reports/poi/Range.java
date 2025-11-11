@@ -190,26 +190,16 @@ public class Range {
 
 		ApplicationServer.getMonitor().logInfo("Ranges sorted: " + ranges);
 
-		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
-			@Override
-			public void visit(Row row, int colNum, Cell cell) {
-				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
-					return;
-
-				Object value = source.evaluate(cell.getStringCellValue());
-				cell.setCellValue(value != null ? value.toString() : "null");
-			}
-		};
+		SheetModifier.CellVisitor visitor = getCellVisitor();
 
 		source.prepare(sheet);
 
-		Block targetBoundaries = boundaries.move(baseShift);
 		Block target = block.move(baseShift);
 		Block filled = new Block(target.start(), block.size().component(direction.orthogonal()));
 		Vector shift = baseShift;
 
 		if (!baseShift.isZero())
-			sheet.copy(boundaries, targetBoundaries.start(), false);
+			sheet.copy(boundaries, boundaries.move(baseShift).start(), false);
 
 		try {
 			source.open();
@@ -218,25 +208,10 @@ public class Range {
 				if (!shift.isZero())
 					sheet.copy(block, target.start(), false);
 
-				List<Vector> resizes = new ArrayList<Vector>(ranges.size());
+				target = target.resize(applyInnerRanges(sheet, shift));
 
-				for (Range range : ranges) {
-					Vector rangeShift = shift;
-
-					for (int i = 0; i < resizes.size(); i++) {
-						for (Direction direction : Direction.values())
-							if (range.getBlock().start(direction).mod() >= ranges.get(i).getBlock().end(direction).mod())
-								rangeShift = rangeShift.add(resizes.get(i).component(direction));
-					}
-
-					Vector rangeResize = range.apply(sheet, rangeShift);
-					resizes.add(rangeResize);
-					target = Block.boundaries(range.getBoundaries().move(rangeShift).resize(rangeResize), target);
-				}
-
-				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries());
-
-				sheet.visitCells(target, visitor);
+				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries())
+						.visitCells(target, visitor);
 
 				filled = Block.boundaries(filled, target);
 				shift = shift.add(target.size(direction));
@@ -248,12 +223,51 @@ public class Range {
 
 		Vector resize = filled.diffSize(block);
 
+		afterApply(sheet, baseShift, resize, filled);
+
+		ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
+				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
+				+ "\n\t- boundaries " + boundaries + " -> " + boundaries.move(baseShift).resize(resize)
+				+ "\n\t- stat: " + sheet.getStat());
+
+		return resize;
+	}
+
+	private Vector applyInnerRanges(SheetModifier sheet, Vector shift) {
+		if (ranges.isEmpty())
+			return new Vector();
+
+		List<Vector> resizes = new ArrayList<Vector>(ranges.size());
+		Block target = new Block(block.move(shift).start(), new Vector());
+
+		for (Range range : ranges) {
+			Vector rangeShift = shift;
+
+			for (int i = 0; i < resizes.size(); i++) {
+				for (Direction direction : Direction.values())
+					if (range.getBlock().start(direction).mod() >= ranges.get(i).getBlock().end(direction).mod())
+						rangeShift = rangeShift.add(resizes.get(i).component(direction));
+			}
+
+			Vector rangeResize = range.apply(sheet, rangeShift);
+			resizes.add(rangeResize);
+			target = Block.boundaries(range.getBoundaries().move(rangeShift).resize(rangeResize), target);
+		}
+
+		return target.diffSize(block);
+	}
+
+	private void afterApply(SheetModifier sheet, Vector baseShift, Vector resize, Block filled) {
+		Block targetBoundaries = boundaries.move(baseShift);
+
 		for (Direction direction : Direction.values()) {
 			// Clear cells around new filled cells
-			for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), direction), direction)) {
-				if (band.square() > 0) {
-					System.out.println(">>> " + this + ": clear " + band);
-					sheet.clear(band);
+			if (resize.component(direction).mod() > 0) {
+				for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), direction), direction)) {
+					if (band.square() > 0) {
+						System.out.println(">>> " + this + ": clear " + band);
+						sheet.clear(band);
+					}
 				}
 			}
 
@@ -265,20 +279,16 @@ public class Range {
 				sheet.copy(source, baseShift.add(component), true);
 			if (mod < 0)
 				sheet.clear(targetBoundaries.part(mod, direction));
+
+			// Apply additional merged regions
+/*
+			if (stretchDir.mod() > 0)
+				for (Block merge : merges)
+					sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
+*/
 		}
 
-		sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
-/*
-		if (stretchDir.mod() > 0)
-			for (Block merge : merges)
-				sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
-*/
-		ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
-				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
-				+ "\n\t- boundaries " + boundaries + " -> " + targetBoundaries.resize(resize)
-				+ "\n\t- stat: " + sheet.getStat());
-
-		return resize;
+		//sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
 	}
 
 	@Override
@@ -298,5 +308,18 @@ public class Range {
 				boundaries.add(range.boundaries);
 
 		return Block.boundaries(boundaries);
+	}
+
+	private SheetModifier.CellVisitor getCellVisitor() {
+		return new SheetModifier.CellVisitor() {
+			@Override
+			public void visit(Row row, int colNum, Cell cell) {
+				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
+					return;
+
+				Object value = source.evaluate(cell.getStringCellValue());
+				cell.setCellValue(value != null ? value.toString() : "null");
+			}
+		};
 	}
 }

@@ -184,7 +184,7 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier applyOuterMergedRegions(Block block, Block boundaries, Vector shift, Vector stretch) {
+	public SheetModifier applyOuterMergedRegions(Block block, Block boundaries, Vector shift, Vector resize) {
 		SearchConfig search = new SearchConfig(block, boundaries);
 
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
@@ -194,7 +194,7 @@ public class SheetModifier {
 				continue;
 
 			if (block.in(region)) {
-				addMergedRegion(region.move(shift).resize(stretch));
+				addMergedRegion(region.move(shift).resize(resize));
 				continue;
 			}
 
@@ -204,7 +204,7 @@ public class SheetModifier {
 				if (search.isBefore(region, direction))
 					region = region.move(shift);
 				else if (search.isAfter(region, direction))
-					region = region.move(shift).move(stretch.component(direction));
+					region = region.move(shift).move(resize.component(direction));
 				else
 					continue;
 
@@ -219,7 +219,7 @@ public class SheetModifier {
 
 			for (Direction direction : Direction.values()) {
 				if (search.intersectsBand(region, direction)) {
-					addMergedRegion(region.move(shift).resize(stretch.component(direction)));
+					addMergedRegion(region.move(shift).resize(resize.component(direction)));
 					break;
 				}
 			}
