@@ -4,10 +4,11 @@ import org.zenframework.z8.lang.Object;
 public class Range extends Object {
 
 	// Attributes:
-	//   - address - Multiplied block Excel range address, i.e. "A1:B3"
-	//   - boundaries - Excel range address around multiplied block
-	//   - axis - one of Vertical or Horizontal
-	//   - sheet - Excel sheet index
+	//   - [address "B2:C2"] - Multiplied block Excel range address
+	//   - [boundaries "A1:D3"] - Excel range address around multiplied block, address must be in boundaries
+	//   - [axis Range.Horizontal] - one of Vertical or Horizontal
+	//   - [sheet 0] - Excel sheet index
+	//   - [totals] - aggregate source data
 
 	// Records insertion axis
 	public static final int Vertical = 0;

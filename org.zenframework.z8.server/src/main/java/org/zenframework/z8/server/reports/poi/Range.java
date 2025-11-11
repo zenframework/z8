@@ -32,6 +32,7 @@ public class Range {
 	private DataSource source;
 	private Block block, boundaries;
 	private Axis axis = Axis.Vertical;
+	private boolean aggregation;
 	private Range parent;
 
 	private final List<Range> ranges = new ArrayList<Range>();
@@ -109,6 +110,15 @@ public class Range {
 
 	public Range setAxis(int axis) {
 		return setAxis(Axis.valueOf(axis));
+	}
+
+	public Range setAggregation(boolean aggregation) {
+		this.aggregation = aggregation;
+		return this;
+	}
+
+	public boolean isAggregation() {
+		return aggregation;
 	}
 
 	public Range getParent() {

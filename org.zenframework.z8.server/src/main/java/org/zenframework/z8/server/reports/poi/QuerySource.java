@@ -17,6 +17,7 @@ public class QuerySource extends DataSource {
 	private final Query query;
 
 	private int count = -1;
+	private boolean aggregated = false;
 
 	public QuerySource(Query query) {
 		this.query = query;
@@ -36,9 +37,13 @@ public class QuerySource extends DataSource {
 	@Override
 	public void open() {
 		super.open();
+
 		query.saveState();
-		query.read(fields.values(), query.sortFields(), null);
-		//query.read(fields.values(), query.sortFields(), query.groupFields(), null, null, 0, -1);
+
+		if (range.isAggregation())
+			aggregated = query.aggregate(fields.values());
+		else
+			query.read(fields.values(), query.sortFields(), null);
 	}
 
 	@Override
@@ -54,6 +59,14 @@ public class QuerySource extends DataSource {
 
 	@Override
 	protected boolean internalNext() {
+		if (range.isAggregation()) {
+			try {
+				return aggregated;
+			} finally {
+				aggregated = false;
+			}
+		}
+
 		return query.next();
 	}
 

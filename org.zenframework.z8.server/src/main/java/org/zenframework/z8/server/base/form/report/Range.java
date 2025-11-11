@@ -28,6 +28,7 @@ public class Range extends OBJECT {
 	public static final String Address = "address";
 	public static final String Boundaries = "boundaries";
 	public static final String Axis = "axis";
+	public static final String Totals = "totals";
 
 	// Records insertion axis
 	public static final integer Vertical = new integer(0);
@@ -56,10 +57,14 @@ public class Range extends OBJECT {
 		return attribute != null ? Integer.parseInt(attribute) : Vertical.getInt();
 	}
 
+	public boolean isTotals() {
+		return hasAttribute(Totals);
+	}
+
 	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
 		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range()
 				.setName(index()).setSource(source.get()).setBlock(getAddress()).setBoundaries(getBoundaries())
-				.setAxis(getAxis()).setMergesAddress(string.unwrap(merges));
+				.setAxis(getAxis()).setAggregation(isTotals()).setMergesAddress(string.unwrap(merges));
 
 		for (Range.CLASS<Range> subrange : ranges)
 			range.addRange(subrange.get().asPoiRange());
