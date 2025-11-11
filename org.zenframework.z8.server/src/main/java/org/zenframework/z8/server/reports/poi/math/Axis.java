@@ -1,13 +1,13 @@
 package org.zenframework.z8.server.reports.poi.math;
 
-public enum Direction {
+public enum Axis {
 	Vertical, Horizontal;
 
-	public Direction orthogonal() {
+	public Axis orthogonal() {
 		return this == Vertical ? Horizontal : Vertical;
 	}
 
-	public static Direction valueOf(int value) {
+	public static Axis valueOf(int value) {
 		return values()[value];
 	}
 }

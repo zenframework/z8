@@ -14,7 +14,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.math.Block;
-import org.zenframework.z8.server.reports.poi.math.Direction;
+import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.runtime.OBJECT;
 
@@ -31,7 +31,7 @@ public class Range {
 	private String name;
 	private DataSource source;
 	private Block block, boundaries;
-	private Direction direction = Direction.Vertical;
+	private Axis axis = Axis.Vertical;
 	private Range parent;
 
 	private final List<Range> ranges = new ArrayList<Range>();
@@ -98,17 +98,17 @@ public class Range {
 		return setBoundaries(boundaries != null ? new Block(boundaries) : null);
 	}
 
-	public Direction getDirection() {
-		return direction;
+	public Axis getAxis() {
+		return axis;
 	}
 
-	public Range setDirection(Direction direction) {
-		this.direction = direction;
+	public Range setDirection(Axis axis) {
+		this.axis = axis;
 		return this;
 	}
 
-	public Range setDirection(int direction) {
-		return setDirection(Direction.valueOf(direction));
+	public Range setDirection(int axis) {
+		return setDirection(Axis.valueOf(axis));
 	}
 
 	public Range getParent() {
@@ -195,7 +195,7 @@ public class Range {
 		source.prepare(sheet);
 
 		Block target = block.move(baseShift);
-		Block filled = new Block(target.start(), block.size().component(direction.orthogonal()));
+		Block filled = new Block(target.start(), block.size().component(axis.orthogonal()));
 		Vector shift = baseShift;
 
 		if (!baseShift.isZero())
@@ -214,7 +214,7 @@ public class Range {
 						.visitCells(target, visitor);
 
 				filled = Block.boundaries(filled, target);
-				shift = shift.add(target.size(direction));
+				shift = shift.add(target.size(axis));
 				target = block.move(shift);
 			}
 		} finally {
@@ -244,9 +244,9 @@ public class Range {
 			Vector rangeShift = shift;
 
 			for (int i = 0; i < resizes.size(); i++) {
-				for (Direction direction : Direction.values())
-					if (range.getBlock().start(direction).mod() >= ranges.get(i).getBlock().end(direction).mod())
-						rangeShift = rangeShift.add(resizes.get(i).component(direction));
+				for (Axis axis : Axis.values())
+					if (range.getBlock().start(axis).mod() >= ranges.get(i).getBlock().end(axis).mod())
+						rangeShift = rangeShift.add(resizes.get(i).component(axis));
 			}
 
 			Vector rangeResize = range.apply(sheet, rangeShift);
@@ -260,10 +260,10 @@ public class Range {
 	private void afterApply(SheetModifier sheet, Vector baseShift, Vector resize, Block filled) {
 		Block targetBoundaries = boundaries.move(baseShift);
 
-		for (Direction direction : Direction.values()) {
+		for (Axis axis : Axis.values()) {
 			// Clear cells around new filled cells
-			if (resize.component(direction).mod() > 0) {
-				for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), direction), direction)) {
+			if (resize.component(axis).mod() > 0) {
+				for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), axis), axis)) {
 					if (band.square() > 0) {
 						System.out.println(">>> " + this + ": clear " + band);
 						sheet.clear(band);
@@ -272,13 +272,13 @@ public class Range {
 			}
 
 			// Spread static cells AFTER inserted cells
-			Block source = boundaries.bandAfter(block, direction);
-			Vector component = resize.component(direction);
+			Block source = boundaries.bandAfter(block, axis);
+			Vector component = resize.component(axis);
 			int mod = component.mod();
 			if (mod != 0)
 				sheet.copy(source, baseShift.add(component), true);
 			if (mod < 0)
-				sheet.clear(targetBoundaries.part(mod, direction));
+				sheet.clear(targetBoundaries.part(mod, axis));
 
 			// Apply additional merged regions
 /*

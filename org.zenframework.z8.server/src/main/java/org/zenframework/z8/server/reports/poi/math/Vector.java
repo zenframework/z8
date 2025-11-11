@@ -14,8 +14,8 @@ public class Vector {
 		this(cell.getRowIndex(), cell.getColumnIndex());
 	}
 
-	public Vector(int value, Direction direction) {
-		this(direction == Direction.Horizontal ? 0 : value, direction == Direction.Horizontal ? value : 0);
+	public Vector(int value, Axis axis) {
+		this(axis == Axis.Horizontal ? 0 : value, axis == Axis.Horizontal ? value : 0);
 	}
 
 	public Vector(int row, int col) {
@@ -51,12 +51,12 @@ public class Vector {
 		return vector != null ? new Vector(row - vector.row, col - vector.col) : this;
 	}
 
-	public Vector component(Direction direction) {
-		return direction == Direction.Horizontal ? new Vector(0, col) : new Vector(row, 0);
+	public Vector component(Axis axis) {
+		return axis == Axis.Horizontal ? new Vector(0, col) : new Vector(row, 0);
 	}
 
-	public int coordinate(Direction direction) {
-		return direction == Direction.Horizontal ? col : row;
+	public int coordinate(Axis axis) {
+		return axis == Axis.Horizontal ? col : row;
 	}
 
 	public Vector inverse() {

@@ -55,8 +55,8 @@ public class Block {
 		return start;
 	}
 
-	public Vector start(Direction direction) {
-		return start.component(direction);
+	public Vector start(Axis axis) {
+		return start.component(axis);
 	}
 
 	public int startRow() {
@@ -71,8 +71,8 @@ public class Block {
 		return size;
 	}
 
-	public Vector size(Direction direction) {
-		return size.component(direction);
+	public Vector size(Axis axis) {
+		return size.component(axis);
 	}
 
 	public int height() {
@@ -87,8 +87,8 @@ public class Block {
 		return start.add(size);
 	}
 
-	public Vector end(Direction direction) {
-		return end().component(direction);
+	public Vector end(Axis axis) {
+		return end().component(axis);
 	}
 
 	public int endRow() {
@@ -168,25 +168,25 @@ public class Block {
 		return size().sub(block.size());
 	}
 
-	public Block band(Block block, Direction direction) {
-		return direction == Direction.Horizontal ? new Block(startRow(), block.startCol(), height(), block.width())
+	public Block band(Block block, Axis axis) {
+		return axis == Axis.Horizontal ? new Block(startRow(), block.startCol(), height(), block.width())
 				: new Block(block.startRow(), startCol(), block.height(), width());
 	}
 
-	public Block bandBefore(Block block, Direction direction) {
-		return direction == Direction.Horizontal ? new Block(startRow(), startCol(), height(), block.startCol() - startCol())
+	public Block bandBefore(Block block, Axis axis) {
+		return axis == Axis.Horizontal ? new Block(startRow(), startCol(), height(), block.startCol() - startCol())
 				: new Block(startRow(), startCol(), block.startRow() - startRow(), width());
 	}
 
-	public Block bandAfter(Block block, Direction direction) {
-		return direction == Direction.Horizontal ? new Block(startRow(), block.endCol(), height(), endCol() - block.endCol())
+	public Block bandAfter(Block block, Axis axis) {
+		return axis == Axis.Horizontal ? new Block(startRow(), block.endCol(), height(), endCol() - block.endCol())
 				: new Block(block.endRow(), startCol(), endRow() - block.endRow(), width());
 	}
 
-	public List<Block> bandExclusive(Block block, Direction direction) {
+	public List<Block> bandExclusive(Block block, Axis axis) {
 		List<Block> blocks = new ArrayList<Block>(2);
 
-		if (direction == Direction.Horizontal) {
+		if (axis == Axis.Horizontal) {
 			if (block.startRow() > startRow())
 				blocks.add(new Block(startRow(), block.startCol(), block.startRow() - startRow(), block.width()));
 			if (block.endRow() < endRow())
@@ -201,9 +201,14 @@ public class Block {
 		return blocks;
 	}
 
-	public Block part(int size, Direction direction) {
-		return size >= 0 ? new Block(start(), size().component(direction.orthogonal()).add(new Vector(size, direction)))
-				: new Block(start().add(size(direction)).add(new Vector(size, direction)), size().component(direction.orthogonal()).add(new Vector(-size, direction)));
+	public Block part(int size, Axis axis) {
+		return size >= 0 ? new Block(start(), size().component(axis.orthogonal()).add(new Vector(size, axis)))
+				: new Block(start().add(size(axis)).add(new Vector(size, axis)), size().component(axis.orthogonal()).add(new Vector(-size, axis)));
+	}
+
+	public List<Block> grid(Block block) {
+		List<Block> grid = new ArrayList<Block>(8);
+		return grid;
 	}
 
 	public static Block boundaries(Block... blocks) {

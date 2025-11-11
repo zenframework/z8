@@ -9,34 +9,34 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.zenframework.z8.server.reports.poi.math.Block;
-import org.zenframework.z8.server.reports.poi.math.Direction;
+import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 
 public class SheetModifier {
 
 	private static class SearchConfig {
-		final Block[] bandBefore = new Block[Direction.values().length];
-		final Block[] bandAfter = new Block[Direction.values().length];
-		final Block[] band = new Block[Direction.values().length];
+		final Block[] bandBefore = new Block[Axis.values().length];
+		final Block[] bandAfter = new Block[Axis.values().length];
+		final Block[] band = new Block[Axis.values().length];
 
 		SearchConfig(Block source, Block boundaries) {
-			for (Direction direction : Direction.values()) {
-				bandBefore[direction.ordinal()] = boundaries.bandBefore(source, direction);
-				bandAfter[direction.ordinal()] = boundaries.bandAfter(source, direction);
-				band[direction.ordinal()] = boundaries.band(source, direction);
+			for (Axis axis : Axis.values()) {
+				bandBefore[axis.ordinal()] = boundaries.bandBefore(source, axis);
+				bandAfter[axis.ordinal()] = boundaries.bandAfter(source, axis);
+				band[axis.ordinal()] = boundaries.band(source, axis);
 			}
 		}
 
-		boolean isBefore(Block region, Direction direction) {
-			return region.in(bandBefore[direction.ordinal()]);
+		boolean isBefore(Block region, Axis axis) {
+			return region.in(bandBefore[axis.ordinal()]);
 		}
 
-		boolean isAfter(Block region, Direction direction) {
-			return region.in(bandAfter[direction.ordinal()]);
+		boolean isAfter(Block region, Axis axis) {
+			return region.in(bandAfter[axis.ordinal()]);
 		}
 
-		boolean intersectsBand(Block region, Direction direction) {
-			return region.intersects(band[direction.ordinal()]);
+		boolean intersectsBand(Block region, Axis axis) {
+			return region.intersects(band[axis.ordinal()]);
 		}
 	}
 
@@ -200,11 +200,11 @@ public class SheetModifier {
 
 			boolean applied = false;
 
-			for (Direction direction : Direction.values()) {
-				if (search.isBefore(region, direction))
+			for (Axis axis : Axis.values()) {
+				if (search.isBefore(region, axis))
 					region = region.move(shift);
-				else if (search.isAfter(region, direction))
-					region = region.move(shift).move(resize.component(direction));
+				else if (search.isAfter(region, axis))
+					region = region.move(shift).move(resize.component(axis));
 				else
 					continue;
 
@@ -217,16 +217,16 @@ public class SheetModifier {
 			if (applied)
 				continue;
 
-			for (Direction direction : Direction.values()) {
-				if (search.intersectsBand(region, direction)) {
-					addMergedRegion(region.move(shift).resize(resize.component(direction)));
+			for (Axis axis : Axis.values()) {
+				if (search.intersectsBand(region, axis)) {
+					addMergedRegion(region.move(shift).resize(resize.component(axis)));
 					break;
 				}
 			}
 		}
 /*
 		// TODO Exclude existing merged regions
-		for (Block part : targetBoundaries.bandExclusive(target, direction)) {
+		for (Block part : targetBoundaries.bandExclusive(target, axis)) {
 			try {
 				addMergedRegion(part);
 			} catch (IllegalStateException e) {}
