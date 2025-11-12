@@ -2,6 +2,7 @@ package org.zenframework.z8.server.ldap;
 
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -113,8 +114,11 @@ public class LdapAPI {
 		usersFilter = PATH_USERS_FILTER.evaluate(config, DEFAULT_USERS_FILTER);
 		userFilter = "(&" + usersFilter + "(" + usersLoginField + "={0}))";
 
-		groupsBaseDn = PATH_GROUPS_BASE_DN.evaluate(config, "");
-		groupsBaseDn += (!baseDn.isEmpty() && !groupsBaseDn.isEmpty() ? "," : "") + baseDn;
+		groupsBaseDn = PATH_GROUPS_BASE_DN.evaluate(config, null);
+
+		if (groupsBaseDn != null)
+			groupsBaseDn += (!baseDn.isEmpty() && !groupsBaseDn.isEmpty() ? "," : "") + baseDn;
+
 		groupsNameField = PATH_GROUPS_NAME_FIELD.evaluate(config, DEFAULT_GROUPS_NAME_FIELD);
 		groupsMemberField = PATH_GROUPS_MEMBER_FIELD.evaluate(config, DEFAULT_GROUPS_MEMBER_FIELD);
 		groupsFields = PATH_GROUPS_FIELDS.evaluate(config, new HashMap<String, String>());
@@ -216,6 +220,9 @@ public class LdapAPI {
 	}
 
 	private <T> Collection<T> search(String searchBase, String searchFilter, int pageSize, Extractor<T> extractor) {
+		if (searchBase == null)
+			return Collections.emptyList();
+
 		Collection<T> result = new HashSet<>();
 
 		SearchControls controls = new SearchControls();
