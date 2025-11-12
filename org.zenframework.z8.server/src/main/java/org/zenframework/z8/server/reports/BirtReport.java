@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IExcelRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
@@ -63,9 +62,7 @@ import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.actions.ActionConfig;
 import org.zenframework.z8.server.request.actions.ReadAction;
 import org.zenframework.z8.server.resources.Resources;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
-import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -959,18 +956,6 @@ public class BirtReport {
 		}
 	}
 
-	private File getUniqueFileName(File folder, String name, String extension) {
-		name = name.replace('/', '-').replace('\\', '-').replace(':', '-').replace('\n', ' ');
-
-		if(name.endsWith("."))
-			name = name.substring(0, name.length() - 1);
-
-		date time = new date();
-		File file = FileUtils.getFile(folder, time.format("yyyy.MM.dd"), guid.create().toString(), name + "." + extension);
-		file.getParentFile().mkdirs();
-		return file;
-	}
-
 	private File generateAndSplit(IReportRunnable reportRunnable) {
 		File outputFolder = Folders.ReportsOutput;
 
@@ -978,7 +963,7 @@ public class BirtReport {
 
 		String documentName = options.name();
 
-		File outputFile = getUniqueFileName(outputFolder, documentName, format());
+		File outputFile = ReportUtils.getUniqueFileName(outputFolder, documentName, format());
 
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction(); // for large cursors
@@ -990,7 +975,7 @@ public class BirtReport {
 		}
 
 		if(isSplitNeeded()) {
-			File splittedFile = getUniqueFileName(outputFolder, documentName, format());
+			File splittedFile = ReportUtils.getUniqueFileName(outputFolder, documentName, format());
 
 			FileOutputStream output = null;
 			FileInputStream input = null;

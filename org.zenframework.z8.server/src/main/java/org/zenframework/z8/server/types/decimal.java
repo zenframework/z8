@@ -444,7 +444,7 @@ public final class decimal extends primary {
 
 	static public decimal z8_parse(string value) {
 		try {
-			String string = value.get();
+			String string = value != null ? value.get() : "";
 			if(string.isEmpty())
 				return decimal.Zero;
 			return new decimal(new BigDecimal(string));

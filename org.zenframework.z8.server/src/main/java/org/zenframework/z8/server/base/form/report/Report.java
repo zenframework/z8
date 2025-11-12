@@ -3,28 +3,33 @@ package org.zenframework.z8.server.base.form.report;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.reports.BirtReport;
-import org.zenframework.z8.server.reports.ReportOptions;
 import org.zenframework.z8.server.reports.Reports;
+import org.zenframework.z8.server.reports.poi.PoiReport;
+import org.zenframework.z8.server.reports.poi.Util;
+import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class Report extends OBJECT implements Runnable, IReport {
 	static public class CLASS<T extends Report> extends OBJECT.CLASS<T> {
-		public CLASS() {
-			this(null);
-		}
-
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(Report.class);
@@ -36,6 +41,9 @@ public class Report extends OBJECT implements Runnable, IReport {
 		}
 	}
 
+	static public final string BIRT = new string(Reports.BIRT);
+	static public final string POI = new string(Reports.POI);
+
 	static public final string Pdf = new string(Reports.Pdf);
 	static public final string Excel = new string(Reports.Excel);
 	static public final string Word = new string(Reports.Word);
@@ -43,9 +51,13 @@ public class Report extends OBJECT implements Runnable, IReport {
 	static public final string Html = new string(Reports.Html);
 	static public final string Powerpoint = new string(Reports.Powerpoint);
 
+	public string engine = BIRT;
 	public string template;
 	public string name;
 	public string format;
+
+	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
+	public RLinkedHashMap<integer, RCollection<string>> hiddenColumns = new RLinkedHashMap<integer, RCollection<string>>();
 
 	public Report(IObject container) {
 		super(container);
@@ -94,21 +106,65 @@ public class Report extends OBJECT implements Runnable, IReport {
 	}
 
 	protected file z8_execute(guid recordId) {
-		ReportOptions report = new ReportOptions();
+		File reportFile;
+
+		if (engine.get().equals(BIRT.get()))
+			reportFile = executeBirt();
+		else if (engine.get().equals(POI.get()))
+			reportFile = executePoi();
+		else
+			throw new IllegalStateException();
+
+		file file = new file(reportFile);
+		file.set(new InputOnlyFileItem(reportFile, reportFile.getName()));
+
+		return file;
+	}
+
+	private File executeBirt() {
+		org.zenframework.z8.server.reports.ReportOptions report = new org.zenframework.z8.server.reports.ReportOptions();
 		report.templateFolder = Folders.Reports;
 		report.template = template.get() + '.' + Reports.DesignExtension;
 		report.queries = queries();
 		report.format = format().get();
 		report.setName(name != null ? name.get() : template.get());
 
-		File diskFile = new File(Folders.WorkingPath, new BirtReport(report).execute().getPath());
-		file file = new file(diskFile);
-		file.set(new InputOnlyFileItem(diskFile, diskFile.getName()));
+		return new File(Folders.WorkingPath, new BirtReport(report).execute().getPath());
+	}
 
-		return file;
+	private File executePoi() {
+		org.zenframework.z8.server.reports.poi.ReportOptions options = new org.zenframework.z8.server.reports.poi.ReportOptions()
+				.setTemplate(template.get()).setName(name != null ? name.get() : null);
+
+		PoiReport report = new PoiReport(options).setContext(this).setHiddenColumns(hiddenColumnsToInt());
+
+		for (Range.CLASS<Range> range : ranges)
+			report.addRange(range.get().getSheet(), range.get().asPoiRange());
+
+		IMonitor monitor = ApplicationServer.getMonitor();
+
+		if (monitor != null) {
+			for (String error : report.getErrors())
+				monitor.warning(error);
+		}
+
+		return report.execute();
 	}
 
 	public file z8_run(guid recordId) {
 		return run(recordId);
+	}
+
+	private Map<Integer, Collection<Integer>> hiddenColumnsToInt() {
+		Map<Integer, Collection<Integer>> result = new HashMap<Integer, Collection<Integer>>();
+
+		for (Map.Entry<integer, RCollection<string>> entry : hiddenColumns.entrySet()) {
+			Collection<Integer> sheetColumns = new HashSet<Integer>();
+			result.put(entry.getKey().getInt(), sheetColumns);
+			for (string column : entry.getValue())
+				sheetColumns.add(Util.columnToInt(column.get()));
+		}
+
+		return result;
 	}
 }

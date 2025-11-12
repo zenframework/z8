@@ -231,6 +231,10 @@
 
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 
+	<!-- Expression -->
+	<entry key="Expression.evaluationError">Ошибка вычисления выражения: {0}</entry>
+	<entry key="Expression.variableIsNotSet">Значение переменной &quot;{0}&quot; не задано</entry>
+
 	<!-- Generator -->
 	<entry key="Generator.displayName">Генерация схемы данных</entry>
 	<entry key="Generator.schedulerStopped">Планировщик заданий остановлен</entry>

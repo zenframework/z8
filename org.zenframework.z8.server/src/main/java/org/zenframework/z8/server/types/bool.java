@@ -93,7 +93,7 @@ public final class bool extends primary {
 	}
 
 	static public bool z8_parse(string string) {
-		return new bool(string.get());
+		return string != null ? new bool(string.get()) : False;
 	}
 
 	public sql_bool sql_bool() {

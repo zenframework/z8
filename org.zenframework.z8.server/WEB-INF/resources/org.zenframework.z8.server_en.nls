@@ -231,6 +231,10 @@
 
 	<entry key="Exception.unknownDatabase">Unknown database</entry>
 
+	<!-- Expression -->
+	<entry key="Expression.evaluationError">Expression evaluation error: {0}</entry>
+	<entry key="Expression.variableIsNotSet">Variable &quot;{0}&quot; is not set</entry>
+
 	<!-- Generator -->
 	<entry key="Generator.displayName">Generate database scheme</entry>
 	<entry key="Generator.schedulerStopped">Scheduler stopped</entry>
