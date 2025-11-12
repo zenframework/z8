@@ -306,16 +306,21 @@ public class Range {
 	}
 
 	private Block boundariesFromChildren(SheetModifier sheet) {
-		if (ranges.size() == 1)
-			return sheet.getBoundaries();
-
-		Collection<Block> boundaries = new LinkedList<Block>();
+		Collection<Block> children = new LinkedList<Block>();
 
 		for (Range range : ranges)
 			if (range.boundaries != null)
-				boundaries.add(range.boundaries);
+				children.add(range.boundaries);
 
-		return Block.boundaries(boundaries);
+		Block boundaries = Block.boundaries(children);
+
+		if (boundaries != null)
+			return boundaries;
+
+		if (ranges.size() > 1)
+			throw new IllegalStateException(this + ": multiple ranges must have defined boundaries");
+
+		return sheet.getBoundaries();
 	}
 
 	private SheetModifier.CellVisitor getCellVisitor() {
