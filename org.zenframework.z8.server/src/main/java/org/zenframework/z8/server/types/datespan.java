@@ -41,7 +41,9 @@ public final class datespan extends primary {
 
 		int length = datespan.length();
 
-		if(length < 3) {
+		if(datespan == null || datespan.isEmpty()) {
+			set(0, 0, 0, 0);
+		} else if(length < 3) {
 			set(0, 0, 0, Integer.parseInt(datespan));
 		} else if(length < 6) {
 			int minutes = Integer.parseInt(datespan.substring(0, 2));
@@ -262,7 +264,7 @@ public final class datespan extends primary {
 	}
 
 	static public datespan z8_parse(string string) {
-		return new datespan(string.get());
+		return string != null ? new datespan(string.get()) : new datespan(0);
 	}
 
 	public string z8_toString(string frm) {
