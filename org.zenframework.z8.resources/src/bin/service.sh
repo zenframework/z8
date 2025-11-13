@@ -12,7 +12,6 @@
 FORM_CONTENT_SIZE=15000000
 
 HOME="\$( cd "\$(dirname "\$0")/.." ; pwd -P )"
-CONF="\$HOME/conf"
 WEB="\$HOME/web"
 WORK="\$HOME/work"
 
@@ -33,4 +32,4 @@ fi
 
 export JAVA_OPTS
 
-(cd "\$CONF" && "\$HOME/bin/${project.name}" -server webserver)
+(cd "\$WORK" && "\$HOME/bin/${project.name}" -server webserver)
