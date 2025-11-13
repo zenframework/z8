@@ -133,18 +133,6 @@ public class binary extends primary {
 		return temp.binary();
 	}
 
-	public int length() {
-		try {
-			return stream.available();
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public integer z8_length() {
-		return new integer(length());
-	}
-
 	public void z8_unzip(file directory) {
 		file.unzip(get(), directory.getAbsolutePath());
 	}

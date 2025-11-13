@@ -3,6 +3,7 @@ package org.zenframework.z8.server.types.sql;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
+import org.zenframework.z8.server.db.sql.functions.string.Length;
 import org.zenframework.z8.server.types.binary;
 
 public class sql_binary extends sql_primary {
@@ -21,5 +22,9 @@ public class sql_binary extends sql_primary {
 	@Override
 	public sql_string z8_toString() {
 		return new sql_string(new ToString(this));
+	}
+	
+	public sql_integer z8_length() {
+		return new sql_integer(new Length(this));
 	}
 }

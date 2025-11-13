@@ -8,9 +8,6 @@ import org.zenframework.z8.base.table.value.StringField;
 [displayName "Файлы"]
 [native "org.zenframework.z8.server.base.table.system.Files"]
 public class Files extends Table {
-	public static final int Location_DB = 0;
-	public static final int Location_Storage = 1;
-	
 	[displayName "Имя файла"]
 	public StringField name;
 	name.length = 512;
@@ -37,6 +34,7 @@ public class Files extends Table {
 
 	public static file get(guid fileId);
 	public static file get(file file);
-	public static file addToStorage(string path, string name, file file);
+	public static file add(string path, string name, int size, binary data);
+	public static file add(string path, string name, file f);
 
 }

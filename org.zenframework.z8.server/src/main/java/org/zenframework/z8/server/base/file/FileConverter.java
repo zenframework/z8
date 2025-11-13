@@ -54,7 +54,7 @@ import com.lowagie.text.pdf.PdfStamper;
 public class FileConverter {
 
 	public static final String PDF = "pdf";
-	public static final String TempPrefix = "pdfToSign-";
+	public static final String TempPrefix = "converted-pdf-";
 
 	public static final string PDFX = new string("PDF/X");
 	public static final string PDFX1A2001 = new string("PDF/X-1a:2001");
@@ -73,7 +73,7 @@ public class FileConverter {
 
 	private FileConverter() {}
 
-	public static file z8_convertToTemp(file source) {
+	public static file z8_convertToPdf(file source) {
 		return new file(convert(source.toFile(), file.createTempJavaFile(TempPrefix, PDF)));
 	}
 	
@@ -81,7 +81,7 @@ public class FileConverter {
 		return new file(convert(source.toFile(), target.toFile()));
 	}
 
-	public static file z8_convertToTemp(file source, RLinkedHashMap<string, string> parameters) {
+	public static file z8_convertToPdf(file source, RLinkedHashMap<string, string> parameters) {
 		return new file(convert(source.toFile(), file.createTempJavaFile(TempPrefix, PDF), PrimaryUtils.unwrapStringMap(parameters)));
 	}
 	

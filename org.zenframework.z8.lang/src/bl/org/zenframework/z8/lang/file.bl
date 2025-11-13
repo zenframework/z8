@@ -1,5 +1,9 @@
 [primary "org.zenframework.z8.server.types.file"]
 public class file extends primary {
+	static public final int Unknown;
+	static public final int Storage;
+	static public final int DB;
+	
 	public guid id;
 	public string name;
 	public date time;

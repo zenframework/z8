@@ -48,6 +48,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 	static public final int DISK_MAX_FILENAME_LENGTH = 120;
 
 	static public final String separator = "/";
+	
+	static public final integer Unknown = integer.MinusOne;
+	static public final integer Storage = integer.One;
+	static public final integer DB = integer.Zero;
 
 	public guid id = guid.Null;
 	public string name = new string();
@@ -56,7 +60,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public integer size = integer.Zero;
 	public guid user = guid.Null;
 	public string author = new string();
-	public bool storage = bool.False;
+	public integer location = Unknown;
 
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
@@ -138,7 +142,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		set(json);
 	}
 
-	public void set(file file) {
+	public file set(file file) {
 		id = file.id;
 		name = file.name;
 		path = file.path;
@@ -148,21 +152,25 @@ public class file extends primary implements RmiSerializable, Serializable {
 		author = file.author;
 		value = file.value;
 		details = file.details;
+		
+		return this;
 	}
 
 	public FileItem get() {
 		return value;
 	}
 
-	public void set(FileItem value) {
+	public file set(FileItem value) {
 		this.value = value;
+		return this;
 	}
 
-	public void set(File value) {
+	public file set(File value) {
 		this.value = new InputOnlyFileItem(value, value.getName());
+		return this;
 	}
 
-	protected void set(JsonObject json) {
+	protected file set(JsonObject json) {
 		path = new string(json.getString(json.has(Json.file) ? Json.file : Json.path));
 		name = new string(json.has(Json.name) ? json.getString(Json.name) : "");
 		size = new integer(json.has(Json.size) ? json.getString(Json.size) : "");
@@ -185,6 +193,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 		} catch(NumberFormatException e) {
 			time = new date();
 		}
+		
+		return this;
 	}
 
 	static public Collection<file> parse(String json) {
@@ -469,7 +479,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 			return file;
 
 		String pathStr = file.getPath();
-		if(pathStr.startsWith(Files.Storage) && storage.operatorNot().get())
+		if(pathStr.startsWith(Files.Storage) && location.get() == Unknown.get())
 			throw new RuntimeException("Call Files.get()");
 
 		file = Files.getFullStoragePath(this);

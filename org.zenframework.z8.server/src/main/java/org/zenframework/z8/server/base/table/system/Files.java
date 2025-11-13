@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.file.InputOnlyFileItem;
+import org.zenframework.z8.server.base.file.InputStreamFileItem;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
@@ -20,7 +21,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
-import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -32,8 +33,8 @@ public class Files extends Table {
 	public static final String TableName = "SystemFiles";
 	public static final String Storage = "storage/";
 
-	public static final long Location_DB = 0;
-	public static final long Location_Storage = 1;
+	public static final long Location_DB = file.DB.get();
+	public static final long Location_Storage = file.Storage.get();
 
 	static public class fieldNames {
 		public final static String Name = "Name";
@@ -155,13 +156,22 @@ public class Files extends Table {
 		return change(file, true);
 	}
 	
-	public file addToStorage(string path, string name, file file) {
-		String pathStr = path.get();
-		if(!pathStr.startsWith(Storage))
-			throw new RuntimeException("Path \"" + pathStr + "\" doesn't belong to storage");
-		file.name = name;
-		file.path = path;
-		return change(file, true);
+	public file add(string path, string name, integer size, binary data) {
+		String pathStr = file.getNormalizedPath(path.get());
+		if(!pathStr.startsWith(Storage)) {
+			//throw new RuntimeException("Path \"" + pathStr + "\" doesn't belong to storage");
+			if(pathStr.startsWith("/"))
+				pathStr = pathStr.substring(1);
+			pathStr = Storage + pathStr;
+		}
+		
+		file forAdd = new file();
+		forAdd.name = name;
+		forAdd.path = path;
+		forAdd.size = size;
+		forAdd.set(new InputStreamFileItem(data.get(), name.get()));
+
+		return change(forAdd, true);
 	}
 
 	public file updateFile(file file) {
@@ -182,8 +192,11 @@ public class Files extends Table {
 				if (ServerConfig.filesSaveOnDisk()) {
 					location.get().set(Location_Storage);
 					putOnDisk(file, input);
-				} else
+				} else {
 					data.get().set(input);
+				}
+			} else if(create) {
+				throw new RuntimeException("File \"" + file.path + "\" has no data and can't be created");
 			}
 
 			if(create) {
@@ -212,7 +225,31 @@ public class Files extends Table {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	private void setSize(guid id, long newSize) {
+		size.get().set(newSize);
+		update(id);
+	}
 
+	private static file readFile(file f) throws IOException {
+		guid fileId = f.id;
+		
+		Files table = newInstance();
+		
+		Field location = table.location.get();
+		Field size = table.size.get();
+		Collection<Field> fields = Arrays.asList(location, size);
+		
+		if(fileId != null && !fileId.isNull() && table.readRecord(fileId, fields)) {
+			f.size = new integer(size.integer().get());
+			f.location = location.integer(); 
+		} else {
+			f.location = file.Storage; 
+		}
+		
+		return f;
+	}
+	
 	public static InputStream getInputStream(file file) throws IOException {
 		guid fileId = file.id;
 
@@ -242,34 +279,47 @@ public class Files extends Table {
 		return null;
 	}
 
-	public static file get(file file) throws IOException {
-		File path = getFullStoragePath(file);
-		boolean notFound = !path.exists();
+	public static file get(file f) throws IOException {
+		File value = getFullStoragePath(f);
+		boolean notFound = !value.exists();
+		readFile(f);
 
-		if(notFound || path.length() == 0) {
-			InputStream inputStream = getInputStream(file);
+		if(f.location.get() == Location_Storage) {
+			if(notFound)
+				throw new RuntimeException("Files.java:get(file file) file location is storage and file doesn't exist, path: " + value.getAbsolutePath());
+			return f.set(new InputOnlyFileItem(value, f.name.get()));
+		}
 
-			if(inputStream == null) {
-				if(notFound) {
-					throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
-				}
-				file.storage = bool.True;
-				return file;
-			}
-
-			path.getParentFile().mkdirs();
-			long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(path));
-			long fileSize = file.size.get();
-			if(fileSize != 0 && copiedSize != fileSize) {
-				path.delete();
-				throw new RuntimeException("Files.java:get(file file) file broken, fileId: " + file.id.get() +  ", path: " + path.getAbsolutePath());
+		//location == Location_DB
+		long fileSize = f.size.get();
+		if(!notFound) {
+			long existSize = value.length();
+			if(fileSize != existSize) {
+				value.delete();
+				notFound = true;
+			} else {
+				return f.set(new InputOnlyFileItem(value, f.name.get()));
 			}
 		}
 
-		file.set(new InputOnlyFileItem(path, file.name.get()));
-		file.size = new integer(path.length());
-		file.storage = bool.True;
-		return file;
+		//location == Location_DB && notFound
+		InputStream inputStream = getInputStream(f);
+
+		if(inputStream == null)
+			throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + value.getAbsolutePath());
+
+		value.getParentFile().mkdirs();
+		long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(value));
+		if(fileSize != 0 && copiedSize != fileSize) {
+			value.delete();
+			throw new RuntimeException("Files.java:get(file file) file broken (size value doesn't match data size), fileId: " + f.id.get() +  ", path: " + value.getAbsolutePath());
+		}
+
+		if(fileSize == 0) {
+			f.size = new integer(copiedSize);
+			newInstance().setSize(f.id, copiedSize);
+		}
+		return f.set(new InputOnlyFileItem(value, f.name.get()));
 	}
 
 	public static File getFullStoragePath(file file) {
@@ -290,7 +340,11 @@ public class Files extends Table {
 		}
 	}
 	
-	public static file z8_addToStorage(string path, string name, file file) {
-		return newInstance().addToStorage(path, name, file);
+	public static file z8_add(string path, string name, integer size, binary data) {
+		return newInstance().add(path, name, size, data);
+	}
+	
+	public static file z8_add(string path, string name, file f) {
+		return newInstance().add(path, name, f.size, f.binary());
 	}
 }

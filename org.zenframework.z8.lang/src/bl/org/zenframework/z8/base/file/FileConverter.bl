@@ -29,8 +29,8 @@ public class FileConverter {
 	public static bool isConvertableToPdf(string extension);
 
 	// Parameters: Background, Reset, Format
-	public static file convertToTemp(file source);
-	public static file convertToTemp(file source, string[string] parameters);
+	public static file convertToPdf(file source);
+	public static file convertToPdf(file source, string[string] parameters);
 	public static file convert(file source, file target);
 	public static file convert(file source, file target, string[string] parameters);
 	public static file convert(binary source, file target);
