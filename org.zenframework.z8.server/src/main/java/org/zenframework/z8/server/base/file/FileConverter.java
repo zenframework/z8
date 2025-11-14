@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.BindException;
+import java.net.ServerSocket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -344,6 +346,16 @@ public class FileConverter {
 
 	public static boolean isOfficeExtension(String extension) {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
+	}
+
+	public static void checkOfficeManagerPort() {
+		int port = ServerConfig.officePort();
+		try (ServerSocket socket = new ServerSocket(port)) {
+		} catch (BindException e) {
+			Trace.logError("LibreOffice cannot start: port " + port + " is already in use", e);
+		} catch (IOException e) {
+			Trace.logError("Failed to check LibreOffice port: " + e.getMessage(), e);
+		}
 	}
 
 	public static void startOfficeManager() {
