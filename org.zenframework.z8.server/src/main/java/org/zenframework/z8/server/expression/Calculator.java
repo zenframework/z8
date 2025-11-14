@@ -285,9 +285,15 @@ public class Calculator {
 		}
 	}
 
-	public Object callMethod(Object parent, String name, Object... arguments) {
+	public Object callMethod(Object object, String name, Object... arguments) {
 		try {
-			return getValue(parent.getClass().getMethod(name, asClasses(arguments)).invoke(parent, arguments));
+			Class<?> cls = object instanceof Class ? (Class<?>) object : object.getClass();
+			object = object instanceof Class ? null : object;
+			try {
+				return getValue(cls.getMethod(name, asClasses(arguments)).invoke(object, arguments));
+			} catch (NoSuchMethodException e) {
+				return getValue(cls.getMethod("z8_" + name, asClasses(arguments)).invoke(object, arguments));
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

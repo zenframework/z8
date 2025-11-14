@@ -1,6 +1,0 @@
-import org.zenframework.z8.lang.Object;
-
-[native "org.zenframework.z8.server.base.form.report.Condition"]
-public class Condition extends Object {
-	virtual public sql_bool expression();
-}
