@@ -102,7 +102,15 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier visitCells(Block block, CellVisitor visitor) {
+	public SheetModifier visitSheetCells(Block block, CellVisitor visitor) {
+		return visitCells(sheet, block, visitor);
+	}
+
+	public SheetModifier visitOriginCells(Block block, CellVisitor visitor) {
+		return visitCells(origin, block, visitor);
+	}
+
+	private SheetModifier visitCells(Sheet sheet, Block block, CellVisitor visitor) {
 		for (int rowNum = block.startRow(), endRow = block.endRow(), endCol = block.endCol(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
@@ -191,7 +199,8 @@ public class SheetModifier {
 			if (inBottom)
 				region = region.move(resize.component(Axis.Vertical));
 
-			addMergedRegion(region.move(shift));
+			if (region.square() > 0)
+				addMergedRegion(region.move(shift));
 		}
 
 		return this;

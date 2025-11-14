@@ -37,11 +37,10 @@ public class Range extends OBJECT {
 	public OBJECT.CLASS<? extends OBJECT> source = new OBJECT.CLASS<OBJECT>(this);
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
 	public RCollection<string> merges = new RCollection<string>();
-	public Condition.CLASS<? extends Condition> on = new Condition.CLASS<Condition>(this);
 
 	public int getSheet() {
 		String sheet = getAttribute(Sheet);
-		return sheet != null ? Integer.parseInt(sheet) : 0;
+		return sheet != null ? integer.parse(sheet).getInt() : 0;
 	}
 
 	public String getAddress() {

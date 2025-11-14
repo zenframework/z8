@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Axis;
@@ -26,6 +27,8 @@ public class Range {
 			return Block.Comparator.compare(o1.getBoundaries(), o2.getBoundaries());
 		}
 	};
+
+	private static final boolean Trace = ServerConfig.reportPoiTrace();
 
 	private PoiReport report;
 	private String name;
@@ -74,6 +77,12 @@ public class Range {
 	}
 
 	public Block getBlock() {
+		if (block == null) {
+			if (parent != null)
+				throw new IllegalStateException(this + " block is not set");
+			block = boundaries;
+		}
+
 		return block;
 	}
 
@@ -83,7 +92,7 @@ public class Range {
 	}
 
 	public Range setBlock(String address) {
-		return setBlock(new Block(address));
+		return setBlock(address != null ? new Block(address) : null);
 	}
 
 	public Block getBoundaries() {
@@ -187,18 +196,15 @@ public class Range {
 		if (boundaries == null)
 			boundaries = boundariesFromChildren(sheet);
 
-		if (block == null) {
-			if (parent != null)
-				throw new IllegalStateException(this + " block is not set");
-			block = boundaries;
-		}
+		block = getBlock();
 
 		if (!block.in(boundaries))
 			throw new IllegalStateException(this + " address " + block + " is out of boundaries " + boundaries);
 
 		Collections.sort(ranges, Comparator);
 
-		ApplicationServer.getMonitor().logInfo("Ranges sorted: " + ranges);
+		if (Trace && ranges.size() > 1)
+			ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "': " + ranges);
 
 		SheetModifier.CellVisitor visitor = getCellVisitor();
 
@@ -221,7 +227,7 @@ public class Range {
 				target = target.resize(applyInnerRanges(sheet, shift));
 
 				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries())
-						.visitCells(target, visitor);
+						.visitSheetCells(target, visitor);
 
 				filled = Block.boundaries(filled, target);
 				shift = shift.add(target.size(axis));
@@ -234,12 +240,13 @@ public class Range {
 		Vector resize = filled.diffSize(block);
 
 		afterApply(sheet, baseShift, resize, filled);
-/*
-		ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
-				+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
-				+ "\n\t- boundaries " + boundaries + " -> " + boundaries.move(baseShift).resize(resize)
-				+ "\n\t- stat: " + sheet.getStat());
-*/
+
+		if (Trace)
+			ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
+					+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
+					+ "\n\t- boundaries " + boundaries + " -> " + boundaries.move(baseShift).resize(resize)
+					+ "\n\t- stat: " + sheet.getStat());
+
 		return resize;
 	}
 

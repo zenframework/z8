@@ -87,7 +87,7 @@ public class QuerySource extends DataSource {
 			}
 		};
 
-		sheet.visitCells(range.getBlock(), visitor);
+		sheet.visitOriginCells(range.getBlock(), visitor);
 
 		for (Field.CLASS<? extends Field> field : query.extraFields)
 			fields.put(field.id(), field.get());
