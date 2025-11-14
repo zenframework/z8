@@ -143,12 +143,14 @@ public class Report extends OBJECT implements Runnable, IReport {
 
 		IMonitor monitor = ApplicationServer.getMonitor();
 
+		File result = report.execute();
+
 		if (monitor != null) {
 			for (String error : report.getErrors())
 				monitor.warning(error);
 		}
 
-		return report.execute();
+		return result;
 	}
 
 	public file z8_run(guid recordId) {

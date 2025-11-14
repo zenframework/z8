@@ -141,6 +141,8 @@ public class ServerConfig extends Config {
 	static final private String CryptoSecretKeySpec = "crypto.secret.key.spec";
 	static final private String CryptoIv = "crypto.iv";
 
+	static final private String ReportPoiTrace = "report.poi.trace";
+
 
 	static private File configPath;
 	static private File workingPath;
@@ -248,6 +250,7 @@ public class ServerConfig extends Config {
 	static private String cryptoCipherSpec;
 	static private String cryptoSecretKeySpec;
 	static private String cryptoIv;
+	static private boolean reportPoiTrace;
 
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
@@ -383,6 +386,8 @@ public class ServerConfig extends Config {
 		cryptoCipherSpec = instance.getProperty(CryptoCipherSpec, "TripleDES/CBC/PKCS5Padding");
 		cryptoSecretKeySpec = instance.getProperty(CryptoSecretKeySpec, "TripleDES");
 		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
+
+		reportPoiTrace = instance.getProperty(ReportPoiTrace, false);
 	}
 
 	private static File getApplicationPath(File defaultValue) {
@@ -877,6 +882,10 @@ public class ServerConfig extends Config {
 
 	static public String cryptoIv() {
 		return cryptoIv;
+	}
+
+	static public boolean reportPoiTrace() {
+		return reportPoiTrace;
 	}
 
 	static public IApplicationServer applicationServer() {
