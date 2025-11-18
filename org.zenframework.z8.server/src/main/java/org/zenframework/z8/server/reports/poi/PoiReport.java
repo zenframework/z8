@@ -18,9 +18,11 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Select;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.expression.DefaultContext;
 import org.zenframework.z8.server.expression.Expression;
 import org.zenframework.z8.server.expression.ObjectContext;
+import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.utils.IOUtils;
 
@@ -111,7 +113,8 @@ public class PoiReport {
 	public Expression getExpression() {
 		if (expression == null)
 			expression = new Expression()
-					.setContext(new ObjectContext(DefaultContext.StaticContext, context))
+					.setContext(new ObjectContext(DefaultContext.create()
+							.setVariable(Json.parameters.get(), ApplicationServer.getRequest().getParameters()), context))
 					.setGetter(new Expression.Getter() {
 						@Override
 						@SuppressWarnings("rawtypes")
