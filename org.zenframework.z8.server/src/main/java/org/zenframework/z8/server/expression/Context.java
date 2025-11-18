@@ -8,6 +8,10 @@ public abstract class Context {
 		this.parent = parent;
 	}
 
+	public Context getParent() {
+		return parent;
+	}
+
 	public final Variable getVariable(String name) {
 		Variable variable = getDefinedVariable(name);
 		return variable != null ? variable : parent != null ? parent.getVariable(name) : null;

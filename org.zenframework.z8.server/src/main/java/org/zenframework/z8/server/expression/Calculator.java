@@ -108,15 +108,13 @@ public class Calculator {
 		Object value;
 
 		if (index instanceof string) {
-			String indexStr = ((string) index).get();
+			string indexStr = (string) index;
 
 			if (array instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
 				array = ((org.zenframework.z8.server.base.json.parser.JsonObject) array).get();
 
-			if (array instanceof JsonObject) {
-				value = ((JsonObject) array).get(indexStr);
-			} else if (array instanceof RLinkedHashMap) {
-				value = ((RLinkedHashMap) array).get(indexStr);
+			if (array instanceof Map) {
+				value = ((Map) array).get(indexStr);
 			} else {
 				value = null;
 				addError("Illegal operator " + array.getClass().getName() + "[\"" + indexStr + "\"]");
