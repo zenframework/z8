@@ -40,7 +40,7 @@ public class TabControl extends Control {
 	}
 
 	public Collection<Tab> getTabs() {
-		return CLASS.asList(tabs);
+		return CLASS.<Tab>asList(tabs);
 	}
 
 	@Override
