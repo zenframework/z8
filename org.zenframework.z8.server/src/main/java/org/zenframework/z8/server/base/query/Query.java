@@ -763,7 +763,7 @@ public class Query extends OBJECT {
 	public Collection<Field> fields() {
 		Set<Field> result = new LinkedHashSet<Field>(50);
 
-		for(Control control : CLASS.asList(controls))
+		for(Control control : CLASS.<Control>asList(controls))
 			result.addAll(control.fields());
 
 		result.addAll(names());
@@ -1119,7 +1119,7 @@ public class Query extends OBJECT {
 	}
 
 	public Collection<Action> actions() {
-		return CLASS.asList(actions);
+		return CLASS.<Action>asList(actions);
 	}
 
 	public Action getAction(String id) {
