@@ -53,6 +53,6 @@ public class Section extends Control {
 
 		writer.writeProperty(Json.isSection, true);
 		writer.writeProperty(Json.colCount, colCount);
-		writer.writeControls(Json.controls, CLASS.asList(controls), query, context); 
+		writer.writeControls(Json.controls, CLASS.<Control>asList(controls), query, context); 
 	}
 }
