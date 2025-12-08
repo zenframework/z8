@@ -34,7 +34,9 @@ public class Files extends Table {
 
 	public static file get(guid fileId);
 	public static file get(file file);
+	public static file add(guid id, string path, string name, int size, binary data);
 	public static file add(string path, string name, int size, binary data);
+	public static file add(guid id, string path, string name, file f);
 	public static file add(string path, string name, file f);
 
 }

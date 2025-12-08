@@ -156,7 +156,7 @@ public class Files extends Table {
 		return change(file, true);
 	}
 	
-	public file add(string path, string name, integer size, binary data) {
+	public file add(guid id, string path, string name, integer size, binary data) {
 		String pathStr = file.getNormalizedPath(path.get());
 		if(!pathStr.startsWith(Storage)) {
 			//throw new RuntimeException("Path \"" + pathStr + "\" doesn't belong to storage");
@@ -166,6 +166,7 @@ public class Files extends Table {
 		}
 		
 		file forAdd = new file();
+		forAdd.id = id;
 		forAdd.name = name;
 		forAdd.path = path;
 		forAdd.size = size;
@@ -340,11 +341,19 @@ public class Files extends Table {
 		}
 	}
 	
+	public static file z8_add(guid id, string path, string name, integer size, binary data) {
+		return newInstance().add(id, path, name, size, data);
+	}
+	
 	public static file z8_add(string path, string name, integer size, binary data) {
-		return newInstance().add(path, name, size, data);
+		return z8_add(null, path, name, size, data);
+	}
+	
+	public static file z8_add(guid id, string path, string name, file f) {
+		return newInstance().add(id, path, name, f.size, f.binary());
 	}
 	
 	public static file z8_add(string path, string name, file f) {
-		return newInstance().add(path, name, f.size, f.binary());
+		return z8_add(null, path, name, f.size, f.binary());
 	}
 }
