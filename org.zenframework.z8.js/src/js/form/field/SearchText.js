@@ -5,7 +5,6 @@ Z8.define('Z8.form.field.SearchText', {
 	triggers: { icon: '' },
 
 	confirm: true,
-
 	searchPending: false,
 	lastSearchValue: '',
 
@@ -16,6 +15,14 @@ Z8.define('Z8.form.field.SearchText', {
 		config.clearIcon = config.clearIcon || 'fa-times';
 
 		Z8.form.field.Text.prototype.constructor.call(this, config);
+	},
+
+	initTriggers: function (){
+		var triggers = this.triggers;
+		if (this.list)
+			triggers.push({ icon: 'fa-copy', tooltip: 'Вставить данные из выбранной записи', handler: this.getSelection, scope: this });
+
+		TextBox.prototype.initTriggers.call(this);
 	},
 
 	isValid: function() {
@@ -32,12 +39,11 @@ Z8.define('Z8.form.field.SearchText', {
 	},
 
 	setBusy: function(busy) {
-		this.getTrigger().setBusy(busy);
+		this.triggers[0].setBusy(busy);
 	},
 
 	updateTrigger: function() {
-		var trigger = this.getTrigger();
-
+		var trigger = this.triggers[0];
 		if(trigger.isBusy())
 			return;
 
@@ -66,7 +72,7 @@ Z8.define('Z8.form.field.SearchText', {
 	},
 
 	search: function() {
-		if(!this.getTrigger().isEnabled())
+		if(!this.triggers[0].isEnabled())
 			return;
 
 		if(this.confirm && !this.searchPending)
@@ -83,7 +89,7 @@ Z8.define('Z8.form.field.SearchText', {
 	},
 
 	clear: function() {
-		if(!this.getTrigger().isEnabled())
+		if(!this.triggers[0].isEnabled())
 			return false;
 
 		this.setValue('');
@@ -106,6 +112,20 @@ Z8.define('Z8.form.field.SearchText', {
 		this.fireEvent('cancel', this);
 
 		return true;
+	},
+
+	getSelection: function() {
+		if (this.list == null)
+			return;
+		var currentItem = this.list.getCurrentItem();
+		if (currentItem == null)
+			return;
+		var record = currentItem.getRecord();
+		if (record != null) {
+			this.setValue(record.get(this.field.name));
+			this.searchPending = this.value != this.lastSearchValue;
+			this.updateTrigger();
+		}
 	},
 
 	onTriggerClick: function(trigger) {
