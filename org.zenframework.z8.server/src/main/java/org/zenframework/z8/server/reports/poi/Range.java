@@ -15,6 +15,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.math.Block;
+import org.zenframework.z8.server.expression.DefaultContext;
+import org.zenframework.z8.server.expression.ObjectContext;
 import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -37,6 +39,8 @@ public class Range {
 	private Axis axis = Axis.Vertical;
 	private boolean aggregation;
 	private Range parent;
+	private String subtotalsBy;
+	private Block subtotalBlock = null;
 
 	private final List<Range> ranges = new ArrayList<Range>();
 	private final Set<Block> merges = new HashSet<Block>();
@@ -96,7 +100,8 @@ public class Range {
 	}
 
 	public Block getBoundaries() {
-		return boundaries != null ? boundaries : parent == null ? null : parent.getRanges().size() == 1 ? parent.getBlock() : block;
+		return boundaries != null ? boundaries
+				: parent == null ? null : parent.getRanges().size() == 1 ? parent.getBlock() : block;
 	}
 
 	public Range setBoundaries(Block boundaries) {
@@ -128,6 +133,28 @@ public class Range {
 
 	public boolean isAggregation() {
 		return aggregation;
+	}
+
+	public Range setSubtotalBlock(Block subtotalBlock) {
+		this.subtotalBlock = subtotalBlock;
+		return this;
+	}
+
+	public Range setSubtotalBlock(String subtotalAddress) {
+		return setSubtotalBlock(subtotalAddress != null ? new Block(subtotalAddress) : null);
+	}
+
+	public Block getSubtotalBlock() {
+		return subtotalBlock;
+	}
+
+	public Range setSubtotalsBy(String subtotalsBy) {
+		this.subtotalsBy = subtotalsBy;
+		return this;
+	}
+
+	public String getSubtotalsBy() {
+		return subtotalsBy;
 	}
 
 	public Range getParent() {
@@ -197,6 +224,11 @@ public class Range {
 			boundaries = boundariesFromChildren(sheet);
 
 		block = getBlock();
+		Block originalBlock = block;
+
+		if (subtotalBlock != null) {
+			block = block.bandBefore(subtotalBlock, axis);
+		}
 
 		if (!block.in(boundaries))
 			throw new IllegalStateException(this + " address " + block + " is out of boundaries " + boundaries);
@@ -206,9 +238,29 @@ public class Range {
 		if (Trace && ranges.size() > 1)
 			ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "': " + ranges);
 
-		SheetModifier.CellVisitor visitor = getCellVisitor();
-
 		source.prepare(sheet);
+
+		Object previousGroupValue = null;
+		AggregatorObject aggregatorObj = null;
+		boolean firstRow = true;
+
+		SheetModifier.CellVisitor dataVisitor;
+		SheetModifier.CellVisitor subtotalVisitor = null;
+
+		if (subtotalsBy != null && !subtotalsBy.isEmpty() && subtotalBlock != null) {
+			aggregatorObj = new AggregatorObject();
+
+			ObjectContext context = new ObjectContext(DefaultContext.create().setVariable("agg", aggregatorObj),
+					report.getContext());
+
+			report.getExpression().setContext(context);
+
+			dataVisitor = getAccumulatingVisitor(sheet, subtotalBlock, aggregatorObj);
+			subtotalVisitor = getBaseVisitor();
+
+		} else {
+			dataVisitor = getBaseVisitor();
+		}
 
 		Block target = block.move(baseShift);
 		Block filled = new Block(target.start(), block.size().component(axis.orthogonal()));
@@ -221,33 +273,81 @@ public class Range {
 			source.open();
 
 			while (source.next()) {
+
+				if (aggregatorObj != null && !firstRow) {
+					Object currentValue = source.getCurrentValue(subtotalsBy);
+
+					if (!previousGroupValue.equals(currentValue)) {
+						Vector subtotalPosition = filled.end(axis);
+						Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition, aggregatorObj,
+								subtotalVisitor);
+						shift = shift.add(subtotalShift);
+						target = block.move(shift);
+
+						aggregatorObj.reset();
+					}
+				}
+
 				if (!shift.isZero())
 					sheet.copy(block, target.start(), false);
 
+				Block oldTarget = target;
 				target = target.resize(applyInnerRanges(sheet, shift));
 
-				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries())
-						.visitSheetCells(target, visitor);
+				Vector currentShift = target.start().sub(block.start());
+
+				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries()).visitSheetCells(currentShift,
+						oldTarget, dataVisitor);
 
 				filled = Block.boundaries(filled, target);
 				shift = shift.add(target.size(axis));
 				target = block.move(shift);
+
+				if (aggregatorObj != null) {
+					previousGroupValue = source.getCurrentValue(subtotalsBy);
+					firstRow = false;
+				}
 			}
+
+			if (aggregatorObj != null && !firstRow) {
+				Vector subtotalPosition = filled.end(axis);
+				Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition, aggregatorObj, subtotalVisitor);
+				filled = filled.resize(subtotalShift);
+
+				aggregatorObj.reset();
+			}
+
 		} finally {
 			source.close();
 		}
+
+		block = originalBlock;
 
 		Vector resize = filled.diffSize(block);
 
 		afterApply(sheet, baseShift, resize, filled);
 
 		if (Trace)
-			ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "':"
-					+ "\n\t- range " + block.toAddress() + " -> " + baseShift + ", " + filled
-					+ "\n\t- boundaries " + boundaries + " -> " + boundaries.move(baseShift).resize(resize)
-					+ "\n\t- stat: " + sheet.getStat());
+			ApplicationServer.getMonitor()
+					.logInfo("Report '" + report.getOptions().getName() + "':" + "\n\t- range " + block.toAddress()
+							+ " -> " + baseShift + ", " + filled + "\n\t- boundaries " + boundaries + " -> "
+							+ boundaries.move(baseShift).resize(resize) + "\n\t- stat: " + sheet.getStat());
 
 		return resize;
+	}
+
+	private Vector insertSubtotalRow(SheetModifier sheet, Vector subtotalPosition, AggregatorObject aggregatorObj,
+			SheetModifier.CellVisitor subtotalVisitor) {
+		if (subtotalBlock == null)
+			return new Vector(0, 0);
+
+		Block subtotalTarget = subtotalBlock.move(subtotalPosition.sub(subtotalBlock.start()));
+
+		sheet.copy(subtotalBlock, subtotalTarget.start(), false);
+
+		sheet.visitSheetCells(null, subtotalTarget, subtotalVisitor);
+
+		return subtotalBlock.size(axis);
 	}
 
 	private Vector applyInnerRanges(SheetModifier sheet, Vector shift) {
@@ -280,7 +380,8 @@ public class Range {
 		for (Axis axis : Axis.values()) {
 			// Clear cells around new filled cells
 			if (resize.component(axis).mod() > 0) {
-				for (Block band : targetBoundaries.resize(resize).bandExclusive(filled.bandAfter(block.move(baseShift), axis), axis)) {
+				for (Block band : targetBoundaries.resize(resize)
+						.bandExclusive(filled.bandAfter(block.move(baseShift), axis), axis)) {
 					if (band.square() > 0)
 						sheet.clear(band);
 				}
@@ -294,13 +395,11 @@ public class Range {
 				sheet.copy(source, baseShift.add(component), true);
 			if (mod < 0)
 				sheet.clear(targetBoundaries.part(mod, axis));
-
 			// Apply additional merged regions
-/*
-			if (stretchDir.mod() > 0)
-				for (Block merge : merges)
-					sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
-*/
+			/*
+			 * if (stretchDir.mod() > 0) for (Block merge : merges)
+			 * sheet.addMergedRegion(merge.move(baseShift).resize(stretchDir));
+			 */
 		}
 
 		sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
@@ -309,7 +408,8 @@ public class Range {
 	@Override
 	public String toString() {
 		return new StringBuilder(30).append("Range[").append(name != null ? name : "?").append(": ")
-				.append(block != null ? block.toAddress() : '-').append(" / ").append(boundaries != null ? boundaries : '-').append(']').toString();
+				.append(block != null ? block.toAddress() : '-').append(" / ")
+				.append(boundaries != null ? boundaries : '-').append(']').toString();
 	}
 
 	private Block boundariesFromChildren(SheetModifier sheet) {
@@ -330,16 +430,48 @@ public class Range {
 		return sheet.getBoundaries();
 	}
 
-	private SheetModifier.CellVisitor getCellVisitor() {
+	private SheetModifier.CellVisitor getAccumulatingVisitor(SheetModifier sheet, Block subtotalBlock,
+			AggregatorObject aggregatorObj) {
 		return new SheetModifier.CellVisitor() {
 			@Override
-			public void visit(Row row, int colNum, Cell cell) {
+			public void visit(Row row, int colNum, Cell cell, Vector shift) {
 				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
 					return;
 
-				Object value = source.evaluate(cell.getStringCellValue());
+				String cellContent = cell.getStringCellValue();
+				Object value = source.evaluate(cellContent);
+				cell.setCellValue(value != null ? value.toString() : "null");
+
+				Vector absolutePos = new Vector(row.getRowNum(), colNum);
+				Vector templatePos = absolutePos.sub(shift);
+
+				aggregatorObj.setCurrentCell(templatePos, value);
+
+				sheet.visitOriginCells(subtotalBlock, new SheetModifier.CellVisitor() {
+					@Override
+					public void visit(Row row, int colNum, Cell subtotalCell, Vector shift) {
+						if (subtotalCell != null && subtotalCell.getCellTypeEnum() == CellType.STRING)
+							source.evaluate(subtotalCell.getStringCellValue());
+					}
+				});
+
+			}
+		};
+
+	}
+
+	private SheetModifier.CellVisitor getBaseVisitor() {
+		return new SheetModifier.CellVisitor() {
+			@Override
+			public void visit(Row row, int colNum, Cell cell, Vector shift) {
+				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
+					return;
+
+				String cellContent = cell.getStringCellValue();
+				Object value = source.evaluate(cellContent);
 				cell.setCellValue(value != null ? value.toString() : "null");
 			}
 		};
 	}
+
 }

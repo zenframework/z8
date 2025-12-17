@@ -1,5 +1,8 @@
 package org.zenframework.z8.server.base.form.report;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -29,6 +32,8 @@ public class Range extends OBJECT {
 	public static final String Boundaries = "boundaries";
 	public static final String Axis = "axis";
 	public static final String Totals = "totals";
+	public static final String Subtotal = "subtotal";
+	public static final String SubtotalsBy = "subtotalsBy";
 
 	// Records insertion axis
 	public static final integer Vertical = new integer(0);
@@ -37,6 +42,11 @@ public class Range extends OBJECT {
 	public OBJECT.CLASS<? extends OBJECT> source = new OBJECT.CLASS<OBJECT>(this);
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
 	public RCollection<string> merges = new RCollection<string>();
+
+	public String getSubtotalsBy() {
+		String subtotalsb = getAttribute(SubtotalsBy);
+		return subtotalsb;
+	}
 
 	public int getSheet() {
 		String sheet = getAttribute(Sheet);
@@ -60,10 +70,15 @@ public class Range extends OBJECT {
 		return hasAttribute(Totals);
 	}
 
+	public String getSubtotalBlock() {
+		return getAttribute(Subtotal);
+	}
+
 	public org.zenframework.z8.server.reports.poi.Range asPoiRange() {
 		org.zenframework.z8.server.reports.poi.Range range = new org.zenframework.z8.server.reports.poi.Range()
 				.setName(index()).setSource(source.get()).setBlock(getAddress()).setBoundaries(getBoundaries())
-				.setAxis(getAxis()).setAggregation(isTotals()).setMergesAddress(string.unwrap(merges));
+				.setAxis(getAxis()).setAggregation(isTotals()).setSubtotalsBy(getSubtotalsBy())
+				.setSubtotalBlock(getSubtotalBlock()).setMergesAddress(string.unwrap(merges));
 
 		for (Range.CLASS<Range> subrange : ranges)
 			range.addRange(subrange.get().asPoiRange());

@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.reports.poi;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.expression.Expression;
+import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.reports.poi.math.Vector;
 
 public class QuerySource extends DataSource {
 
@@ -81,15 +84,30 @@ public class QuerySource extends DataSource {
 
 		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
 			@Override
-			public void visit(Row row, int colNum, Cell cell) {
+			public void visit(Row row, int colNum, Cell cell, Vector shift) {
 				if (cell != null && cell.getCellTypeEnum() == CellType.STRING)
 					getExpression().extractObjects(cell.getStringCellValue(), extractor);
 			}
 		};
 
-		sheet.visitOriginCells(range.getBlock(), visitor);
+		Block collectBlock = range.getBlock();
+		if (range.getSubtotalBlock() != null)
+			collectBlock = collectBlock.bandBefore(range.getSubtotalBlock(), range.getAxis());
+
+		sheet.visitOriginCells(collectBlock, visitor);
 
 		for (Field.CLASS<? extends Field> field : query.extraFields)
 			fields.put(field.id(), field.get());
 	}
+
+	public Collection<Field> getFields() {
+		return fields.values();
+	}
+
+	@Override
+	public Object getCurrentValue(String fieldId) {
+		Field field = fields.get(fieldId);
+		return field != null ? field.get() : null;
+	}
+
 }

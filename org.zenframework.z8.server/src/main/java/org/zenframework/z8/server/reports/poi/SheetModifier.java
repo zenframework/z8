@@ -26,7 +26,7 @@ public class SheetModifier {
 	public SheetModifier() {}
 
 	public static interface CellVisitor {
-		void visit(Row row, int colNum, Cell cell);
+		void visit(Row row, int colNum, Cell cell, Vector shift);
 	}
 
 	public List<String> getErrors() {
@@ -102,15 +102,15 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier visitSheetCells(Block block, CellVisitor visitor) {
-		return visitCells(sheet, block, visitor);
+	public SheetModifier visitSheetCells(Vector shift, Block block, CellVisitor visitor) {
+		return visitCells(sheet, shift, block, visitor);
 	}
 
 	public SheetModifier visitOriginCells(Block block, CellVisitor visitor) {
-		return visitCells(origin, block, visitor);
+		return visitCells(origin, null,  block, visitor);
 	}
 
-	private SheetModifier visitCells(Sheet sheet, Block block, CellVisitor visitor) {
+	private SheetModifier visitCells(Sheet sheet, Vector shift, Block block, CellVisitor visitor) {
 		for (int rowNum = block.startRow(), endRow = block.endRow(), endCol = block.endCol(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
@@ -118,7 +118,7 @@ public class SheetModifier {
 				continue;
 
 			for (int colNum = block.startCol(); colNum < endCol; colNum++)
-				visitor.visit(row, colNum, row.getCell(colNum));
+				visitor.visit(row, colNum, row.getCell(colNum), shift);
 		}
 
 		return this;

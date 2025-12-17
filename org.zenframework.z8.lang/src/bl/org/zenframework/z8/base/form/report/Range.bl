@@ -9,6 +9,8 @@ public class Range extends Object {
 	//   - [axis Range.Horizontal] - one of Vertical or Horizontal
 	//   - [sheet 0] - Excel sheet index
 	//   - [totals] - aggregate source data
+	//   - [subtotal "A6:K6"] - Subtotal row range with aggregations (e.g. ${agg.sum("B2")})
+	//   - [subtotalsBy source.field.id()] - Field ID for grouping, subtotal inserted when field value changes
 
 	// Records insertion axis
 	public static final int Vertical = 0;

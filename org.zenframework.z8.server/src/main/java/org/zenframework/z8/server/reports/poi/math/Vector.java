@@ -77,6 +77,24 @@ public class Vector {
 		return new StringBuilder(10).append(Util.columnToString(col)).append(row + 1).toString();
 	}
 
+	public static Vector parseAddress(String address) {
+		StringBuilder colLetters = new StringBuilder();
+		StringBuilder rowDigits = new StringBuilder();
+
+		for (char c : address.toCharArray()) {
+			if (Character.isLetter(c)) {
+				colLetters.append(c);
+			} else if (Character.isDigit(c)) {
+				rowDigits.append(c);
+			}
+		}
+
+		int col = Util.columnToInt(colLetters.toString());
+		int row = rowDigits.length() > 0 ? Integer.parseInt(rowDigits.toString()) - 1 : 0;
+
+		return new Vector(row, col);
+	}
+
 	@Override
 	public int hashCode() {
 		return row ^ col;
