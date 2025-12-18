@@ -13,6 +13,8 @@ public class PrintOptions {
 	public float topMargin = 10;
 	public float bottomMargin = 10;
 
+	public String detailRowHeight = null;
+
 	public PrintOptions() {
 	}
 
@@ -22,13 +24,15 @@ public class PrintOptions {
 
 		JsonObject object = new JsonObject(json);
 
-		pageOrientation = PageOrientation.fromString(object.getString(Json.pageOrientation));
-		pageFormat = PageFormat.fromString(object.getString(Json.pageFormat));
+		pageFormat = object.has(Json.pageFormat) ? PageFormat.fromString(object.getString(Json.pageFormat)) : pageFormat;
+		pageOrientation = object.has(Json.pageOrientation) ? PageOrientation.fromString(object.getString(Json.pageOrientation)) : pageOrientation;
 
-		leftMargin = (float)object.getDouble(Json.leftMargin);
-		rightMargin = (float)object.getDouble(Json.rightMargin);
-		topMargin = (float)object.getDouble(Json.topMargin);
-		bottomMargin = (float)object.getDouble(Json.bottomMargin);
+		leftMargin = object.has(Json.leftMargin) ? (float)object.getDouble(Json.leftMargin) : leftMargin;
+		rightMargin = object.has(Json.rightMargin) ? (float)object.getDouble(Json.rightMargin) : rightMargin;
+		topMargin = object.has(Json.topMargin) ? (float)object.getDouble(Json.topMargin) : topMargin;
+		bottomMargin = object.has(Json.bottomMargin) ? (float)object.getDouble(Json.bottomMargin) : bottomMargin;
+
+		detailRowHeight = object.has(Json.detailRowHeight) ? object.getString(Json.detailRowHeight) : detailRowHeight;
 	}
 
 	public float pageHeight() {

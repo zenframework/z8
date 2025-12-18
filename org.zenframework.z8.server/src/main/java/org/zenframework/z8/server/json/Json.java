@@ -190,6 +190,8 @@ public interface Json {
 	static public string topMargin = new string("topMargin");
 	static public string bottomMargin = new string("bottomMargin");
 
+	static public string detailRowHeight = new string("detailRowHeight");
+
 	static public string active = new string("active");
 	static public string total = new string("total");
 	static public string start = new string("start");

@@ -285,6 +285,8 @@ public class BirtReport {
 	private void createReportDetail(TableHandle table) {
 		try {
 			RowHandle detailRow = elementFactory.newTableRow();
+			if (options.printOptions.detailRowHeight != null)
+				detailRow.setProperty(RowHandle.HEIGHT_PROP, options.printOptions.detailRowHeight);
 
 			for(Column column : getColumns()) {
 				CellHandle cell = null;
