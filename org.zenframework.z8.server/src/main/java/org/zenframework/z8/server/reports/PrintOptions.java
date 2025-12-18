@@ -14,6 +14,7 @@ public class PrintOptions {
 	public float bottomMargin = 10;
 
 	public String detailRowHeight = null;
+	public VertAlign detailVertAlign = VertAlign.Middle;
 
 	public PrintOptions() {
 	}
@@ -33,6 +34,7 @@ public class PrintOptions {
 		bottomMargin = object.has(Json.bottomMargin) ? (float)object.getDouble(Json.bottomMargin) : bottomMargin;
 
 		detailRowHeight = object.has(Json.detailRowHeight) ? object.getString(Json.detailRowHeight) : detailRowHeight;
+		detailVertAlign = object.has(Json.detailVertAlign) ? VertAlign.fromString(object.getString(Json.detailVertAlign)) : detailVertAlign;
 	}
 
 	public float pageHeight() {
