@@ -285,6 +285,8 @@ public class BirtReport {
 	private void createReportDetail(TableHandle table) {
 		try {
 			RowHandle detailRow = elementFactory.newTableRow();
+			if (options.printOptions.detailRowHeight != null)
+				detailRow.setProperty(RowHandle.HEIGHT_PROP, options.printOptions.detailRowHeight);
 
 			for(Column column : getColumns()) {
 				CellHandle cell = null;
@@ -292,6 +294,8 @@ public class BirtReport {
 				if(!column.isIndentation()) {
 					cell = createCell(1, 1, DetailCellStyle, -1);
 					setCellFormat(cell, column);
+					if (options.printOptions.detailVertAlign != null)
+						cell.setProperty(StyleHandle.VERTICAL_ALIGN_PROP, options.printOptions.detailVertAlign.toDesignAlign());
 
 					DataItemHandle data = elementFactory.newDataItem(null);
 					data.setResultSetColumn(column.getName());

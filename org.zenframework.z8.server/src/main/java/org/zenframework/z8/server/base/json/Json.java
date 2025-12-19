@@ -120,6 +120,9 @@ public class Json extends OBJECT {
 	final static public string topMargin = org.zenframework.z8.server.json.Json.topMargin;
 	final static public string bottomMargin = org.zenframework.z8.server.json.Json.bottomMargin;
 
+	final static public string detailRowHeight = org.zenframework.z8.server.json.Json.detailRowHeight;
+	final static public string detailVertAlign = org.zenframework.z8.server.json.Json.detailVertAlign;
+
 	final static public string total = org.zenframework.z8.server.json.Json.total;
 	final static public string start = org.zenframework.z8.server.json.Json.start;
 	final static public string finish = org.zenframework.z8.server.json.Json.finish;

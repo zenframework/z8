@@ -147,6 +147,9 @@ public class Json extends Object {
 	static public string topMargin;
 	static public string bottomMargin;
 
+	static public string detailRowHeight;
+	static public string detailVertAlign;
+
 	static public string total;
 	static public string start;
 	static public string finish;
