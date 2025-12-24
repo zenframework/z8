@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.BindException;
+import java.net.ServerSocket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -337,6 +339,35 @@ public class FileConverter {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
+	public static void findFreeOfficePort() {
+		final int basePort = ServerConfig.baseOfficePort();
+		final int MAX_OFFSET = 3;
+
+		for (int offset = 0; offset <= MAX_OFFSET; offset++) {
+			int port = basePort + offset;
+
+			try (ServerSocket socket = new ServerSocket(port)) {
+				Trace.logEvent("LibreOffice will start on port " + port);
+				ServerConfig.setOfficePort(port);
+			} catch (BindException e) {
+				Trace.logEvent(
+						"LibreOffice port " + port + " is already in use, trying next port"
+				);
+			} catch (IOException e) {
+				Trace.logError(
+						"Failed to check LibreOffice port " + port, e
+				);
+			}
+		}
+
+		Trace.logEvent(
+				"LibreOffice cannot start: ports " +
+						basePort + "..." + (basePort + MAX_OFFSET) + " are all in use"
+		);
+
+		ServerConfig.setOfficePort(basePort);
+	}
+
 	public static void startOfficeManager() {
 		if(officeManager != null)
 			return;
@@ -359,6 +390,7 @@ public class FileConverter {
 			return;
 		OfficeUtils.stopQuietly(officeManager);
 		officeManager = null;
+		ServerConfig.setOfficePort(ServerConfig.baseOfficePort());
 	}
 
 	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {
