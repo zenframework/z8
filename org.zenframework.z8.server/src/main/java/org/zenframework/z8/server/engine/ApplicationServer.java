@@ -119,7 +119,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 
-		FileConverter.checkOfficeManagerPort();
+		FileConverter.findFreeOfficePort();
 	}
 
 	@Override
