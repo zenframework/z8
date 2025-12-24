@@ -11,6 +11,8 @@ public class Range extends Object {
 	//   - [totals] - aggregate source data
 	//   - [subtotal "A6:K6"] - Subtotal row range with aggregations (e.g. ${agg.sum("B2")})
 	//   - [subtotalsBy source.field.id()] - Field ID for grouping, subtotal inserted when field value changes
+	//   - [subotalsMerge "A1:B1,"B3:C3"] - stretch merged regions to full group length when subtotal group changes
+	//   - [merge ""A1:B1,"B3:C3"] - additional merged regions to process (static positions)
 
 	// Records insertion axis
 	public static final int Vertical = 0;
@@ -18,5 +20,4 @@ public class Range extends Object {
 
 	public Object source;
 	public Range[] ranges;
-	public string[] merges;
 }

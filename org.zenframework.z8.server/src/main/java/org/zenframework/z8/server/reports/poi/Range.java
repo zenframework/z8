@@ -41,8 +41,10 @@ public class Range {
 	private Range parent;
 	private String subtotalsBy;
 	private Block subtotalBlock = null;
+	private Vector groupStartPosition = null;
 
 	private final List<Range> ranges = new ArrayList<Range>();
+	private final Set<Block> subtotalMerges = new HashSet<Block>();
 	private final Set<Block> merges = new HashSet<Block>();
 
 	public Range setReport(PoiReport report) {
@@ -157,6 +159,28 @@ public class Range {
 		return subtotalsBy;
 	}
 
+	private void parseMergesString(String mergeString, Set<Block> targetSet) {
+		if (mergeString == null || mergeString.isEmpty())
+			return;
+
+		String[] blocks = mergeString.split(",");
+		for (String block : blocks) {
+			String trimmed = block.trim();
+			if (!trimmed.isEmpty())
+				targetSet.add(new Block(trimmed));
+		}
+	}
+
+	public Range setMerges(String mergeString) {
+		parseMergesString(mergeString, merges);
+		return this;
+	}
+
+	public Range setSubtotalMerges(String mergeString) {
+		parseMergesString(mergeString, subtotalMerges);
+		return this;
+	}
+
 	public Range getParent() {
 		return parent;
 	}
@@ -187,30 +211,6 @@ public class Range {
 			boundaries.add(range.getBoundaries());
 
 		return boundaries;
-	}
-
-	public Range setMerges(Collection<Block> merges) {
-		this.merges.clear();
-		this.merges.addAll(merges);
-		return this;
-	}
-
-	public Range setMergesAddress(Collection<String> merges) {
-		this.merges.clear();
-
-		for (String merge : merges)
-			addMerge(merge);
-
-		return this;
-	}
-
-	public Range addMerge(Block merge) {
-		merges.add(merge);
-		return this;
-	}
-
-	public Range addMerge(String merge) {
-		return addMerge(new Block(merge));
 	}
 
 	public void apply(SheetModifier sheet) {
@@ -265,6 +265,7 @@ public class Range {
 		Block target = block.move(baseShift);
 		Block filled = new Block(target.start(), block.size().component(axis.orthogonal()));
 		Vector shift = baseShift;
+		groupStartPosition = baseShift;
 
 		if (!baseShift.isZero())
 			sheet.copy(boundaries, boundaries.move(baseShift).start(), false);
@@ -277,12 +278,17 @@ public class Range {
 				if (aggregatorObj != null && !firstRow) {
 					Object currentValue = source.getCurrentValue(subtotalsBy);
 
-					if (!previousGroupValue.equals(currentValue)) {
+					if (!objectsEqual(previousGroupValue, currentValue)) {
+						Vector groupResize = shift.sub(Vector.unit(axis)).sub(groupStartPosition);
+
+						sheet.applyGroupMerges(groupStartPosition, groupResize, subtotalMerges, block, axis);
+
 						Vector subtotalPosition = filled.end(axis);
 						Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition, aggregatorObj,
 								subtotalVisitor);
 						shift = shift.add(subtotalShift);
 						target = block.move(shift);
+						groupStartPosition = shift;
 
 						aggregatorObj.reset();
 					}
@@ -306,10 +312,15 @@ public class Range {
 				if (aggregatorObj != null) {
 					previousGroupValue = source.getCurrentValue(subtotalsBy);
 					firstRow = false;
+
 				}
 			}
 
 			if (aggregatorObj != null && !firstRow) {
+				Vector groupResize = shift.sub(Vector.unit(axis)).sub(groupStartPosition);
+
+				sheet.applyGroupMerges(groupStartPosition, groupResize, subtotalMerges, block, axis);
+
 				Vector subtotalPosition = filled.end(axis);
 				Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition, aggregatorObj, subtotalVisitor);
 				filled = filled.resize(subtotalShift);
@@ -334,6 +345,14 @@ public class Range {
 							+ boundaries.move(baseShift).resize(resize) + "\n\t- stat: " + sheet.getStat());
 
 		return resize;
+	}
+
+	private boolean objectsEqual(Object a, Object b) {
+		if (a == null && b == null)
+			return true;
+		if (a == null || b == null)
+			return false;
+		return a.equals(b);
 	}
 
 	private Vector insertSubtotalRow(SheetModifier sheet, Vector subtotalPosition, AggregatorObject aggregatorObj,
@@ -402,7 +421,7 @@ public class Range {
 			 */
 		}
 
-		sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize);
+		sheet.applyOuterMergedRegions(block, boundaries, baseShift, resize, merges);
 	}
 
 	@Override
