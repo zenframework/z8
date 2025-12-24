@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.expression;
 
+import org.zenframework.z8.server.expression.function.Function;
+
 public abstract class Context {
 
 	private final Context parent;
@@ -17,5 +19,11 @@ public abstract class Context {
 		return variable != null ? variable : parent != null ? parent.getVariable(name) : null;
 	}
 
+	public final Function getFunction(String name) {
+		Function function = getDefinedFunction(name);
+		return function != null ? function : parent != null ? parent.getFunction(name) : null;
+	}
+
 	protected abstract Variable getDefinedVariable(String name);
+	protected abstract Function getDefinedFunction(String name);
 }

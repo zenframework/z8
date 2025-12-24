@@ -3,14 +3,12 @@ package org.zenframework.z8.server.expression;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.birt.report.model.api.IllegalOperationException;
-import org.zenframework.z8.server.expression.function.Format;
 import org.zenframework.z8.server.expression.function.Function;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
@@ -27,16 +25,6 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
 public class Calculator {
-
-	private static final Map<String, Function> Functions = new HashMap<String, Function>();
-
-	public static void register(String name, Function function) {
-		Functions.put(name, function);
-	}
-
-	static {
-		register(Format.NAME, new Format());
-	}
 
 	private final List<String> errors = new LinkedList<String>();
 
@@ -298,7 +286,7 @@ public class Calculator {
 	}
 
 	public Object callFunction(String name, Object... arguments) {
-		Function function = Functions.get(name);
+		Function function = context.getFunction(name);
 
 		if (function == null)
 			throw new RuntimeException("Unknown function '" + name + "'");

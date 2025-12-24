@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.expression.function.Format;
+import org.zenframework.z8.server.expression.function.Function;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -15,6 +17,7 @@ import org.zenframework.z8.server.types.string;
 public class DefaultContext extends Context {
 
 	private Map<String, Variable> variables = new HashMap<String, Variable>();
+	private final Map<String, Function> functions = new HashMap<String, Function>();
 
 	public DefaultContext(Context parent) {
 		super(parent);
@@ -23,6 +26,11 @@ public class DefaultContext extends Context {
 	public DefaultContext(Context parent, Map<String, Variable> variables) {
 		this(parent);
 		this.variables.putAll(variables);
+	}
+
+	public DefaultContext setFunction(String name, Function function) {
+		functions.put(name, function);
+		return this;
 	}
 
 	public DefaultContext setVariable(Variable value) {
@@ -48,6 +56,11 @@ public class DefaultContext extends Context {
 		return variables.get(name);
 	}
 
+	@Override
+	protected Function getDefinedFunction(String name) {
+		return functions.get(name);
+	}
+
 	public static DefaultContext create() {
 		return new DefaultContext(null)
 				.setVariable("bool", bool.class)
@@ -56,6 +69,7 @@ public class DefaultContext extends Context {
 				.setVariable("decimal", decimal.class)
 				.setVariable("guid", guid.class)
 				.setVariable("int", integer.class)
-				.setVariable("string", string.class);
+				.setVariable("string", string.class)
+				.setFunction(Format.NAME, new Format());
 	}
 }
