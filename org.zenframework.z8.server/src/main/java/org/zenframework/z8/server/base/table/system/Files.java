@@ -281,30 +281,29 @@ public class Files extends Table {
 	}
 	
 	public static file get(file f) throws IOException {
-		return get(f, false);
+		return get(f, true);
 	}
 
-	public static file get(file f, boolean inProgress) throws IOException {
+	public static file get(file f, boolean strictMode) throws IOException {
 		File value = getFullStoragePath(f);
-		boolean exists= value.exists();
+		boolean exists = value.exists();
+
 		readFile(f);
 
 		if(f.location.get() == Location_Storage) {
-			if(!exists && !inProgress)
+			if(!exists && strictMode)
 				throw new RuntimeException("Files.java:get(file file) file location is storage and file doesn't exist, path: " + value.getAbsolutePath());
 			return f.set(new InputOnlyFileItem(value, f.name.get()));
 		}
 
-		//location == Location_DB
+		// location == Location_DB
+
 		long fileSize = f.size.get();
+
 		if(exists) {
-			long existSize = value.length();
-			if(fileSize != existSize && !inProgress) {
-				value.delete();
-				exists = false;
-			} else {
+			if(fileSize == value.length() || !strictMode)
 				return f.set(new InputOnlyFileItem(value, f.name.get()));
-			}
+			value.delete();
 		}
 
 		//location == Location_DB && !exists
@@ -315,15 +314,17 @@ public class Files extends Table {
 
 		value.getParentFile().mkdirs();
 		long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(value));
-		if(fileSize != 0 && copiedSize != fileSize && !inProgress) {
-			value.delete();
-			throw new RuntimeException("Files.java:get(file file) file broken (size value doesn't match data size), fileId: " + f.id.get() +  ", path: " + value.getAbsolutePath());
+
+		if(strictMode) {
+			if(fileSize == 0) {
+				f.size = new integer(copiedSize);
+				newInstance().setSize(f.id, copiedSize);
+			} else if(copiedSize != fileSize) {
+				value.delete();
+				throw new RuntimeException("Files.java:get(file file) file broken (size value doesn't match data size), fileId: " + f.id.get() +  ", path: " + value.getAbsolutePath());
+			}
 		}
 
-		if(fileSize == 0 && !inProgress) {
-			f.size = new integer(copiedSize);
-			newInstance().setSize(f.id, copiedSize);
-		}
 		return f.set(new InputOnlyFileItem(value, f.name.get()));
 	}
 

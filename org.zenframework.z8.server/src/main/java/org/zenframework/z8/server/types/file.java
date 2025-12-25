@@ -502,7 +502,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		if(Thread.interrupted())
 			throw new ThreadInterruptedException();
 
-		Files.get(this, true);
+		Files.get(this, false);
 
 		offset += partLength;
 
