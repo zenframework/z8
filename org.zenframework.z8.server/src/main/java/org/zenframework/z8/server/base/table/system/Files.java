@@ -279,31 +279,35 @@ public class Files extends Table {
 
 		return null;
 	}
-
+	
 	public static file get(file f) throws IOException {
+		return get(f, false);
+	}
+
+	public static file get(file f, boolean inProgress) throws IOException {
 		File value = getFullStoragePath(f);
-		boolean notFound = !value.exists();
+		boolean exists= value.exists();
 		readFile(f);
 
 		if(f.location.get() == Location_Storage) {
-			if(notFound)
+			if(!exists && !inProgress)
 				throw new RuntimeException("Files.java:get(file file) file location is storage and file doesn't exist, path: " + value.getAbsolutePath());
 			return f.set(new InputOnlyFileItem(value, f.name.get()));
 		}
 
 		//location == Location_DB
 		long fileSize = f.size.get();
-		if(!notFound) {
+		if(exists) {
 			long existSize = value.length();
-			if(fileSize != existSize) {
+			if(fileSize != existSize && !inProgress) {
 				value.delete();
-				notFound = true;
+				exists = false;
 			} else {
 				return f.set(new InputOnlyFileItem(value, f.name.get()));
 			}
 		}
 
-		//location == Location_DB && notFound
+		//location == Location_DB && !exists
 		InputStream inputStream = getInputStream(f);
 
 		if(inputStream == null)
@@ -311,12 +315,12 @@ public class Files extends Table {
 
 		value.getParentFile().mkdirs();
 		long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(value));
-		if(fileSize != 0 && copiedSize != fileSize) {
+		if(fileSize != 0 && copiedSize != fileSize && !inProgress) {
 			value.delete();
 			throw new RuntimeException("Files.java:get(file file) file broken (size value doesn't match data size), fileId: " + f.id.get() +  ", path: " + value.getAbsolutePath());
 		}
 
-		if(fileSize == 0) {
+		if(fileSize == 0 && !inProgress) {
 			f.size = new integer(copiedSize);
 			newInstance().setSize(f.id, copiedSize);
 		}
