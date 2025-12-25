@@ -75,4 +75,9 @@ public abstract class DataSource {
 		CLASS value = (CLASS) getObject().getMember(id);
 		return value != null ? (Wrapper<V>) value.get() : Wrapper.instance(getObject(), id);
 	}
+
+	public Object getCurrentValue(String fieldId) {
+		return null;
+	}
+
 }
