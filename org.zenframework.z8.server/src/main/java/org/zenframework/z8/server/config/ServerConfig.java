@@ -101,6 +101,9 @@ public class ServerConfig extends Config {
 	static final private String ExchangeFolderOut = "exchange.folder.out";
 	static final private String ExchangeFolderErr = "exchange.folder.err";
 
+	static final private String LogCleanupJobCron = "logCleanup.job.cron";
+	static final private String LogCleanupJobKeepFor = "logCleanup.job.keepFor";
+
 	static final private String TraceSql = "trace.sql";
 	static final private String TraceSqlConnections = "trace.sql.connections";
 
@@ -210,6 +213,9 @@ public class ServerConfig extends Config {
 	static private File exchangeFolderIn;
 	static private File exchangeFolderOut;
 	static private File exchangeFolderErr;
+
+	static private String logCleanupJobCron;
+	static private String logCleanupJobKeepFor;
 
 	static private boolean traceSql;
 	static private boolean traceSqlConnections;
@@ -349,6 +355,9 @@ public class ServerConfig extends Config {
 		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in", workingPath);
 		exchangeFolderOut = instance.getFile(ExchangeFolderOut, "exchange/out", workingPath);
 		exchangeFolderErr = instance.getFile(ExchangeFolderErr, "exchange/err", workingPath);
+
+		logCleanupJobCron = instance.getProperty(LogCleanupJobCron, "");
+		logCleanupJobKeepFor = instance.getProperty(LogCleanupJobKeepFor, "30d");
 
 		textExtensions = instance.getProperty(TextExtensions, new String[] { "txt", "xml" });
 		imageExtensions = instance.getProperty(ImageExtensions, new String[] { "tif", "tiff", "jpg", "jpeg", "gif", "png", "bmp" });
@@ -774,6 +783,18 @@ public class ServerConfig extends Config {
 
 	static public File exchangeFolderErr() {
 		return exchangeFolderErr;
+	}
+
+	static public boolean logCleanupJobEnabled() {
+		return !logCleanupJobCron().isEmpty();
+	}
+
+	static public String logCleanupJobCron() {
+		return logCleanupJobCron;
+	}
+
+	static public String logCleanupJobKeepFor() {
+		return logCleanupJobKeepFor;
 	}
 
 	static public String[] textExtensions() {
