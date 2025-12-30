@@ -291,8 +291,11 @@ public class Files extends Table {
 		readFile(f);
 
 		if(f.location.get() == Location_Storage) {
-			if(!exists && strictMode)
+			if(!exists) {
+				if(!strictMode)
+					return f;
 				throw new RuntimeException("Files.java:get(file file) file location is storage and file doesn't exist, path: " + value.getAbsolutePath());
+			}
 			return f.set(new InputOnlyFileItem(value, f.name.get()));
 		}
 
