@@ -69,7 +69,9 @@ public class FileConverter {
 	public static final string Stamps = new string("stamps");
 
 	private static final Map<String, Integer> PDF_VERSIONS = getPdfVersions();
+	private static final int MAX_PORT_OFFSET = 3;
 
+	private static int officePort;
 	private static OfficeManager officeManager;
 
 	private FileConverter() {}
@@ -339,33 +341,30 @@ public class FileConverter {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
-	public static void findFreeOfficePort() {
-		final int basePort = ServerConfig.baseOfficePort();
-		final int MAX_OFFSET = 3;
+	public static void initializePort() {
+		int baseOfficePort = ServerConfig.officePort();
+		officePort = baseOfficePort;
 
-		for (int offset = 0; offset <= MAX_OFFSET; offset++) {
-			int port = basePort + offset;
+		for (int offset = 0; offset <= MAX_PORT_OFFSET; offset++) {
+			int freePort = baseOfficePort + offset;
 
-			try (ServerSocket socket = new ServerSocket(port)) {
-				Trace.logEvent("LibreOffice will start on port " + port);
-				ServerConfig.setOfficePort(port);
+			try (ServerSocket socket = new ServerSocket(freePort)) {
+				officePort = freePort;
+
+				Trace.logEvent("LibreOffice port selected " + freePort);
+				return;
 			} catch (BindException e) {
-				Trace.logEvent(
-						"LibreOffice port " + port + " is already in use, trying next port"
-				);
+				Trace.logEvent("LibreOffice port " + freePort +
+								" is already in use, trying next port");
 			} catch (IOException e) {
 				Trace.logError(
-						"Failed to check LibreOffice port " + port, e
+						"Failed to check LibreOffice port " + freePort, e
 				);
 			}
 		}
 
-		Trace.logEvent(
-				"LibreOffice cannot start: ports " +
-						basePort + "..." + (basePort + MAX_OFFSET) + " are all in use"
-		);
-
-		ServerConfig.setOfficePort(basePort);
+		Trace.logEvent("LibreOffice cannot start: ports " +
+				baseOfficePort + "..." + (baseOfficePort + MAX_PORT_OFFSET) + " are all in use");
 	}
 
 	public static void startOfficeManager() {
@@ -377,9 +376,9 @@ public class FileConverter {
 //		officeManager.start();
 
 		try {
-			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(ServerConfig.officePort()).build();
+			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(officePort).build();
 			officeManager.start();
-			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + ServerConfig.officePort());
+			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + officePort);
 		} catch(OfficeException e1) {
 			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
 		}
@@ -390,7 +389,6 @@ public class FileConverter {
 			return;
 		OfficeUtils.stopQuietly(officeManager);
 		officeManager = null;
-		ServerConfig.setOfficePort(ServerConfig.baseOfficePort());
 	}
 
 	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {

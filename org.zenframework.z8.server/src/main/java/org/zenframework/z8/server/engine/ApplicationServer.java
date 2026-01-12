@@ -118,7 +118,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
-		FileConverter.findFreeOfficePort();
+		FileConverter.initializePort();
 	}
 
 	@Override
