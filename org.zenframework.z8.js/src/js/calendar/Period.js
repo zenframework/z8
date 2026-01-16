@@ -158,9 +158,11 @@ Z8.define('Z8.calendar.Period', {
 	htmlMarkup: function() {
 		var period = this.period;
 		var last7Days = this.last7Days();
+		var startDate = this.normalizeStart(period.start || last7Days.start);
+		var finishDate = this.normalizeFinish(period.finish || last7Days.finish);
 
-		var start = this.start = new Z8.calendar.Calendar({ cls: 'start', date: period.start || last7Days.start });
-		var finish = this.finish = new Z8.calendar.Calendar({ cls: 'finish', date: period.finish || last7Days.finish });
+		var start = this.start = new Z8.calendar.Calendar({ cls: 'start', date: startDate });
+		var finish = this.finish = new Z8.calendar.Calendar({ cls: 'finish', date: finishDate });
 
 		var today = new Z8.button.Button({ text: Z8.$('Period.today'), name: 'today', toggled: true });
 		var yesterday = new Z8.button.Button({ text: Z8.$('Period.yesterday'), name: 'yesterday', toggled: false });
@@ -206,6 +208,14 @@ Z8.define('Z8.calendar.Period', {
 		this.items = [body, buttons];
 
 		return this.callParent();
+	},
+
+	normalizeStart: function(date) {
+		return new Date(new Date(date).setHours(0, 0, 0, 0));
+	},
+
+	normalizeFinish: function(date) {
+		return new Date(new Date(date).setHours(23, 59, 59, 999));
 	},
 
 	attachListeners: function(items) {
