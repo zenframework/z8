@@ -40,13 +40,12 @@ public class LogCleanupJob extends Executable {
 		super(container);
 		useTransaction = bool.False;
 
-		String keepFor = ServerConfig.logCleanupJobKeepFor();
-		this.keepForMillis = DatespanParser.parseToMilliseconds(keepFor);
-
 		initializeSystemLogsConfiguration();
 	}
 
 	private void initializeSystemLogsConfiguration() {
+		this.keepForMillis = DatespanParser.parseToMilliseconds(ServerConfig.logCleanupJobKeepFor());
+
 		File loggingPropertiesFile = new File(ServerConfig.configPath(), "logging.properties");
 
 		if (!loggingPropertiesFile.exists()) {
@@ -86,14 +85,10 @@ public class LogCleanupJob extends Executable {
 	@Override
 	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
 		long cutoffTime = java.lang.System.currentTimeMillis() - keepForMillis;
-
 		int totalDeleted = 0;
 
-		int jobLogsDeleted = cleanupJobLogs(cutoffTime);
-		totalDeleted += jobLogsDeleted;
-
-		int systemLogsDeleted = cleanupSystemLogs(cutoffTime);
-		totalDeleted += systemLogsDeleted;
+		totalDeleted += cleanupJobLogs(cutoffTime);
+		totalDeleted += cleanupSystemLogs(cutoffTime);
 
 		Trace.logEvent("Log cleanup finished. Total deleted: " + totalDeleted + " files.");
 	}
@@ -139,25 +134,22 @@ public class LogCleanupJob extends Executable {
 			return;
 
 		for (File file : files) {
-			if (file.isDirectory()) {
+			if (file.isDirectory())
 				collectJobLogFiles(file, result, cutoffTime);
-			} else if (file.isFile() && file.getName().endsWith(".log")) {
-				if (file.lastModified() < cutoffTime)
-					result.add(file);
-			}
+			else if (file.isFile() && file.getName().endsWith(".log") && file.lastModified() < cutoffTime)
+				result.add(file);
 		}
 	}
 
 	private void collectSystemLogFiles(File directory, List<File> result, long cutoffTime, String regex) {
 		File[] files = directory.listFiles();
+
 		if (files == null)
 			return;
 
 		for (File file : files) {
-			if (file.isFile() && file.getName().matches(regex)) {
-				if (file.lastModified() < cutoffTime)
-					result.add(file);
-			}
+			if (file.isFile() && file.getName().matches(regex) && file.lastModified() < cutoffTime)
+				result.add(file);
 		}
 	}
 
@@ -184,11 +176,10 @@ public class LogCleanupJob extends Executable {
 			if (parent != null && !parent.equals(rootDir))
 				directories.add(parent);
 		}
+
 		for (File dir : directories) {
-			if (isEmptyDirectory(dir)) {
-				if (!dir.delete())
-					Trace.logEvent("Failed to delete empty directory: " + dir.getAbsolutePath());
-			}
+			if (isEmptyDirectory(dir) && !dir.delete())
+				Trace.logEvent("Failed to delete empty directory: " + dir.getAbsolutePath());
 		}
 	}
 
