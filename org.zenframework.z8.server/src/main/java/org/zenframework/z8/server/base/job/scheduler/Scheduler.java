@@ -21,6 +21,7 @@ import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.ie.ExchangeJob;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
+import org.zenframework.z8.server.logs.LogCleanupJob;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.guid;
@@ -240,6 +241,8 @@ public class Scheduler implements Runnable {
 			systemJobs.add(new ScheduledJob(TransportJob.class.getCanonicalName(), ServerConfig.transportJobCron(), database));
 		if(ServerConfig.exchangeJobEnabled())
 			systemJobs.add(new ScheduledJob(ExchangeJob.class.getCanonicalName(), ServerConfig.exchangeJobCron(), database));
+		if(ServerConfig.logCleanupJobEnabled())
+			systemJobs.add(new ScheduledJob(LogCleanupJob.class.getCanonicalName(), ServerConfig.logCleanupJobCron(), database));
 	}
 
 	private void initializeJobs() {
