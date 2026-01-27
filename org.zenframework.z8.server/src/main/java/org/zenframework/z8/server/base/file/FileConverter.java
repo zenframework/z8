@@ -1,10 +1,15 @@
 package org.zenframework.z8.server.base.file;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.StandardOpenOption;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,16 +17,10 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.document.DocumentFormat;
-import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.office.LocalOfficeManager;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Session;
@@ -67,8 +66,6 @@ public class FileConverter {
 	public static final string Stamps = new string("stamps");
 
 	private static final Map<String, Integer> PDF_VERSIONS = getPdfVersions();
-
-	private static OfficeManager officeManager;
 
 	private FileConverter() {}
 
@@ -337,44 +334,37 @@ public class FileConverter {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
-	public static void startOfficeManager() {
-		if(officeManager != null)
-			return;
-
-		// TODO Define setting for local/external manager
-//		officeManager = ExternalOfficeManager.builder().install().connectOnStart(true).portNumber(OFFICE_PORT).build();
-//		officeManager.start();
-
-		try {
-			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(ServerConfig.officePort()).build();
-			officeManager.start();
-			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + ServerConfig.officePort());
-		} catch(OfficeException e1) {
-			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
-		}
-	}
-
-	public static void stopOfficeManager() {
-		if(officeManager == null)
-			return;
-		OfficeUtils.stopQuietly(officeManager);
-		officeManager = null;
-	}
-
 	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {
 		try {
-			startOfficeManager();
+			HttpURLConnection c = (HttpURLConnection) new URL("http://" + Settings.x2tUrl() + "/api/v1/pdf").openConnection();
+			c.setRequestMethod("POST");
+			c.setDoInput(true);
+			c.setDoOutput(true);
+			try (OutputStream o = c.getOutputStream()) {
+				byte[] buffer = new byte[8 * 1024];
+				int bytesRead;
+				while ((bytesRead = input.read(buffer)) != -1) {
+					o.write(buffer, 0, bytesRead);
+				}
 
-			DocumentConverter converter = LocalConverter.make(officeManager);
-			DocumentFormatRegistry registry = converter.getFormatRegistry();
-			//DocumentFormat inputFormat = registry.getFormatByExtension(extension);
-			DocumentFormat targetFormat = getDocumentFormat(parameters);
-			if (targetFormat == null)
-				targetFormat = registry.getFormatByExtension(new file(target).extension());
+				if (c.getResponseCode() != HttpURLConnection.HTTP_OK)
+					throw new RuntimeException();
 
-			converter.convert(input)/*.as(inputFormat)*/.to(target).as(targetFormat).execute();
-			return target;
-		} catch(Throwable e) {
+				try (
+					InputStream i = c.getInputStream();
+					OutputStream fo = java.nio.file.Files.newOutputStream(
+						target.toPath(),
+						StandardOpenOption.CREATE_NEW,
+						StandardOpenOption.TRUNCATE_EXISTING
+					)
+				) {
+					while ((bytesRead = i.read(buffer)) != -1) {
+						fo.write(buffer, 0, bytesRead);
+					}
+				}
+				return target;
+			}
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
