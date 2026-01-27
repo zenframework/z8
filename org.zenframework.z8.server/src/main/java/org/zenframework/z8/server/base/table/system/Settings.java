@@ -31,6 +31,7 @@ public class Settings extends TreeTable {
 
 	final static public guid Version = guid.create(strings.Version);
 	final static public guid WebAppUrl = guid.create(strings.WebAppUrl);
+	final static public guid X2tUrl = guid.create(strings.X2tUrl);
 
 	static public class fieldNames {
 		public final static String Name = "Name";
@@ -45,6 +46,7 @@ public class Settings extends TreeTable {
 
 		public final static String Version = "system.version";
 		public final static String WebAppUrl = "system.webappurl";
+		public final static String X2tUrl = "system.x2turl";
 	}
 
 	static public class displayNames {
@@ -123,6 +125,12 @@ public class Settings extends TreeTable {
 			record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string("Web App URL"));
 			record.put(description.get(), new string("Web Application URL"));
+			record.put(lock.get(), RecordLock.Destroy);
+			addRecord(WebAppUrl, record);
+
+			record = new LinkedHashMap<IField, primary>();
+			record.put(name.get(), new string("x2t URL"));
+			record.put(description.get(), new string("x2t converter URL"));
 			record.put(lock.get(), RecordLock.Destroy);
 			addRecord(WebAppUrl, record);
 		}
@@ -261,6 +269,10 @@ public class Settings extends TreeTable {
 
 	static public String webAppUrl() {
 		return get(WebAppUrl, "");
+	}
+
+	static public String x2tUrl() {
+		return get(X2tUrl, "localhost:8080");
 	}
 
 	static private primary parse(string value, primary defaultValue) {
