@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -113,6 +115,16 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public void start() throws RemoteException {
 		super.start();
+
+		try {
+			HttpURLConnection c = (HttpURLConnection) new URL("http://" + Settings.x2tUrl() + "/api/v1/status").openConnection();
+			c.connect();
+			if (c.getResponseCode() != HttpURLConnection.HTTP_OK || !"OK".equals(c.getResponseMessage()))
+				throw new RuntimeException("z8-x2t service: missing");
+			c.disconnect();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
