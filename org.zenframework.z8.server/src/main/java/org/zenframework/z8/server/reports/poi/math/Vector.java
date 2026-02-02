@@ -5,6 +5,8 @@ import org.zenframework.z8.server.reports.poi.Util;
 
 public class Vector {
 	private final int row, col;
+	private static final Vector UNIT_VERTICAL = new Vector(1, 0);
+	private static final Vector UNIT_HORIZONTAL = new Vector(0, 1);
 
 	public Vector() {
 		this(0, 0);
@@ -75,6 +77,28 @@ public class Vector {
 
 	public String toAddress() {
 		return new StringBuilder(10).append(Util.columnToString(col)).append(row + 1).toString();
+	}
+
+	public static Vector parseAddress(String address) {
+		StringBuilder colLetters = new StringBuilder();
+		StringBuilder rowDigits = new StringBuilder();
+
+		for (char c : address.toCharArray()) {
+			if (Character.isLetter(c)) {
+				colLetters.append(c);
+			} else if (Character.isDigit(c)) {
+				rowDigits.append(c);
+			}
+		}
+
+		int col = Util.columnToInt(colLetters.toString());
+		int row = rowDigits.length() > 0 ? Integer.parseInt(rowDigits.toString()) - 1 : 0;
+
+		return new Vector(row, col);
+	}
+
+	public static Vector unit(Axis axis) {
+		return axis == Axis.Vertical ? UNIT_VERTICAL : UNIT_HORIZONTAL;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,7 +27,7 @@ public class SheetModifier {
 	public SheetModifier() {}
 
 	public static interface CellVisitor {
-		void visit(Row row, int colNum, Cell cell);
+		void visit(Row row, int colNum, Cell cell, Vector shift);
 	}
 
 	public List<String> getErrors() {
@@ -102,15 +103,15 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier visitSheetCells(Block block, CellVisitor visitor) {
-		return visitCells(sheet, block, visitor);
+	public SheetModifier visitSheetCells(Vector shift, Block block, CellVisitor visitor) {
+		return visitCells(sheet, shift, block, visitor);
 	}
 
 	public SheetModifier visitOriginCells(Block block, CellVisitor visitor) {
-		return visitCells(origin, block, visitor);
+		return visitCells(origin, null, block, visitor);
 	}
 
-	private SheetModifier visitCells(Sheet sheet, Block block, CellVisitor visitor) {
+	private SheetModifier visitCells(Sheet sheet, Vector shift, Block block, CellVisitor visitor) {
 		for (int rowNum = block.startRow(), endRow = block.endRow(), endCol = block.endCol(); rowNum < endRow; rowNum++) {
 			Row row = sheet.getRow(rowNum);
 
@@ -118,7 +119,7 @@ public class SheetModifier {
 				continue;
 
 			for (int colNum = block.startCol(); colNum < endCol; colNum++)
-				visitor.visit(row, colNum, row.getCell(colNum));
+				visitor.visit(row, colNum, row.getCell(colNum), shift);
 		}
 
 		return this;
@@ -168,42 +169,78 @@ public class SheetModifier {
 		return this;
 	}
 
-	public SheetModifier applyOuterMergedRegions(Block block, Block boundaries, Vector shift, Vector resize) {
+	public SheetModifier applyGroupMerges(Vector groupStart, Vector groupResize, Set<Block> subtotalMerges, Block block,
+			Axis axis) {
+		if (subtotalMerges == null || subtotalMerges.isEmpty())
+			return this;
+
+		Vector stretchVector = groupResize.component(axis);
+
+		if (stretchVector.mod() <= 0)
+			return this;
+
+		for (Block merge : subtotalMerges) {
+			if (!merge.in(block))
+				continue;
+
+			Block movedMerge = merge.move(groupStart);
+			Block stretchedMerge = movedMerge.resize(stretchVector);
+
+			if (stretchedMerge.square() > 0)
+				addMergedRegion(stretchedMerge);
+		}
+
+		return this;
+	}
+
+	public SheetModifier applyOuterMergedRegions(Block block, Block boundaries, Vector shift, Vector resize,
+			Set<Block> boundariesMerge) {
 		Map<Direction, Block> bands = boundaries.bands(block);
 
 		for (int i = 0; i < origin.getNumMergedRegions(); i++) {
 			Block region = new Block(origin.getMergedRegion(i));
+			processOuterRegion(region, block, boundaries, bands, shift, resize);
+		}
 
-			if (region.in(block) || !region.in(boundaries))
-				continue;
+		if (boundariesMerge == null || boundariesMerge.isEmpty())
+			return this;
 
-			if (block.in(region)) {
-				addMergedRegion(region.move(shift).resize(resize));
-				continue;
-			}
-
-			if (block.intersects(region))
-				continue;
-
-			boolean inTop = region.in(bands.get(Direction.Top));
-			boolean inBottom = region.in(bands.get(Direction.Bottom));
-			boolean inLeft = region.in(bands.get(Direction.Left));
-			boolean inRight = region.in(bands.get(Direction.Right));
-
-			if (inLeft || inRight)
-				region = region.resize(resize.component(Axis.Vertical));
-			else if (inTop || inBottom)
-				region = region.resize(resize.component(Axis.Horizontal));
-			if (inRight)
-				region = region.move(resize.component(Axis.Horizontal));
-			if (inBottom)
-				region = region.move(resize.component(Axis.Vertical));
-
-			if (region.square() > 0)
-				addMergedRegion(region.move(shift));
+		for (Block merge : boundariesMerge) {
+			processOuterRegion(merge, block, boundaries, bands, shift, resize);
 		}
 
 		return this;
+	}
+
+	private void processOuterRegion(Block region, Block block, Block boundaries, Map<Direction, Block> bands,
+			Vector shift, Vector resize) {
+		if (region.in(block) || !region.in(boundaries))
+			return;
+
+		if (block.in(region)) {
+			addMergedRegion(region.move(shift).resize(resize));
+			return;
+		}
+
+		if (block.intersects(region))
+			return;
+
+		boolean inTop = region.in(bands.get(Direction.Top));
+		boolean inBottom = region.in(bands.get(Direction.Bottom));
+		boolean inLeft = region.in(bands.get(Direction.Left));
+		boolean inRight = region.in(bands.get(Direction.Right));
+
+		if (inLeft || inRight)
+			region = region.resize(resize.component(Axis.Vertical));
+		else if (inTop || inBottom)
+			region = region.resize(resize.component(Axis.Horizontal));
+		if (inRight)
+			region = region.move(resize.component(Axis.Horizontal));
+		if (inBottom)
+			region = region.move(resize.component(Axis.Vertical));
+
+		if (region.square() > 0)
+			addMergedRegion(region.move(shift));
 	}
 
 	private void copyNonNull(Row sourceRow, int sourceStartCol, Row targetRow, int targetStartCol, int count) {
