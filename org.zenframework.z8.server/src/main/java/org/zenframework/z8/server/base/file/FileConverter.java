@@ -129,7 +129,7 @@ public class FileConverter {
 				else if (toPdf && isEmailExtension(extension))
 					PdfUtils.textToPdf(EmlUtils.emailToString(in), target);
 				else
-					convertOffice(in, target, parameters);
+					convertOffice(in, extension, target, parameters);
 			} catch (IOException e) {
 				throw new RuntimeException("Can't convert file to " + target, e);
 			} finally {
@@ -334,12 +334,15 @@ public class FileConverter {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
-	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {
+	private static File convertOffice(InputStream input, String extension, File target, Map<String, String> parameters) {
 		try {
-			HttpURLConnection c = (HttpURLConnection) new URL("http://" + Settings.x2tUrl() + "/api/v1/pdf").openConnection();
+			HttpURLConnection c = (HttpURLConnection) new URL(
+				"http://" + Settings.x2tUrl() + "/api/v1/convert?from=" + extension + "&to=" + new file(target).extension()
+			).openConnection();
 			c.setRequestMethod("POST");
 			c.setDoInput(true);
 			c.setDoOutput(true);
+
 			try (OutputStream o = c.getOutputStream()) {
 				byte[] buffer = new byte[8 * 1024];
 				int bytesRead;
@@ -348,7 +351,7 @@ public class FileConverter {
 				}
 
 				if (c.getResponseCode() != HttpURLConnection.HTTP_OK)
-					throw new RuntimeException();
+					throw new RuntimeException("Can't convert file to " + target);
 
 				try (
 					InputStream i = c.getInputStream();

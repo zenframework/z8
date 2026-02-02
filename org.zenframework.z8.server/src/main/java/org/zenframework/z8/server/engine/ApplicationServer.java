@@ -119,8 +119,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		try {
 			HttpURLConnection c = (HttpURLConnection) new URL("http://" + Settings.x2tUrl() + "/api/v1/status").openConnection();
 			c.connect();
-			assert c.getResponseCode() == HttpURLConnection.HTTP_OK;
-			assert "OK".equals(c.getResponseMessage());
+			if (c.getResponseCode() != HttpURLConnection.HTTP_OK || !"OK".equals(c.getResponseMessage()))
+				throw new RuntimeException("z8-x2t service: missing");
 			c.disconnect();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
