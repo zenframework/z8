@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -48,10 +49,12 @@ public class file extends primary implements RmiSerializable, Serializable {
 	static public final int DISK_MAX_FILENAME_LENGTH = 120;
 
 	static public final String separator = "/";
-	
+
 	static public final integer Unknown = integer.MinusOne;
 	static public final integer Storage = integer.One;
 	static public final integer DB = integer.Zero;
+
+	static public AtomicInteger count = new AtomicInteger(0);
 
 	public guid id = guid.Null;
 	public string name = new string();
@@ -418,7 +421,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		else
 			extension = "";
 
-		String name = (prefix != null ? prefix : "") + new date().format("Y-MM-dd HH-mm-ss") + extension;
+		if(count.get() == 100)
+			count.set(0);
+
+		String name = (prefix != null ? prefix : "") + new date().format("Y-MM-dd HH-mm-ss-SSS") + " " + count.incrementAndGet() + extension;
 		File temp = new File(folder, name);
 		temp.deleteOnExit();
 		return temp;
