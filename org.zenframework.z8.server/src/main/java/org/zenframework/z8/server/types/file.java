@@ -45,6 +45,7 @@ import org.zenframework.z8.server.utils.NumericUtils;
 public class file extends primary implements RmiSerializable, Serializable {
 
 	private static final long serialVersionUID = -2542688680678439014L;
+	static private AtomicInteger tempCount = new AtomicInteger(0);
 	static public final String EOL = "\r\n";
 	static public final int DISK_MAX_FILENAME_LENGTH = 120;
 
@@ -53,8 +54,6 @@ public class file extends primary implements RmiSerializable, Serializable {
 	static public final integer Unknown = integer.MinusOne;
 	static public final integer Storage = integer.One;
 	static public final integer DB = integer.Zero;
-
-	static public AtomicInteger count = new AtomicInteger(0);
 
 	public guid id = guid.Null;
 	public string name = new string();
@@ -421,10 +420,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		else
 			extension = "";
 
-		if(count.get() == 100)
-			count.set(0);
+		if(tempCount.get() == 100)
+			tempCount.set(0);
 
-		String name = (prefix != null ? prefix : "") + new date().format("Y-MM-dd HH-mm-ss-SSS") + " " + count.incrementAndGet() + extension;
+		String name = (prefix != null ? prefix : "") + new date().format("Y-MM-dd HH-mm-ss-SSS") + " " + tempCount.incrementAndGet() + extension;
 		File temp = new File(folder, name);
 		temp.deleteOnExit();
 		return temp;
