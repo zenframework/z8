@@ -168,7 +168,7 @@ public class Files extends Table {
 		file forAdd = new file();
 		forAdd.id = id;
 		forAdd.name = name;
-		forAdd.path = path;
+		forAdd.path = new string(pathStr);
 		forAdd.size = size;
 		forAdd.set(new InputStreamFileItem(data.get(), name.get()));
 
