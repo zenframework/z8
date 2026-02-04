@@ -184,6 +184,7 @@
 	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
 	<entry key="ScheduledJobs.lastStart">Последнее завершение</entry>
 	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
+	<entry key="ScheduledJobs.resetScheduler">Перезапуск планировщика задач</entry>
 
 	<!-- ScheduledJobLogs -->
 	<entry key="ScheduledJobLogs.description">Описание</entry>

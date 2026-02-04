@@ -37,6 +37,8 @@ public class JobsView extends ScheduledJobs {
 	public Listbox.CLASS<Listbox> logsListbox = new Listbox.CLASS<Listbox>(this);
 	public ScheduledJobLogs.CLASS<ScheduledJobLogs> logs = new ScheduledJobLogs.CLASS<ScheduledJobLogs>(this);
 
+	protected ResetSchedulerAction.CLASS<ResetSchedulerAction> resetScheduler = new ResetSchedulerAction.CLASS<ResetSchedulerAction>(this);
+
 	public JobsView(IObject container) {
 		super(container);
 	}
@@ -46,6 +48,8 @@ public class JobsView extends ScheduledJobs {
 		super.initMembers();
 
 		objects.add(logs);
+
+		objects.add(resetScheduler);
 	}
 
 	@Override
@@ -110,5 +114,9 @@ public class JobsView extends ScheduledJobs {
 		names.add(users.get().name);
 
 		sortFields.add(jobs.get().name);
+
+		resetScheduler.setIndex("resetScheduler");
+
+		actions.add(resetScheduler);
 	}
 }

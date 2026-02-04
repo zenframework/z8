@@ -184,6 +184,7 @@
 	<entry key="ScheduledJobs.lastStart">Last start</entry>
 	<entry key="ScheduledJobs.lastFinish">Last finish</entry>
 	<entry key="ScheduledJobs.nextStart">Next Start</entry>
+	<entry key="ScheduledJobs.resetScheduler">Restarting the task scheduler</entry>
 
 	<!-- ScheduledJobLogs -->
 	<entry key="ScheduledJobLogs.description">Description</entry>

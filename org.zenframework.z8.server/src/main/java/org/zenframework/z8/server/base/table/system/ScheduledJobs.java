@@ -45,6 +45,7 @@ public class ScheduledJobs extends Table {
 		public final static String LastStart = "ScheduledJobs.lastStart";
 		public final static String LastFinish = "ScheduledJobs.lastFinish";
 		public final static String NextStart = "ScheduledJobs.nextStart";
+		public final static String ResetScheduler = "ScheduledJobs.resetScheduler";
 	}
 
 	static public class displayNames {
@@ -58,6 +59,7 @@ public class ScheduledJobs extends Table {
 		public final static String LastStart = Resources.get(strings.LastStart);
 		public final static String LastFinish = Resources.get(strings.LastFinish);
 		public final static String NextStart = Resources.get(strings.NextStart);
+		public final static String ResetScheduler = Resources.get(strings.ResetScheduler);
 	}
 
 	public static class CLASS<T extends Table> extends Table.CLASS<T> {
