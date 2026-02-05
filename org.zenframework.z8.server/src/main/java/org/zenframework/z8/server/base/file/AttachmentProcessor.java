@@ -98,7 +98,7 @@ public class AttachmentProcessor extends OBJECT {
 				file.id = guid.create();
 				setUser(file);
 				setPathIfEmpty(recordId, file);
-				filesTable.add(file);
+				filesTable.saveFile(file, true);
 			}
 		}
 

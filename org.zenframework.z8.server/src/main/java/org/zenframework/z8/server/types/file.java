@@ -507,10 +507,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 		if(Thread.interrupted())
 			throw new ThreadInterruptedException();
 
-		Files.get(this, false);
-
+		Files.get(this);
 		offset += partLength;
 
+		if(offset > size.get())
+			throw new RuntimeException("File '" + getPath() + "': offset > size");
 		if(offset == size.get())
 			return null;
 		if(offset == -1)

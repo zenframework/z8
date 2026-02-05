@@ -15,11 +15,13 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IntegerExpression;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.date;
@@ -91,6 +93,7 @@ public class Files extends Table {
 	public final DatetimeField.CLASS<DatetimeField> time = new DatetimeField.CLASS<DatetimeField>(this);
 	public final DatetimeField.CLASS<DatetimeField> lastModified = new DatetimeField.CLASS<DatetimeField>(this);
 	public final IntegerField.CLASS<IntegerField> location = new IntegerField.CLASS<IntegerField>(this);
+	public IntegerExpression.CLASS<? extends IntegerExpression> length = new IntegerExpression.CLASS<IntegerExpression>(this);;
 
 	static public Files newInstance() {
 		return new Files.CLASS<Files>().get();
@@ -111,6 +114,11 @@ public class Files extends Table {
 		objects.add(time);
 		objects.add(lastModified);
 		objects.add(location);
+		objects.add(length);
+	}
+	
+	public void constructor1() {
+		length.get(IClass.Constructor).operatorAssign(data.get(IClass.Constructor1).sql_binary().z8_length());
 	}
 
 	@Override
@@ -141,6 +149,8 @@ public class Files extends Table {
 
 		location.setName(fieldNames.Location);
 		location.setIndex("location");
+
+		length.setIndex("length");
 	}
 
 	@Override
@@ -152,14 +162,9 @@ public class Files extends Table {
 		lastModified.get().set(now);
 	}
 
-	public file add(file file) {
-		return change(file, true);
-	}
-	
-	public file add(guid id, string path, string name, integer size, binary data) {
+	public static file add(guid id, string path, string name, integer size, binary data) {
 		String pathStr = file.getNormalizedPath(path.get());
 		if(!pathStr.startsWith(Storage)) {
-			//throw new RuntimeException("Path \"" + pathStr + "\" doesn't belong to storage");
 			if(pathStr.startsWith("/"))
 				pathStr = pathStr.substring(1);
 			pathStr = Storage + pathStr;
@@ -172,14 +177,14 @@ public class Files extends Table {
 		forAdd.size = size;
 		forAdd.set(new InputStreamFileItem(data.get(), name.get()));
 
-		return change(forAdd, true);
+		return newInstance().saveFile(forAdd, true);
 	}
 
-	public file updateFile(file file) {
-		return change(file, false);
+	public file saveFile(file file) {
+		return saveFile(file, !hasRecord(file.id));
 	}
 
-	private file change(file file, boolean create) {
+	public file saveFile(file file, boolean create) {
 		InputStream input = file.getInputStream();
 
 		try {
@@ -226,42 +231,33 @@ public class Files extends Table {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private void setSize(guid id, long newSize) {
-		size.get().set(newSize);
-		update(id);
-	}
 
-	private static file readFile(file f) throws IOException {
+	private file readFile(file f) throws IOException {
 		guid fileId = f.id;
 		
-		Files table = newInstance();
+		Field location = this.location.get();
+		Field length = this.length.get();
+		Collection<Field> fields = Arrays.asList(location, length);
 		
-		Field location = table.location.get();
-		Field size = table.size.get();
-		Collection<Field> fields = Arrays.asList(location, size);
-		
-		if(fileId != null && !fileId.isNull() && table.readRecord(fileId, fields)) {
-			f.size = new integer(size.integer().get());
+		if(!fileId.isNull() && readRecord(fileId, fields)) {
 			f.location = location.integer(); 
+			f.size = new integer(length.integer().get());
 		} else {
 			f.location = file.Storage; 
 		}
-		
+
 		return f;
 	}
 	
-	public static InputStream getInputStream(file file) throws IOException {
+	public InputStream getInputStream(file file) throws IOException {
 		guid fileId = file.id;
 
-		Files table = newInstance();
+		Field data = this.data.get();
+		Field length = this.length.get();
+		Collection<Field> fields = Arrays.asList(data, length);
 
-		Field data = table.data.get();
-		Field size = table.size.get();
-		Collection<Field> fields = Arrays.asList(data, size);
-
-		if(!fileId.isNull() && table.readRecord(fileId, fields)) {
-			file.size = new integer(size.integer().get());
+		if(!fileId.isNull() && readRecord(fileId, fields)) {
+			file.size = new integer(length.integer().get());
 			return data.binary().get();
 		}
 
@@ -279,54 +275,36 @@ public class Files extends Table {
 
 		return null;
 	}
-	
-	public static file get(file f) throws IOException {
-		return get(f, true);
-	}
 
-	public static file get(file f, boolean strictMode) throws IOException {
+	public static file get(file f) throws IOException {
 		File value = getFullStoragePath(f);
 		boolean exists = value.exists();
 
-		readFile(f);
+		Files table = newInstance();
+		table.readFile(f);
 
 		if(f.location.get() == Location_Storage) {
-			if(!exists) {
-				if(!strictMode)
-					return f;
+			if(!exists)
 				throw new RuntimeException("Files.java:get(file file) file location is storage and file doesn't exist, path: " + value.getAbsolutePath());
-			}
+			f.size = new integer(value.length());
 			return f.set(new InputOnlyFileItem(value, f.name.get()));
 		}
 
 		// location == Location_DB
-
-		long fileSize = f.size.get();
-
 		if(exists) {
-			if(fileSize == value.length() || !strictMode)
+			if(f.size.get() == value.length())
 				return f.set(new InputOnlyFileItem(value, f.name.get()));
 			value.delete();
 		}
 
 		//location == Location_DB && !exists
-		InputStream inputStream = getInputStream(f);
+		InputStream inputStream = table.getInputStream(f);
 
 		if(inputStream == null)
 			throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + value.getAbsolutePath());
 
 		value.getParentFile().mkdirs();
-		long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(value));
-
-		if(strictMode) {
-			if(fileSize == 0) {
-				f.size = new integer(copiedSize);
-				newInstance().setSize(f.id, copiedSize);
-			} else if(copiedSize != fileSize) {
-				value.delete();
-				throw new RuntimeException("Files.java:get(file file) file broken (size value doesn't match data size), fileId: " + f.id.get() +  ", path: " + value.getAbsolutePath());
-			}
-		}
+		IOUtils.copyLarge(inputStream, new FileOutputStream(value));
 
 		return f.set(new InputOnlyFileItem(value, f.name.get()));
 	}
@@ -350,18 +328,18 @@ public class Files extends Table {
 	}
 	
 	public static file z8_add(guid id, string path, string name, integer size, binary data) {
-		return newInstance().add(id, path, name, size, data);
+		return add(id, path, name, size, data);
 	}
 	
 	public static file z8_add(string path, string name, integer size, binary data) {
-		return z8_add(null, path, name, size, data);
+		return z8_add(guid.Null, path, name, size, data);
 	}
 	
 	public static file z8_add(guid id, string path, string name, file f) {
-		return newInstance().add(id, path, name, f.size, f.binary());
+		return add(id, path, name, f.size, f.binary());
 	}
 	
 	public static file z8_add(string path, string name, file f) {
-		return z8_add(null, path, name, f.size, f.binary());
+		return z8_add(guid.Null, path, name, f.size, f.binary());
 	}
 }

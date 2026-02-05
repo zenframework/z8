@@ -1,6 +1,7 @@
 import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BinaryField;
 import org.zenframework.z8.base.table.value.DatetimeField;
+import org.zenframework.z8.base.table.value.IntExpression;
 import org.zenframework.z8.base.table.value.IntField;
 import org.zenframework.z8.base.table.value.StringField;
 
@@ -31,6 +32,8 @@ public class Files extends Table {
 
 	[name "File"]
 	public BinaryField data;
+
+	public IntExpression length;
 
 	public static file get(guid fileId);
 	public static file get(file file);

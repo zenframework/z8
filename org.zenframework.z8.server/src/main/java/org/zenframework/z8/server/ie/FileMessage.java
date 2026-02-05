@@ -101,7 +101,7 @@ public class FileMessage extends Message {
 		if(offset == 0) {
 			target.getParentFile().mkdirs();
 			target.delete();
-		} else if(!target.exists() || (offset + file.partLength()) < target.length())
+		} else if(!target.exists() || offset != target.length())
 			return false;
 
 		ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
@@ -117,13 +117,8 @@ public class FileMessage extends Message {
 		try {
 			guid fileId = file.id;
 			if(!fileId.isNull()) {
-				Files files = Files.newInstance();
 				file.set(new InputOnlyFileItem(target, file.name.get()));
-
-				if(!files.hasRecord(fileId))
-					files.add(file);
-				else
-					files.updateFile(file);
+				Files.newInstance().saveFile(file);
 			}
 
 			return true;

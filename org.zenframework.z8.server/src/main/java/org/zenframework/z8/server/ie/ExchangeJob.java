@@ -68,14 +68,11 @@ public class ExchangeJob extends Executable {
 		try {
 			in = new ObjectInputStream(new FileInputStream(f));
 			o = ObjectIO.read(in);
-			if (o instanceof DataMessage) {
+			if (o instanceof DataMessage)
 				Rmi.get(IApplicationServer.class).accept((DataMessage) o);
-			} else if (o instanceof file) {
-				file file = (file) o;
-				Files files = Files.newInstance();
-				if (!files.hasRecord(file.id))
-					files.add(file);
-			} else
+			else if (o instanceof file)
+				Files.newInstance().saveFile((file) o);
+			else
 				throw new IOException("Unsupported message type " + (o != null ? o.getClass().getName() : "null"));
 			return true;
 		} catch (Exception e) {
