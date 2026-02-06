@@ -75,6 +75,7 @@
 	<entry key="TransportQueue.ordinal">Номер</entry>
 	<entry key="TransportQueue.processed">Обработано</entry>
 	<entry key="TransportQueue.bytesTransferred">Отправлено, Б</entry>
+	<entry key="TransportQueue.restartTransport">Перезапуск транспорта</entry>
 
 	<!-- Tables -->
 	<entry key="Tables.title">Таблицы</entry>
@@ -184,7 +185,7 @@
 	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
 	<entry key="ScheduledJobs.lastStart">Последнее завершение</entry>
 	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
-	<entry key="ScheduledJobs.resetScheduler">Перезапуск планировщика задач</entry>
+	<entry key="ScheduledJobs.restartScheduler">Перезапуск планировщика задач</entry>
 
 	<!-- ScheduledJobLogs -->
 	<entry key="ScheduledJobLogs.description">Описание</entry>

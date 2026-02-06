@@ -208,4 +208,9 @@ public class ScheduledJob implements Runnable {
 	public void startNow() {
 		lastStart = date.Min;
 	}
+
+	public void restart() {
+		stop();
+		start();
+	}
 }
