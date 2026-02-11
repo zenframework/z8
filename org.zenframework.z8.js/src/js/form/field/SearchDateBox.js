@@ -7,13 +7,13 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		finish: new Date() 
 	},
 	format: Format.Datetime,
-	
+
 	constructor: function(config) {
 		config = config || {};
 		config.confirm = config.confirm !== false;
 		config.searchIcon =  config.searchIcon || 'fa-search';
 		config.clearIcon = config.clearIcon || 'fa-times';
-		
+
 		Z8.form.field.Text.prototype.constructor.call(this, config);
 	},
 
@@ -58,9 +58,9 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		var periodControl = new Z8.calendar.Period({ period: this.period });
 		periodControl.on('apply', this.onPeriodApply, this);
 		periodControl.on('cancel', this.onPeriodCancel, this);
-		
+
 		var menu = this.menu = new Z8.menu.Menu({ items: [periodControl], useTab: false });
-		menu.render();
+		menu.render(this.dom);
 		this.updateTrigger();
 	},
 
@@ -93,7 +93,7 @@ Z8.define('Z8.form.field.SearchDateBox', {
 		var onlyFinishDate = finish.toLocaleString(undefined, {
 			month: "short", day: "numeric", 
 			hour: undefined, minute: undefined, second: undefined
-		});					
+		});
 
 		if(Format.formatDate(start, this.format) == Format.formatDate(finish, this.format))
 			return Format.formatDate(start, this.format);
