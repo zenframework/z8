@@ -568,7 +568,12 @@ public class BirtReport {
 		case Integer:
 			return format.get().replace("0", "#") + "0";
 		case Decimal:
-			return format.get().replace("0", "#");
+			String f = format.get();
+			int dot = f.indexOf('.');
+			if (dot < 0)
+				return f.replace("0", "#") + "0";
+
+			return f.substring(0, dot).replace("0", "#") + "0.0" + f.substring(dot + 2).replace("0", "#");
 		default:
 			return format.get();
 		}
