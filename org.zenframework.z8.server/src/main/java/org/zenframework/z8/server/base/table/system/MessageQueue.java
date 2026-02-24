@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
-import org.zenframework.z8.server.base.job.scheduler.ScheduledJob;
-import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -15,14 +13,11 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
 import org.zenframework.z8.server.db.sql.expressions.IsNot;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.ie.Message;
-import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
@@ -164,12 +159,6 @@ public class MessageQueue extends Table {
 		classId.get().set(new string(message.classId()));
 		data.get().set(message.toBinary());
 		create();
-		ConnectionManager.get().flush();
-
-		ScheduledJob transportJob = Scheduler.get(ApplicationServer.getDatabase())
-		                                     .findSystemJob(TransportJob.class.getCanonicalName());
-		if (transportJob != null)
-			transportJob.startNow();
 	}
 
 	public Collection<String> getAddresses() {
@@ -202,7 +191,7 @@ public class MessageQueue extends Table {
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
 
-		read(fields, orderBy, where, 10);
+		read(fields, orderBy, where, 100);
 
 		while(next()) {
 			Message message = (Message) Loader.getInstance(classId.string().get());

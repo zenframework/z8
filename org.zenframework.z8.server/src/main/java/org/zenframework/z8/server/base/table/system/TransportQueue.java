@@ -223,7 +223,7 @@ public class TransportQueue extends Table {
 
 		SqlToken where = new And(new IsNot(processed), new Equ(address, domain));
 
-		read(fields, orderBy, where);
+		read(fields, orderBy, where, 100);
 
 		while(next())
 			result.add(recordId());
