@@ -12,39 +12,44 @@ public class Cron {
 
 	private static final String COLUMN = "((\\*)|(\\d{1,2}(-\\d{1,2})?))(/\\d{1,2})?(\\,((\\*)|(\\d{1,2}(-\\d{1,2})?))(/\\d{1,2})?)*";
 	private static final Pattern PATTERN = Pattern
-			.compile("^" + COLUMN + "\\s+" + COLUMN + "\\s+" + COLUMN + "\\s+" + COLUMN + "\\s+" + COLUMN + "$");
-
-	private static final int MIN = 0;
-	private static final int HOUR = 1;
-	private static final int DAYOFM = 2;
-	private static final int MONTH = 3;
-	private static final int DAYOFW = 4;
+			.compile("^" + COLUMN + "\\s+" + COLUMN + "\\s+" + COLUMN + "\\s+" + COLUMN + "\\s+" + COLUMN + "(\\s+" + COLUMN + ")?$");
 
 	private Cron() {}
 
 	public static date nextDate(date date, String cronExp) {
 		Rule[] rules = parse(cronExp);
-		date dt = addMinute(date);
-		for (boolean monthOk = rules[MONTH].check(dt.month(), false), dayOk = rules[DAYOFM].check(dt.day(), true)
-				|| rules[DAYOFW].check(dayOfWeekMondayFirst(dt), true)
-				|| rules[DAYOFM].any() && rules[DAYOFW].any(), hourOk = rules[HOUR].check(dt.hours(),
-						false), minOk = rules[MIN].check(dt.minutes(), false); !monthOk || !dayOk
-								|| !hourOk
-								|| !minOk; monthOk = rules[MONTH].check(dt.month(), false), dayOk = rules[DAYOFM]
-										.check(dt.day(), true) || rules[DAYOFW].check(dayOfWeekMondayFirst(dt), true)
-										|| rules[DAYOFM].any() && rules[DAYOFW].any(), hourOk = rules[HOUR].check(
-												dt.hours(), false), minOk = rules[MIN].check(dt.minutes(), false)) {
+		boolean seconds = rules.length == 6;
+		int secField = seconds ? 0 : -1;
+		int minField = seconds ? 1 : 0;
+		int hourField = seconds ? 2 : 1;
+		int dayOfMonthField = seconds ? 3 : 2;
+		int monthField = seconds ? 4 : 3;
+		int dayOfWeek = seconds ? 5 : 4;
+		boolean monthOk = true, dayOk = true, hourOk = true, minOk = true, secOk = true;
+		date dt = date;
+
+		do {
 			if (!monthOk)
-				dt = addMonth(dt);
+				dt = dt.truncMonth().addMonth(1);
 			else if (!dayOk)
-				dt = addDay(dt);
+				dt = dt.truncDay().addDay(1);
 			else if (!hourOk)
-				dt = addHour(dt);
+				dt = dt.truncHour().addHour(1);
+			else if (!seconds)
+				dt = dt.truncMinute().addMinute(1);
 			else
-				dt = addMinute(dt);
+				dt = dt.truncSecond().addSecond(1);
+
 			if (dt.operatorSub(date).days() > 366)
 				throw new IllegalArgumentException("Can't find date for '" + cronExp + "' after " + date);
-		}
+
+			monthOk = rules[monthField].check(dt.month());
+			dayOk = rules[dayOfMonthField].check(dt.day()) && rules[dayOfWeek].check(dayOfWeekMondayFirst(dt));
+			hourOk = rules[hourField].check(dt.hours());
+			minOk = rules[minField].check(dt.minutes());
+			secOk = !seconds || rules[secField].check(dt.seconds());
+		} while (!monthOk || !dayOk || !hourOk || !minOk || !secOk);
+
 		return dt;
 	}
 
@@ -68,30 +73,6 @@ public class Cron {
 		for (int i = 0; i < rules.length; i++)
 			rules[i] = new Rule(parts[i]);
 		return rules;
-	}
-
-	private static date addMinute(date dt) {
-		dt = dt.addMinute(1);
-		dt.set(dt.year(), dt.month(), dt.day(), dt.hours(), dt.minutes(), 0, 0);
-		return dt;
-	}
-
-	private static date addHour(date dt) {
-		dt = dt.addHour(1);
-		dt.set(dt.year(), dt.month(), dt.day(), dt.hours(), 0, 0, 0);
-		return dt;
-	}
-
-	private static date addDay(date dt) {
-		dt = dt.addDay(1);
-		dt.set(dt.year(), dt.month(), dt.day(), 0, 0, 0, 0);
-		return dt;
-	}
-
-	private static date addMonth(date dt) {
-		dt = dt.addMonth(1);
-		dt.set(dt.year(), dt.month(), 1, 0, 0, 0, 0);
-		return dt;
 	}
 
 	private static int dayOfWeekMondayFirst(date dt) {
@@ -128,9 +109,9 @@ public class Cron {
 			return rules == null;
 		}
 
-		boolean check(int value, boolean strict) {
+		boolean check(int value) {
 			if (any())
-				return !strict;
+				return true;
 			for (int[] rule : rules)
 				if (rule[0] <= value && value <= rule[1] && (value - rule[0]) % rule[2] == 0)
 					return true;
@@ -139,7 +120,7 @@ public class Cron {
 
 	}
 
-	private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd(u) HH:mm");
+	private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd(u) HH:mm:ss");
 
 	private static void check(String base, String cronExp, String... expectedArr) {
 		date baseDate = new date(base);
@@ -148,7 +129,7 @@ public class Cron {
 			date expectedDate = new date(expected);
 			System.out.println(baseDate.format(FORMAT) + " - " + cronExp + " - expected: " + expectedDate.format(FORMAT)
 					+ ", actual: " + actualDate.format(FORMAT) + " - "
-					+ (expectedDate.equals(actualDate) ? "OK" : "ERROR"));
+					+ (expectedDate.get().equals(actualDate.get()) ? "OK" : "ERROR"));
 			baseDate = actualDate;
 		}
 	}
@@ -165,6 +146,7 @@ public class Cron {
 
 	// Tests
 	public static void main(String[] args) {
+		// 5 fields (minutes)
 		check("2000-01-01 00:00", "* * * * *", "2000-01-01 00:01", "2000-01-01 00:02");
 		check("2000-01-01 00:05", "5 0 * * *", "2000-01-02 00:05", "2000-01-03 00:05");
 		check("2000-01-01 00:00", "15 14 1 * *", "2000-01-01 14:15", "2000-02-01 14:15");
@@ -178,6 +160,16 @@ public class Cron {
 		check("2000-01-01 00:00", "1-59/2 * * * *", "2000-01-01 00:01", "2000-01-01 00:03");
 		check("2000-01-01 00:00", "*/5 * * * *", "2000-01-01 00:05", "2000-01-01 00:10");
 		check("2000-01-01 00:00", "* * 29 2 *");
+
+		// 6 fields (seconds)
+		check("2000-01-01 00:00:00", "* * * * * *", "2000-01-01 00:00:01", "2000-01-01 00:00:02");
+		check("2000-01-01 00:05:00", "0 5 0 * * *", "2000-01-02 00:05:00", "2000-01-03 00:05:00");
+		check("2000-01-01 00:00:00", "0-59 * * * * *", "2000-01-01 00:00:01", "2000-01-01 00:00:02");
+		check("2000-01-01 00:00:00", "0-59/2 * * * * *", "2000-01-01 00:00:02", "2000-01-01 00:00:04");
+		check("2000-01-01 00:00:00", "1-59/2 * * * * *", "2000-01-01 00:00:01", "2000-01-01 00:00:03");
+		check("2000-01-01 00:00:00", "*/5 * * * * *", "2000-01-01 00:00:05", "2000-01-01 00:00:10");
+
+		// Illegal expressions
 		checkIllegalExp("2000-01-01 00:00", "* * 31 2 *");
 		checkIllegalExp("2000-01-01 00:00", "3/2 * * * *");
 	}

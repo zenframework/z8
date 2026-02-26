@@ -359,6 +359,10 @@ public class date extends primary {
 		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR_OF_DAY), value.get(GregorianCalendar.MINUTE), 0));
 	}
 
+	public date truncSecond() {
+		return new date(new GregorianCalendar(value.get(GregorianCalendar.YEAR), value.get(GregorianCalendar.MONTH), value.get(GregorianCalendar.DAY_OF_MONTH), value.get(GregorianCalendar.HOUR_OF_DAY), value.get(GregorianCalendar.MINUTE), value.get(GregorianCalendar.SECOND)));
+	}
+
 	static boolean isEqualDate(date left, date right) {
 		return left.year() == right.year() && left.month() == right.month() && left.day() == right.day();
 	}
@@ -645,6 +649,10 @@ public class date extends primary {
 	}
 
 	public date z8_truncMinute() {
+		return truncMinute();
+	}
+
+	public date z8_truncSecond() {
 		return truncMinute();
 	}
 
