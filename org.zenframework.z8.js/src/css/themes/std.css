@@ -355,6 +355,10 @@ canvas {
 	cursor: not-allowed;
 }
 
+.control-group.triple-checkbox>.box>.control.disabled:not(.busy) {
+	cursor: pointer;
+}
+
 .control-group>.label {
 	display: flex;
 	flex-direction: row;

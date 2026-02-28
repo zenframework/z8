@@ -75,6 +75,7 @@ form/field/Integer.js
 form/field/File.js
 form/field/Float.js
 form/field/Checkbox.js
+form/field/TripleCheckbox.js
 form/field/Buttonbox.js
 form/field/TextArea.js
 form/field/Combobox.js
@@ -84,6 +85,7 @@ form/field/Datetime.js
 form/field/Date.js
 form/field/SearchText.js
 form/field/SearchDateBox.js
+form/field/SearchCheckbox.js
 form/field/SearchCombobox.js
 form/field/Filter.js
 form/field/Geometry.js
