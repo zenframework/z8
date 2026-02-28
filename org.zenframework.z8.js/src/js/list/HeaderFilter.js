@@ -33,6 +33,9 @@ Z8.define('Z8.list.HeaderFilter', {
 		case Type.Datetime:
 			searchBox = new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Datetime });
 			break;
+		case Type.Boolean:
+			searchBox = new Z8.form.field.SearchCheckbox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list });
+			break;
 		}
 
 		if (searchBox != null) {
