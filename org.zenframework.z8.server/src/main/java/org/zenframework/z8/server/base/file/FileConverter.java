@@ -6,10 +6,7 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.StandardOpenOption;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +17,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.document.DocumentFormat;
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Session;
@@ -34,11 +30,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.ArrayUtils;
-import org.zenframework.z8.server.utils.EmlUtils;
-import org.zenframework.z8.server.utils.IOUtils;
-import org.zenframework.z8.server.utils.PdfUtils;
-import org.zenframework.z8.server.utils.PrimaryUtils;
+import org.zenframework.z8.server.utils.*;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
@@ -336,37 +328,14 @@ public class FileConverter {
 
 	private static File convertOffice(InputStream input, String extension, File target, Map<String, String> parameters) {
 		try {
-			HttpURLConnection c = (HttpURLConnection) new URL(
-				"http://" + Settings.x2tUrl() + "/api/v1/convert?from=" + extension + "&to=" + new file(target).extension()
-			).openConnection();
-			c.setRequestMethod("POST");
-			c.setDoInput(true);
-			c.setDoOutput(true);
-
-			try (OutputStream o = c.getOutputStream()) {
-				byte[] buffer = new byte[8 * 1024];
-				int bytesRead;
-				while ((bytesRead = input.read(buffer)) != -1) {
-					o.write(buffer, 0, bytesRead);
-				}
-
-				if (c.getResponseCode() != HttpURLConnection.HTTP_OK)
-					throw new RuntimeException("Can't convert file to " + target);
-
-				try (
-					InputStream i = c.getInputStream();
-					OutputStream fo = java.nio.file.Files.newOutputStream(
-						target.toPath(),
-						StandardOpenOption.CREATE_NEW,
-						StandardOpenOption.TRUNCATE_EXISTING
-					)
-				) {
-					while ((bytesRead = i.read(buffer)) != -1) {
-						fo.write(buffer, 0, bytesRead);
-					}
-				}
-				return target;
-			}
+			InputStream output = ConverterUtils.convert(input, extension, new file(target).extension());
+			OutputStream targetOutput = java.nio.file.Files.newOutputStream(
+							target.toPath(),
+							StandardOpenOption.CREATE_NEW,
+							StandardOpenOption.TRUNCATE_EXISTING
+			);
+			IOUtils.copy(output, targetOutput, true);
+			return target;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

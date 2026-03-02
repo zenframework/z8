@@ -1,8 +1,6 @@
 package org.zenframework.z8.server.engine;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -31,6 +29,7 @@ import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.ConverterUtils;
 
 public class ApplicationServer extends RmiServer implements IApplicationServer {
 	static private final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
@@ -44,7 +43,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			instance = new ApplicationServer();
 			instance.start();
 		}
-		return instance;	
+		return instance;
 	}
 
 	static public IRequest getRequest() {
@@ -86,7 +85,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public static void restoreEventsLevel() {
 		getRequest().restoreEventsLevel();
 	}
-	
+
 	public static EventsLevel eventsLevel() {
 		return getRequest().eventsLevel();
 	}
@@ -116,15 +115,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	public void start() throws RemoteException {
 		super.start();
 
-		try {
-			HttpURLConnection c = (HttpURLConnection) new URL("http://" + Settings.x2tUrl() + "/api/v1/status").openConnection();
-			c.connect();
-			if (c.getResponseCode() != HttpURLConnection.HTTP_OK || !"OK".equals(c.getResponseMessage()))
-				throw new RuntimeException("z8-x2t service: missing");
-			c.disconnect();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		ConverterUtils.check();
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
 
@@ -207,7 +198,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser registerUser(LoginParameters loginParameters, String password, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(loginParameters != null ? loginParameters.getSchema() : null)));
@@ -221,7 +212,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser verifyUser(String verification, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
@@ -235,7 +226,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
@@ -263,7 +254,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public IUser changeUserPassword(String verification, String password, String schema, String requestHost) throws RemoteException {
 		setRequest(new Request(new Session(schema)));
@@ -277,7 +268,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			setRequest(null);
 		}
 	}
-	
+
 	@Override
 	public file download(ISession session, GNode node, file file) throws IOException {
 		setRequest(new Request(node.getAttributes(), node.getFiles(), session));
