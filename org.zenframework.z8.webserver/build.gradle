@@ -5,6 +5,8 @@ dependencies {
 	implementation project(':org.zenframework.z8.servlet')
 
 	compile ("org.zenframework.z8.dependencies:z8-dependencies-jetty:${dependenciesVersion}@pom") { transitive = true }
+
+	compile 'org.jolokia:jolokia-jvm:1.7.2'
 }
 
 publishing.publications {
