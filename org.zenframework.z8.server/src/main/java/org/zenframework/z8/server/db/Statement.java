@@ -28,6 +28,8 @@ import org.zenframework.z8.server.types.string;
 public abstract class Statement {
 	private Connection connection;
 
+	private final String id = guid.create().toString();
+
 	private String sql;
 	private int priority;
 	private PreparedStatement preparedStatement;
@@ -41,9 +43,8 @@ public abstract class Statement {
 		this.priority = priority;
 	}
 
-	@Override
-	public int hashCode() {
-		return sql.hashCode();
+	public String getId() {
+		return id;
 	}
 
 	public Connection connection() {
@@ -110,6 +111,8 @@ public abstract class Statement {
 	}
 
 	public void close() {
+		connection.unregister(this);
+
 		if(preparedStatement == null)
 			return;
 
