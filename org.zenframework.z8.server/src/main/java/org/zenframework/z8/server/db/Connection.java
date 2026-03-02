@@ -7,8 +7,8 @@ import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IDatabase;
@@ -36,7 +36,7 @@ public class Connection {
 
 	private long lastUsed = System.currentTimeMillis();
 
-	private Set<Statement> statements = new HashSet<Statement>();
+	private Map<String, Statement> statements = new HashMap<String, Statement>();
 	private Collection<Listener> listeners;
 
 	static private java.sql.Connection newConnection(IDatabase database) {
@@ -130,10 +130,12 @@ public class Connection {
 		if(!inTransaction())
 			owner = null;
 
+		Collection<Statement> statements = new ArrayList<Statement>(this.statements.values());
+
+		this.statements.clear();
+
 		for(Statement statement : statements)
 			statement.safeClose();
-
-		statements.clear();
 	}
 
 	private void initClientInfo() {
@@ -341,7 +343,7 @@ public class Connection {
 	public ResultSet executeQuery(Statement statement) throws SQLException {
 		try {
 			ResultSet resultSet = doExecuteQuery(statement);
-			statements.add(statement);
+			statements.put(statement.getId(), statement);
 			return resultSet;
 		} catch(SQLException e) {
 			checkAndReconnect(e);
@@ -375,5 +377,9 @@ public class Connection {
 			statement.prepare();
 			statement.preparedStatement().execute();
 		}
+	}
+
+	public void unregister(Statement statement) {
+		statements.remove(statement.getId());
 	}
 }

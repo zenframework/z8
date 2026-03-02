@@ -634,7 +634,14 @@ public class Query extends OBJECT {
 		if(cursor == null)
 			throw new RuntimeException("Method Query.read() should be called before Query.next()");
 
-		return cursor.next();
+		boolean hasNext = cursor.next();
+
+		if (!hasNext) {
+			cursor.close();
+			cursor = null;
+		}
+
+		return hasNext;
 	}
 
 	public boolean isAfterLast() {
