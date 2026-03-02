@@ -145,7 +145,7 @@ public class AggregatorObject {
 			return ((decimal) value).getDouble();
 
 		try {
-			return Double.parseDouble(value.toString());
+			return Double.parseDouble(value.toString().replace(',', '.').trim());
 		} catch (Exception e) {
 			return .0;
 		}
