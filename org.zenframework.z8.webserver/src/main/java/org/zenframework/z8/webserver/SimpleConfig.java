@@ -32,7 +32,7 @@ public class SimpleConfig implements ServletConfig, FilterConfig {
 
 	@Override
 	public String getInitParameter(String var1) {
-		return initParameters.get(name);
+		return initParameters.get(var1);
 	}
 
 	@Override
