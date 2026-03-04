@@ -16,7 +16,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
 
 import com.sun.net.httpserver.HttpServer;
-import sun.net.httpserver.DefaultHttpServerProvider;
+import com.sun.net.httpserver.spi.HttpServerProvider;
 
 @SuppressWarnings("restriction")
 public class MonitoringServer {
@@ -49,7 +49,7 @@ public class MonitoringServer {
 		try {
 			server = createHttpServer();
 
-			jolokiaHandler = createJolokiaHandler();
+			jolokiaHandler = createJolokiaHandler(hashCode());
 			jolokiaHandler.start(false);
 
 			server.createContext(JolokiaPath, jolokiaHandler);
@@ -75,20 +75,31 @@ public class MonitoringServer {
 		InetSocketAddress address = new InetSocketAddress(ServerConfig.monitoringServerPort());
 		Executor executor = Executors.newFixedThreadPool(ServerConfig.monitoringServerThreads(), new DaemonThreadFactory());
 
-		// HttpServer.create(address, 0) creates Jetty server
-		HttpServer server = new DefaultHttpServerProvider().createHttpServer(address, 0);
+		HttpServer server = getHttpServerPropvider().createHttpServer(address, 0);
 		server.setExecutor(executor);
 
 		return server;
 	}
 
-	private JolokiaHttpHandler createJolokiaHandler() {
+	private static JolokiaHttpHandler createJolokiaHandler(int id) {
 		Map<String, String> params = new HashMap<String, String>();
-		params.put(ConfigKey.AGENT_ID.getKeyValue(), NetworkUtil.getAgentId(hashCode(), "jvm"));
+		params.put(ConfigKey.AGENT_ID.getKeyValue(), NetworkUtil.getAgentId(id, "jvm"));
 
 		Configuration config = new Configuration();
 		config.updateGlobalConfiguration(params);
 
 		return new JolokiaHttpHandler(config);
+	}
+
+	private static HttpServerProvider getHttpServerPropvider() {
+		String providerClass = ServerConfig.monitoringServerProvider();
+		try {
+			return (HttpServerProvider) Class.forName(providerClass).newInstance();
+		} catch (Exception e) {
+			Trace.logError("Could not load HTTP server provider '" + providerClass + "'", e);
+			HttpServerProvider provider = HttpServerProvider.provider();
+			Trace.logEvent("Loaded default HTTP server provider: " + provider.getClass().getName() + ". WARNING! Be aware of Jetty!");
+			return provider;
+		}
 	}
 }

@@ -149,6 +149,7 @@ public class ServerConfig extends Properties {
 	static final private String CryptoSecretKeySpec = "crypto.secret.key.spec";
 	static final private String CryptoIv = "crypto.iv";
 
+	static final private String MonitoringServerProvider = "monitoring.server.provider";
 	static final private String MonitoringServerPort = "monitoring.server.port";
 	static final private String MonitoringServerThreads = "monitoring.server.threads";
 
@@ -268,6 +269,7 @@ public class ServerConfig extends Properties {
 	static private String cryptoSecretKeySpec;
 	static private String cryptoIv;
 
+	static private String monitoringServerProvider;
 	static private int monitoringServerPort;
 	static private int monitoringServerThreads;
 
@@ -416,6 +418,7 @@ public class ServerConfig extends Properties {
 		cryptoSecretKeySpec = instance.getProperty(CryptoSecretKeySpec, "TripleDES");
 		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
 
+		monitoringServerProvider = instance.getProperty(MonitoringServerProvider, "sun.net.httpserver.DefaultHttpServerProvider");
 		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9090);
 		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
@@ -913,6 +916,10 @@ public class ServerConfig extends Properties {
 
 	static public String cryptoIv() {
 		return cryptoIv;
+	}
+
+	static public String monitoringServerProvider() {
+		return monitoringServerProvider;
 	}
 
 	static public int monitoringServerPort() {
