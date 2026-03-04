@@ -146,6 +146,7 @@ public class ServerConfig extends Config {
 
 	static final private String ReportPoiTrace = "report.poi.trace";
 
+	static final private String MonitoringServerProvider = "monitoring.server.provider";
 	static final private String MonitoringServerPort = "monitoring.server.port";
 	static final private String MonitoringServerThreads = "monitoring.server.threads";
 
@@ -261,6 +262,7 @@ public class ServerConfig extends Config {
 	static private String cryptoIv;
 	static private boolean reportPoiTrace;
 
+	static private String monitoringServerProvider;
 	static private int monitoringServerPort;
 	static private int monitoringServerThreads;
 
@@ -404,6 +406,7 @@ public class ServerConfig extends Config {
 
 		reportPoiTrace = instance.getProperty(ReportPoiTrace, false);
 
+		monitoringServerProvider = instance.getProperty(MonitoringServerProvider, "sun.net.httpserver.DefaultHttpServerProvider");
 		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9090);
 		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
@@ -916,6 +919,10 @@ public class ServerConfig extends Config {
 
 	static public boolean reportPoiTrace() {
 		return reportPoiTrace;
+	}
+
+	static public String monitoringServerProvider() {
+		return monitoringServerProvider;
 	}
 
 	static public int monitoringServerPort() {
