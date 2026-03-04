@@ -5,10 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IDatabase;
@@ -17,6 +21,72 @@ import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.encoding;
 
 public class Connection {
+
+	static public class Info {
+		private static final DateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		private static final DateFormat TimeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
+		private final int id;
+		private final String schema;
+		private final int statementsCount;
+		private final String lastStatement;
+		private final Date lastUsed;
+		private final long usageTime;
+		private final String threadName;
+		private final IDatabase.Info database;
+
+		private Info(int id, String schema, int statementsCount, String lastStatement, long lastUsed, long usageTime, String threadName, IDatabase.Info database) {
+			this.id = id;
+			this.schema = schema;
+			this.statementsCount = statementsCount;
+			this.lastStatement = lastStatement;
+			this.lastUsed = new Date(lastUsed);
+			this.usageTime = usageTime;
+			this.threadName = threadName;
+			this.database = database;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getSchema() {
+			return schema;
+		}
+
+		public int getStatementsCount() {
+			return statementsCount;
+		}
+
+		public String getLastStatement() {
+			return lastStatement;
+		}
+
+		public long getLastUsedTimestamp() {
+			return lastUsed.getTime();
+		}
+
+		public String getLastUsedDate() {
+			return DateFormat.format(lastUsed);
+		}
+
+		public String getLastUsedTime() {
+			return TimeFormat.format(lastUsed);
+		}
+
+		public long getUsageTime() {
+			return usageTime;
+		}
+
+		public String getThreadName() {
+			return threadName;
+		}
+
+		public IDatabase.Info getDatabase() {
+			return database;
+		}
+	}
+
 	static public int TransactionReadCommitted = java.sql.Connection.TRANSACTION_READ_COMMITTED;
 	static public int TransactionReadUncommitted = java.sql.Connection.TRANSACTION_READ_UNCOMMITTED;
 	static public int TransactionRepeatableRead = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
@@ -27,6 +97,10 @@ public class Connection {
 
 	static private long FiveMinutes = 5 * datespan.TicksPerMinute;
 
+	static private final AtomicInteger IdCounter = new AtomicInteger(0);
+
+	private final int id = IdCounter.incrementAndGet();
+
 	private IDatabase database = null;
 	private java.sql.Connection connection = null;
 	private Thread owner = null;
@@ -34,10 +108,13 @@ public class Connection {
 	private int transactionCount = 0;
 	private Batch batch;
 
+	private String threadName = null;
 	private long lastUsed = System.currentTimeMillis();
+	private long usageTime = 0L;
 
 	private Map<String, Statement> statements = new HashMap<String, Statement>();
 	private Collection<Listener> listeners;
+	private String lastStatement;
 
 	static private java.sql.Connection newConnection(IDatabase database) {
 		ConnectionSavePoint savePoint = ConnectionSavePoint.create(database);
@@ -69,6 +146,10 @@ public class Connection {
 		if(listeners == null)
 			listeners = new ArrayList<Listener>();
 		listeners.add(listener);
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public void close() {
@@ -121,6 +202,7 @@ public class Connection {
 			reconnect();
 
 		lastUsed = System.currentTimeMillis();
+		threadName = Thread.currentThread().getName();
 
 		owner = Thread.currentThread();
 		initClientInfo();
@@ -136,6 +218,8 @@ public class Connection {
 
 		for(Statement statement : statements)
 			statement.safeClose();
+
+		usageTime = System.currentTimeMillis() - lastUsed;
 	}
 
 	private void initClientInfo() {
@@ -344,6 +428,7 @@ public class Connection {
 		try {
 			ResultSet resultSet = doExecuteQuery(statement);
 			statements.put(statement.getId(), statement);
+			lastStatement = statement.sql();
 			return resultSet;
 		} catch(SQLException e) {
 			checkAndReconnect(e);
@@ -381,5 +466,9 @@ public class Connection {
 
 	public void unregister(Statement statement) {
 		statements.remove(statement.getId());
+	}
+
+	public Info getInfo() {
+		return new Info(id, schema(), statements.size(), lastStatement, lastUsed, usageTime, threadName, database.getInfo());
 	}
 }
