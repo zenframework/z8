@@ -146,6 +146,9 @@ public class ServerConfig extends Config {
 
 	static final private String ReportPoiTrace = "report.poi.trace";
 
+	static final private String MonitoringServerPort = "monitoring.server.port";
+	static final private String MonitoringServerThreads = "monitoring.server.threads";
+
 
 	static private File configPath;
 	static private File workingPath;
@@ -257,6 +260,9 @@ public class ServerConfig extends Config {
 	static private String cryptoSecretKeySpec;
 	static private String cryptoIv;
 	static private boolean reportPoiTrace;
+
+	static private int monitoringServerPort;
+	static private int monitoringServerThreads;
 
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
@@ -397,6 +403,9 @@ public class ServerConfig extends Config {
 		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
 
 		reportPoiTrace = instance.getProperty(ReportPoiTrace, false);
+
+		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9090);
+		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
 
 	private static File getApplicationPath(File defaultValue) {
@@ -907,6 +916,14 @@ public class ServerConfig extends Config {
 
 	static public boolean reportPoiTrace() {
 		return reportPoiTrace;
+	}
+
+	static public int monitoringServerPort() {
+		return monitoringServerPort;
+	}
+
+	static public int monitoringServerThreads() {
+		return monitoringServerThreads;
 	}
 
 	static public IApplicationServer applicationServer() {
