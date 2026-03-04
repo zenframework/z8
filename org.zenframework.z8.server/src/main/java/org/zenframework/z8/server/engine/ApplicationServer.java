@@ -15,6 +15,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.ie.MessageAcceptor;
+import org.zenframework.z8.server.jmx.MBeans;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IMonitor;
 import org.zenframework.z8.server.request.IRequest;
@@ -115,6 +116,8 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		super.start();
 
 		enableTimeoutChecking(1 * datespan.TicksPerMinute);
+
+		MBeans.getInstance().registerMBeans();
 
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
 	}

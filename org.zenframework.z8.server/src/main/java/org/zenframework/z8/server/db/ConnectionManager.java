@@ -80,4 +80,30 @@ public class ConnectionManager {
 			}
 		}
 	}
+
+	public static List<IDatabase.Info> getDatabasesInfo() {
+		List<IDatabase.Info> dbInfo = new ArrayList<IDatabase.Info>(10);
+
+		for(IDatabase db : databaseConnections.keySet())
+			dbInfo.add(db.getInfo());
+
+		return dbInfo;
+	}
+
+	public static List<Connection.Info> getConnectionsInfo() {
+		List<Connection.Info> connInfo = new ArrayList<Connection.Info>(100);
+
+		for(Map.Entry<IDatabase, List<Connection>> entry : databaseConnections.entrySet()) {
+			List<Connection> connections;
+
+			synchronized(entry.getKey().getLock()) {
+				connections = new ArrayList<Connection>(entry.getValue());
+			}
+
+			for(Connection connection : connections)
+				connInfo.add(connection.getInfo());
+		}
+
+		return connInfo;
+	}
 }

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
@@ -22,6 +23,10 @@ import org.zenframework.z8.server.types.encoding;
 
 public class Database implements IDatabase, RmiSerializable, Serializable {
 	private static final long serialVersionUID = -3409230943645338455L;
+
+	private static final AtomicInteger IdCounter = new AtomicInteger(0);
+
+	private final int id = IdCounter.incrementAndGet();
 
 	private String schema = null;
 	private String user = null;
@@ -84,6 +89,11 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	public String key() {
 		return driver + connection + schema;
+	}
+
+	@Override
+	public int id() {
+		return id;
 	}
 
 	@Override
@@ -314,5 +324,10 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 		isLatestVersion = RmiIO.readBoolean(in);
 
 		vendor = DatabaseVendor.fromString(RmiIO.readString(in));
+	}
+
+	@Override
+	public Info getInfo() {
+		return new Info(id, schema, user, connection, driver, charset.toString());
 	}
 }
