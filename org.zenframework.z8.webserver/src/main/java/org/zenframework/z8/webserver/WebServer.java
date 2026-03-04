@@ -14,12 +14,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.util.log.StdErrLog;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.RmiServer;
@@ -71,11 +69,7 @@ public class WebServer extends RmiServer implements IWebServer {
 
 		z8Context.setHandler(sessions);
 
-		ContextHandler jolokiaContext = new ContextHandler("/jolokia");
-		jolokiaContext.setLogger(new StdErrLog());
-		jolokiaContext.setHandler(new JolokiaHandler(jolokiaContext.getServletContext()));
-
-		server.setHandler(new HandlerCollection(jolokiaContext, z8Context));
+		server.setHandler(z8Context);
 	}
 
 	@Override

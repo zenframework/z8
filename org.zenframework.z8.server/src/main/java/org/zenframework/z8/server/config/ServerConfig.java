@@ -149,6 +149,9 @@ public class ServerConfig extends Properties {
 	static final private String CryptoSecretKeySpec = "crypto.secret.key.spec";
 	static final private String CryptoIv = "crypto.iv";
 
+	static final private String MonitoringServerPort = "monitoring.server.port";
+	static final private String MonitoringServerThreads = "monitoring.server.threads";
+
 
 	static private File workingPath;
 
@@ -264,6 +267,9 @@ public class ServerConfig extends Properties {
 	static private String cryptoCipherSpec;
 	static private String cryptoSecretKeySpec;
 	static private String cryptoIv;
+
+	static private int monitoringServerPort;
+	static private int monitoringServerThreads;
 
 	static private IApplicationServer applicationServer;
 	static private IAuthorityCenter authorityCenter;
@@ -409,6 +415,9 @@ public class ServerConfig extends Properties {
 		cryptoCipherSpec = instance.getProperty(CryptoCipherSpec, "TripleDES/CBC/PKCS5Padding");
 		cryptoSecretKeySpec = instance.getProperty(CryptoSecretKeySpec, "TripleDES");
 		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
+
+		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9090);
+		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -904,6 +913,14 @@ public class ServerConfig extends Properties {
 
 	static public String cryptoIv() {
 		return cryptoIv;
+	}
+
+	static public int monitoringServerPort() {
+		return monitoringServerPort;
+	}
+
+	static public int monitoringServerThreads() {
+		return monitoringServerThreads;
 	}
 
 	static public IApplicationServer applicationServer() {
