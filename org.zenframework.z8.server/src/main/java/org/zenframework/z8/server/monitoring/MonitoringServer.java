@@ -36,15 +36,24 @@ public class MonitoringServer {
 		}
 	}
 
+	private static MonitoringServer Instance;
+
+	public static boolean isEnabled() {
+		return ServerConfig.isMonitoringServerEnabled();
+	}
+
+	public static MonitoringServer get() {
+		if (Instance == null)
+			Instance = new MonitoringServer();
+		return Instance;
+	}
+
 	private HttpServer server;
 	private JolokiaHttpHandler jolokiaHandler;
 
-	public MonitoringServer() {
-	}
-
 	public void start() {
 		if (server != null)
-			stop();
+			throw new RuntimeException("Monitoring server started already");
 
 		try {
 			server = createHttpServer();
@@ -57,15 +66,16 @@ public class MonitoringServer {
 
 			Trace.logEvent("Monitoring server started on port " + server.getAddress().getPort());
 		} catch (IOException e) {
-			Trace.logError("Could not start monitoring server", e);
+			throw new RuntimeException("Could not start monitoring server", e);
 		}
 	}
 
 	public void stop() {
-		if (server != null) {
-			jolokiaHandler.stop();
-			server.stop(0);
-		}
+		if (server == null)
+			return;
+
+		jolokiaHandler.stop();
+		server.stop(0);
 
 		jolokiaHandler = null;
 		server = null;
@@ -93,13 +103,11 @@ public class MonitoringServer {
 
 	private static HttpServerProvider getHttpServerPropvider() {
 		String providerClass = ServerConfig.monitoringServerProvider();
+
 		try {
 			return (HttpServerProvider) Class.forName(providerClass).newInstance();
 		} catch (Exception e) {
-			Trace.logError("Could not load HTTP server provider '" + providerClass + "'", e);
-			HttpServerProvider provider = HttpServerProvider.provider();
-			Trace.logEvent("Loaded default HTTP server provider: " + provider.getClass().getName() + ". WARNING! Be aware of Jetty!");
-			return provider;
+			throw new RuntimeException("Could not load HTTP server provider '" + providerClass + "'", e);
 		}
 	}
 }

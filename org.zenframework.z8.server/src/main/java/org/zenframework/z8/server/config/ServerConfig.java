@@ -407,7 +407,7 @@ public class ServerConfig extends Config {
 		reportPoiTrace = instance.getProperty(ReportPoiTrace, false);
 
 		monitoringServerProvider = instance.getProperty(MonitoringServerProvider, "sun.net.httpserver.DefaultHttpServerProvider");
-		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9090);
+		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9800);
 		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
 
@@ -919,6 +919,10 @@ public class ServerConfig extends Config {
 
 	static public boolean reportPoiTrace() {
 		return reportPoiTrace;
+	}
+
+	static public boolean isMonitoringServerEnabled() {
+		return monitoringServerPort > 0;
 	}
 
 	static public String monitoringServerProvider() {
