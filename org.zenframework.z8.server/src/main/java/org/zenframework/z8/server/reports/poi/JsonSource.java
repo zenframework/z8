@@ -71,7 +71,7 @@ public class JsonSource extends DataSource {
 			if (!currentObj.has(part))
 				return null;
 
-			current = currentObj.opt(part);
+			current = currentObj.get(part);
 		}
 
 		return current;

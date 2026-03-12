@@ -107,7 +107,7 @@ public abstract class RequestAction extends RequestTarget {
 
 		JsonArray array = new JsonArray(lookupFields);
 
-		for(int index = 0; index < array.length(); index++)
+		for(int index = 0; index < array.size(); index++)
 			result.add(array.getString(index));
 
 		return result;

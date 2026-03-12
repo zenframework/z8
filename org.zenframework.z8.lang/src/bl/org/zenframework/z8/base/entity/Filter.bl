@@ -1,0 +1,10 @@
+[native "org.zenframework.z8.server.base.entity.Filter"]
+public class Filter {
+
+	public Filter operator ! ();
+	public Filter operator && (Filter value);
+	public Filter operator || (Filter value);
+
+	virtual public bool accept(Entity entity);
+
+}

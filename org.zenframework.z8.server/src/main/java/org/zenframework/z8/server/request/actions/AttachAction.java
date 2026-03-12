@@ -35,7 +35,7 @@ public class AttachAction extends RequestAction {
 		JsonObject json = new JsonObject(getRequestParameter(Json.details));
 		Map<string, string> details = new HashMap<string, string>();
 
-		for(String name : JsonObject.getNames(json))
+		for(String name : json.getNames())
 			details.put(new string(name), new string(json.getString(name)));
 
 		for(file file : files)

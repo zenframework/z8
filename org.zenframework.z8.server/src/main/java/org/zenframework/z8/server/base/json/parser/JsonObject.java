@@ -73,21 +73,18 @@ public class JsonObject extends OBJECT {
 	}
 
 	public bool z8_isEmpty() {
-		return new bool(object.length() == 0);
+		return new bool(object.size() == 0);
 	}
 
 	public integer z8_length() {
-		return new integer(object.length());
+		return new integer(object.size());
 	}
 
 	public RCollection<string> z8_getNames() {
 		RCollection<string> result = new RCollection<string>();
 
-		String[] names = org.zenframework.z8.server.json.parser.JsonObject.getNames(object);
-
-		for(String name : names) {
+		for (String name : object.getNames())
 			result.add(new string(name));
-		}
 
 		return result;
 	}
@@ -170,7 +167,7 @@ public class JsonObject extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
-		object.put(name, JsonUtils.unwrap(value));
+		object.set(name, JsonUtils.unwrap(value));
 		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
 	}
 
@@ -192,6 +189,29 @@ public class JsonObject extends OBJECT {
 	}
 
 	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, primary value) {
+		object.set(name, JsonUtils.unwrap(value));
+		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, JsonArray.CLASS<? extends JsonArray> value) {
+		object.put(name.get(), value.get().get());
+		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, JsonObject.CLASS<? extends JsonObject> value) {
+		object.put(name.get(), value.get().getInternalObject());
+		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+	}
+
+	public JsonObject.CLASS<? extends JsonObject> z8_set(Field.CLASS<? extends Field> fieldClass) {
+		Field field = fieldClass.get();
+		return z8_put(field.z8_id(), field.get());
+	}
+
+	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_remove(string name) {
 		object.remove(name.get());
 		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
@@ -205,10 +225,6 @@ public class JsonObject extends OBJECT {
 	@Override
 	public string z8_toString() {
 		return new string(object.toString());
-	}
-
-	public string z8_toString(integer indentFactor) {
-		return new string(object.toString(indentFactor.getInt()));
 	}
 
 	public static JsonObject.CLASS<JsonObject> getJsonObject(org.zenframework.z8.server.json.parser.JsonObject json) {

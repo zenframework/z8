@@ -1,13 +1,9 @@
 package org.zenframework.z8.server.base.form.report;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.integer;
-import org.zenframework.z8.server.types.string;
 
 public class Range extends OBJECT {
 	static public class CLASS<T extends Range> extends OBJECT.CLASS<T> {

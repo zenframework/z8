@@ -1,0 +1,23 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.entity.Registry"]
+public class Registry extends Object {
+
+	public static Registry getRegistry();
+
+	public Registry setLogEnabled(bool logEnabled);
+	public bool isLogEnabled();
+
+	public Entity getEntity(guid entityId);
+
+	public void visitEntities(Visitor visitor);
+	public void visitEntities(Visitor visitor, Filter filter);
+
+	public Entity[guid] findEntities(Filter filter);
+	public Entity findEntity(Filter filter);
+
+	public Entity findCopy(guid originId);
+
+	public Registry reset();
+	public Registry flush();
+}

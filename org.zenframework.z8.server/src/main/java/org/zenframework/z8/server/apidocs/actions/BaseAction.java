@@ -48,9 +48,9 @@ public abstract class BaseAction implements IActionRequest {
     @Override
     public void makeExample(Query query) {
         JsonObject requestJson = createRequestParameters(query);
-        request = requestJson.toString(4);
+        request = requestJson.toString();
         JsonObject resposneJson = createResponseParameters(query);
-        response = resposneJson.toString(4);
+        response = resposneJson.toString();
     }
 
     @Override

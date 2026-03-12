@@ -68,11 +68,11 @@ public class JsonArray extends OBJECT {
 	}
 
 	public bool z8_isEmpty() {
-		return new bool(array.length() == 0);
+		return new bool(array.size() == 0);
 	}
 
 	public integer z8_length() {
-		return new integer(array.length());
+		return new integer(array.size());
 	}
 
 	public string z8_getString(integer i) {
@@ -139,19 +139,19 @@ public class JsonArray extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_add(primary value) {
-		array.put(JsonUtils.unwrap(value));
+		array.add(JsonUtils.unwrap(value));
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_add(JsonArray.CLASS<? extends JsonArray> value) {
-		array.put(value.get().get());
+		array.add(value.get().get());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_add(JsonObject.CLASS<? extends JsonObject> value) {
-		array.put(value.get().getInternalObject());
+		array.add(value.get().getInternalObject());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
@@ -175,19 +175,19 @@ public class JsonArray extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
-		array.put(index.getInt(), JsonUtils.unwrap(value));
+		array.add(index.getInt(), JsonUtils.unwrap(value));
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, JsonArray.CLASS<? extends JsonArray> value) {
-		array.put(index.getInt(), value.get().get());
+		array.add(index.getInt(), value.get().get());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, JsonObject.CLASS<? extends JsonObject> value) {
-		array.put(index.getInt(), value.get().getInternalObject());
+		array.add(index.getInt(), value.get().getInternalObject());
 		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
 	}
 
@@ -221,10 +221,6 @@ public class JsonArray extends OBJECT {
 	@Override
 	public string z8_toString() {
 		return new string(array.toString());
-	}
-
-	public string z8_toString(integer indentFactor) {
-		return new string(array.toString(indentFactor.getInt()));
 	}
 
 	public static JsonArray.CLASS<JsonArray> z8_parse(string source) {

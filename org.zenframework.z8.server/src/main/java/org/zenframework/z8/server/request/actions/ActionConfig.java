@@ -89,7 +89,7 @@ public class ActionConfig {
 
 		JsonArray jsonArray = new JsonArray(requestParameter(key));
 
-		for(int index = 0; index < jsonArray.length(); index++)
+		for(int index = 0; index < jsonArray.size(); index++)
 			guids.add(new guid(jsonArray.getString(index)));
 
 		return guids;

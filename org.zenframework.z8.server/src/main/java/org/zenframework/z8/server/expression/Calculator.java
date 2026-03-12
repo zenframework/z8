@@ -11,7 +11,6 @@ import java.util.UUID;
 import org.eclipse.birt.report.model.api.IllegalOperationException;
 import org.zenframework.z8.server.expression.function.Function;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -324,7 +323,7 @@ public class Calculator {
 		if (o instanceof CLASS)
 			o = ((CLASS) o).get();
 
-		if (o == null || JsonObject.NULL.equals(o))
+		if (o == null)
 			return null;
 		if (o instanceof Boolean)
 			return new bool((Boolean) o);

@@ -46,7 +46,5 @@ public class JsonArray extends Object {
 	public guid[] toGuidArray();
 	public string[] toStringArray();
 
-	public string toString(int indentFactor);
-
 	public static JsonArray parse(string source);
 }

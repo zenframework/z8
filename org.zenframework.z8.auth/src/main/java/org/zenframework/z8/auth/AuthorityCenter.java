@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.crypto.Digest;
 import org.zenframework.z8.server.engine.HubServer;
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;

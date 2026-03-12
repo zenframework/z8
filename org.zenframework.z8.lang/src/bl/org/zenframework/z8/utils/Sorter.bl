@@ -1,0 +1,10 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.utils.Sorter"]
+public class Sorter extends Object {
+
+	public void sort(Object[] array);
+
+	virtual public int compare(Object o1, Object o2);
+
+}

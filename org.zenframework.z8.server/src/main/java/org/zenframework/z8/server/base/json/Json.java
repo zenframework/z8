@@ -231,9 +231,8 @@ public class Json extends OBJECT {
 
 	private static string encode(RCollection<primary> values) {
 		org.zenframework.z8.server.json.parser.JsonArray array = new org.zenframework.z8.server.json.parser.JsonArray();
-		for(primary value : values) {
-			array.put(value);
-		}
+		for (primary value : values)
+			array.add(value);
 		return new string(array.toString());
 	}
 

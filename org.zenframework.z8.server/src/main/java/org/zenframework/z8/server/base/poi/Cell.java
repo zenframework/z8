@@ -23,28 +23,21 @@ public class Cell extends OBJECT {
 
 	public org.apache.poi.ss.usermodel.Cell cell;
 
-	public static final int Numeric = 0;
-	public static final int String = 1;
-	public static final int Formula = 2;
-	public static final int Blank = 3;
-	public static final int Boolean = 4;
-	public static final int Error = 5;
-
 	public Cell(IObject container) {
 		super(container);
 	}
 
 	public string z8_getString() {
-		switch(cell.getCellType()) {
-		case String: 
-			return new string(cell.getStringCellValue());
-		case Numeric:
+		switch(cell.getCellTypeEnum()) {
+		case BOOLEAN:
+			return new bool(cell.getBooleanCellValue()).string();
+		case FORMULA:
+			return new string(cell.getCellFormula());
+		case NUMERIC:
 			double value = cell.getNumericCellValue();
 			return value == (long)value ? new integer((long)value).string() : new decimal(value).string();
-		case Boolean:
-			return new bool(cell.getBooleanCellValue()).string();
-		case Formula:
-			return new string(cell.getCellFormula());
+		case STRING:
+			return new string(cell.getStringCellValue());
 		default:
 			return new string();
 		}

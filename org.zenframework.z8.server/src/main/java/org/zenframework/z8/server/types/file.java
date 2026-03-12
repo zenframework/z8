@@ -188,7 +188,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 		JsonArray array = new JsonArray(json);
 
-		for(int i = 0; i < array.length(); i++)
+		for(int i = 0; i < array.size(); i++)
 			result.add(new file(array.getJsonObject(i)));
 
 		return result;
@@ -219,14 +219,14 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public JsonObject toJsonObject() {
 		JsonObject json = new JsonObject();
-		json.put(Json.name, name);
-		json.put(Json.time, time);
-		json.put(Json.size, size);
-		json.put(Json.path, path);
-		json.put(Json.id, id);
-		json.put(Json.user, user);
-		json.put(Json.author, author);
-		json.put(Json.details, details);
+		json.set(Json.name, name);
+		json.set(Json.time, time);
+		json.set(Json.size, size);
+		json.set(Json.path, path);
+		json.set(Json.id, id);
+		json.set(Json.user, user);
+		json.set(Json.author, author);
+		json.set(Json.details, details);
 		return json;
 	}
 

@@ -62,13 +62,13 @@ public class UpdateAction extends RequestAction {
 
 		Collection<file> files = request().getFiles();
 
-		for(int index = 0; index < records.length(); index++) {
+		for(int index = 0; index < records.size(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
 			Collection<Field> ownerFields = new ArrayList<Field>();
 			Collection<Field> queryFields = new ArrayList<Field>();
 
-			for(String fieldId : JsonObject.getNames(record)) {
+			for(String fieldId : record.getNames()) {
 				Field field = contextQuery.findFieldById(fieldId);
 
 				if(field != null) {

@@ -1,0 +1,70 @@
+import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.json.JsonObject;
+
+[native "org.zenframework.z8.server.base.entity.EntityParser"]
+public class EntityParser {
+
+	public static final string String = "string";
+	public static final string Integer = "integer";
+	public static final string Decimal = "decimal";
+	public static final string Boolean = "boolean";
+	public static final string Datespan = "datespan";
+	public static final string Guid = "guid";
+	public static final string Date = "date";
+	public static final string Json = "json";
+
+	public Registry getRegistry();
+	public EntityParser setRegistry(Registry registry);
+
+	public Entity getEntity();
+	public EntityParser setEntity(Entity entity);
+
+	public JsonObject getJson();
+	public EntityParser setJson(string json);
+	public EntityParser setJson(JsonObject json);
+
+	public JsonObject toJson(Entity entity);
+	public JsonArray toJson(Entity[] entity);
+
+	public Entity fromJson(JsonObject json);
+	public Entity[] fromJson(JsonArray json);
+
+	virtual public EntityParser read();
+	virtual public EntityParser write();
+
+	virtual protected Entity newEntity();
+
+	protected EntityParser readString(string key);
+	protected EntityParser readInt(string key);
+	protected EntityParser readDecimal(string key);
+	protected EntityParser readGuid(string key);
+	protected EntityParser readBool(string key);
+	protected EntityParser readDate(string key);
+	protected EntityParser readDatespan(string key);
+	protected EntityParser readJsonObject(string key);
+	protected EntityParser readJsonArray(string key);
+
+	protected EntityParser readValue(string key, string type);
+
+	protected EntityParser readValue(string key);
+	protected EntityParser readValues(string[] keys);
+
+	protected EntityParser writeValue(string key);
+	protected EntityParser writeValues(string[] keys);
+
+	protected EntityParser writeValue(string key, primary value);
+	protected EntityParser writeValue(string key, JsonArray value);
+	protected EntityParser writeValue(string key, JsonObject value);
+
+	protected EntityParser writeNonEmpty(string key);
+	protected EntityParser writeNonEmpty(string[] keys);
+
+	protected EntityParser writeNonEmpty(string key, primary value);
+	protected EntityParser writeNonEmpty(string key, JsonArray value);
+	protected EntityParser writeNonEmpty(string key, JsonObject value);
+
+	protected primary getValue(string key, string type);
+
+	protected static primary getValue(JsonObject json, string key, string type);
+	protected static primary getValue(JsonArray json, int index, string type);
+}

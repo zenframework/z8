@@ -28,7 +28,7 @@ public class DetachAction extends RequestAction {
 		List<file> files = new ArrayList<file>();
 		JsonArray jsonArray = new JsonArray(getRequestParameter(Json.data));
 
-		for(int i = 0; i < jsonArray.length(); i++)
+		for(int i = 0; i < jsonArray.size(); i++)
 			files.add(new file(jsonArray.getGuid(i)));
 
 		Query query = getQuery();

@@ -69,7 +69,7 @@ public class OdaQuery implements IQuery {
 
 		JsonArray jsonFields = json.getJsonArray(Json.fields);
 
-		for(int index = 0; index < jsonFields.length(); index++) {
+		for(int index = 0; index < jsonFields.size(); index++) {
 			JsonObject field = jsonFields.getJsonObject(index);
 			fields.add(new OdaField(field));
 		}

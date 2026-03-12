@@ -59,7 +59,7 @@ public class CreateAction extends RequestAction {
 
 		Collection<file> files = request().getFiles();
 
-		for(int index = 0; index < records.length(); index++) {
+		for(int index = 0; index < records.size(); index++) {
 			JsonObject record = (JsonObject)records.get(index);
 
 			guid recordId = QueryUtils.extractKey(record, primaryKey);
@@ -69,7 +69,7 @@ public class CreateAction extends RequestAction {
 
 			query.onNew();
 
-			for(String fieldId : JsonObject.getNames(record)) {
+			for(String fieldId : record.getNames()) {
 				Field field = fieldsMap.get(fieldId);
 
 				if(field == null) {

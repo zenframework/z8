@@ -281,7 +281,7 @@ abstract public class Field extends Control implements IField {
 		JsonArray jsonArray = new JsonArray(json.get());
 
 		RCollection result = new RCollection();
-		for(int i = 0; i < jsonArray.length(); i++)
+		for(int i = 0; i < jsonArray.size(); i++)
 			result.add(parse(jsonArray.getString(i)));
 
 		return result;

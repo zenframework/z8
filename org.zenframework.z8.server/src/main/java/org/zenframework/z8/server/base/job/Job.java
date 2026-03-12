@@ -72,14 +72,10 @@ public class Job extends RequestTarget {
 
 		JsonObject object = new JsonObject(data);
 
-		if (object != null) {
-			String[] names = JsonObject.getNames(object);
-
-			for (String parameterId : names) {
-				IParameter parameter = executable.getParameter(parameterId);
-				String value = object.getString(parameterId);
-				parameter.parse(value);
-			}
+		for (String parameterId : object.getNames()) {
+			IParameter parameter = executable.getParameter(parameterId);
+			String value = object.getString(parameterId);
+			parameter.parse(value);
 		}
 	}
 
