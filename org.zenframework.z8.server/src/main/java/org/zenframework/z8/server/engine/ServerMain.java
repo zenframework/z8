@@ -74,13 +74,15 @@ public final class ServerMain {
 
 			server.start();
 
-			MonitoringServer monitoring = new MonitoringServer();
-			monitoring.start();
+			if (MonitoringServer.isEnabled())
+				MonitoringServer.get().start();
 
 			java.lang.Runtime.getRuntime().addShutdownHook(new Thread("Z8-shutdown") {
 				@Override
 				public void run() {
-					monitoring.stop();
+					if (MonitoringServer.isEnabled())
+						MonitoringServer.get().stop();
+
 					try {
 						server.stop();
 					} catch(RemoteException e) {}

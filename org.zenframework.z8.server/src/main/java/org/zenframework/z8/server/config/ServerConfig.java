@@ -419,7 +419,7 @@ public class ServerConfig extends Properties {
 		cryptoIv = instance.getProperty(CryptoIv, "anc96lt1");
 
 		monitoringServerProvider = instance.getProperty(MonitoringServerProvider, "sun.net.httpserver.DefaultHttpServerProvider");
-		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9090);
+		monitoringServerPort = instance.getProperty(MonitoringServerPort, 9800);
 		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
 
@@ -916,6 +916,10 @@ public class ServerConfig extends Properties {
 
 	static public String cryptoIv() {
 		return cryptoIv;
+	}
+
+	static public boolean isMonitoringServerEnabled() {
+		return monitoringServerPort > 0;
 	}
 
 	static public String monitoringServerProvider() {
