@@ -85,6 +85,11 @@ public class Postfix extends LanguageElement implements IJavaTypeCast {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return prefix.containsQualifiedName(name) || postfix != null && postfix.containsQualifiedName(name);
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		return super.resolveTypes(compilationUnit, declaringType) && prefix.resolveTypes(compilationUnit, declaringType) && (postfix == null || postfix.resolveTypes(compilationUnit, declaringType));
 	}

@@ -58,6 +58,11 @@ public class MapElement extends LanguageElement {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return key.containsQualifiedName(name) || value.containsQualifiedName(name);
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;

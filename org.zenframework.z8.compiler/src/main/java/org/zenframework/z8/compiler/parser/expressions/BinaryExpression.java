@@ -53,6 +53,11 @@ public class BinaryExpression extends LanguageElement {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return left.containsQualifiedName(name) || right.containsQualifiedName(name);
+	}
+	
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		return super.resolveTypes(compilationUnit, declaringType) && left.resolveTypes(compilationUnit, declaringType) && right.resolveTypes(compilationUnit, declaringType);
 	}
@@ -166,7 +171,7 @@ public class BinaryExpression extends LanguageElement {
 			codeGenerator.getCompilationUnit().importType(booleanType);
 			codeGenerator.append("new " + booleanType.getJavaName() + "(");
 			codeGenerator.append("null " + operatorToken.getSign() + " ");
-			right.getCode(codeGenerator);
+			codeGenerator.append(right);
 			codeGenerator.append(")");
 			return;
 		} 
@@ -174,7 +179,7 @@ public class BinaryExpression extends LanguageElement {
 		if(right.getVariableType().isNull()) {
 			codeGenerator.getCompilationUnit().importType(booleanType);
 			codeGenerator.append("new " + booleanType.getJavaName() + "(");
-			left.getCode(codeGenerator);
+			codeGenerator.append(left);
 			codeGenerator.append(" " + operatorToken.getSign() + " null");
 			codeGenerator.append(")");
 			return;
@@ -183,9 +188,9 @@ public class BinaryExpression extends LanguageElement {
 		if(left.getVariableType().isEnum()) {
 			codeGenerator.getCompilationUnit().importType(booleanType);
 			codeGenerator.append("new " + booleanType.getJavaName() + "(");
-			left.getCode(codeGenerator);
+			codeGenerator.append(left);
 			codeGenerator.append(operatorToken.getSign());
-			right.getCode(codeGenerator);
+			codeGenerator.append(right);
 			codeGenerator.append(")");
 			return;
 		}
@@ -195,48 +200,44 @@ public class BinaryExpression extends LanguageElement {
 
 		boolean isBoolean = !leftType.isArray() && leftType.getType() == booleanType && !rightType.isArray() && rightType.getType() == booleanType;
 
-		if(isBoolean && (operatorToken.getId() == IToken.AND || operatorToken.getId() == IToken.OR)) {
-			codeGenerator.append("(");
-
-			leftTypeCast.getCode(codeGenerator, left);
-			codeGenerator.append(".get()");
-			codeGenerator.append(" ? ");
-
-			codeGenerator.getCompilationUnit().importType(booleanType);
-
-			String trueValue = "new " + booleanType.getJavaName() + "(true)";
-			String falseValue = "new " + booleanType.getJavaName() + "(false)";
-
-			if(operatorToken.getId() == IToken.AND) {
-				if(rightTypeCast.getContext() != null) {
-					codeGenerator.append(trueValue);
-					codeGenerator.append('.');
-				}
-
-				rightTypeCast.getCode(codeGenerator, right);
-				codeGenerator.append(" : ");
-				codeGenerator.append(falseValue);
-			} else {
-				codeGenerator.append(trueValue);
-				codeGenerator.append(" : ");
-
-				if(rightTypeCast.getContext() != null) {
-					codeGenerator.append(falseValue);
-					codeGenerator.append('.');
-				}
-
-				rightTypeCast.getCode(codeGenerator, right);
-			}
-
-			codeGenerator.append(')');
+		if(isBoolean && (operatorToken.is(IToken.And) || operatorToken.is(IToken.Or))) {
+			getLogicalExpressionCode(codeGenerator);
 			return;
 		}
 
-		leftTypeCast.getCode(codeGenerator, left);
-		codeGenerator.append('.');
-		if(rightTypeCast.getTarget().isReference())
-			codeGenerator.append("get().");
-		rightTypeCast.getCode(codeGenerator, right);
+		codeGenerator.append(leftTypeCast, left);
+		codeGenerator.append('.').append(rightTypeCast.getTarget().isReference() ? "get()." : "");
+		codeGenerator.append(rightTypeCast, right);
+	}
+
+	private void getLogicalExpressionCode(CodeGenerator codeGenerator) {
+		codeGenerator.getCompilationUnit().importType(booleanType);
+		String trueValue = "new " + booleanType.getJavaName() + "(true)";
+		String falseValue = "new " + booleanType.getJavaName() + "(false)";
+
+		codeGenerator.append("(");
+		codeGenerator.append(leftTypeCast, left).append(".get()");
+		codeGenerator.append(" ? ");
+
+		if(operatorToken.getId() == IToken.And) {
+			if(rightTypeCast.getContext() != null)
+				codeGenerator.append(trueValue).append('.');
+
+			codeGenerator.append(rightTypeCast, right);
+			codeGenerator.append(" : ");
+			codeGenerator.append(falseValue);
+		} else {
+			codeGenerator.append(trueValue);
+			codeGenerator.append(" : ");
+
+			if(rightTypeCast.getContext() != null)
+				codeGenerator.append(falseValue).append('.');
+
+			codeGenerator.append(rightTypeCast, right);
+		}
+
+		codeGenerator.append(')');
+		return;
 	}
 
 	public ILanguageElement getLeftElement() {

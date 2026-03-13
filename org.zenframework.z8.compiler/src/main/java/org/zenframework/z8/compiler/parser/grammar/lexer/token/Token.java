@@ -9,7 +9,7 @@ public class Token implements IToken {
 	private IPosition position;
 
 	public Token() {
-		this.id = IToken.NOTHING;
+		this.id = IToken.Nothing;
 	}
 
 	public Token(int id, IPosition position) {
@@ -25,6 +25,11 @@ public class Token implements IToken {
 	@Override
 	public int getId() {
 		return id;
+	}
+
+	@Override
+	public boolean is(int id) {
+		return this.id == id;
 	}
 
 	@Override

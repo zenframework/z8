@@ -12,6 +12,7 @@ import org.zenframework.z8.compiler.core.IType;
 import org.zenframework.z8.compiler.core.ITypeCast;
 import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
+import org.zenframework.z8.compiler.parser.BuiltinNative;
 import org.zenframework.z8.compiler.parser.LanguageElement;
 import org.zenframework.z8.compiler.parser.expressions.Constant;
 import org.zenframework.z8.compiler.parser.grammar.lexer.Lexer;
@@ -111,17 +112,17 @@ public class Record extends LanguageElement implements IMember {
 
 	@Override
 	public boolean isPublic() {
-		return accessToken != null && accessToken.getId() == IToken.PUBLIC;
+		return accessToken != null && accessToken.getId() == IToken.Public;
 	}
 
 	@Override
 	public boolean isProtected() {
-		return accessToken != null && accessToken.getId() == IToken.PROTECTED;
+		return accessToken != null && accessToken.getId() == IToken.Protected;
 	}
 
 	@Override
 	public boolean isPrivate() {
-		return accessToken != null && accessToken.getId() == IToken.PRIVATE;
+		return accessToken != null && accessToken.getId() == IToken.Private;
 	}
 
 	public void setAccess(IToken accessToken) {
@@ -282,22 +283,25 @@ public class Record extends LanguageElement implements IMember {
 		codeGenerator.append(mapType + " map = new " + mapType + "();");
 		codeGenerator.breakLine();
 
+		IType type = getDeclaringType(); 
+		String stage = type.getConstructionStage();
+
 		for(IAttribute attribute : attributes) {
 			IVariableType variableType = attribute.getVariableType();
 
 			codeGenerator.getCompilationUnit().importType(variableType);
 
 			codeGenerator.indent();
-			codeGenerator.append("map.put(" + attribute.getName() + ".get(), ");
-			attribute.getValue().getCode(codeGenerator);
-			codeGenerator.append(");");
+
+			type.setConstructionStage(BuiltinNative.Constructor2);
+			codeGenerator.append("map.put(").append(attribute.getName()).append(".get(), ").append(attribute.getValue()).append(");");
+			type.setConstructionStage(stage);
+
 			codeGenerator.breakLine();
 		}
 
 		codeGenerator.indent();
-		codeGenerator.append("internalAddRecord(");
-		constant.getCode(codeGenerator);
-		codeGenerator.append(", map);");
+		codeGenerator.append("internalAddRecord(").append(constant).append(", map);");
 		codeGenerator.breakLine();
 
 		codeGenerator.decrementIndent();

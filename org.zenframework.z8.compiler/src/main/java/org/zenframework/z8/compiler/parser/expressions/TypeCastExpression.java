@@ -54,6 +54,11 @@ public class TypeCastExpression extends LanguageElement {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return expression.containsQualifiedName(name);
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		return super.resolveTypes(compilationUnit, declaringType) && variableType.resolveTypes(compilationUnit, declaringType) && expression.resolveTypes(compilationUnit, declaringType);
 	}

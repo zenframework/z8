@@ -69,6 +69,15 @@ public class ArrayInitializer extends LanguageElement {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		for(ILanguageElement element : elements) {
+			if(element.containsQualifiedName(name))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
 	public void setStaticContext(boolean staticContext) {
 		super.setStaticContext(staticContext);
 

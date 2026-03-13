@@ -61,15 +61,10 @@
 
 	void error(IToken token, String message) {
 		if(token != null && token.getPosition() != null) { // empty or fully commented file
-			if(message == null)
-				message = "', delete this token";
-			else
-				message = "', " + message;
-
-			parser.getCompilationUnit().error(token.getPosition(), "Syntax error on token '" + getLexer().getString(token.getPosition()) + message);
+			message = message != null ? message : "delete this token";
+			parser.getCompilationUnit().error(token.getPosition(), "Syntax error on token '" + getLexer().getString(token.getPosition()) + "', " + message);
 		} else if(token != null && token.getId() == 0) {
 			token = getLexer().previousToken();
-
 			if(token.getPosition() != null)
 				parser.getCompilationUnit().error(token.getPosition(), "Syntax error on token '" + getLexer().getString(token.getPosition()) + "', unexpected end of file");
 		}

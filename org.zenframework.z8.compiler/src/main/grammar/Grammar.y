@@ -18,114 +18,119 @@ public class Grammar
 
 %start program
 
-%token <token> WHITESPACE
-%token <token> LINEBREAK
-%token <token> COMMENT
+%token <token> Whitespace
+%token <token> Linebreak
+%token <token> Comment
 
-%token <token> NOT
-%token <token> MUL
-%token <token> DIV
-%token <token> MOD
-%token <token> ADD
-%token <token> SUB
-%token <token> CARET
-%token <token> MUL_CARET
-%token <token> CARET_MUL
-%token <token> MUL_CARET_MUL
+%token <token> Not
+%token <token> BitwiseNot
 
-%token <token> EQU
-%token <token> NOT_EQU
-%token <token> LESS
-%token <token> MORE
-%token <token> LESS_EQU
-%token <token> MORE_EQU
-%token <token> AND
-%token <token> OR
-%token <token> GROUP
+%token <token> Mul
+%token <token> Div
+%token <token> Mod
+%token <token> Plus
+%token <token> Minus
 
-%token <token> ADD_ASSIGN
-%token <token> SUB_ASSIGN
-%token <token> MUL_ASSIGN
-%token <token> DIV_ASSIGN
-%token <token> MOD_ASSIGN
+%token <token> Equ
+%token <token> NotEqu
+%token <token> Less
+%token <token> More
+%token <token> LessEqu
+%token <token> MoreEqu
 
-%token <token> CARET_ASSIGN
-%token <token> MUL_CARET_ASSIGN
-%token <token> CARET_MUL_ASSIGN
-%token <token> MUL_CARET_MUL_ASSIGN
+%token <token> BitwiseAnd
+%token <token> BitwiseOr
+%token <token> BitwiseXor
 
-%token <token> LBRACE
-%token <token> RBRACE
-%token <token> LBRACKET
-%token <token> RBRACKET
-%token <token> LCBRACE
-%token <token> RCBRACE
-%token <token> BRACKETS
-%token <token> COLON
-%token <token> SEMICOLON
-%token <token> ASSIGN
-%token <token> QUESTION
-%token <token> COMMA
-%token <token> DOT
+%token <token> And
+%token <token> Or
 
-%token <token> CONSTANT
-%token <token> IDENTIFIER
-%token <token> OPERATOR
+%token <token> AddAssign
+%token <token> SubAssign
+%token <token> MulAssign
+%token <token> DivAssign
+%token <token> ModAssign
+%token <token> BitwiseAndAssign
+%token <token> BitwiseOrAssign
+%token <token> BitwiseXorAssign
 
-%token <token> IF
-%token <token> ELSE
+%token <token> LBrace
+%token <token> RBrace
+%token <token> LBracket
+%token <token> RBracket
+%token <token> LCBrace
+%token <token> RCBrace
+%token <token> Brackets
+%token <token> Colon
+%token <token> Semicolon
+%token <token> Assign
+%token <token> Question
+%token <token> Comma
+%token <token> Elvis
+%token <token> Dot
 
-%token <token> DO
-%token <token> FOR
-%token <token> WHILE
+%token <token> Constant
+%token <token> Identifier
 
-%token <token> BREAK
-%token <token> RETURN
-%token <token> CONTINUE
+%token <token> Operator
 
-%token <token> THIS
-%token <token> SUPER
-%token <token> CONTAINER
+%token <token> If
+%token <token> Else
 
-%token <token> NULL
+%token <token> Do
+%token <token> For
+%token <token> While
 
-%token <token> IMPORT
+%token <token> Break
+%token <token> Return
+%token <token> Continue
 
-%token <token> CLASS
-%token <token> PUBLIC
-%token <token> PROTECTED
-%token <token> PRIVATE
-%token <token> EXTENDS
+%token <token> This
+%token <token> Super
+%token <token> Container
 
-%token <token> ENUM
-%token <token> RECORDS
+%token <token> Null
 
-%token <token> AUTO
+%token <token> Import
+%token <token> Class
+%token <token> Public
+%token <token> Protected
+%token <token> Private
+%token <token> Extends
 
-%token <token> NEW
-%token <token> STATIC
+%token <token> Enum
+%token <token> Records
 
-%token <token> TRY
-%token <token> CATCH
-%token <token> FINALLY
-%token <token> THROW
+%token <token> Auto
 
-%token <token> VIRTUAL
-%token <token> FINAL
+%token <token> New
+%token <token> Static
+
+%token <token> Try
+%token <token> Catch
+%token <token> Finally
+%token <token> Throw
+
+%token <token> Virtual
+%token <token> Final
+%token <token> InstanceOf
 
 
-%left COMMA SEMICOLON
-%left COLON
-%left ASSIGN
-%left OR
-%left AND
-%left EQU NOT_EQU
-%left LESS MORE LESS_EQU MORE_EQU
-%left ADD SUB
-%left MUL DIV MOD
-%left QUESTION
-%left LBRACE RBRACE
-%left LBRACKET RBRACKET
+%left Comma Semicolon
+%left Colon
+%left Assign
+%left Or
+%left And
+%left BitwiseOr
+%left BitwiseXor
+%left BitwiseAnd
+%left Equ NotEqu
+%left Less More LessEqu MoreEqu
+%left Plus Minus
+%left Mul Div Mod
+%left Question
+%left LBrace RBrace
+%left LBracket RBracket
 
 %%
 /* ========================================================================================= */
@@ -138,41 +143,41 @@ program
 	;
 
 classes
-	: class_enum
-	| classes class_enum
+	: classEnum
+	| classes classEnum
 	;
 
-class_enum
+classEnum
 	: class
 	| enum
 	;
 
 import
-	: import_list                               { parser.onImport(); }
+	: importList                               { parser.onImport(); }
 	;
 
-import_list
-	: import_element                            { parser.onImportList(true); }
-	| import_list import_element                { parser.onImportList(false); }
+importList
+	: importElement                            { parser.onImportList(true); }
+	| importList importElement                 { parser.onImportList(false); }
 	;
 
-import_element
-	: IMPORT qualified_name SEMICOLON           { parser.onImportElement($1, $3); }
+importElement
+	: Import qualifiedName Semicolon           { parser.onImportElement($1, $3); }
 	;
 	
 attribute
-	: LBRACKET IDENTIFIER RBRACKET              { parser.onAttribute($1, $2, null, $3); }
-	| LBRACKET IDENTIFIER CONSTANT RBRACKET     { parser.onAttribute($1, $2, $3, $4); }
-	| LBRACKET IDENTIFIER expression RBRACKET   { parser.onAttribute($1, $2, $4); }
+	: LBracket Identifier RBracket             { parser.onAttribute($1, $2, null, $3); }
+	| LBracket Identifier Constant RBracket    { parser.onAttribute($1, $2, $3, $4); }
+	| LBracket Identifier expression RBracket  { parser.onAttribute($1, $2, $4); }
 	;
 
 access
-	: PUBLIC                                    { parser.onToken($1); }
-	| PRIVATE                                   { parser.onToken($1); }
-	| PROTECTED                                 { parser.onToken($1); }
-	| STATIC                                    { parser.onToken($1); }
-	| AUTO                                      { parser.onToken($1); }
-	| VIRTUAL                                   { parser.onToken($1); }
+	: Public                                   { parser.onToken($1); }
+	| Private                                  { parser.onToken($1); }
+	| Protected                                { parser.onToken($1); }
+	| Static                                   { parser.onToken($1); }
+	| Auto                                     { parser.onToken($1); }
+	| Virtual                                  { parser.onToken($1); }
 	;
 
 modifier
@@ -181,580 +186,584 @@ modifier
 	;
 
 modifiers
-	: modifier                                  { parser.onModifiers(true); }
-	| modifiers modifier                        { parser.onModifiers(false); }
+	: modifier                                 { parser.onModifiers(true); }
+	| modifiers modifier                       { parser.onModifiers(false); }
 	;
 
-qualified_name
-	: IDENTIFIER                                { parser.onQualifiedName(true, $1); }
-	| qualified_name DOT IDENTIFIER             { parser.onQualifiedName(false, $3); }
-	| qualified_name DOT                        { error($2); }
+qualifiedName
+	: Identifier                               { parser.onQualifiedName(true, $1); }
+	| qualifiedName Dot Identifier             { parser.onQualifiedName(false, $3); }
+	| qualifiedName Dot                        { error($2); }
 	;
 
-enum_keyword
-	: ENUM                                      { parser.startEnum($1); }
+enumKeyword
+	: Enum                                     { parser.startEnum($1); }
 	;
 	
-enum_name
-	: IDENTIFIER                                { parser.setEnumName($1); }
+enumName
+	: Identifier                               { parser.setEnumName($1); }
 	;
 
-simple_enum_header
-	: enum_keyword enum_name
+simpleEnumHeader
+	: enumKeyword enumName
 	;
 
-enum_header
-	: simple_enum_header
-	| modifiers simple_enum_header              { parser.applyModifiers(); }
+enumHeader
+	: simpleEnumHeader
+	| modifiers simpleEnumHeader               { parser.applyModifiers(); }
 	;
 
 enum
-	: enum_header                               { error("EnumBody is missing"); }
-	| enum_header enum_body
+	: enumHeader                               { error("EnumBody is missing"); }
+	| enumHeader enumBody
 	;
 
-enum_body_lcbrace
-	: LCBRACE                                   { parser.startEnumBody($1); }
+enumBodyLCBrace
+	: LCBrace                                  { parser.startEnumBody($1); }
+	;
+
+enumIdentifier
+	: Identifier                               { parser.addEnumMember($1); }
+	;
+
+enumMembers
+	: enumIdentifier
+	| enumMembers Comma enumIdentifier
+	| enumMembers Comma
+	;
+
+enumBodyLeft
+	: enumBodyLCBrace
+	| enumBodyLCBrace enumMembers
+	;
+
+enumBody
+	: enumBodyLeft                             { error("'}' expected after this token"); }
+	| enumBodyLeft RCBrace                     { parser.finishEnumBody($2); }
+	;
+
+classKeyword
+	: Class                                    { parser.startClass(null, $1); }
+	| Final Class                              { parser.startClass($1, $2); }
+	;
+
+className
+	: Identifier                               { parser.setClassName($1); }
+	;
+
+extendsKeyword
+	: Extends
+	;
+
+baseName
+	: qualifiedName                            { parser.setClassBase(); }
+	;
+
+simpleClassHeader
+	: classKeyword className
 	;
 	
-enum_identifier
-	: IDENTIFIER                                { parser.addEnumMember($1); }
+extendedClassHeader
+	: simpleClassHeader
+	| simpleClassHeader extendsKeyword baseName
 	;
 	
-enum_members
-	: enum_identifier
-	| enum_members COMMA enum_identifier
-	| enum_members COMMA
-	;
-
-enum_body_left
-	: enum_body_lcbrace
-	| enum_body_lcbrace enum_members
-	;
-
-enum_body
-	: enum_body_left                            { error("'}' expected after this token"); }
-	| enum_body_left RCBRACE                    { parser.finishEnumBody($2); }
-	;
-
-class_keyword
-	: CLASS                                     { parser.startClass(null, $1); }
-	| FINAL CLASS                               { parser.startClass($1, $2); }
-	;
-
-class_name
-	: IDENTIFIER                                { parser.setClassName($1); }
-	;
-
-extends_keyword
-	: EXTENDS
-	;
-
-base_name
-	: IDENTIFIER                                { parser.setClassBase($1); }
-	;
-
-simple_class_header
-	: class_keyword class_name
-	;
-	
-extended_class_header
-	: simple_class_header
-	| simple_class_header extends_keyword base_name
-	;
-	
-class_header
-	: extended_class_header
-	| modifiers extended_class_header           { parser.applyModifiers(); }
+classHeader
+	: extendedClassHeader
+	| modifiers extendedClassHeader            { parser.applyModifiers(); }
 	;
 
 class
-	: class_header class_body                   { parser.finishClass(); }
+	: classHeader classBody                    { parser.finishClass(); }
 	;
 
-noname_class
-	: class_keyword class_body                  { parser.finishClass(); }
+nonameClass
+	: classKeyword classBody                   { parser.finishClass(); }
 	;
 
-class_body_lcbrace
-	: LCBRACE                                   { parser.startClassBody($1); }
+classBodyLCBrace
+	: LCBrace                                  { parser.startClassBody($1); }
 	;
 
-class_body_left
-	: class_body_lcbrace
-	| class_body_lcbrace class_members
+classBodyLeft
+	: classBodyLCBrace
+	| classBodyLCBrace classMembers
 	;
 
-class_body
-	: class_body_left RCBRACE                   { parser.finishClassBody($2); }
+classBody
+	: classBodyLeft RCBrace                    { parser.finishClassBody($2); }
 	;
 
-variable_declarator_init1
-	: variable_declarator_init
-	| modifiers variable_declarator_init        { parser.applyModifiers(); }
+variableDeclaratorInit1
+	: variableDeclaratorInit
+	| modifiers variableDeclaratorInit         { parser.applyModifiers(); }
 	;
 	
-qualified_name_init1
-	: qualified_name_init
-	| modifiers qualified_name_init             { parser.applyModifiers(); }
+qualifiedNameInit1
+	: qualifiedNameInit
+	| modifiers qualifiedNameInit              { parser.applyModifiers(); }
 	;
 	
 method1
 	: method
-	| modifiers method                          { parser.applyModifiers(); }
+	| modifiers method                         { parser.applyModifiers(); }
 	;
 
 records1
 	: records
-	| modifiers records                         { parser.applyModifiers(); }
+	| modifiers records                        { parser.applyModifiers(); }
 	;
 
-class_member
-	: class_member1                         { parser.addClassMember(); }	
+classMember
+	: classMember1                             { parser.addClassMember(); }
 	;
 
-class_member1
-	: variable_declarator_init1 SEMICOLON
-	| qualified_name_init1 SEMICOLON
-	| variable_declarator_init1 qualified_name_init1 SEMICOLON      { parser.onMissingSemicolon();}
-	| variable_declarator_init1 variable_declarator_init1 SEMICOLON { parser.onMissingSemicolon();}
-	| qualified_name_init1 variable_declarator_init1 SEMICOLON      { parser.onMissingSemicolon();}
-	| qualified_name_init1 qualified_name_init1 SEMICOLON           { parser.onMissingSemicolon();}
-/*  | qualified_name_init1 method1                                  { parser.onMissingSemicolon();} */
-	| variable_declarator_init1 method1                             { parser.onMissingSemicolon();}
+classMember1
+	: variableDeclaratorInit1 Semicolon
+	| qualifiedNameInit1 Semicolon
+	| variableDeclaratorInit1 qualifiedNameInit1 Semicolon         { parser.onMissingSemicolon(); }
+	| variableDeclaratorInit1 variableDeclaratorInit1 Semicolon    { parser.onMissingSemicolon(); }
+	| qualifiedNameInit1 variableDeclaratorInit1 Semicolon         { parser.onMissingSemicolon(); }
+	| qualifiedNameInit1 qualifiedNameInit1 Semicolon              { parser.onMissingSemicolon(); }
+	| variableDeclaratorInit1 method1                              { parser.onMissingSemicolon(); }
 	| method1
 	| records1
 	;
 
-class_members
-	: class_member
-	| class_members class_member
+classMembers
+	: classMember
+	| classMembers classMember
 	;
 
-records_keyword
-	: RECORDS                                   { parser.startRecords($1); }
+recordsKeyword
+	: Records                                  { parser.startRecords($1); }
 	;
 
 records
-	: records_keyword records_body              { parser.finishRecords(); }
+	: recordsKeyword recordsBody               { parser.finishRecords(); }
 	;
 
-records_lcbrace
-	: LCBRACE                                   { parser.startRecordsBody($1); }
+recordsLCBrace
+	: LCBrace                                  { parser.startRecordsBody($1); }
 	;
 
-records_body_left
-	: records_lcbrace
-	| records_lcbrace records_list
+recordsBodyLeft
+	: recordsLCBrace
+	| recordsLCBrace recordsList
 	;
 	
-records_body
-	: records_body_left RCBRACE                 { parser.finishRecordsBody($2); }
+recordsBody
+	: recordsBodyLeft RCBrace                  { parser.finishRecordsBody($2); }
 	;
 
-record_name
-	: IDENTIFIER                                { parser.startRecord($1); }
+recordName
+	: Identifier                               { parser.startRecord($1); }
 	;
 		
-simple_record
-	: record_name ASSIGN CONSTANT               { parser.setRecordValue($3); }
+simpleRecord
+	: recordName Assign Constant               { parser.setRecordValue($3); }
 	;
 	
 record1
-	: simple_record
-	| modifiers simple_record                   { parser.applyModifiers(); }
+	: simpleRecord
+	| modifiers simpleRecord                   { parser.applyModifiers(); }
 	;
 
 record
-	: record1 SEMICOLON                         { parser.addRecord(); }
+	: record1 Semicolon                        { parser.addRecord(); }
 	;
 
-records_list
+recordsList
 	: record
-	| records_list record
+	| recordsList record
 	;
 
-simple_type
-	: qualified_name                            { parser.onVariableType(false); }
+simpleType
+	: qualifiedName                            { parser.onVariableType(false); }
 	;
 
-array_type
-	: qualified_name indices                    { parser.onVariableType(true); }
+arrayType
+	: qualifiedName indices                    { parser.onVariableType(true); }
 	;
 
 type
-	: simple_type
-	| array_type
+	: simpleType
+	| arrayType
 	;
 
-variable_declarator
-	: variable_declarator1
-	| variable_declarator1 DOT                  { error($2); }
+variableDeclarator
+	: variableDeclarator1
+	| variableDeclarator1 Dot                  { error($2); }
 	;
 
-variable_declarator1
-	: type IDENTIFIER                           { parser.onVariableDeclarator($2); }
-	| FINAL type IDENTIFIER                     { parser.onVariableDeclarator($1, $3); }
+variableDeclarator1
+	: type Identifier                          { parser.onVariableDeclarator($2); }
+	| Final type Identifier                    { parser.onVariableDeclarator($1, $3); }
 	;
 
-variable_declarator_init
-	: variable_declarator
-	| variable_declarator ASSIGN initializer	{ parser.onVariableDeclaratorInit($2); }
+variableDeclaratorInit
+	: variableDeclarator
+	| variableDeclarator Assign initializer    { parser.onVariableDeclaratorInit($2); }
 	;
 
-qualified_name_init
-	: qualified_name                                    { parser.onVariableInit(null); }
-	| qualified_name ASSIGN initializer                 { parser.onVariableInit($2); }
-	| qualified_name ADD_ASSIGN initializer             { parser.onVariableInit($2); }
-	| qualified_name CARET_ASSIGN initializer           { parser.onVariableInit($2); }
-	| qualified_name MUL_CARET_ASSIGN initializer       { parser.onVariableInit($2); }
-	| qualified_name CARET_MUL_ASSIGN initializer       { parser.onVariableInit($2); }
-	| qualified_name MUL_CARET_MUL_ASSIGN initializer   { parser.onVariableInit($2); }
+qualifiedNameInit
+	: qualifiedName                            { parser.onVariableInit(null); }
+	| qualifiedName Assign initializer         { parser.onVariableInit($2); }
+	| qualifiedName AddAssign initializer      { parser.onOperatorAssign($2); parser.onVariableInit($2); }
 	;
 
-method_header
-	: type IDENTIFIER parameters                { parser.createMethod($2); }
-	| OPERATOR parameters                       { parser.createPriorityOperator($1); }
-	| OPERATOR IDENTIFIER parameters            { parser.createCastOperator($1, $2); }
-	| type OPERATOR NOT parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR MUL parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR DIV parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR MOD parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR ADD parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR SUB parameters              { parser.createOperator($2, $3); }
+methodHeader
+	: type Identifier parameters               { parser.createMethod($2); }
+	| Operator parameters                      { parser.createPriorityOperator($1); }
+	| Operator Identifier parameters           { parser.createCastOperator($1, $2); }
+	| type Operator Not parameters             { parser.createOperator($2, $3); }
+	| type Operator Mul parameters             { parser.createOperator($2, $3); }
+	| type Operator Div parameters             { parser.createOperator($2, $3); }
+	| type Operator Mod parameters             { parser.createOperator($2, $3); }
+	| type Operator Plus parameters            { parser.createOperator($2, $3); }
+	| type Operator Minus parameters           { parser.createOperator($2, $3); }
 
-	| type OPERATOR CARET parameters            { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET parameters        { parser.createOperator($2, $3); }
-	| type OPERATOR CARET_MUL parameters        { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET_MUL parameters    { parser.createOperator($2, $3); }
+	| type Operator Equ parameters             { parser.createOperator($2, $3); }
+	| type Operator NotEqu parameters          { parser.createOperator($2, $3); }
+	| type Operator Less parameters            { parser.createOperator($2, $3); }
+	| type Operator More parameters            { parser.createOperator($2, $3); }
+	| type Operator LessEqu parameters         { parser.createOperator($2, $3); }
+	| type Operator MoreEqu parameters         { parser.createOperator($2, $3); }
 
-	| type OPERATOR EQU parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR NOT_EQU parameters          { parser.createOperator($2, $3); }
-	| type OPERATOR LESS parameters             { parser.createOperator($2, $3); }
-	| type OPERATOR MORE parameters             { parser.createOperator($2, $3); }
-	| type OPERATOR LESS_EQU parameters         { parser.createOperator($2, $3); }
-	| type OPERATOR MORE_EQU parameters         { parser.createOperator($2, $3); }
-	| type OPERATOR AND parameters              { parser.createOperator($2, $3); }
-	| type OPERATOR OR parameters               { parser.createOperator($2, $3); }
-	| type OPERATOR ASSIGN parameters           { parser.createOperator($2, $3); }
+	| type Operator BitwiseNot parameters      { parser.createOperator($2, $3); }
+	| type Operator BitwiseAnd parameters      { parser.createOperator($2, $3); }
+	| type Operator BitwiseOr parameters       { parser.createOperator($2, $3); }
+	| type Operator BitwiseXor parameters      { parser.createOperator($2, $3); }
 
-	| type OPERATOR ADD_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR SUB_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR DIV_ASSIGN parameters       { parser.createOperator($2, $3); }
-	| type OPERATOR MOD_ASSIGN parameters       { parser.createOperator($2, $3); }
-
-	| type OPERATOR CARET_ASSIGN parameters             { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET_ASSIGN parameters         { parser.createOperator($2, $3); }
-	| type OPERATOR CARET_MUL_ASSIGN parameters         { parser.createOperator($2, $3); }
-	| type OPERATOR MUL_CARET_MUL_ASSIGN parameters     { parser.createOperator($2, $3); }
+	| type Operator And parameters             { parser.createOperator($2, $3); }
+	| type Operator Or parameters              { parser.createOperator($2, $3); }
+	| type Operator Assign parameters          { parser.createOperator($2, $3); }
 	;
 
 method
-	: method_header compound                    { parser.setMethodBody(); }
-	| method_header SEMICOLON
+	: methodHeader compound                    { parser.setMethodBody(); }
+	| methodHeader Semicolon
 	;
 
 parameter
-	: variable_declarator                       { parser.createParameter(); }
+	: variableDeclarator                       { parser.createParameter(); }
 	;
 
-parameters_list
+parametersList
 	: parameter
-	| parameters_list COMMA parameter
+	| parametersList Comma parameter
 	;
 
-parameters_left
-	: LBRACE                                    { parser.startParameters($1); }
+parametersLeft
+	: LBrace                                   { parser.startParameters($1); }
 	;
 
 parameters
-	: parameters_left RBRACE                    { parser.finishParameters($2); }
-	| parameters_left parameters_list RBRACE    { parser.finishParameters($3); }
+	: parametersLeft RBrace                    { parser.finishParameters($2); }
+	| parametersLeft parametersList RBrace     { parser.finishParameters($3); }
 	;
 
 initializer
-	: noname_class
-	| array_initializer
+	: nonameClass
+	| expression
+	| arrayInitializer
 	;
 
-array_initializer_left
-	: LCBRACE                                   { parser.startArrayInitializer($1); }
+arrayInitializerLeft
+	: LCBrace                                  { parser.startArrayInitializer($1); }
 	;
 
-array_initializer
-	: expression
-	| array_initializer_left RCBRACE
-	| array_initializer_left array_initializers RCBRACE         { parser.finishArrayInitializer($3); }
-	| array_initializer_left array_initializers COMMA RCBRACE   { parser.finishArrayInitializer($4); }
+arrayInitializer
+	: arrayInitializerLeft RCBrace
+	| arrayInitializerLeft arrayInitializers RCBrace           { parser.finishArrayInitializer($3); }
+	| arrayInitializerLeft arrayInitializers Comma RCBrace     { parser.finishArrayInitializer($4); }
 	;
 
-array_initializers
-	: array_initializers_element
-	| array_initializers COMMA array_initializers_element
+arrayInitializers
+	: arrayInitializersElement
+	| arrayInitializers Comma arrayInitializersElement
 	;
 
-array_initializers_element
-	: map_element                               { parser.addArrayInitializer(); }
-	| array_initializer                         { parser.addArrayInitializer(); }
+arrayInitializersElement
+	: mapElement                               { parser.addArrayInitializer(); }
+	| expression                               { parser.addArrayInitializer(); }
+	| arrayInitializer                         { parser.addArrayInitializer(); }
 	;
 
-map_element
-	: LBRACE expression COMMA array_initializer RBRACE
-		{ parser.onMapElement($1, $5); }
+mapElement
+	: LBrace expression Comma expression RBrace            { parser.onMapElement($1, $5); }
+	| LBrace expression Comma arrayInitializer RBrace      { parser.onMapElement($1, $5); }
 	;
 
-compound_left
-	: LCBRACE                                   { parser.startCompound($1); }
+compoundLeft
+	: LCBrace                                  { parser.startCompound($1); }
 	;
 
 compound
-	: compound_left RCBRACE                     { parser.finishCompound($2); }
-	| compound_left statements RCBRACE          { parser.finishCompound($3); }
+	: compoundLeft RCBrace                     { parser.finishCompound($2); }
+	| compoundLeft statements RCBrace          { parser.finishCompound($3); }
 	;
 
 statements
-	: statement                                 { parser.addStatement(); }
-	| statements statement                      { parser.addStatement(); }
+	: statement                                { parser.addStatement(); }
+	| statements statement                     { parser.addStatement(); }
 	;
 
-declarator_statement
-	: variable_declarator_init                  { parser.onDeclarator(); }
+declaratorStatement
+	: variableDeclaratorInit                   { parser.onDeclarator(); }
 	;
 
 statement
-	: try_catch_finally
+	: tryCatchFinally
 	| throw
-	| assignment SEMICOLON                      { parser.onStatement(); }
-	| declarator_statement SEMICOLON            { parser.onStatement(); }
-
-/*  | assignment assignment SEMICOLON */
-	| declarator_statement declarator_statement SEMICOLON
-												{ parser.onStatement2(); }
-	| declarator_statement assignment SEMICOLON
-												{ parser.onStatement2(); }
+	| assignment Semicolon                                 { parser.onStatement(); }
+	| declaratorStatement Semicolon                        { parser.onStatement(); }
+	| declaratorStatement declaratorStatement Semicolon    { parser.onStatement2(); }
+	| declaratorStatement assignment Semicolon             { parser.onStatement2(); }
 
 	| compound
 	| selection
 	| iteration
 	| jump
 
-	| assignment try_catch_finally              { parser.onStatement1(); }
-	| assignment throw                          { parser.onStatement1(); }
-	| assignment compound                       { parser.onStatement1(); }
-	| assignment selection                      { parser.onStatement1(); }
-	| assignment iteration                      { parser.onStatement1(); }
+	| assignment tryCatchFinally               { parser.onStatement1(); }
+	| assignment throw                         { parser.onStatement1(); }
+	| assignment compound                      { parser.onStatement1(); }
+	| assignment selection                     { parser.onStatement1(); }
+	| assignment iteration                     { parser.onStatement1(); }
 
-	| declarator_statement try_catch_finally    { parser.onStatement1(); }
-	| declarator_statement throw                { parser.onStatement1(); }
-	| declarator_statement compound             { parser.onStatement1(); }
-	| declarator_statement selection            { parser.onStatement1(); }
-	| declarator_statement iteration            { parser.onStatement1(); }
-	| declarator_statement jump                 { parser.onStatement1(); }
+	| declaratorStatement tryCatchFinally      { parser.onStatement1(); }
+	| declaratorStatement throw                { parser.onStatement1(); }
+	| declaratorStatement compound             { parser.onStatement1(); }
+	| declaratorStatement selection            { parser.onStatement1(); }
+	| declaratorStatement iteration            { parser.onStatement1(); }
+	| declaratorStatement jump                 { parser.onStatement1(); }
 	;
 
 throw
-	: THROW expression SEMICOLON                { parser.onThrowStatement($1); }
+	: Throw expression Semicolon               { parser.onThrowStatement($1); }
 	;
 
 try
-	: TRY compound                              { parser.onTryStatement($1); }
+	: Try compound                             { parser.onTryStatement($1); }
 	;
 
 catch
-	: CATCH LBRACE variable_declarator RBRACE compound
-			{ parser.onCatchClause($1); }
+	: Catch LBrace variableDeclarator RBrace compound      { parser.onCatchClause($1); }
 	;
 
 finally
-	: FINALLY compound                          { parser.onFinallyStatement($1); }
+	: Finally compound                         { parser.onFinallyStatement($1); }
 	;
 
-try_catch
-	: try catch                                 { parser.addCatchStatement(); }
-	| try_catch catch                           { parser.addCatchStatement(); }
+tryCatch
+	: try catch                                { parser.addCatchStatement(); }
+	| tryCatch catch                           { parser.addCatchStatement(); }
 	;
 
-try_catch_finally
-	: try_catch
+tryCatchFinally
+	: tryCatch
 	| try finally
-	| try_catch finally
+	| tryCatch finally
 	;
 
 selection
-	: IF braced_expression statement                     { parser.onIfStatement($1, null); }
-	| IF braced_expression statement ELSE statement      { parser.onIfStatement($1, $4); }
+	: If bracedExpression statement                    { parser.onIfStatement($1, null); }
+	| If bracedExpression statement Else statement     { parser.onIfStatement($1, $4); }
 	;
 
-while_loop
-	: WHILE braced_expression statement         { parser.onWhileStatement($1); }
+whileLoop
+	: While bracedExpression statement         { parser.onWhileStatement($1); }
 	;
 
-do_while_loop
-	: DO statement WHILE braced_expression SEMICOLON     { parser.onDoWhileStatement($1, $3); }
+doWhileLoop
+	: Do statement While bracedExpression Semicolon    { parser.onDoWhileStatement($1, $3); }
 	;
 
-for_init
-	: variable_declarator_init                  { parser.onDeclarator(); }
+forInit
+	: variableDeclaratorInit                   { parser.onDeclarator(); }
 	| assignment
 	;
 
-for_statement
-	: FOR LBRACE SEMICOLON expression SEMICOLON assignment RBRACE statement
-		{ parser.onForStatement($1, false); }
-	| FOR LBRACE for_init SEMICOLON expression SEMICOLON assignment RBRACE statement
-		{ parser.onForStatement($1, true); }
+forEachInit
+	: variableDeclarator                       { parser.onDeclarator(); }
+	;
+
+forStatement
+	: For LBrace Semicolon expression Semicolon assignment RBrace statement            { parser.onForStatement($1, false); }
+	| For LBrace forInit Semicolon expression Semicolon assignment RBrace statement    { parser.onForStatement($1, true); }
+	| For LBrace forEachInit Colon expression RBrace statement                         { parser.onForEachStatement($1); }
 	;
 
 iteration
-	: while_loop
-	| do_while_loop
-	| for_statement
+	: whileLoop
+	| doWhileLoop
+	| forStatement
 	;
 
 jump
-	: RETURN SEMICOLON                          { parser.onJumpStatement($1, false); }
-	| RETURN expression SEMICOLON               { parser.onJumpStatement($1, true); }	
-	| BREAK SEMICOLON                           { parser.onJumpStatement($1, false); }
-	| CONTINUE SEMICOLON                        { parser.onJumpStatement($1, false); }
+	: Return Semicolon                         { parser.onJumpStatement($1, false); }
+	| Return expression Semicolon              { parser.onJumpStatement($1, true); }
+	| Return arrayInitializer Semicolon        { parser.onJumpStatement($1, true); }
+	| Break Semicolon                          { parser.onJumpStatement($1, false); }
+	| Continue Semicolon                       { parser.onJumpStatement($1, false); }
 	;
 
 assignment
 	: expression
-	| postfix ASSIGN array_initializer          { parser.onAssignment($2); }
-	| postfix ADD_ASSIGN expression             { parser.onOperator($2); }
-	| postfix SUB_ASSIGN expression             { parser.onOperator($2); }
-	| postfix MUL_ASSIGN expression             { parser.onOperator($2); }
-	| postfix DIV_ASSIGN expression             { parser.onOperator($2); }
-	| postfix MOD_ASSIGN expression             { parser.onOperator($2); }
-	| postfix CARET_ASSIGN expression           { parser.onOperator($2); }
-	| postfix MUL_CARET_ASSIGN expression       { parser.onOperator($2); }
-	| postfix CARET_MUL_ASSIGN expression       { parser.onOperator($2); }
-	| postfix MUL_CARET_MUL_ASSIGN expression   { parser.onOperator($2); }
+	| postfix Assign expression                { parser.onAssignment($2); }
+	| postfix Assign arrayInitializer          { parser.onAssignment($2); }
+	| postfix AddAssign expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix SubAssign expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix MulAssign expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix DivAssign expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix ModAssign expression             { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix BitwiseAndAssign expression      { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix BitwiseOrAssign expression       { parser.onOperatorAssign($2); parser.onAssignment($2); }
+	| postfix BitwiseXorAssign expression      { parser.onOperatorAssign($2); parser.onAssignment($2); }
 	;
 
 expression
-	: ternary_expression
+	: ternaryExpression
+	| ternaryExpression InstanceOf simpleType  { parser.onInstanceOf($2); }
 	;
 
-ternary_expression
-	: logical_or
-	| logical_or QUESTION expression COLON expression    { parser.onCondition(); }
+ternaryExpression
+	: logicalOr
+	| logicalOr Question expression Colon ternaryExpression   { parser.onTernaryOperator($2, $4); }
+	| logicalOr Elvis expression                       { parser.onElvisOperator($2); }
+	| logicalOr Elvis arrayInitializer                 { parser.onElvisOperator($2); }
 	;
 
-logical_or
-	: logical_and
-	| logical_or OR logical_and                 { parser.onOperator($2); }
+logicalOr
+	: logicalAnd
+	| logicalOr Or logicalAnd                  { parser.onOperator($2); }
 	;
 
-logical_and
+logicalAnd
+	: bitwiseOr
+	| logicalAnd And bitwiseOr                 { parser.onOperator($2); }
+	;
+
+bitwiseOr
+	: bitwiseXor
+	| bitwiseOr BitwiseOr bitwiseXor           { parser.onOperator($2); }
+	;
+
+bitwiseXor
+	: bitwiseAnd
+	| bitwiseXor BitwiseXor bitwiseAnd         { parser.onOperator($2); }
+	;
+
+bitwiseAnd
 	: equality
-	| logical_and AND equality                  { parser.onOperator($2); }
+	| bitwiseAnd BitwiseAnd equality           { parser.onOperator($2); }
 	;
 
 equality
 	: relational
-	| relational EQU relational                 { parser.onOperator($2); }
-	| relational NOT_EQU relational             { parser.onOperator($2); }
+	| relational Equ relational                { parser.onOperator($2); }
+	| relational NotEqu relational             { parser.onOperator($2); }
 	;
 
 relational
 	: additive
-	| additive LESS additive                    { parser.onOperator($2); }
-	| additive MORE additive                    { parser.onOperator($2); }
-	| additive LESS_EQU additive                { parser.onOperator($2); }
-	| additive MORE_EQU additive                { parser.onOperator($2); }
-	| relational CARET additive                 { parser.onOperator($2); }
-	| relational MUL_CARET additive             { parser.onOperator($2); }
-	| relational CARET_MUL additive             { parser.onOperator($2); }
-	| relational MUL_CARET_MUL additive         { parser.onOperator($2); }
+	| Null                                     { parser.onNull($1); }
+	| additive Less additive                   { parser.onOperator($2); }
+	| additive More additive                   { parser.onOperator($2); }
+	| additive LessEqu additive                { parser.onOperator($2); }
+	| additive MoreEqu additive                { parser.onOperator($2); }
 	;
 
 additive
 	: multiplicative
-	| additive ADD multiplicative               { parser.onOperator($2); }
-	| additive SUB multiplicative               { parser.onOperator($2); }
+	| additive Plus multiplicative             { parser.onOperator($2); }
+	| additive Minus multiplicative            { parser.onOperator($2); }
 	;
 
 multiplicative
 	: unary
-	| multiplicative MUL unary                  { parser.onOperator($2); }
-	| multiplicative DIV unary                  { parser.onOperator($2); }
-	| multiplicative MOD unary                  { parser.onOperator($2); }
+	| multiplicative Mul unary                 { parser.onOperator($2); }
+	| multiplicative Div unary                 { parser.onOperator($2); }
+	| multiplicative Mod unary                 { parser.onOperator($2); }
 	;
 
 unary
-	: type_cast
-	| ADD unary
-	| SUB unary                                 { parser.onUnary($1); }
-	| NOT unary                                 { parser.onUnary($1); }
+	: postfix
+	| Plus unary
+	| Minus unary                              { parser.onUnary($1); }
+	| Not unary                                { parser.onUnary($1); }
+	| BitwiseNot unary                         { parser.onUnary($1); }
 	;
 
-type_cast
-	: postfix
-	| braced_expression postfix                 { parser.onTypeCast(); }
+typeCast
+	: bracedExpression postfix                 { parser.onTypeCast(); }
+	| arrayType arrayInitializer               { parser.onArrayTypeCast(); }
 	;
 
 new
-	: NEW IDENTIFIER                            { parser.onNewExpression($1, $2); }
+	: New Identifier                           { parser.onNewExpression($1, $2); }
 	;
 
 container
-	: CONTAINER                                 { parser.onContainer($1); }
-	| container DOT CONTAINER                   { parser.addContainer($3); }
+	: Container                                { parser.onContainer($1); }
+	| container Dot Container                  { parser.addContainer($3); }
 	;
 
-braced_expression
-	: LBRACE expression RBRACE                  { parser.onBracedExpression($1, $3); }
+bracedExpression
+	: LBrace expression RBrace                 { parser.onBracedExpression($1, $3); }
+	| new
 	;
 
 prefix
-	: THIS                                      { parser.onThis($1); }
-	| SUPER                                     { parser.onSuper($1); }
-	| CONSTANT                                  { parser.onConstant($1); }
-	| new
-	| braced_expression
-	| simple_type                               { parser.onTypeToPostfix(); }
-	| array_type                                { parser.onTypeToPostfix(); }
-	| method_call                               { parser.onMethodCall(false); }
+	: This                                     { parser.onThis($1); }
+	| Super                                    { parser.onSuper($1); }
+	| Constant                                 { parser.onConstant($1); }
+	| bracedExpression
+	| simpleType                               { parser.onTypeToPostfix(); }
+	| arrayType                                { parser.onTypeToPostfix(); }
+	| methodCall                               { parser.onMethodCall(false); }
+	| typeCast
 	;
 
-index_expression
-	: LBRACKET RBRACKET                         { parser.onIndex($1, $2, false); }
-	| LBRACKET expression RBRACKET              { parser.onIndex($1, $3, true); }
+indexExpression
+	: LBracket RBracket                        { parser.onIndex($1, $2, false); }
+	| LBracket expression RBracket             { parser.onIndex($1, $3, true); }
 	;
 
 indices
-	: index_expression                          { parser.onIndices(true); }
-	| indices index_expression                  { parser.onIndices(false); }
+	: indexExpression                          { parser.onIndices(true); }
+	| indices indexExpression                  { parser.onIndices(false); }
 	;
 
 postfix
 	: prefix
 	| container
-	| container DOT qualified_name              { parser.onPostfix(); }
-	| container DOT method_call                 { parser.onMethodCall(true); }
-	| container DOT                             { error($2); }
-	| postfix indices                           { parser.onArrayAccess(); }
-	| postfix DOT qualified_name                { parser.onPostfix(); }
-	| postfix DOT method_call                   { parser.onMethodCall(true); }
-	| postfix DOT                               { error($2); }
+	| container Dot qualifiedName              { parser.onPostfix(); }
+	| container Dot methodCall                 { parser.onMethodCall(true); }
+	| container Dot                            { error($2); }
+	| postfix indices                          { parser.onArrayAccess(); }
+	| postfix Dot qualifiedName                { parser.onPostfix(); }
+	| postfix Dot methodCall                   { parser.onMethodCall(true); }
+	| postfix Dot                              { error($2); }
 	;
 
-method_call
-	: qualified_name expressions
+methodCall
+	: qualifiedName expressions
 	;
 
-expressions_left
-	: LBRACE                                    { parser.startExpressions($1); }
+expressionsLeft
+	: LBrace                                   { parser.startExpressions($1); }
 	;
 
 expressions
-	: expressions_left RBRACE                   { parser.finishExpressions($2); }
-	| expressions_left expressions_list RBRACE  { parser.finishExpressions($3); }
+	: expressionsLeft RBrace                   { parser.finishExpressions($2); }
+	| expressionsLeft expressionsList RBrace   { parser.finishExpressions($3); }
 	;
 
-expressions_list
-	: expression                                { parser.addExpression(); }
-	| expressions_list COMMA expression         { parser.addExpression(); }
+expressionsList
+	: expression                               { parser.addExpression(); }
+	| arrayInitializer                         { parser.addExpression(); }
+	| expressionsList Comma expression         { parser.addExpression(); }
+	| expressionsList Comma arrayInitializer   { parser.addExpression(); }
 	;

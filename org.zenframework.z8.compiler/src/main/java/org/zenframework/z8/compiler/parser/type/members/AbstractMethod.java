@@ -198,17 +198,17 @@ public abstract class AbstractMethod extends LanguageElement implements IMethod 
 
 	@Override
 	public boolean isPublic() {
-		return accessToken == null || accessToken.getId() == IToken.PUBLIC;
+		return accessToken == null || accessToken.getId() == IToken.Public;
 	}
 
 	@Override
 	public boolean isProtected() {
-		return accessToken != null && accessToken.getId() == IToken.PROTECTED;
+		return accessToken != null && accessToken.getId() == IToken.Protected;
 	}
 
 	@Override
 	public boolean isPrivate() {
-		return accessToken != null && accessToken.getId() == IToken.PRIVATE;
+		return accessToken != null && accessToken.getId() == IToken.Private;
 	}
 
 	@Override

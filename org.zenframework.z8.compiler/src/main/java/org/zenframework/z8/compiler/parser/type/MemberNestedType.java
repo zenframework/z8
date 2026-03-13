@@ -51,13 +51,8 @@ public class MemberNestedType extends AbstractType implements IInitializer {
 	}
 
 	@Override
-	public String getLeftName() {
+	public String getName() {
 		return name.toString();
-	}
-
-	@Override
-	public String getRightName() {
-		return null;
 	}
 
 	@Override

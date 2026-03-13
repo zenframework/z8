@@ -31,9 +31,8 @@ public class UnaryExpression extends LanguageElement {
 
 	@Override
 	public IPosition getSourceRange() {
-		if(expression != null) {
+		if(expression != null)
 			return operatorToken.getPosition().union(expression.getPosition());
-		}
 		return operatorToken.getPosition();
 	}
 
@@ -53,6 +52,11 @@ public class UnaryExpression extends LanguageElement {
 	@Override
 	public IVariableType getVariableType() {
 		return operator.getVariableType();
+	}
+
+	@Override
+	public boolean containsQualifiedName(String name) {
+		return expression.containsQualifiedName(name);
 	}
 
 	@Override

@@ -46,6 +46,11 @@ public class TernaryExpression extends LanguageElement {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return condition.containsQualifiedName(name) || left.containsQualifiedName(name) || right.containsQualifiedName(name);
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		if(!super.resolveTypes(compilationUnit, declaringType))
 			return false;

@@ -8,7 +8,7 @@ abstract public class ConstantToken extends Token {
 	}
 
 	protected ConstantToken(IPosition position) {
-		super(IToken.CONSTANT, position);
+		super(IToken.Constant, position);
 	}
 
 	public String format() {

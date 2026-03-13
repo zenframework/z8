@@ -375,7 +375,7 @@ public class Type extends AbstractType {
 		IInitializer[] initializers = type.getInitializers();
 
 		for(IInitializer initializer : initializers) {
-			String name = type.getNestedUserName() + '.' + initializer.getLeftName();
+			String name = type.getNestedUserName() + '.' + initializer.getName();
 
 			MemberInitializationInfo info = result.get(name);
 

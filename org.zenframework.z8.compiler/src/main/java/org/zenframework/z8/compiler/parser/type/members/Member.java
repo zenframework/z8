@@ -135,17 +135,17 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public boolean isPublic() {
-		return accessToken == null || accessToken.getId() == IToken.PUBLIC;
+		return accessToken == null || accessToken.getId() == IToken.Public;
 	}
 
 	@Override
 	public boolean isProtected() {
-		return accessToken != null && accessToken.getId() == IToken.PROTECTED;
+		return accessToken != null && accessToken.getId() == IToken.Protected;
 	}
 
 	@Override
 	public boolean isPrivate() {
-		return accessToken != null && accessToken.getId() == IToken.PRIVATE;
+		return accessToken != null && accessToken.getId() == IToken.Private;
 	}
 
 	public void setStaticToken(IToken staticToken) {
@@ -269,10 +269,11 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public void getStaticConstructor(CodeGenerator codeGenerator) {
-		if(isStatic()) {
-			if(initializer != null)
-				initializer.getConstructor2(codeGenerator);
-		}
+		if(!isStatic())
+			return;
+
+		if(initializer != null)
+			initializer.getConstructor2(codeGenerator);
 	}
 
 	@Override
@@ -311,6 +312,9 @@ public class Member extends LanguageElement implements IMember {
 
 	@Override
 	public void getConstructor2(CodeGenerator codeGenerator) {
+		if(isStatic())
+			return;
+
 		if(initializer != null)
 			initializer.getConstructor2(codeGenerator);
 
