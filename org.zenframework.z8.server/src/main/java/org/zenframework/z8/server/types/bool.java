@@ -113,11 +113,11 @@ public final class bool extends primary {
 	}
 
 	public bool operatorEqu(bool x) {
-		return new bool(value == x.value);
+		return new bool(x != null && value == x.value);
 	}
 
 	public bool operatorNotEqu(bool x) {
-		return new bool(value != x.value);
+		return new bool(x!= null && value != x.value);
 	}
 
 	@Override

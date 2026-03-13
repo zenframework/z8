@@ -69,6 +69,7 @@ public final class date extends primary {
 	public date truncSecond();
 
 	public string toString(string frm);
+	public string toIsoString();
 
 	/**
 	Format      Description                                                               Example returned values
@@ -137,6 +138,7 @@ public final class date extends primary {
 		U        Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)                1193432466 or -2138434463
 	*/
 
-	static public date parse(string time);
+	static public date parse(string timestamp);
+	static public date parseIsoString(string isoString);
 	static public date parse(string string, string frm);
 }

@@ -8,9 +8,7 @@ public final class integer extends primary {
 
 	private static final long serialVersionUID = 2882942660543308166L;
 
-	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000
-																	// + 1 =
-																	// -0x7fffffffffffffff
+	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000 + 1 = -0x7fffffffffffffff
 	static public integer Max = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
 
 	static public integer Zero = new integer();
@@ -53,7 +51,7 @@ public final class integer extends primary {
 
 	static public integer parse(String value, int radix) {
 		if(value == null || value.isEmpty())
-			return integer.Zero;
+			return null;
 
 		char lastChar = value.charAt(value.length() - 1);
 		if(lastChar == 'L' || lastChar == 'l')
@@ -133,11 +131,15 @@ public final class integer extends primary {
 		return new sql_integer(this);
 	}
 
-	public integer operatorAnd(integer x) {
+	public date date() {
+		return new date(this);
+	}
+
+	public integer operatorBitwiseAnd(integer x) {
 		return new integer(value & x.value);
 	}
 
-	public integer operatorOr(integer x) {
+	public integer operatorBitwiseOr(integer x) {
 		return new integer(value | x.value);
 	}
 
@@ -170,19 +172,11 @@ public final class integer extends primary {
 	}
 
 	public integer operatorDiv(integer x) {
-		try {
-			return new integer(value / x.value);
-		} catch(ArithmeticException e) {
-			throw new exception(e);
-		}
+		return new integer(value / x.value);
 	}
 
 	public integer operatorMod(integer x) {
-		try {
-			return new integer(value % x.value);
-		} catch(ArithmeticException e) {
-			throw new exception(e);
-		}
+		return new integer(value % x.value);
 	}
 
 	public decimal operatorAdd(decimal x) {
@@ -206,31 +200,31 @@ public final class integer extends primary {
 	}
 
 	public bool operatorEqu(integer x) {
-		return new bool(value == x.value);
+		return new bool(x != null && value == x.value);
 	}
 
 	public bool operatorNotEqu(integer x) {
-		return new bool(value != x.value);
+		return new bool(x != null && value != x.value);
 	}
 
 	public bool operatorLess(integer x) {
-		return new bool(value < x.value);
+		return new bool(x != null && value < x.value);
 	}
 
 	public bool operatorMore(integer x) {
-		return new bool(value > x.value);
+		return new bool(x != null && value > x.value);
 	}
 
 	public bool operatorLessEqu(integer x) {
-		return new bool(value <= x.value);
+		return new bool(x != null && value <= x.value);
 	}
 
 	public bool operatorMoreEqu(integer x) {
-		return new bool(value >= x.value);
+		return new bool(x != null && value >= x.value);
 	}
 
 	public bool operatorEqu(decimal x) {
-		return x.operatorEqu(this);
+		return x != null ? x.operatorEqu(this) : bool.False;
 	}
 
 	public bool operatorNotEqu(decimal x) {
@@ -266,11 +260,11 @@ public final class integer extends primary {
 	}
 
 	public integer z8_and(integer x) {
-		return operatorAnd(x);
+		return operatorBitwiseAnd(x);
 	}
 
 	public integer z8_or(integer x) {
-		return operatorOr(x);
+		return operatorBitwiseOr(x);
 	}
 
 	public integer z8_xor(integer x) {
@@ -355,6 +349,14 @@ public final class integer extends primary {
 
 	public string z8_toString(integer radix) {
 		return new string(format(radix.getInt()));
+	}
+
+	public string z8_toHexString() {
+		return new string(Long.toHexString(value));
+	}
+
+	public string z8_toBinaryString() {
+		return new string(Long.toBinaryString(value));
 	}
 
 	static public integer z8_parse(string string) {

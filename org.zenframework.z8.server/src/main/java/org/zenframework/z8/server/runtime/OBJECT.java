@@ -365,8 +365,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return Application.z8_user();
 	}
 
-	protected void z8_constructor() {
+	static public User.CLASS<? extends User> z8_system() {
+		return Application.z8_system();
 	}
+
+	protected void z8_constructor() {}
 
 	public string z8_getAttribute(string attribute) {
 		return new string(getAttribute(attribute.get()));

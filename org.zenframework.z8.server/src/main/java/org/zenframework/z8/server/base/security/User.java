@@ -97,6 +97,10 @@ public class User extends OBJECT {
 		return (User.CLASS<?>)this.getCLASS();
 	}
 
+	public IUser get() {
+		return user;
+	}
+
 	public void onBeforeLoad(String login) {
 		z8_onBeforeLoad(new string(login));
 	}

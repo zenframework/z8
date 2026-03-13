@@ -6,9 +6,12 @@ public final class int extends primary {
 	public operator decimal();
 	public operator string();
 	public operator sql_int();
+	public operator date();
 
-	public int operator+();
-	public int operator-();
+	public int operator ~ ();
+
+	public int operator + ();
+	public int operator - ();
 	public int operator + (int value);
 	public int operator - (int value);
 	public int operator * (int value);
@@ -33,6 +36,10 @@ public final class int extends primary {
 	public bool operator >= (decimal value);
 	public bool operator == (decimal value);
 	public bool operator != (decimal value);
+
+	public int operator & (int value);
+	public int operator | (int value);
+	public int operator ^ (int value);
 
 	public int abs();
 	public int signum();
@@ -69,6 +76,8 @@ public final class int extends primary {
 	public int rightShift(int _bit);
 
 	public string toString(int radix);
+	public string toHexString();
+	public string toBinaryString();
 
 	static public int parse(string string);
 	static public int parse(string string, int radix);

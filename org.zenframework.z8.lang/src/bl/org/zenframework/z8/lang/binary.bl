@@ -1,10 +1,18 @@
 [primary "org.zenframework.z8.server.types.binary"]
 public final class binary extends primary {
-	public int length(); 
+	public string name;
+
+	public string getName();
+	public binary setName(string name);
+
+	public string getBaseName();
+	public string getExtension();
+
+	public int length();
+
+	public static binary zip(file fileOrDirectory);
+	public static binary zip(binary[] binaries);
 
 	public void unzip(file directory);
 	public void unzip(file directory, encoding charset);
-
-	public static binary zip(file fileOrDirectory);
-
 }

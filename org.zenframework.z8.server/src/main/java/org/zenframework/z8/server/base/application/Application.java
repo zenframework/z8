@@ -32,10 +32,27 @@ public class Application {
 	}
 
 	static public User.CLASS<? extends User> z8_user() {
-		User.CLASS<User> cls = new User.CLASS<User>(null);
-		User user = cls.get();
-		user.initialize(ApplicationServer.getUser());
-		return cls;
+		return User.get(ApplicationServer.getUser());
+	}
+
+	static public User.CLASS<? extends User> z8_system() {
+		return User.get(ApplicationServer.getSystem());
+	}
+
+	static public void z8_switchUser(User.CLASS<? extends User> user) {
+		ApplicationServer.switchUser(user.get().get());
+	}
+
+	static public void z8_restoreUser() {
+		ApplicationServer.restoreUser();
+	}
+
+	static public guid z8_userId() {
+		return ApplicationServer.getUser().getId();
+	}
+
+	static public guid z8_systemId() {
+		return ApplicationServer.getSystem().getId();
 	}
 
 	static public integer z8_currentTimeMillis() {

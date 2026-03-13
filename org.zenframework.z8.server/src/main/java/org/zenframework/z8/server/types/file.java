@@ -76,6 +76,22 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return new DiskFileItem(null, null, false, name, NumericUtils.Megabyte, null);
 	}
 
+	static public String getBaseName(String name) {
+		return FilenameUtils.getBaseName(name);
+	}
+
+	static public String getFileName(String name) {
+		return FilenameUtils.getName(name);
+	}
+
+	static public String getExtension(String name) {
+		return FilenameUtils.getExtension(name).toLowerCase();
+	}
+
+	static public String normalize(String name) {
+		return name.replaceAll("[\\\\/\\*?|<>\"\\n\\r]", "").replaceAll("\\s+", " ").replaceAll(":", "꞉" /* ꞉ - MODIFIER LETTER COLON */).trim();
+	}
+
 	public file() {
 		super();
 	}
@@ -399,6 +415,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 		partLength = RmiIO.readInt(in);
 	}
 
+	static public file createTempFile() {
+		return createTempFile(Folders.Temp, null, null);
+	}
+
 	static public file createTempFile(String prefix, String extension) {
 		return createTempFile(Folders.Temp, prefix, extension);
 	}
@@ -600,9 +620,9 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 			if(fileOrDirectory.isDirectory()) {
 				for(File file : fileOrDirectory.listFiles())
-					zipFile(zipOutput, file, "");
+					zip(zipOutput, file, "");
 			} else
-				zipFile(zipOutput, fileOrDirectory, "");
+				zip(zipOutput, fileOrDirectory, "");
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -612,20 +632,42 @@ public class file extends primary implements RmiSerializable, Serializable {
 		return this;
 	}
 
-	private void zipFile(ZipOutputStream zipOutput, File file, String path) throws IOException {
-		path = FilenameUtils.concat(path, file.getName());
+	public file zip(binary[] binaries) {
+		OutputStream output = null;
+		ZipOutputStream zipOutput = null;
 
-		if(file.isDirectory()) {
-			for(File f : file.listFiles())
-				zipFile(zipOutput, f, path);
+		try {
+			output = getBinaryOutputStream();
+			zipOutput = new ZipOutputStream(output);
+
+			for(int i = 0; i < binaries.length; i++)
+				zip(zipOutput, binaries[i].get(), binaries[i].name.get());
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(zipOutput);
+			IOUtils.closeQuietly(output);
+		}
+
+		return this;
+	}
+
+	private void zip(ZipOutputStream zipOutput, File source, String path) throws IOException {
+		path += (path.isEmpty() ? "" : file.separator) + source.getName();
+
+		if(source.isDirectory()) {
+			for(File file : source.listFiles())
+				zip(zipOutput, file, path);
 			return;
 		}
 
-		InputStream input = null;
+		zip(zipOutput, new FileInputStream(source), path);
+	}
 
+	private void zip(ZipOutputStream zipOutput, InputStream input, String name) throws IOException {
 		try {
-			zipOutput.putNextEntry(new ZipEntry(path));
-			IOUtils.copyLarge(input = new FileInputStream(file), zipOutput, false);
+			zipOutput.putNextEntry(new ZipEntry(name));
+			IOUtils.copyLarge(input, zipOutput, false);
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
