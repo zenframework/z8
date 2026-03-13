@@ -51,7 +51,7 @@ public class ServerConfig extends Config {
 	static final private String DatabaseConnection = "application.database.connection";
 	static final private String DatabaseDriver = "application.database.driver";
 	static final private String DatabaseCharset = "application.database.charset";
-	
+
 	static final private String EmailLogin = "application.email.login";
 	static final private String EmailPassword = "application.email.password";
 
@@ -114,6 +114,7 @@ public class ServerConfig extends Config {
 
 	static final private String OfficeHome = "office.home";
 	static final private String OfficePort = "office.port";
+	static final private String ConverterUrl = "converter.url";
 
 	static final private String SpnegoDomainRealm = "spnego.domainRealm";
 	static final private String SpnegoPropertiesPath = "spnego.propertiesPath";
@@ -226,6 +227,7 @@ public class ServerConfig extends Config {
 
 	static private String officeHome;
 	static private int officePort;
+	static private String converterUrl;
 
 	static private String spnegoDomainRealm;
 	static private File spnegoPropertiesPath;
@@ -374,6 +376,7 @@ public class ServerConfig extends Config {
 
 		officeHome = instance.getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 		officePort = instance.getProperty(OfficePort, 8100);
+		converterUrl = instance.getProperty(ConverterUrl, "http://localhost:8080");
 
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = instance.getFile(SpnegoPropertiesPath, "", configPath);
@@ -596,11 +599,11 @@ public class ServerConfig extends Config {
 	static public String databaseUser() {
 		return databaseUser;
 	}
-	
+
 	static public String emailLogin() {
 		return emailLogin;
 	}
-	
+
 	static public String emailPassword() {
 		return emailPassword;
 	}
@@ -664,7 +667,7 @@ public class ServerConfig extends Config {
 	static public boolean oneSessionPerUser() {
 		return authorityCenterSessionOnePerUser;
 	}
-	
+
 	static public String interconnectionCenterHost() {
 		return interconnectionCenterHost;
 	}
@@ -831,6 +834,10 @@ public class ServerConfig extends Config {
 
 	static public int officePort() {
 		return officePort;
+	}
+
+	static public String converterUrl() {
+		return converterUrl;
 	}
 
 	static public boolean webClientHashPassword() {
