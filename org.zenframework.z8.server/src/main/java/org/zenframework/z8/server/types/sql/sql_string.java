@@ -7,10 +7,10 @@ import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.fts.Fts;
-import org.zenframework.z8.server.db.sql.fts.TsLike;
-import org.zenframework.z8.server.db.sql.fts.TsQuery;
-import org.zenframework.z8.server.db.sql.fts.TsRank;
-import org.zenframework.z8.server.db.sql.fts.TsVector;
+import org.zenframework.z8.server.db.sql.fts.FtsLike;
+import org.zenframework.z8.server.db.sql.fts.FtsQuery;
+import org.zenframework.z8.server.db.sql.fts.FtsRank;
+import org.zenframework.z8.server.db.sql.fts.FtsVector;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
@@ -27,6 +27,7 @@ import org.zenframework.z8.server.db.sql.functions.string.LTrim;
 import org.zenframework.z8.server.db.sql.functions.string.Length;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
 import org.zenframework.z8.server.db.sql.functions.string.Lower;
+import org.zenframework.z8.server.db.sql.functions.string.Quote;
 import org.zenframework.z8.server.db.sql.functions.string.RPad;
 import org.zenframework.z8.server.db.sql.functions.string.RTrim;
 import org.zenframework.z8.server.db.sql.functions.string.RegIndexOf;
@@ -83,8 +84,12 @@ public class sql_string extends sql_primary {
 		return isEmpty();
 	}
 
-	public sql_integer z8_length() {
+	public sql_integer length() {
 		return new sql_integer(new Length(this));
+	}
+
+	public sql_integer z8_length() {
+		return length();
 	}
 
 	public sql_bool z8_contains(sql_string pattern) {
@@ -176,6 +181,10 @@ public class sql_string extends sql_primary {
 		return new sql_string(new Reverse(this));
 	}
 
+	public sql_string z8_quote() {
+		return new sql_string(new Quote(this));
+	}
+
 	public sql_string z8_json(sql_string name) {
 		return new sql_string(new GetJson(this, name));
 	}
@@ -203,7 +212,7 @@ public class sql_string extends sql_primary {
 	}
 
 	public sql_bool z8_ftsLike(sql_string query, Fts.CLASS<? extends Fts> config) {
-		return new sql_bool(new TsLike(new TsVector(this, config.get()), new TsQuery(query, config.get())));
+		return new sql_bool(new FtsLike(new FtsVector(this, config.get()), new FtsQuery(query, config.get())));
 	}
 
 	public sql_decimal z8_ftsRank(sql_string query) {
@@ -211,7 +220,7 @@ public class sql_string extends sql_primary {
 	}
 
 	public sql_decimal z8_ftsRank(sql_string query, Fts.CLASS<? extends Fts> config) {
-		return new sql_decimal(new TsRank(new TsVector(this, config.get()), new TsQuery(query, config.get()), config.get()));
+		return new sql_decimal(new FtsRank(new FtsVector(this, config.get()), new FtsQuery(query, config.get()), config.get()));
 	}
 
 	/* *** Operators *** */

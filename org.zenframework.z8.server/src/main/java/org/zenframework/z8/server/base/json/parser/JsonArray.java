@@ -75,44 +75,28 @@ public class JsonArray extends OBJECT {
 		return new integer(array.size());
 	}
 
-	public string z8_getString(integer i) {
-		return new string(array.getString(i.getInt()));
+	public integer z8_size() {
+		return new integer(array.size());
 	}
 
-	public string z8_getString(JsonPath.CLASS<? extends JsonPath> path) {
-		return (string) JsonUtils.wrap(path.get().get().evaluate(array));
+	public string z8_getString(integer i) {
+		return new string(array.getString(i.getInt()));
 	}
 
 	public integer z8_getInt(integer i) {
 		return new integer(array.getInt(i.getInt()));
 	}
 
-	public integer z8_getInt(JsonPath.CLASS<? extends JsonPath> path) {
-		return (integer) JsonUtils.wrap(path.get().get().evaluate(array));
-	}
-
 	public decimal z8_getDecimal(integer i) {
 		return new decimal(array.getDouble(i.getInt()));
-	}
-
-	public decimal z8_getDecimal(JsonPath.CLASS<? extends JsonPath> path) {
-		return (decimal) JsonUtils.wrap(path.get().get().evaluate(array));
 	}
 
 	public bool z8_getBool(integer i) {
 		return new bool(array.getBoolean(i.getInt()));
 	}
 
-	public bool z8_getBool(JsonPath.CLASS<? extends JsonPath> path) {
-		return (bool) JsonUtils.wrap(path.get().get().evaluate(array));
-	}
-
 	public guid z8_getGuid(integer i) {
 		return array.getGuid(i.getInt());
-	}
-
-	public guid z8_getGuid(JsonPath.CLASS<? extends JsonPath> path) {
-		return (guid) JsonUtils.wrap(path.get().get().evaluate(array));
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(integer i) {
@@ -121,20 +105,10 @@ public class JsonArray extends OBJECT {
 		return cls;
 	}
 
-	@SuppressWarnings("unchecked")
-	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(JsonPath.CLASS<? extends JsonPath> path) {
-		return (JsonArray.CLASS<? extends JsonArray>) JsonUtils.wrap(path.get().get().evaluate(array));
-	}
-
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(integer i) {
 		JsonObject.CLASS<? extends JsonObject> cls = new JsonObject.CLASS<JsonObject>(null);
 		cls.get().set(array.getJsonObject(i.getInt()));
 		return cls;
-	}
-
-	@SuppressWarnings("unchecked")
-	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(JsonPath.CLASS<? extends JsonPath> path) {
-		return (JsonObject.CLASS<? extends JsonObject>) JsonUtils.wrap(path.get().get().evaluate(array));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -221,6 +195,13 @@ public class JsonArray extends OBJECT {
 	@Override
 	public string z8_toString() {
 		return new string(array.toString());
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static JsonArray.CLASS<JsonArray> z8_fromArray(RCollection array) {
+		JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
+		jsonArray.get().set(new org.zenframework.z8.server.json.parser.JsonArray(array));
+		return jsonArray;
 	}
 
 	public static JsonArray.CLASS<JsonArray> z8_parse(string source) {

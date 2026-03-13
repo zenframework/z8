@@ -3,11 +3,13 @@ package org.zenframework.z8.server.types.sql;
 import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.Add;
+import org.zenframework.z8.server.db.sql.expressions.Bitwise;
 import org.zenframework.z8.server.db.sql.expressions.Group;
 import org.zenframework.z8.server.db.sql.expressions.Mul;
 import org.zenframework.z8.server.db.sql.expressions.Operation;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
+import org.zenframework.z8.server.db.sql.expressions.UnaryNot;
 import org.zenframework.z8.server.db.sql.functions.Average;
 import org.zenframework.z8.server.db.sql.functions.Count;
 import org.zenframework.z8.server.db.sql.functions.Max;
@@ -95,6 +97,10 @@ public class sql_integer extends sql_primary {
 		return this;
 	}
 
+	public sql_integer operatorNot() {
+		return new sql_integer(new UnaryNot(this));
+	}
+
 	public sql_integer operatorAdd(sql_integer value) {
 		return new sql_integer(new Add(this, Operation.Add, value));
 	}
@@ -158,4 +164,17 @@ public class sql_integer extends sql_primary {
 	public sql_bool operatorNotEqu(SqlToken value) {
 		return new sql_bool(new Rel(this, Operation.NotEq, value));
 	}
+
+	public sql_integer operatorBitwiseAnd(sql_integer value) {
+		return new sql_integer(new Bitwise(this, Operation.BitwiseAnd, value));
+	}
+
+	public sql_integer operatorBitwiseOr(sql_integer value) {
+		return new sql_integer(new Bitwise(this, Operation.BitwiseOr, value));
+	}
+
+	public sql_integer operatorXor(sql_integer value) {
+		return new sql_integer(new Bitwise(this, Operation.Xor, value));
+	}
+
 }

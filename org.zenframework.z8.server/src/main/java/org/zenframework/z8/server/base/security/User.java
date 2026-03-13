@@ -45,6 +45,10 @@ public class User extends OBJECT {
 		return get(user).get();
 	}
 
+	static public User.CLASS<? extends User> z8_get(guid id) {
+		return newInstance().initialize(org.zenframework.z8.server.security.User.read(id));
+	}
+
 	private IUser user = new org.zenframework.z8.server.security.User();
 	private RLinkedHashMap<guid, string> roles = new RLinkedHashMap<guid, string>();
 

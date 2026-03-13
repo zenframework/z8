@@ -28,6 +28,8 @@ public final class sql_decimal extends sql_primary {
 	public sql_bool operator == (sql_decimal value);
 	public sql_bool operator != (sql_decimal value);
 
+	public sql_bool isNaN();
+
 	public sql_int sign();
 	public sql_decimal abs();
 	public sql_int ceil();

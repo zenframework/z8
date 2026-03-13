@@ -10,16 +10,16 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class TsQuery extends SqlToken {
+public class FtsQuery extends SqlToken {
 
 	private SqlToken string;
 	private Fts config;
 
-	public TsQuery(SqlToken string) {
+	public FtsQuery(SqlToken string) {
 		this(string, null);
 	}
 
-	public TsQuery(SqlToken string, Fts config) {
+	public FtsQuery(SqlToken string, Fts config) {
 		this.string = string;
 		this.config = config;
 	}

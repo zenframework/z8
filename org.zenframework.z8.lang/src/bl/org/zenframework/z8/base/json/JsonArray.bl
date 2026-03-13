@@ -11,23 +11,17 @@ public class JsonArray extends Object {
 	public JsonArray operator + (JsonArray value);
 
 	public bool isEmpty();
-	public int length();
+	public int length(); // Deprecated
+	public int size();
 
 	public string getString(int i);
-	public string getString(JsonPath path);
 	public int getInt(int i);
-	public int getInt(JsonPath path);
 	public decimal getDecimal(int i);
-	public decimal getDecimal(JsonPath path);
 	public bool getBool(int i);
-	public bool getBool(JsonPath path);
 	public guid getGuid(int i);
-	public guid getGuid(JsonPath path);
 
 	public JsonArray getJsonArray(int i);
-	public JsonArray getJsonArray(JsonPath path);
 	public JsonObject getJsonObject(int i);
-	public JsonObject getJsonObject(JsonPath path);
 
 	public JsonArray add(primary value);
 	public JsonArray add(JsonArray value);
@@ -46,5 +40,6 @@ public class JsonArray extends Object {
 	public guid[] toGuidArray();
 	public string[] toStringArray();
 
+	public static JsonArray fromArray(primary[] array);
 	public static JsonArray parse(string source);
 }

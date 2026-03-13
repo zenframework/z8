@@ -19,9 +19,9 @@ import org.zenframework.z8.server.db.sql.expressions.Or;
 import org.zenframework.z8.server.db.sql.expressions.Rel;
 import org.zenframework.z8.server.db.sql.expressions.Unary;
 import org.zenframework.z8.server.db.sql.fts.Fts;
-import org.zenframework.z8.server.db.sql.fts.TsLike;
-import org.zenframework.z8.server.db.sql.fts.TsQuery;
-import org.zenframework.z8.server.db.sql.fts.TsVector;
+import org.zenframework.z8.server.db.sql.fts.FtsLike;
+import org.zenframework.z8.server.db.sql.fts.FtsQuery;
+import org.zenframework.z8.server.db.sql.fts.FtsVector;
 import org.zenframework.z8.server.db.sql.functions.IsNull;
 import org.zenframework.z8.server.db.sql.functions.conversion.GuidToString;
 import org.zenframework.z8.server.db.sql.functions.string.Like;
@@ -297,7 +297,7 @@ public class Expression implements IFilter {
 					ftsConfig = ((StringExpression) this.field).fts.get();
 				else
 					throw new IllegalArgumentException("Full text search: unsupported field type " + this.field.type());
-				token = new TsLike(new TsVector(field, ftsConfig), new TsQuery(new sql_string(value), ftsConfig));
+				token = new FtsLike(new FtsVector(field, ftsConfig), new FtsQuery(new sql_string(value), ftsConfig));
 				if (operation == Operation.IsNotSimilarTo)
 					token = new Unary(Operation.Not, token);
 				return token;
