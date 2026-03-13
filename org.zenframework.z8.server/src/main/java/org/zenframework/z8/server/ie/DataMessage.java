@@ -8,7 +8,6 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.table.value.Field;
-import org.zenframework.z8.server.db.sql.functions.Sql;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -181,25 +180,21 @@ public class DataMessage extends Message {
 	}
 
 	public void z8_add(Table.CLASS<? extends Table> table) {
-		source.add(table.get(), null, (sql_bool) null);
-		addDescription(table, bool.True.sql_bool());
+		addDescription(table, source.add(table.get(), null, (sql_bool) null));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields) {
-		source.add(table.get(), CLASS.asList(fields), (sql_bool) null);
-		addDescription(table, bool.True.sql_bool());
+		addDescription(table, source.add(table.get(), CLASS.asList(fields), (sql_bool) null));
 	}
 
 	public void z8_add(Table.CLASS<? extends Table> table, sql_bool where) {
-		source.add(table.get(), null, where);
-		addDescription(table, where);
+		addDescription(table, source.add(table.get(), null, where));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_add(Table.CLASS<? extends Table> table, RCollection fields, sql_bool where) {
-		source.add(table.get(), CLASS.asList(fields), where);
-		addDescription(table, where);
+		addDescription(table, source.add(table.get(), CLASS.asList(fields), where));
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -209,14 +204,12 @@ public class DataMessage extends Message {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_addRecords(Table.CLASS<? extends Table> table, RCollection ids) {
-		source.add(table.get(), null, ids);
-		addDescription(table, Sql.z8_inVector(table.get().recordId.get().sql_guid(), ids));
+		addDescription(table, source.add(table.get(), null, ids));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_addRecords(Table.CLASS<? extends Table> table, RCollection fields, RCollection ids) {
-		source.add(table.get(), CLASS.asList(fields), ids);
-		addDescription(table, Sql.z8_inVector(table.get().recordId.get().sql_guid(), ids));
+		addDescription(table, source.add(table.get(), CLASS.asList(fields), ids));
 	}
 
 	public void z8_addRule(ImportPolicy policy) {
@@ -269,9 +262,13 @@ public class DataMessage extends Message {
 		return new FileMessage.CLASS<FileMessage>(null);
 	}
 	
-	private void addDescription(Table.CLASS<? extends Table> table, sql_bool where) {
+	private void addDescription(Table.CLASS<? extends Table> table, int recordsCount) {
+		if (recordsCount == 0)
+			return;
+
 		if (description.length() > 0)
 			description.append(", ");
-		description.append(table.name() + ": " + table.get().count(where));
+
+		description.append(table.name() + ": " + recordsCount);
 	}
 }
