@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.Sequencer;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -222,8 +223,9 @@ public class TransportQueue extends Table {
 		Collection<Field> orderBy = Arrays.<Field>asList(ordinal.get());
 
 		SqlToken where = new And(new IsNot(processed), new Equ(address, domain));
+		int limit = ServerConfig.getTransportQueueTransactionSize();
 
-		read(fields, orderBy, where, 100);
+		read(fields, orderBy, where, limit);
 
 		while(next())
 			result.add(recordId());
