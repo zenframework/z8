@@ -95,6 +95,8 @@ public class ServerConfig extends Config {
 	static final private String TransportJobCron = "transport.job.cron";
 	static final private String TransportJobThreads = "transport.job.threads";
 	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
+	static final private String TransportQueueTransactionSize = "transport.job.transportQueueTransactionSize";
+	static final private String MessageQueueTransactionSize = "transport.job.messageQueueTransactionSize";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
 	static final private String ExchangeFolderIn = "exchange.folder.in";
@@ -212,6 +214,8 @@ public class ServerConfig extends Config {
 	static private String transportJobCron;
 	static private int transportJobThreads;
 	static private boolean transportJobLogStackTrace;
+	static private int transportQueueTransactionSize;
+	static private int messageQueueTransactionSize;
 
 	static private String exchangeJobCron;
 	static private File exchangeFolderIn;
@@ -358,6 +362,8 @@ public class ServerConfig extends Config {
 		transportJobCron = instance.getProperty(TransportJobCron, "");
 		transportJobThreads = instance.getProperty(TransportJobThreads, 10);
 		transportJobLogStackTrace = instance.getProperty(TransportJobLogStackTrace, false);
+		transportQueueTransactionSize = instance.getProperty(TransportQueueTransactionSize, 500);
+		messageQueueTransactionSize = instance.getProperty(MessageQueueTransactionSize, 50);
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
 		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in", workingPath);
@@ -775,6 +781,14 @@ public class ServerConfig extends Config {
 
 	static public boolean transportJobLogStackTrace() {
 		return transportJobLogStackTrace;
+	}
+
+	public static int getTransportQueueTransactionSize() {
+		return transportQueueTransactionSize;
+	}
+
+	public static int getMessageQueueTransactionSize() {
+		return messageQueueTransactionSize;
 	}
 
 	static public boolean exchangeJobEnabled() {
