@@ -58,14 +58,7 @@ public abstract class DataSource {
 	protected abstract boolean internalNext();
 
 	public Object evaluate(String value) {
-		String result = getExpression().evaluateText(value);
-		if (result == null)
-			return null;
-		try {
-			return Double.parseDouble(result.trim().replace(',', '.'));
-		} catch (NumberFormatException e) {
-			return result;
-		}
+		return getExpression().evaluateText(value);
 	}
 
 	public abstract OBJECT getObject();
