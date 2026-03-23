@@ -9,25 +9,9 @@ import org.zenframework.z8.server.expression.generated.ExpressionLexer;
 import org.zenframework.z8.server.expression.generated.ExpressionParser;
 import org.zenframework.z8.server.expression.generated.TextLexer;
 import org.zenframework.z8.server.expression.generated.TextParser;
-import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.string;
 
-public class Expression extends OBJECT {
-	public static class CLASS<T extends OBJECT> extends OBJECT.CLASS<T> {
-		public CLASS(IObject container) {
-			super(container);
-			setJavaClass(Expression.class);
-		}
-
-		@Override
-		public Object newObject(IObject container) {
-			return new Expression(container);
-		}
-	}
-
+public class Expression {
 	public static interface Extractor {
 		void onObject(OBJECT object);
 	}
@@ -37,14 +21,6 @@ public class Expression extends OBJECT {
 	}
 
 	private final Calculator calculator = new Calculator();
-
-	public Expression() {
-		super(null);
-	}
-
-	public Expression(IObject container) {
-		super(container);
-	}
 
 	public Calculator getCalculator() {
 		return calculator;
@@ -108,25 +84,5 @@ public class Expression extends OBJECT {
 		ExtractorTreeVisitor visitor = new ExtractorTreeVisitor(calculator.setSilent(true), extractor);
 
 		visitor.visit(parser.text());
-	}
-
-	public RCollection<string> z8_getErrors() {
-		RCollection<string> errors = new RCollection<string>(getErrors().size(), false);
-		for (String error : getErrors())
-			errors.add(new string(error));
-		return errors;
-	}
-
-	public bool z8_evaluateBoolean(string expression) {
-		Object result = evaluateExpression(expression.get());
-
-		if (result instanceof bool)
-			return (bool) result;
-
-		throw new IllegalStateException("Boolean result expected: " + result);
-	}
-
-	public string z8_evaluateText(string expression) {
-		return expression != null ? new string(evaluateText(expression.get())) : null;
 	}
 }

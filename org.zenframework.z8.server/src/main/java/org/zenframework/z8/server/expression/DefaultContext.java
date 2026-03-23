@@ -61,6 +61,11 @@ public class DefaultContext extends Context {
 		return functions.get(name);
 	}
 
+	@Override
+	public String toString() {
+		return new StringBuilder(1024).append("variables: ").append(variables).append(", functions: ").append(functions).toString();
+	}
+
 	public static DefaultContext create() {
 		return new DefaultContext(null)
 				.setVariable("bool", bool.class)
