@@ -8,5 +8,7 @@ public enum Aggregation {
 	Count,
 	Array,
 	Distinct,
-	Concat
+	Concat,
+	BitwiseOr,
+	BitwiseAnd
 }

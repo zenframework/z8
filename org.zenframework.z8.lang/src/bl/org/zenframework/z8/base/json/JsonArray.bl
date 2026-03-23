@@ -37,8 +37,12 @@ public class JsonArray extends Object {
 
 	public JsonArray remove(int index);
 
+	public date[] toDateArray();
+	public decimal[] toDecimalArray();
 	public guid[] toGuidArray();
+	public int[] toIntArray();
 	public string[] toStringArray();
+	public bool[] toBoolArray();
 
 	public static JsonArray fromArray(primary[] array);
 	public static JsonArray parse(string source);

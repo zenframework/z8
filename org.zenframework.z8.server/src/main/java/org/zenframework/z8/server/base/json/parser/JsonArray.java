@@ -5,6 +5,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -173,16 +174,48 @@ public class JsonArray extends OBJECT {
 
 	public RCollection<guid> z8_toGuidArray() {
 		RCollection<guid> result = new RCollection<guid>();
-		for(int i = 0; i < array.size(); i++) {
+		for(int i = 0; i < array.size(); i++)
 			result.add(array.getGuid(i));
-		}
+		return result;
+	}
+
+	public RCollection<integer> z8_toIntArray() {
+		RCollection<integer> result = new RCollection<integer>();
+		for(int i = 0; i < array.size(); i++)
+			result.add(new integer(array.getInt(i)));
+		return result;
+	}
+
+	public RCollection<decimal> z8_toDecimalArray() {
+		RCollection<decimal> result = new RCollection<decimal>();
+		for(int i = 0; i < array.size(); i++)
+			result.add(new decimal(array.getDouble(i)));
 		return result;
 	}
 
 	public RCollection<string> z8_toStringArray() {
 		RCollection<string> result = new RCollection<string>();
 		for(int i = 0; i < array.size(); i++) {
-			result.add(new string(array.getString(i)));
+			String value = array.getString(i);
+			result.add(value != null ? new string(value) : null);
+		}
+		return result;
+	}
+
+	public RCollection<date> z8_toDateArray() {
+		RCollection<date> result = new RCollection<date>();
+		for(int i = 0; i < array.size(); i++) {
+			String value = array.getString(i);
+			result.add(value != null ? new date(value) : null);
+		}
+		return result;
+	}
+
+	public RCollection<bool> z8_toBoolArray() {
+		RCollection<bool> result = new RCollection<bool>();
+		for(int i = 0; i < array.size(); i++) {
+			String value = array.getString(i);
+			result.add(value != null ? new bool(value) : new bool(false));
 		}
 		return result;
 	}

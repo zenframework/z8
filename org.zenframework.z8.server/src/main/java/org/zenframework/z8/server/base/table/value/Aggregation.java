@@ -9,7 +9,9 @@ public enum Aggregation {
 	Count(Names.Count),
 	Array(Names.Array),
 	Distinct(Names.Distinct),
-	Concat(Names.Concat);
+	Concat(Names.Concat),
+	BitwiseOr(Names.BitwiseOr),
+	BitwiseAnd(Names.BitwiseAnd);
 
 	class Names {
 		static protected final String None = "none";
@@ -21,6 +23,8 @@ public enum Aggregation {
 		static protected final String Array = "array";
 		static protected final String Distinct = "distinct";
 		static protected final String Concat = "concat";
+		static protected final String BitwiseOr = "bitwise_or";
+		static protected final String BitwiseAnd = "bitwise_and";
 	}
 
 	private String fName = null;
