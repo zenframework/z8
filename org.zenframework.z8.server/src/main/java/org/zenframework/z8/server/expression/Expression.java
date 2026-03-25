@@ -135,7 +135,7 @@ public class Expression extends OBJECT {
 	}
 
 	public string z8_evaluateText(string expression) {
-		Object result = evaluateText(expression.get());
+		Object result = expression != null ? evaluateText(expression.get()) : null;
 		return result != null ? new string(result.toString()) : null;
 	}
 }

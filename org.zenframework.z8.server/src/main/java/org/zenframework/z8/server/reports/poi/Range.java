@@ -21,8 +21,11 @@ import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.string;
 
 public class Range {
 
@@ -660,6 +663,12 @@ public class Range {
 			cell.setCellValue(((integer) value).getInt());
 		else if (value instanceof decimal)
 			cell.setCellValue(((decimal) value).getDouble());
+		else if (value instanceof bool)
+			cell.setCellValue(((bool) value).get());
+		else if (value instanceof date)
+			cell.setCellValue(((date) value).get());
+		else if (value instanceof string)
+			cell.setCellValue(((string) value).get());
 		else
 			cell.setCellValue(value != null ? value.toString() : "");
 		return value;
