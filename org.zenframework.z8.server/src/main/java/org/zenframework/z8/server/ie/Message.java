@@ -67,6 +67,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 
 	private guid id = guid.Null;
+	private long ordinal;
 	private guid sourceId = guid.Null;
 	private String name;
 	private String description;
@@ -98,6 +99,14 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	public void setId(guid id) {
 		this.id = id;
+	}
+
+	public long getOrdinal() {
+		return ordinal;
+	}
+
+	public void setOrdinal(long ordinal) {
+		this.ordinal = ordinal;
 	}
 
 	public String getName() {
@@ -345,11 +354,14 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				connection.rollback();
 
 			onAcceptFail(e);
+
 			if(failAction == Cancel.getInt())
 				return true;
 			if(failAction == Retry.getInt())
 				return false;
-			Trace.logError(e);
+
+			Trace.logError("DataMessage [" + sender + '/' + ordinal + "] failed", e);
+
 			throw new RuntimeException(e);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);

@@ -178,18 +178,21 @@ public class Scheduler implements Runnable {
 		ApplicationServer.setRequest(new Request(new Session(database.schema())));
 
 		while(thread != null) {
-			initializeJobs();
-
-			if(Thread.interrupted())
-				break;
-
-			startJobs();
-
 			try {
-				Thread.sleep(1 * 1000);
-			} catch(InterruptedException e) {
-				break;
+				initializeJobs();
+
+				if(Thread.interrupted())
+					break;
+
+				startJobs();
+			} catch (Throwable e) {
+				Trace.logError("Scheduler fatal error, waitting for 1min...", e);
+				if(!sleep(60 * 1000))
+					break;
 			}
+
+			if(!sleep(1 * 1000))
+				break;
 		}
 
 		ApplicationServer.setRequest(null);
@@ -315,5 +318,14 @@ public class Scheduler implements Runnable {
 		}
 
 		return false;
+	}
+
+	private static boolean sleep(int ms) {
+		try {
+			Thread.sleep(ms);
+			return true;
+		} catch(InterruptedException e) {
+			return false;
+		}
 	}
 }
