@@ -186,9 +186,10 @@ public class MessageQueue extends Table {
 		Field processing = this.processing.get();
 		Field data = this.data.get();
 		Field classId = this.classId.get();
+		Field ordinal = this.ordinal.get();
 
-		Collection<Field> fields = Arrays.<Field>asList(name, description, data, classId);
-		Collection<Field> orderBy = Arrays.<Field>asList(ordinal.get());
+		Collection<Field> fields = Arrays.<Field>asList(name, description, data, classId, ordinal);
+		Collection<Field> orderBy = Arrays.<Field>asList(ordinal);
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
 		int limit = ServerConfig.getMessageQueueTransactionSize();
@@ -201,6 +202,7 @@ public class MessageQueue extends Table {
 			message.setDescription(description.get().toString());
 			message.fromBinary(data.binary());
 			message.setId(recordId());
+			message.setOrdinal(ordinal.integer().get());
 			result.add(message);
 		}
 
