@@ -84,6 +84,7 @@ public class Transport implements Runnable {
 			Scheduler.unregister(ApplicationServer.getDatabase(), thread);
 			Transport.unregister(this);
 			ApplicationServer.setRequest(null);
+			ConnectionManager.release();
 		}
 	}
 
