@@ -177,6 +177,10 @@ public class MessageQueue extends Table {
 		return result;
 	}
 
+	public int count(String domain) {
+		return count(new Equ(address.get(), domain));
+	}
+
 	public Collection<Message> getMessages(String domain) {
 		Collection<Message> result = new ArrayList<Message>();
 
@@ -192,7 +196,7 @@ public class MessageQueue extends Table {
 		Collection<Field> orderBy = Arrays.<Field>asList(ordinal);
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
-		int limit = ServerConfig.getMessageQueueTransactionSize();
+		int limit = ServerConfig.messageQueueTransactionSize();
 
 		read(fields, orderBy, where, limit);
 
@@ -205,6 +209,8 @@ public class MessageQueue extends Table {
 			message.setOrdinal(ordinal.integer().get());
 			result.add(message);
 		}
+
+		close();
 
 		return result;
 	}

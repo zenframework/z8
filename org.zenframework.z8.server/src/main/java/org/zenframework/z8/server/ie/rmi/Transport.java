@@ -3,8 +3,10 @@ package org.zenframework.z8.server.ie.rmi;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
@@ -30,12 +32,39 @@ public class Transport implements Runnable {
 	static private Object lock = new Object();
 	static private Map<String, Transport> workers = new HashMap<String, Transport>();
 
+	static public class Info {
+		private final String domain;
+		private final int messageQueueSize;
+		private final int transportQueueSize;
+
+		private Info(String domain, int messageQueueSize, int transportQueueSize) {
+			this.domain = domain;
+			this.messageQueueSize = messageQueueSize;
+			this.transportQueueSize = transportQueueSize;
+		}
+
+		public String getDomain() {
+			return domain;
+		}
+
+		public int getMessageQueueSize() {
+			return messageQueueSize;
+		}
+
+		public int getTransportQueueSize() {
+			return transportQueueSize;
+		}
+	}
+
 	private String domain;
 	private IApplicationServer server;
 	private Thread thread;
 
 	private MessageQueue messageQueue = MessageQueue.newInstance();
 	private TransportQueue transportQueue = TransportQueue.newInstance();
+
+	private int messageQueueSize;
+	private int transportQueueSize;
 
 	static public Transport get(String domain) {
 		synchronized(lock) {
@@ -74,10 +103,14 @@ public class Transport implements Runnable {
 		try {
 			if(ServerConfig.isMultitenant())
 				throw new RuntimeException("Transport is incompatible with multitenacy ");
+
 			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
-			do {
+
+			for (int i = 0, n = ServerConfig.transportJobIterations(); i < n; i++) {
 				prepareMessages();
-			} while (sendMessages());
+				if (!sendMessages())
+					break;
+			}
 		} catch(Throwable e) {
 			Trace.logError(e);
 		} finally {
@@ -89,6 +122,8 @@ public class Transport implements Runnable {
 	}
 
 	private boolean prepareMessages() throws Throwable {
+		messageQueueSize = messageQueue.count(domain);
+
 		Collection<Message> messages = messageQueue.getMessages(domain);
 
 		for(Message message : messages)
@@ -114,6 +149,8 @@ public class Transport implements Runnable {
 	}
 
 	private boolean sendMessages() throws Throwable {
+		transportQueueSize = messageQueue.count(domain);
+
 		Collection<guid> ids = transportQueue.getMessages(domain);
 
 		for(guid id : ids) {
@@ -228,5 +265,24 @@ public class Transport implements Runnable {
 
 		transportQueue.setProcessed(message.getId());
 		return true;
+	}
+
+	public Info getInfo() {
+		return new Info(domain, messageQueueSize, transportQueueSize);
+	}
+
+	public static List<Info> getTransportsInfo() {
+		Collection<Transport> transports;
+
+		synchronized(lock) {
+			transports = new ArrayList<Transport>(workers.values());
+		}
+
+		List<Info> infos = new ArrayList<Transport.Info>(transports.size());
+
+		for (Transport transport : transports)
+			infos.add(transport.getInfo());
+
+		return infos;
 	}
 }

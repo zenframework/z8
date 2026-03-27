@@ -6,6 +6,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.zenframework.z8.server.jmx.impl.ConnectionManagerImpl;
+import org.zenframework.z8.server.jmx.impl.TransportImpl;
 import org.zenframework.z8.server.logs.Trace;
 
 public class MBeans {
@@ -24,6 +25,7 @@ public class MBeans {
 
 	public void registerMBeans() {
 		register(ConnectionManagerMXBean.Name, new ConnectionManagerImpl(), ConnectionManagerMXBean.class);
+		register(TransportMXBean.Name, new TransportImpl(), TransportMXBean.class);
 	}
 
 	protected <T> void register(String name, T mbean, Class<T> type) {

@@ -10,8 +10,6 @@ import org.zenframework.z8.server.jmx.ConnectionManagerMXBean;
 
 public class ConnectionManagerImpl implements ConnectionManagerMXBean {
 
-	public static final String ConnectionsCount = "connectionsCount";
-
 	@Override
 	public List<Info> getConnections() throws OpenDataException {
 		return ConnectionManager.getConnectionsInfo();
