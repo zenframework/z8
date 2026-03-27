@@ -1,11 +1,17 @@
 var Z8 = {
-	classes: {},
+	classes: {
+		Array: Array
+	},
 
-	apply: function(object, config) {
+	apply: function(object, config, defined) {
 		object = object || {};
 
-		for(var name in config)
-			object[name] = config[name];
+		for(var name in config) {
+			var value = config[name];
+			if(defined && value === undefined)
+				continue;
+			object[name] = value;
+		}
 
 		return object;
 	},
@@ -32,6 +38,14 @@ var Z8 = {
 		prototype[name] = member;
 	},
 
+	addNewInstance: function(prototype) {
+		var newInstance = function() {
+			return new this.$class();
+		};
+
+		Z8.addMember(prototype, newInstance, 'newInstance');
+	},
+
 	addCallParent: function(prototype) {
 		var callParent = function() {
 			return this.callParent.caller.$previous.apply(this, arguments);
@@ -40,14 +54,11 @@ var Z8 = {
 		Z8.addMember(prototype, callParent, 'callParent');
 	},
 
-	newConstructor: function() {
-		return function constructor() {
-			return this.constructor.apply(this, arguments);
-		};
-	},
-
 	define: function(className, config) {
-		var cls = Z8.newConstructor();
+		var cls = function() {
+			this.constructor.apply(this, arguments);
+			return this;
+		};
 
 		var single = config.single;
 		delete config.single;
@@ -64,24 +75,23 @@ var Z8 = {
 		var shortName = config.shortClassName;
 		delete config.shortClassName;
 
-		var baseCls = null;
-
-		if(extend != null) {
-			baseCls = Z8.classes[extend];
-			if(baseCls == null)
-				throw 'Superclass not found: "' + extend + '"'; 
-		} else
-			baseCls = function(param) { return Z8.addMembers(this, param); };
+		var baseCls = extend != null
+				? (String.isString(extend) ? Z8.classes[extend] : extend)
+				: function(param) { Z8.apply(this, param, true); };
+		if(baseCls == null)
+			throw 'Superclass not found: "' + extend + '"'; 
 
 		var basePrototype = baseCls.prototype;
 		var prototype = cls.prototype = Object.create(basePrototype);
 		prototype.self = prototype;
+		prototype.$class = cls;
 		prototype.$className = className;
 		if(shortName != null)
 			prototype.$shortClassName = shortName;
 		cls.superclass = prototype.superclass = basePrototype;
 
 		Z8.addMembers(prototype, config);
+		Z8.addNewInstance(prototype);
 		Z8.addCallParent(prototype);
 		Z8.mixin(prototype, mixins);
 		Z8.apply(cls, statics);
@@ -101,7 +111,10 @@ var Z8 = {
 		mixins = Array.isArray(mixins) ? mixins : [mixins];
 
 		for(var i = 0, length = mixins.length; i < length; i++) {
-			var mixin = Z8.classes[mixins[i]];
+			var mixin = mixins[i];
+
+			if(String.isString(mixin))
+				mixin = Z8.classes[mixin];
 
 			if(mixin == null)
 				throw 'Mixin not found: "' + mixins[i] + '"';
@@ -154,6 +167,9 @@ var Z8 = {
 			if(cls == null)
 				throw 'Class not found: "' + name + '"';
 		}
+
+		if(cls == Array)
+			return [];
 
 		var object = Object.create(cls.prototype);
 		cls.call(object, config);
