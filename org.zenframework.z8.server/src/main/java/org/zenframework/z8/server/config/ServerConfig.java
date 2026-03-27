@@ -93,6 +93,7 @@ public class ServerConfig extends Properties {
 	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
 	static final private String TransportQueueTransactionSize = "transport.job.transportQueueTransactionSize";
 	static final private String MessageQueueTransactionSize = "transport.job.messageQueueTransactionSize";
+	static final private String TransportJobIterations = "transport.job.iterations";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
 	static final private String ExchangeFolderIn = "exchange.folder.in";
@@ -216,6 +217,7 @@ public class ServerConfig extends Properties {
 	static private boolean transportJobLogStackTrace;
 	static private int transportQueueTransactionSize;
 	static private int messageQueueTransactionSize;
+	static private int transportJobIterations;
 
 	static private String exchangeJobCron;
 	static private File exchangeFolderIn;
@@ -371,6 +373,7 @@ public class ServerConfig extends Properties {
 		transportJobLogStackTrace = instance.getProperty(TransportJobLogStackTrace, false);
 		transportQueueTransactionSize = instance.getProperty(TransportQueueTransactionSize, 500);
 		messageQueueTransactionSize = instance.getProperty(MessageQueueTransactionSize, 50);
+		transportJobIterations = instance.getProperty(TransportJobIterations, 10);
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
 		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in");
@@ -762,12 +765,16 @@ public class ServerConfig extends Properties {
 		return transportJobLogStackTrace;
 	}
 
-	public static int getTransportQueueTransactionSize() {
+	public static int transportQueueTransactionSize() {
 		return transportQueueTransactionSize;
 	}
 
-	public static int getMessageQueueTransactionSize() {
+	public static int messageQueueTransactionSize() {
 		return messageQueueTransactionSize;
+	}
+
+	public static int transportJobIterations() {
+		return transportJobIterations;
 	}
 
 	static public boolean exchangeJobEnabled() {

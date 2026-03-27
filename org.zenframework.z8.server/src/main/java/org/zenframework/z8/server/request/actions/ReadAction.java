@@ -301,16 +301,16 @@ public class ReadAction extends RequestAction {
 		return result;
 	}
 
-	public void addFilter(SqlToken filter) {
-		collectFilterQueries(filter, filters, filterFields);
+	public ReadAction addFilter(SqlToken filter) {
+		return collectFilterQueries(filter, filters, filterFields);
 	}
 
-	public void addGroupFilter(SqlToken filter) {
-		collectFilterQueries(filter, groupFilters, groupFilterFields);
+	public ReadAction addGroupFilter(SqlToken filter) {
+		return collectFilterQueries(filter, groupFilters, groupFilterFields);
 	}
 
-	public void addFilter(Field field, guid keyValue) {
-		addFilter(field, keyValue, Operation.Eq);
+	public ReadAction addFilter(Field field, guid keyValue) {
+		return addFilter(field, keyValue, Operation.Eq);
 	}
 
 	private Collection<ILink> getPath(Field field) {
@@ -479,16 +479,19 @@ public class ReadAction extends RequestAction {
 		}
 	}
 
-	private void collectFilterQueries(SqlToken filter, Collection<SqlToken> filters, Collection<Field> filterFields) {
-		if(filter != null && !(filter == sql_bool.True) && !filters.contains(filter)) {
-			Collection<Field> fields = getUsedFields(filter);
+	private ReadAction collectFilterQueries(SqlToken filter, Collection<SqlToken> filters, Collection<Field> filterFields) {
+		if (filter == null || filter == sql_bool.True || filters.contains(filter))
+			return this;
 
-			for(Field field : fields)
-				collectUsedQueries(field);
+		Collection<Field> fields = getUsedFields(filter);
 
-			filterFields.addAll(fields);
-			filters.add(filter);
-		}
+		for(Field field : fields)
+			collectUsedQueries(field);
+
+		filterFields.addAll(fields);
+		filters.add(filter);
+
+		return this;
 	}
 
 	private Collection<Field> getUsedFields(Field field) {
@@ -534,12 +537,12 @@ public class ReadAction extends RequestAction {
 			addFilter(left);
 	}
 
-	private void addFilter(Field field, guid value, Operation operation) {
-		addFilter(getFilter(field, value, operation));
+	private ReadAction addFilter(Field field, guid value, Operation operation) {
+		return addFilter(getFilter(field, value, operation));
 	}
 
-	private void addFilter(Field field, Collection<guid> value, Operation operation) {
-		addFilter(getFilter(field, value, operation));
+	private ReadAction addFilter(Field field, Collection<guid> value, Operation operation) {
+		return addFilter(getFilter(field, value, operation));
 	}
 
 	private void addLikeFilter(Collection<String> fields, String lookup) {

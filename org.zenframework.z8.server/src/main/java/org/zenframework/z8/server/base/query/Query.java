@@ -287,8 +287,12 @@ public class Query extends OBJECT {
 	public RCollection<guid> findRecords(SqlToken where) {
 		RCollection<guid> records = new RCollection<guid>();
 		read(Arrays.asList(primaryKey()), where);
+
 		while(next())
 			records.add(primaryKey().guid());
+
+		close();
+
 		return records;
 	}
 
@@ -322,15 +326,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean aggregate(Collection<Field> fields, SqlToken where) {
-		ReadAction action = new ReadAction(this, fields);
-		action.addFilter(where);
-
-		if(cursor != null)
-			cursor.close();
-
-		cursor = action.getTotals();
-
-		return cursor.next();
+		return close().initCursor(new ReadAction(this, fields).addFilter(where).getTotals()).next(true);
 	}
 
 	private Collection<Field> getInsertFields(guid recordId) {
@@ -388,38 +384,36 @@ public class Query extends OBJECT {
 		return CopyAction.run(this, recordId);
 	}
 
-	public Collection<Field> read(Collection<Field> fields) {
+	public Query read(Collection<Field> fields) {
 		return read(fields, -1);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int limit) {
+	public Query read(Collection<Field> fields, int limit) {
 		return read(fields, 0, limit);
 	}
 
-	public Collection<Field>  read(Collection<Field> fields, int start, int limit) {
+	public Query read(Collection<Field> fields, int start, int limit) {
 		return read(fields, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields) {
-		read(fields, 1);
-		return next();
+		return read(fields, 1).next(true);
 	}
 
-	public Collection<Field> read(Collection<Field> fields, SqlToken where) {
+	public Query read(Collection<Field> fields, SqlToken where) {
 		return read(fields, where, -1);
 	}
 
-	public Collection<Field> read(Collection<Field> fields, SqlToken where, int limit) {
+	public Query read(Collection<Field> fields, SqlToken where, int limit) {
 		return read(fields, where, 0, limit);
 	}
 
-	public Collection<Field> read(Collection<Field> fields, SqlToken where, int start, int limit) {
+	public Query read(Collection<Field> fields, SqlToken where, int start, int limit) {
 		return read(fields, null, null, where, null, start, limit);
 	}
 
 	public boolean readFirst(Collection<Field> fields, SqlToken where) {
-		read(fields, null, null, where, null, 0, 1);
-		return next();
+		return read(fields, null, null, where, null, 0, 1).next(true);
 	}
 
 	public void read(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
@@ -435,8 +429,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-		read(fields, sortFields, null, where, null);
-		return next();
+		return read(fields, sortFields, null, where, null).next(true);
 	}
 
 	public void sort(Collection<Field> sortFields, SqlToken where) {
@@ -496,32 +489,18 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readRecord(guid id, Collection<Field> fields) {
-		ReadAction action = new ReadAction(this, fields, id);
-
-		if(cursor != null)
-			cursor.close();
-
-		cursor = action.getCursor();
-
-		if(!cursor.next()) {
-			cursor.close();
-			cursor = null;
-			return false;
-		}
-
-		return true;
+		return close().initCursor(new ReadAction(this, fields, id).getCursor()).next(true);
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		read(fields, sortFields, groupFields, where, having);
-		return next();
+		return read(fields, sortFields, groupFields, where, having).next(true);
 	}
 
-	protected void read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		read(fields, sortFields, groupFields, where, having, 0, -1);
+	protected Query read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
+		return read(fields, sortFields, groupFields, where, having, 0, -1);
 	}
 
-	protected Collection<Field> read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
+	protected Query read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having, int start, int limit) {
 		ActionConfig config = new ActionConfig();
 		config.query = this;
 		config.fields = fields;
@@ -535,20 +514,15 @@ public class Query extends OBJECT {
 		action.setLimit(limit);
 		action.setStart(start);
 
-		if(cursor != null)
-			cursor.close();
-
-		cursor = action.getCursor();
-		return cursor.getFields();
+		return close().initCursor(action.getCursor());
 	}
 
 	public Collection<Field> getChangedFields() {
 		Collection<Field> fields = new ArrayList<Field>();
 
-		for(Field.CLASS<? extends Field> field : primaryFields()) {
+		for(Field.CLASS<? extends Field> field : primaryFields())
 			if(field.hasInstance() && field.get().changed())
 				fields.add(field.get());
-		}
 
 		return fields;
 	}
@@ -564,10 +538,13 @@ public class Query extends OBJECT {
 			resetChangedFields();
 	}
 
-	private void resetChangedFields() {
+	private Query resetChangedFields() {
 		Collection<Field> changedFields = getChangedFields();
+
 		for(Field field : changedFields)
 			field.reset();
+
+		return this;
 	}
 
 	public int update(SqlToken where) {
@@ -583,7 +560,7 @@ public class Query extends OBJECT {
 			result += UpdateAction.run(this, id, false);
 		}
 
-		resetChangedFields();
+		close().resetChangedFields();
 
 		return result;
 	}
@@ -607,18 +584,12 @@ public class Query extends OBJECT {
 			result += DestroyAction.run(this, id);
 		}
 
+		close();
+
 		return result;
 	}
 
-	private boolean readRecord(guid id, RCollection<Field.CLASS<Field>> fieldClasses) {
-		Collection<Field> fields = CLASS.asList(fieldClasses);
-
-		fields = fields.isEmpty() ? null : fields;
-
-		return readRecord(id, fields);
-	}
-
-	private void read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having, int start, int limit) {
+	private Query read1(RCollection<Field.CLASS<Field>> fieldClasses, RCollection<Field.CLASS<Field>> sortClasses, RCollection<Field.CLASS<Field>> groupClasses, SqlToken where, SqlToken having, int start, int limit) {
 		Collection<Field> fields = CLASS.asList(fieldClasses);
 		Collection<Field> sortFields = CLASS.asList(sortClasses);
 		Collection<Field> groupFields = CLASS.asList(groupClasses);
@@ -627,19 +598,21 @@ public class Query extends OBJECT {
 		sortFields = sortFields.isEmpty() ? null : sortFields;
 		groupFields = groupFields.isEmpty() ? null : groupFields;
 
-		read(fields, sortFields, groupFields, where, having, start, limit);
+		return read(fields, sortFields, groupFields, where, having, start, limit);
 	}
 
 	public boolean next() {
+		return next(false);
+	}
+
+	public boolean next(boolean close) {
 		if(cursor == null)
 			throw new RuntimeException("Method Query.read() should be called before Query.next()");
 
 		boolean hasNext = cursor.next();
 
-		if (!hasNext) {
-			cursor.close();
-			cursor = null;
-		}
+		if (close || !hasNext)
+			close();
 
 		return hasNext;
 	}
@@ -649,6 +622,20 @@ public class Query extends OBJECT {
 			throw new RuntimeException("Method Query.read() should be called before Query.isAfterLast()");
 
 		return cursor.isAfterLast();
+	}
+
+	public Query close() {
+		if (cursor == null)
+			return this;
+
+		cursor.close();
+		cursor = null;
+		return this;
+	}
+
+	private Query initCursor(Select cursor) {
+		this.cursor = cursor;
+		return this;
 	}
 
 	private List<State> states = new ArrayList<State>();
@@ -707,8 +694,7 @@ public class Query extends OBJECT {
 	}
 
 	public void restoreState() {
-		if(cursor != null)
-			cursor.close();
+		close();
 
 		State state = states.remove(states.size() - 1);
 
@@ -1259,11 +1245,11 @@ public class Query extends OBJECT {
 	}
 
 	public bool z8_hasRecord(guid recordId) {
-		return new bool(hasRecord(recordId));
+		return hasRecord(recordId) ? bool.True : bool.False;
 	}
 
 	public bool z8_hasRecord(sql_bool where) {
-		return new bool(hasRecord(where));
+		return hasRecord(where) ? bool.True : bool.False;
 	}
 
 	public RCollection<guid> z8_findRecords(sql_bool where) {
@@ -1283,8 +1269,7 @@ public class Query extends OBJECT {
 	}
 
 	public bool z8_aggregate(RCollection<Field.CLASS<Field>> fieldClasses, sql_bool where) {
-		Collection<Field> fields = CLASS.asList(fieldClasses);
-		return new bool(aggregate(fields, where));
+		return aggregate(CLASS.asList(fieldClasses), where) ? bool.True : bool.False;
 	}
 
 	public guid z8_recordId() {
@@ -1335,7 +1320,8 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readRecord(guid id, RCollection fieldClasses) {
-		return new bool(readRecord(id, (RCollection<Field.CLASS<Field>>)fieldClasses));
+		Collection<Field> fields = CLASS.asList(fieldClasses);
+		return readRecord(id, fields.isEmpty() ? null : fields) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1345,8 +1331,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses) {
-		read1(fieldClasses, null, null, null, null, 0, -1);
-		return new bool(next());
+		return read1(fieldClasses, null, null, null, null, 0, -1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1356,8 +1341,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses) {
-		read1(fieldClasses, sortClasses, null, null, null, 0, -1);
-		return new bool(next());
+		return read1(fieldClasses, sortClasses, null, null, null, 0, -1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1367,8 +1351,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, sql_bool where) {
-		read1(fieldClasses, null, null, where, null, 0, -1);
-		return new bool(next());
+		return read1(fieldClasses, null, null, where, null, 0, -1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1383,8 +1366,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		read1(fieldClasses, sortClasses, null, where, null, 0, -1);
-		return new bool(next());
+		return read1(fieldClasses, sortClasses, null, where, null, 0, -1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1464,7 +1446,7 @@ public class Query extends OBJECT {
 	}
 
 	public bool z8_next() {
-		return new bool(next());
+		return next() ? bool.True : bool.False;
 	}
 
 	public void z8_onNew() {

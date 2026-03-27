@@ -64,6 +64,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initRecords(SqlToken where) {
 		records = new ArrayList<guid>();
 

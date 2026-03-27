@@ -212,6 +212,10 @@ public class TransportQueue extends Table {
 		return result;
 	}
 
+	public int count(String domain) {
+		return count(new Equ(address.get(), domain));
+	}
+
 	public Collection<guid> getMessages(String domain) {
 		Collection<guid> result = new ArrayList<guid>();
 
@@ -222,12 +226,14 @@ public class TransportQueue extends Table {
 		Collection<Field> orderBy = Arrays.<Field>asList(ordinal.get());
 
 		SqlToken where = new And(new IsNot(processed), new Equ(address, domain));
-		int limit = ServerConfig.getTransportQueueTransactionSize();
+		int limit = ServerConfig.transportQueueTransactionSize();
 
 		read(fields, orderBy, where, limit);
 
 		while(next())
 			result.add(recordId());
+
+		close();
 
 		return result;
 	}
