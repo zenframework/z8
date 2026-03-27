@@ -326,7 +326,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean aggregate(Collection<Field> fields, SqlToken where) {
-		return close().initCursor(new ReadAction(this, fields).addFilter(where).getTotals()).next(true);
+		return initCursor(new ReadAction(this, fields).addFilter(where).getTotals()).next(true);
 	}
 
 	private Collection<Field> getInsertFields(guid recordId) {
@@ -489,7 +489,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readRecord(guid id, Collection<Field> fields) {
-		return close().initCursor(new ReadAction(this, fields, id).getCursor()).next(true);
+		return initCursor(new ReadAction(this, fields, id).getCursor()).next(true);
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
@@ -514,7 +514,7 @@ public class Query extends OBJECT {
 		action.setLimit(limit);
 		action.setStart(start);
 
-		return close().initCursor(action.getCursor());
+		return initCursor(action.getCursor());
 	}
 
 	public Collection<Field> getChangedFields() {
@@ -605,15 +605,16 @@ public class Query extends OBJECT {
 		return next(false);
 	}
 
-	public boolean next(boolean close) {
+	public boolean next(boolean closeCursor) {
 		if(cursor == null)
 			throw new RuntimeException("Method Query.read() should be called before Query.next()");
 
 		boolean hasNext = cursor.next();
-
-		if (close || !hasNext)
-			close();
-
+/*
+		TODO Close statement
+		if (closeCursor || !hasNext)
+			cursor.close();
+*/
 		return hasNext;
 	}
 
@@ -634,7 +635,11 @@ public class Query extends OBJECT {
 	}
 
 	private Query initCursor(Select cursor) {
+		if (this.cursor != null)
+			this.cursor.close();
+
 		this.cursor = cursor;
+
 		return this;
 	}
 
@@ -694,11 +699,9 @@ public class Query extends OBJECT {
 	}
 
 	public void restoreState() {
-		close();
-
 		State state = states.remove(states.size() - 1);
 
-		cursor = state.cursor();
+		initCursor(state.cursor());
 
 		if(cursor != null)
 			cursor.restoreState();
