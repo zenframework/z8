@@ -118,35 +118,29 @@ public class JsonObject extends OBJECT {
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
-		org.zenframework.z8.server.json.parser.JsonArray array = this.object.getJsonArray(name);
-		JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
-		cls.get().set(array);
-		return cls;
+		return JsonArray.getJsonArray(this.object.getJsonArray(name));
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(string name) {
-		org.zenframework.z8.server.json.parser.JsonObject object = this.object.getJsonObject(name);
-		JsonObject.CLASS<? extends JsonObject> cls = new JsonObject.CLASS<JsonObject>(null);
-		cls.get().set(object);
-		return cls;
+		return JsonObject.getJsonObject(this.object.getJsonObject(name));
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
 		object.set(name, JsonUtils.unwrap(value));
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonArray.CLASS<? extends JsonArray> value) {
 		object.put(name.get(), value.get().get());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonObject.CLASS<? extends JsonObject> value) {
 		object.put(name.get(), value.get().getInternalObject());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_put(Field.CLASS<? extends Field> fieldClass) {
@@ -157,19 +151,19 @@ public class JsonObject extends OBJECT {
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, primary value) {
 		object.set(name, JsonUtils.unwrap(value));
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, JsonArray.CLASS<? extends JsonArray> value) {
 		object.put(name.get(), value.get().get());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, JsonObject.CLASS<? extends JsonObject> value) {
 		object.put(name.get(), value.get().getInternalObject());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_set(Field.CLASS<? extends Field> fieldClass) {
@@ -180,7 +174,7 @@ public class JsonObject extends OBJECT {
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_remove(string name) {
 		object.remove(name.get());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@Override
@@ -194,17 +188,23 @@ public class JsonObject extends OBJECT {
 	}
 
 	public static JsonObject.CLASS<JsonObject> getJsonObject(org.zenframework.z8.server.json.parser.JsonObject json) {
+		if (json == null)
+			return null;
+
 		JsonObject.CLASS<JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>(null);
 		jsonObject.get().set(json);
 		return jsonObject;
 	}
 
 	public static JsonObject.CLASS<JsonObject> z8_parse(string source) {
-		return getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get()));
+		return source != null ? getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get())) : null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static JsonObject.CLASS<? extends JsonObject> z8_fromPrimaryMap(RLinkedHashMap map) {
+		if (map == null)
+			return null;
+
 		JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
 		jsonObject.get().set(new org.zenframework.z8.server.json.parser.JsonObject(map));
 		return jsonObject;
@@ -212,21 +212,29 @@ public class JsonObject extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static JsonObject.CLASS<? extends JsonObject> z8_fromJsonArrayMap(RLinkedHashMap map) {
+		if (map == null)
+			return null;
+
 		RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>> jsonArrayMap = (RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>>)map;
 		JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
-		for(Map.Entry<primary, JsonArray.CLASS<? extends JsonArray>> ja : jsonArrayMap.entrySet()) {
+
+		for(Map.Entry<primary, JsonArray.CLASS<? extends JsonArray>> ja : jsonArrayMap.entrySet())
 			jsonObject.get().getInternalObject().put(ja.getKey().toString(), ja.getValue().get().get());
-		}
+
 		return jsonObject;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static JsonObject.CLASS<? extends JsonObject> z8_fromJsonObjectMap(RLinkedHashMap map) {
+		if (map == null)
+			return null;
+
 		RLinkedHashMap<primary, JsonObject.CLASS<? extends JsonObject>> jsonObjectMap = (RLinkedHashMap<primary, JsonObject.CLASS<? extends JsonObject>>)map;
 		JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
-		for(Map.Entry<primary, JsonObject.CLASS<? extends JsonObject>> jo : jsonObjectMap.entrySet()) {
+
+		for(Map.Entry<primary, JsonObject.CLASS<? extends JsonObject>> jo : jsonObjectMap.entrySet())
 			jsonObject.get().getInternalObject().put(jo.getKey().toString(), jo.getValue().get().getInternalObject());
-		}
+
 		return jsonObject;
 	}
 }

@@ -101,33 +101,29 @@ public class JsonArray extends OBJECT {
 	}
 
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(integer i) {
-		JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
-		cls.get().set(array.getJsonArray(i.getInt()));
-		return cls;
+		return getJsonArray(array.getJsonArray(i.getInt()));
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(integer i) {
-		JsonObject.CLASS<? extends JsonObject> cls = new JsonObject.CLASS<JsonObject>(null);
-		cls.get().set(array.getJsonObject(i.getInt()));
-		return cls;
+		return JsonObject.getJsonObject(array.getJsonObject(i.getInt()));
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_add(primary value) {
 		array.add(JsonUtils.unwrap(value));
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_add(JsonArray.CLASS<? extends JsonArray> value) {
 		array.add(value.get().get());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_add(JsonObject.CLASS<? extends JsonObject> value) {
 		array.add(value.get().getInternalObject());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -139,84 +135,96 @@ public class JsonArray extends OBJECT {
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_insert(integer index, JsonArray.CLASS<? extends JsonArray> value) {
 		array.insert(index.getInt(), value.get().get());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_insert(integer index, JsonObject.CLASS<? extends JsonObject> value) {
 		array.insert(index.getInt(), value.get().getInternalObject());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, primary value) {
 		array.add(index.getInt(), JsonUtils.unwrap(value));
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, JsonArray.CLASS<? extends JsonArray> value) {
 		array.add(index.getInt(), value.get().get());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_put(integer index, JsonObject.CLASS<? extends JsonObject> value) {
 		array.add(index.getInt(), value.get().getInternalObject());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonArray.CLASS<? extends JsonArray> z8_remove(integer index) {
 		array.remove(index.getInt());
-		return (JsonArray.CLASS<? extends JsonArray>)getCLASS();
+		return (JsonArray.CLASS<? extends JsonArray>) getCLASS();
 	}
 
 	public RCollection<guid> z8_toGuidArray() {
 		RCollection<guid> result = new RCollection<guid>();
+
 		for(int i = 0; i < array.size(); i++)
 			result.add(array.getGuid(i));
+
 		return result;
 	}
 
 	public RCollection<integer> z8_toIntArray() {
 		RCollection<integer> result = new RCollection<integer>();
+
 		for(int i = 0; i < array.size(); i++)
 			result.add(new integer(array.getInt(i)));
+
 		return result;
 	}
 
 	public RCollection<decimal> z8_toDecimalArray() {
 		RCollection<decimal> result = new RCollection<decimal>();
+
 		for(int i = 0; i < array.size(); i++)
 			result.add(new decimal(array.getDouble(i)));
+
 		return result;
 	}
 
 	public RCollection<string> z8_toStringArray() {
 		RCollection<string> result = new RCollection<string>();
+
 		for(int i = 0; i < array.size(); i++) {
 			String value = array.getString(i);
 			result.add(value != null ? new string(value) : null);
 		}
+
 		return result;
 	}
 
 	public RCollection<date> z8_toDateArray() {
 		RCollection<date> result = new RCollection<date>();
+
 		for(int i = 0; i < array.size(); i++) {
 			String value = array.getString(i);
 			result.add(value != null ? new date(value) : null);
 		}
+
 		return result;
 	}
 
 	public RCollection<bool> z8_toBoolArray() {
 		RCollection<bool> result = new RCollection<bool>();
+
 		for(int i = 0; i < array.size(); i++) {
 			String value = array.getString(i);
 			result.add(value != null ? new bool(value) : new bool(false));
 		}
+
 		return result;
 	}
 
@@ -232,18 +240,27 @@ public class JsonArray extends OBJECT {
 
 	@SuppressWarnings("rawtypes")
 	public static JsonArray.CLASS<JsonArray> z8_fromArray(RCollection array) {
+		if (array == null)
+			return null;
+
 		JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
 		jsonArray.get().set(new org.zenframework.z8.server.json.parser.JsonArray(array));
 		return jsonArray;
 	}
 
 	public static JsonArray.CLASS<JsonArray> z8_parse(string source) {
+		if (source == null)
+			return null;
+
 		JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
 		jsonArray.get().set(new org.zenframework.z8.server.json.parser.JsonArray(source.get()));
 		return jsonArray;
 	}
 
 	public static JsonArray.CLASS<JsonArray> getJsonArray(org.zenframework.z8.server.json.parser.JsonArray json) {
+		if (json == null)
+			return null;
+
 		JsonArray.CLASS<JsonArray> jsonArray = new JsonArray.CLASS<JsonArray>(null);
 		jsonArray.get().set(json);
 		return jsonArray;
