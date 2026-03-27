@@ -429,7 +429,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, SqlToken where) {
-		return read(fields, sortFields, null, where, null).next(true);
+		return read(fields, sortFields, null, where, null, 0, 1).next(true);
 	}
 
 	public void sort(Collection<Field> sortFields, SqlToken where) {
@@ -493,7 +493,7 @@ public class Query extends OBJECT {
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		return read(fields, sortFields, groupFields, where, having).next(true);
+		return read(fields, sortFields, groupFields, where, having, 0, 1).next(true);
 	}
 
 	protected Query read(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
@@ -1331,7 +1331,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses) {
-		return read1(fieldClasses, null, null, null, null, 0, -1).next(true) ? bool.True : bool.False;
+		return read1(fieldClasses, null, null, null, null, 0, 1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1341,7 +1341,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses) {
-		return read1(fieldClasses, sortClasses, null, null, null, 0, -1).next(true) ? bool.True : bool.False;
+		return read1(fieldClasses, sortClasses, null, null, null, 0, 1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1351,7 +1351,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, sql_bool where) {
-		return read1(fieldClasses, null, null, where, null, 0, -1).next(true) ? bool.True : bool.False;
+		return read1(fieldClasses, null, null, where, null, 0, 1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1366,7 +1366,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public bool z8_readFirst(RCollection fieldClasses, RCollection sortClasses, sql_bool where) {
-		return read1(fieldClasses, sortClasses, null, where, null, 0, -1).next(true) ? bool.True : bool.False;
+		return read1(fieldClasses, sortClasses, null, where, null, 0, 1).next(true) ? bool.True : bool.False;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
