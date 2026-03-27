@@ -108,6 +108,7 @@ public class Query extends Object {
 	public void group(Field[] groupFields, Field[] fields, Field[] sortFields);
 	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where);
 	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where, sql_bool having);
+	public void group(Field[] groupFields, Field[] fields, Field[] sortFields, sql_bool where, sql_bool having, int start, int limit);
 
 	public bool next();
 	public guid recordId();

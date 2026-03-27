@@ -473,15 +473,11 @@ public class Query extends OBJECT {
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where) {
-		group(fields, groupFields, where, -1);
+		group(fields, groupFields, where, 0, -1);
 	}
-
+	
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
-		read(fields, null, groupFields, where, having);
-	}
-
-	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int limit) {
-		group(fields, groupFields, where, 0, limit);
+		read(fields, null, groupFields, where, having, 0, -1);
 	}
 
 	public void group(Collection<Field> fields, Collection<Field> groupFields, SqlToken where, int start, int limit) {
@@ -511,7 +507,7 @@ public class Query extends OBJECT {
 		action.addFilter(where);
 		action.addGroupFilter(having);
 
-		action.setLimit(limit);
+		action.setLimit(limit >= 0 ? limit : this.limit != null ? this.limit.getInt() : -1);
 		action.setStart(start);
 
 		return initCursor(action.getCursor());
@@ -1364,7 +1360,7 @@ public class Query extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_read(RCollection fieldClasses, RCollection sortClasses, sql_bool where, integer start, integer limit) {
-		read1(fieldClasses, sortClasses, null, where, null, start.getInt(), limit.getInt());
+		read1(fieldClasses, sortClasses, null, where, null, start != null ? start.getInt() : 0, limit != null ? limit.getInt() : -1);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1430,6 +1426,11 @@ public class Query extends OBJECT {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having) {
 		read1(fieldClasses, sortClasses, groupClasses, where, having, 0, -1);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_group(RCollection groupClasses, RCollection fieldClasses, RCollection sortClasses, sql_bool where, sql_bool having, integer start, integer limit) {
+		read1(fieldClasses, sortClasses, groupClasses, where, having, start != null ? start.getInt() : 0, limit != null ? limit.getInt() : -1);
 	}
 
 	public integer z8_update(guid id) {
