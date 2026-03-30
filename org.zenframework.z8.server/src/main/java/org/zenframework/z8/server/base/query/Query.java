@@ -326,7 +326,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean aggregate(Collection<Field> fields, SqlToken where) {
-		return initCursor(new ReadAction(this, fields).addFilter(where).getTotals()).next(true);
+		return close().initCursor(new ReadAction(this, fields).addFilter(where).getTotals()).next(true);
 	}
 
 	private Collection<Field> getInsertFields(guid recordId) {
@@ -469,7 +469,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean readRecord(guid id, Collection<Field> fields) {
-		return initCursor(new ReadAction(this, fields, id).getCursor()).next(true);
+		return close().initCursor(new ReadAction(this, fields, id).getCursor()).next(true);
 	}
 
 	protected boolean readFirst(Collection<Field> fields, Collection<Field> sortFields, Collection<Field> groupFields, SqlToken where, SqlToken having) {
@@ -495,7 +495,7 @@ public class Query extends OBJECT {
 		action.setLimit(limit >= 0 ? limit : this.limit != null ? this.limit.getInt() : -1);
 		action.setStart(start);
 
-		return initCursor(action.getCursor());
+		return close().initCursor(action.getCursor());
 	}
 
 	public Collection<Field> getChangedFields() {
@@ -616,11 +616,7 @@ public class Query extends OBJECT {
 	}
 
 	private Query initCursor(Select cursor) {
-		if (this.cursor != null)
-			this.cursor.close();
-
 		this.cursor = cursor;
-
 		return this;
 	}
 
@@ -682,7 +678,7 @@ public class Query extends OBJECT {
 	public void restoreState() {
 		State state = states.remove(states.size() - 1);
 
-		initCursor(state.cursor());
+		close().initCursor(state.cursor());
 
 		if(cursor != null)
 			cursor.restoreState();
