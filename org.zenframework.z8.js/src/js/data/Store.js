@@ -592,8 +592,7 @@ Z8.define('Z8.data.Store', {
 
 		var loadCallback = function(response, success) {
 			var records = success ? this.initRecords(response.data || []) : [];
-			this.fireEvent('load', this, records, success);
-			Z8.callback(callback, this, records, success);
+			this.onLoad(records, success, callback);
 
 			if(success) {
 				this.loadTotalCount();
@@ -692,6 +691,11 @@ Z8.define('Z8.data.Store', {
 
 	unload: function() {
 		this.loadCount = 0;
+	},
+
+	onLoad: function(records, success, callback) {
+		this.fireEvent('load', this, records, success);
+		Z8.callback(callback, this, records, success);
 	},
 
 	onRecordChanged: function(record, modified) {
