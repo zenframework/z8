@@ -63,7 +63,7 @@ public class Eval extends OBJECT {
 	}
 
 	public string z8_evaluateText(string expression) {
-		Object result = this.expression.evaluateExpression(expression.get());
+		Object result = expression != null ? this.expression.evaluateText(expression.get()) : null;
 		return new string(result == null ? "null" : result.toString());
 	}
 }

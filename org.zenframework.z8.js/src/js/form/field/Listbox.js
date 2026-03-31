@@ -148,7 +148,7 @@ Z8.define('Z8.form.field.Listbox', {
 
 		var fields = record.getValueFor();
 
-		if(fields.length == 0)
+		if(fields == null || fields.length == 0)
 			return null;
 
 		var values = {};
