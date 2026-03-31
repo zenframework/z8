@@ -1416,6 +1416,10 @@ public class Query extends OBJECT {
 		return next() ? bool.True : bool.False;
 	}
 
+	public void z8_close() {
+		close();
+	}
+
 	public void z8_onNew() {
 	}
 
