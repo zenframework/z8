@@ -606,11 +606,13 @@ public class Query extends OBJECT {
 			throw new RuntimeException("Method Query.read() should be called before Query.next()");
 
 		boolean hasNext = cursor.next();
-/*
-		TODO Close statement
-		if (closeCursor || !hasNext)
+
+		// TODO closeCursor value
+		if (/*closeCursor ||*/ !hasNext) {
 			cursor.close();
-*/
+			cursor = null;
+		}
+
 		return hasNext;
 	}
 
