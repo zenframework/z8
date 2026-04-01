@@ -499,6 +499,17 @@ Z8.define('Z8.data.Model', {
 		this.modified = this.original = null;
 	},
 
+	getAttachParams: function() {
+		return {
+			request: this.getName(),
+			action: 'attach',
+			recordId: this.phantom ? guid.Null : this.id,
+			fields: Model.getFieldNames(this.getRequestFields()),
+			link: this.getLink(),
+			query: this.getQuery()
+		};
+	},
+
 	attach: function(name, files, callback, details) {
 		if(this.getAccess().update === false)
 			throw 'Model ' + this.getName() + ' does not have update record privilege';
@@ -516,18 +527,12 @@ Z8.define('Z8.data.Model', {
 			return;
 		}
 
-		var data = {
-			request: this.getName(),
-			action: 'attach',
-			recordId: this.phantom ? guid.Null : this.id,
-			field: name,
-			fields: Model.getFieldNames(this.getFields()),
-			link: this.getLink(),
-			query: this.getQuery()
-		};
+		var data = Z8.apply(this.getAttachParams(), {
+			field: name
+		});
 
 		if (details)
-			data.details = details;
+			data.details = Z8.apply(data.details, details);
 
 		var requestCallback = function(response, success) {
 			if(success) {
@@ -544,16 +549,11 @@ Z8.define('Z8.data.Model', {
 		if(this.getAccess().update === false)
 			throw 'Model ' + this.getName() + ' does not have update record privilege';
 
-		var data = {
-			request: this.getName(),
+		var data = Z8.apply(this.getAttachParams(), {
 			action: 'detach',
-			recordId: this.id,
 			field: name,
 			data: files,
-			fields: Model.getFieldNames(this.getFields()),
-			link: this.getLink(),
-			query: this.getQuery()
-		};
+		});
 
 		var requestCallback = function(response, success) {
 			if(success) {
