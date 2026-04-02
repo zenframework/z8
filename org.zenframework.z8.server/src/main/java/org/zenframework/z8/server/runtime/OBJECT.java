@@ -441,4 +441,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	static public OBJECT.CLASS<? extends OBJECT> z8_newNamedInstance(string name) {
 		return (OBJECT.CLASS<?>) Runtime.instance().getNamed(name.get()).newInstance().getCLASS();
 	}
+
+	static public OBJECT.CLASS<? extends OBJECT> z8_getNamedSingleton(string name) {
+		return (OBJECT.CLASS<?>) Runtime.instance().getNamed(name.get());
+	}
 }

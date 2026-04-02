@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
+import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -105,7 +106,8 @@ public class Entity extends OBJECT {
 	}
 
 	public EntityTable getTable() {
-		return (EntityTable) Loader.getInstance(getAttribute(AttrEntityTable));
+		org.zenframework.z8.server.runtime.CLASS<?> cls = Loader.loadClass(getAttribute(AttrEntityTable));
+		return (EntityTable) Runtime.instance().getTableByName(cls.name()).newInstance();
 	}
 
 	public Registry getRegistry() {

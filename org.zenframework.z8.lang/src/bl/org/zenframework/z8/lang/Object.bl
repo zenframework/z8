@@ -40,4 +40,5 @@ public class Object {
 
 	static public Object newInstance(string className);
 	static public Object newNamedInstance(string name);
+	static public Object getNamedSingleton(string name);
 }
