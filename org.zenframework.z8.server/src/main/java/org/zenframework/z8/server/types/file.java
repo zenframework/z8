@@ -795,6 +795,10 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public file z8_unzip(file directory) {
 		return unzip(directory.getAbsolutePath());
 	}
+	
+	public integer z8_getLocation() {
+		return location;
+	}
 
 	static public RCollection<file> z8_parse(string json) {
 		return new RCollection<file>(parse(json.get()));
