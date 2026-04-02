@@ -3,6 +3,7 @@ package org.zenframework.z8.server.reports.poi;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
@@ -14,6 +15,7 @@ public class AggregatorObject {
 
 	private Vector currentPosition;
 	private Object currentValue;
+	private Vector positionOffset = new Vector();
 
 	private static class AggregatorState {
 		double sum;
@@ -27,6 +29,10 @@ public class AggregatorObject {
 		this.currentValue = value;
 	}
 
+	public void setPositionOffset(Vector offset) {
+		this.positionOffset = offset != null ? offset : new Vector();
+	}
+
 	private void clearCurrentCell() {
 		this.currentPosition = null;
 		this.currentValue = null;
@@ -36,13 +42,20 @@ public class AggregatorObject {
 		return currentPosition != null && currentValue != null;
 	}
 
+	private Vector targetPos(String addr) {
+		return Vector.parseAddress(addr).add(positionOffset);
+	}
+
+	private String key(String addr, String suffix) {
+		Vector t = targetPos(addr);
+		return t.row() + "_" + t.col() + "_" + suffix;
+	}
+
 	public decimal sum(string cellAddress) {
 		String addr = cellAddress.get();
-		String key = addr + "_Sum";
-		Vector targetPos = Vector.parseAddress(addr);
-		AggregatorState state = getState(key);
+		AggregatorState state = getState(key(addr, "Sum"));
 
-		if (!hasCurrentCell() || !currentPosition.equals(targetPos))
+		if (!hasCurrentCell() || !currentPosition.equals(targetPos(addr)))
 			return new decimal(state.sum);
 
 		Double numValue = toDouble(currentValue);
@@ -55,11 +68,9 @@ public class AggregatorObject {
 
 	public decimal average(string cellAddress) {
 		String addr = cellAddress.get();
-		String key = addr + "_Average";
-		Vector targetPos = Vector.parseAddress(addr);
-		AggregatorState state = getState(key);
+		AggregatorState state = getState(key(addr, "Average"));
 
-		if (!hasCurrentCell() || !currentPosition.equals(targetPos))
+		if (!hasCurrentCell() || !currentPosition.equals(targetPos(addr)))
 			return new decimal(state.count > 0 ? state.sum / state.count : 0);
 
 		Double numValue = toDouble(currentValue);
@@ -72,11 +83,9 @@ public class AggregatorObject {
 
 	public integer count(string cellAddress) {
 		String addr = cellAddress.get();
-		String key = addr + "_Count";
-		Vector targetPos = Vector.parseAddress(addr);
-		AggregatorState state = getState(key);
+		AggregatorState state = getState(key(addr, "Count"));
 
-		if (!hasCurrentCell() || !currentPosition.equals(targetPos))
+		if (!hasCurrentCell() || !currentPosition.equals(targetPos(addr)))
 			return new integer(state.count);
 
 		state.count++;
@@ -87,11 +96,9 @@ public class AggregatorObject {
 
 	public Object max(string cellAddress) {
 		String addr = cellAddress.get();
-		String key = addr + "_Max";
-		Vector targetPos = Vector.parseAddress(addr);
-		AggregatorState state = getState(key);
+		AggregatorState state = getState(key(addr, "Max"));
 
-		if (!hasCurrentCell() || !currentPosition.equals(targetPos))
+		if (!hasCurrentCell() || !currentPosition.equals(targetPos(addr)))
 			return state.max;
 
 		@SuppressWarnings("unchecked")
@@ -105,11 +112,9 @@ public class AggregatorObject {
 
 	public Object min(string cellAddress) {
 		String addr = cellAddress.get();
-		String key = addr + "_Min";
-		Vector targetPos = Vector.parseAddress(addr);
-		AggregatorState state = getState(key);
+		AggregatorState state = getState(key(addr, "Min"));
 
-		if (!hasCurrentCell() || !currentPosition.equals(targetPos))
+		if (!hasCurrentCell() || !currentPosition.equals(targetPos(addr)))
 			return state.min;
 
 		@SuppressWarnings("unchecked")
@@ -125,6 +130,7 @@ public class AggregatorObject {
 		accumulated.clear();
 		currentPosition = null;
 		currentValue = null;
+		positionOffset = new Vector();
 	}
 
 	private AggregatorState getState(String key) {
@@ -133,20 +139,16 @@ public class AggregatorObject {
 
 	private Double toDouble(Object value) {
 		if (value == null)
-			return null;
-
+			return .0;
 		if (value instanceof Number)
 			return ((Number) value).doubleValue();
-
 		if (value instanceof integer)
 			return (double) ((integer) value).getInt();
-
 		if (value instanceof decimal)
 			return ((decimal) value).getDouble();
-
 		try {
-			return Double.parseDouble(value.toString());
-		} catch (Exception e) {
+			return Double.parseDouble(value.toString().replace(",", "."));
+		} catch(Exception e) {
 			return .0;
 		}
 	}
