@@ -135,7 +135,11 @@ public class JsonObject extends HashMap<String, Object> {
 		if(object == null || object instanceof date)
 			return (date)object;
 
-		return new date(getLong(object));
+		try {
+			return new date(getLong(object));
+		} catch (Exception e) {
+			return date.parse(object.toString());
+		}
 	}
 
 	public guid getGuid(string key) {
