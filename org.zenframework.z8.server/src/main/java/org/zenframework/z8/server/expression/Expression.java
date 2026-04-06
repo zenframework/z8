@@ -84,19 +84,27 @@ public class Expression extends OBJECT {
 		return visitor.visit(parser.rootExpression());
 	}
 
-	public String evaluateText(String text) {
+	public Object evaluateText(String text) {
 		return evaluateText(text, false);
 	}
 
-	public String evaluateText(String text, boolean silent) {
+	public Object evaluateText(String text, boolean silent) {
 		CharStream charStream = CharStreams.fromString(text);
 		TextLexer lexer = new TextLexer(charStream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TextParser parser = new TextParser(tokens);
 //		parser.setErrorHandler(new ExpressionErrorHandler());
-		TextTreeVisitor visitor = new TextTreeVisitor(calculator.setSilent(silent));
+		TextParser.TextContext tree = parser.text();
+		List<TextParser.TextPartContext> parts = tree.textPart();
 
-		return visitor.visit(parser.text()).toString();
+		if (parts.size() == 1 && parts.get(0) instanceof TextParser.ExpressionTextPartContext) {
+			String exprContent = ((TextParser.ExpressionTextPartContext) parts.get(0)).TEXT().getText();
+			Value value = evaluateExpression(exprContent, silent);
+			return value.isEvaluated() ? value.get() : value.toString();
+		}
+
+		TextTreeVisitor visitor = new TextTreeVisitor(calculator.setSilent(silent));
+		return visitor.visit(tree).toString();
 	}
 
 	public void extractObjects(String text, Extractor extractor) {
@@ -127,6 +135,7 @@ public class Expression extends OBJECT {
 	}
 
 	public string z8_evaluateText(string expression) {
-		return expression != null ? new string(evaluateText(expression.get())) : null;
+		Object result = expression != null ? evaluateText(expression.get()) : null;
+		return result != null ? new string(result.toString()) : null;
 	}
 }
