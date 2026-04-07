@@ -298,15 +298,19 @@ public class Files extends Table {
 		}
 
 		//location == Location_DB && !exists
-		InputStream inputStream = table.getInputStream(f);
+		try {
+			InputStream inputStream = table.getInputStream(f);
 
-		if(inputStream == null)
-			throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + value.getAbsolutePath());
+			if(inputStream == null)
+				throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + value.getAbsolutePath());
 
-		value.getParentFile().mkdirs();
-		IOUtils.copyLarge(inputStream, new FileOutputStream(value));
+			value.getParentFile().mkdirs();
+			IOUtils.copyLarge(inputStream, new FileOutputStream(value));
 
-		return f.set(new InputOnlyFileItem(value, f.name.get()));
+			return f.set(new InputOnlyFileItem(value, f.name.get()));
+		} finally {
+			table.close();
+		}
 	}
 
 	public static File getFullStoragePath(file file) {
