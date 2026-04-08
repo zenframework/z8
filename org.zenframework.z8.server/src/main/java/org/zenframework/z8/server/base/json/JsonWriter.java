@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.json;
 
+import org.zenframework.z8.server.base.json.parser.JsonArray;
+import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -42,65 +44,74 @@ public class JsonWriter extends OBJECT {
 
 	public CLASS<JsonWriter> z8_startObject(string name) {
 		writer.startObject(name.get());
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_startObject() {
 		writer.startObject();
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_finishObject() {
 		writer.finishObject();
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_startArray(string name) {
 		writer.startArray(name.get());
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_startArray() {
 		writer.startArray();
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_finishArray() {
 		writer.finishArray();
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_write(primary value) {
 		writer.write(value);
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	@SuppressWarnings("rawtypes")
 	public CLASS<JsonWriter> z8_write(RCollection value) {
-		writer.startArray();
-		for(Object v : value) {
-			if (v instanceof primary)
-				writer.write((primary) v);
-			else if (v instanceof OBJECT.CLASS)
-				z8_write((OBJECT.CLASS<? extends OBJECT>) v);
-		}
-		writer.finishArray();
-		return (CLASS<JsonWriter>) getCLASS();
-	}
-
-	public CLASS<JsonWriter> z8_write(OBJECT.CLASS<? extends OBJECT> value) {
 		writer.write(value);
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
-	public CLASS<JsonWriter> z8_writeProperty(string name, string value) {
-		writer.writeProperty(name.get(), value.get(), true);
-		return (CLASS<JsonWriter>) getCLASS();
+	public CLASS<JsonWriter> z8_write(JsonObject.CLASS<? extends JsonObject> value) {
+		writer.write(value.get().get());
+		return (CLASS<JsonWriter>)getCLASS();
+	}
+
+	public CLASS<JsonWriter> z8_write(JsonArray.CLASS<? extends JsonArray> value) {
+		writer.write(value.get().get());
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_writeProperty(string name, primary value) {
 		writer.writeProperty(name.get(), value);
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public CLASS<JsonWriter> z8_writeProperty(string name, RCollection value) {
+		writer.writeProperty(name.get(), value);
+		return (CLASS<JsonWriter>)getCLASS();
+	}
+
+	public CLASS<JsonWriter> z8_writeProperty(string name, JsonObject.CLASS<? extends JsonObject> value) {
+		writer.writeProperty(name.get(), value.get().get());
+		return (CLASS<JsonWriter>)getCLASS();
+	}
+
+	public CLASS<JsonWriter> z8_writeProperty(string name, JsonArray.CLASS<? extends JsonArray> value) {
+		writer.writeProperty(name.get(), value.get().get());
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	public CLASS<JsonWriter> z8_writeProperty(string name, OBJECT.CLASS<? extends OBJECT> value) {
@@ -108,15 +119,9 @@ public class JsonWriter extends OBJECT {
 		return (CLASS<JsonWriter>) getCLASS();
 	}
 
-	@SuppressWarnings("rawtypes")
-	public CLASS<JsonWriter> z8_writeProperty(string name, RCollection value) {
-		writer.writeProperty(name.get(), value);
-		return (CLASS<JsonWriter>) getCLASS();
-	}
-
 	public CLASS<JsonWriter> z8_writeProperty(Field.CLASS<? extends Field> field) {
 		writer.writeProperty(field.id(), field.get().get());
-		return (CLASS<JsonWriter>) getCLASS();
+		return (CLASS<JsonWriter>)getCLASS();
 	}
 
 	@Override

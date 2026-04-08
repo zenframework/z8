@@ -13,14 +13,13 @@ public class JsonWriter extends Object {
 
 	public JsonWriter write(primary value);
 	public JsonWriter write(primary[] value);
-
-	public JsonWriter write(Object value);
-	public JsonWriter write(Object[] value);
+	public JsonWriter write(JsonObject value);
+	public JsonWriter write(JsonArray value);
 
 	public JsonWriter writeProperty(string name, primary value);
 	public JsonWriter writeProperty(string name, primary[] value);
-	public JsonWriter writeProperty(string name, Object value);
-	public JsonWriter writeProperty(string name, Object[] value);
+	public JsonWriter writeProperty(string name, JsonObject value);
+	public JsonWriter writeProperty(string name, JsonArray value);
 	public JsonWriter writeProperty(Field field);
 
 	public string toString();
