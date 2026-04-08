@@ -4,9 +4,11 @@ import org.zenframework.z8.lang.Object;
 
 [native "org.zenframework.z8.server.base.eval.Eval"]
 public class Eval extends Object {
-	public void setVariable(string name, primary value);
-	public void setVariable(string name, JsonObject value);
-	public void setVariable(string name, JsonArray value);
+	public Eval setVariable(string name, primary value);
+	public Eval setVariable(string name, JsonObject value);
+	public Eval setVariable(string name, JsonArray value);
+
+	public Eval clear();
 
 	public string getContextInfo();
 
