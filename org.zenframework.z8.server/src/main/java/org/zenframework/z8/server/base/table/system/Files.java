@@ -239,14 +239,18 @@ public class Files extends Table {
 		Field length = this.length.get();
 		Collection<Field> fields = Arrays.asList(location, length);
 		
-		if(!fileId.isNull() && readRecord(fileId, fields)) {
-			f.location = location.integer(); 
-			f.size = new integer(length.integer().get());
-		} else {
-			f.location = file.Storage; 
-		}
+		try {
+			if(!fileId.isNull() && readRecord(fileId, fields)) {
+				f.location = location.integer(); 
+				f.size = new integer(length.integer().get());
+			} else {
+				f.location = file.Storage; 
+			}
 
-		return f;
+			return f;
+		} finally {
+			close();
+		}
 	}
 	
 	public InputStream getInputStream(file file) throws IOException {
