@@ -254,6 +254,12 @@ public class Calculator {
 
 	@SuppressWarnings("rawtypes")
 	public Object getProperty(Object parent, String property) {
+		if (parent instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
+			parent = ((org.zenframework.z8.server.base.json.parser.JsonObject) parent).get();
+
+		if (parent instanceof Map)
+			return getValue(((Map) parent).get(property));
+
 		if (parent instanceof OBJECT) {
 			CLASS value = (CLASS) ((OBJECT) parent).getMember(property);
 			if (value != null)

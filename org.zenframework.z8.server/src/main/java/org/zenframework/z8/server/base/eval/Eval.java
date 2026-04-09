@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.eval;
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.expression.DefaultContext;
+import org.zenframework.z8.server.expression.Value;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -67,10 +68,13 @@ public class Eval extends OBJECT {
 	}
 
 	public bool z8_evaluateBoolean(string expression) {
-		Object result = this.expression.evaluateExpression(expression.get());
+		Value result = this.expression.evaluateExpression(expression.get());
 
-		if (result instanceof bool)
-			return (bool) result;
+		if (!result.isEvaluated())
+			throw new IllegalStateException("Evaluation error: " + result);
+
+		if (result.get() instanceof bool)
+			return (bool) result.get();
 
 		throw new IllegalStateException("Boolean result expected: " + result);
 	}
