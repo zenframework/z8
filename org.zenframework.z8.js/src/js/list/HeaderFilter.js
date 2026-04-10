@@ -20,20 +20,7 @@ Z8.define('Z8.list.HeaderFilter', {
 	htmlMarkup: function() {
 		var field = this.field || {};
 
-		var searchBox = null;
-
-		switch(field.type) {
-		case Type.String:
-		case Type.Text:
-			searchBox = new Z8.form.field.SearchText({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list });
-			break;
-		case Type.Date:
-			searchBox = new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Date });
-			break;
-		case Type.Datetime:
-			searchBox = new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Datetime });
-			break;
-		}
+		var searchBox = this.createSearchBox(field);
 
 		if (searchBox != null) {
 			searchBox.on('search', this.onSearch, this);
@@ -45,6 +32,21 @@ Z8.define('Z8.list.HeaderFilter', {
 		this.searchBox = searchBox;
 
 		return { tag: 'td', id: this.getId(), cls: this.getCls().join(' '), tabIndex: this.getTabIndex(), cn: searchBox != null ? [searchBox.htmlMarkup()] : [] };
+	},
+
+	createSearchBox: function(field) {
+		if (field.disableQuickFilter)
+			return;
+
+		switch(field.type) {
+		case Type.String:
+		case Type.Text:
+			return new Z8.form.field.SearchText({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list });
+		case Type.Date:
+			return new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Date });
+		case Type.Datetime:
+			return new Z8.form.field.SearchDateBox({ field: field, placeholder: field.header, confirmSearch: this.confirmSearch, searchIcon: this.searchIcon, clearIcon: this.clearIcon, list: this.list, format: Format.Datetime });
+		}
 	},
 
 	focus: function() {
