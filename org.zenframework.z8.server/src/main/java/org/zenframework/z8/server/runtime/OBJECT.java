@@ -307,6 +307,12 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		string str = z8_toString();
+		return str != null ? str.get() : "null";
+	}
+
 	public bool operatorEqu(OBJECT.CLASS<? extends OBJECT> object) {
 		return new bool(this == object.get());
 	}

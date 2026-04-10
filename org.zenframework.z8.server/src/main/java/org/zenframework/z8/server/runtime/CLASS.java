@@ -380,6 +380,11 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 		setAttribute(Presentation, presentation);
 	}
 
+	@Override
+	public String toString() {
+		return object != null ? object.toString() : "null";
+	}
+
 	public String icon() {
 		return getAttribute(Icon);
 	}
