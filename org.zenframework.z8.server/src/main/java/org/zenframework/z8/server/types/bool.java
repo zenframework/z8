@@ -16,11 +16,11 @@ public final class bool extends primary {
 		public final static String False = "bool.false";
 	}
 
-	static public String trueString = Resources.get(strings.True);
-	static public String falseString = Resources.get(strings.False);
+	static public final String trueString = Resources.get(strings.True);
+	static public final String falseString = Resources.get(strings.False);
 
-	public static bool False = new bool(false);
-	public static bool True = new bool(true);
+	public static final bool False = new bool(false);
+	public static final bool True = new bool(true);
 
 	public bool() {
 	}

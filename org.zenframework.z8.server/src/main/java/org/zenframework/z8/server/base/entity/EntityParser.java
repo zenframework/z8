@@ -105,7 +105,7 @@ public class EntityParser extends OBJECT {
 
 	public List<Entity> fromJson(org.zenframework.z8.server.json.parser.JsonArray json) {
 		if (json == null)
-			return null;
+			return new ArrayList<Entity>(0);
 
 		List<Entity> entities = new ArrayList<Entity>(json.size());
 		for (int i = 0; i < json.size(); i++)
@@ -336,10 +336,14 @@ public class EntityParser extends OBJECT {
 	}
 
 	public static boolean isEmpty(primary value) {
-		return value == null || (value instanceof bool) && ((bool) value).equals(bool.False) || (value instanceof date) && ((date) value).equals(date.Min) || (value instanceof datespan) && ((datespan) value).get() == 0L
+		return value == null
+				|| (value instanceof bool) && ((bool) value).equals(bool.False)
+				|| (value instanceof date) && ((date) value).equals(date.Min)
+				|| (value instanceof datespan) && ((datespan) value).get() == 0L
 				|| (value instanceof decimal) && (((decimal) value).equals(decimal.Zero) /*|| ((decimal) value).equals(decimal.NaN)*/)
-						|| (value instanceof guid) && ((guid) value).equals(guid.Null) || (value instanceof integer) && ((integer) value).get() == 0
-								|| (value instanceof string) && ((string) value).get().isEmpty();
+				|| (value instanceof guid) && ((guid) value).equals(guid.Null)
+				|| (value instanceof integer) && ((integer) value).get() == 0
+				|| (value instanceof string) && ((string) value).get().isEmpty();
 	}
 
 	public static boolean isEmpty(org.zenframework.z8.server.json.parser.JsonObject value) {
