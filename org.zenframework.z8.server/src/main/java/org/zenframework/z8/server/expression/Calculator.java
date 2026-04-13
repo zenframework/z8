@@ -253,30 +253,44 @@ public class Calculator {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Object getProperty(Object parent, String property) {
-		if (parent instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
-			parent = ((org.zenframework.z8.server.base.json.parser.JsonObject) parent).get();
+	public Object getProperty(Object object, String name) {
+		if (object instanceof Context) {
+			Context context = (Context) object;
+			Object value = context.getVariable(name);
+			if (value != null)
+				return value;
+		}
 
-		if (parent instanceof Map)
-			return getValue(((Map) parent).get(property));
+		if (object instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
+			object = ((org.zenframework.z8.server.base.json.parser.JsonObject) object).get();
 
-		if (parent instanceof OBJECT) {
-			CLASS value = (CLASS) ((OBJECT) parent).getMember(property);
+		if (object instanceof Map)
+			return getValue(((Map) object).get(name));
+
+		if (object instanceof OBJECT) {
+			CLASS value = (CLASS) ((OBJECT) object).getMember(name);
 			if (value != null)
 				return getValue(value);
 		}
 
 		try {
-			return getValue(parent.getClass().getField(property).get(parent));
+			return getValue(object.getClass().getField(name).get(object));
 		} catch (NoSuchFieldException e) {
 			// Try to find public getter
-			return callMethod(parent, getterName(property));
+			return callMethod(object, getterName(name));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public Object callMethod(Object object, String name, Object... arguments) {
+		if (object instanceof Context) {
+			Context context = (Context) object;
+			Function method = context.getFunction(name);
+			if (method != null)
+				return method.call(arguments);
+		}
+
 		try {
 			Class<?> cls = object instanceof Class ? (Class<?>) object : object.getClass();
 			object = object instanceof Class ? null : object;

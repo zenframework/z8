@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.expression.function.Format;
 import org.zenframework.z8.server.expression.function.Function;
+import org.zenframework.z8.server.expression.function.Json;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -74,6 +75,7 @@ public class DefaultContext extends Context {
 				.setVariable("guid", guid.class)
 				.setVariable("int", integer.class)
 				.setVariable("string", string.class)
+				.setVariable("json", Json.create())
 				.setFunction(Format.NAME, new Format());
 	}
 }

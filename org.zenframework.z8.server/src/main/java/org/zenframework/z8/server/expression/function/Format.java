@@ -15,7 +15,7 @@ public class Format extends Function {
 	@Override
 	public Object call(Object... arguments) {
 		if (arguments.length != 2)
-			throw new RuntimeException("format: illegal arguments");
+			throw new IllegalArgumentException("format: illegal arguments");
 
 		return format(checkType(arguments[0], primary.class), checkType(arguments[1], string.class));
 	}
