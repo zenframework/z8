@@ -97,6 +97,8 @@ public class SheetModifier {
 			if (targetRow == null)
 				targetRow = createRow(target.row() + i);
 
+			targetRow.setHeight((short) -1);
+
 			copyNonNull(sourceRow, source.startCol(), targetRow, target.col(), source.width());
 		}
 
