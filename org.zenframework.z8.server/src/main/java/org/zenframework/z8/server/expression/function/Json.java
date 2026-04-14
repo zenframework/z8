@@ -37,8 +37,6 @@ public class Json {
 				min = min(min, (Number) value);
 			}
 
-			System.out.println(">>>>>>> MIN OF " + array + " = " + min);
-
 			return JsonUtils.wrap(min);
 		}
 	}
@@ -69,8 +67,6 @@ public class Json {
 
 				max = max(max, (Number) value);
 			}
-
-			System.out.println(">>>>>>> MAX OF " + array + " = " + max);
 
 			return JsonUtils.wrap(max);
 		}
