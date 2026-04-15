@@ -9,7 +9,6 @@ import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.guid;
 
 public class RestartTransportAction extends Action {
 	static public class CLASS<T extends RestartTransportAction> extends Action.CLASS<T> {
@@ -34,8 +33,8 @@ public class RestartTransportAction extends Action {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public void z8_execute(guid recordId, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		ScheduledJob transportJob = Scheduler.get(ApplicationServer.getDatabase()).findSystemJob(TransportJob.class.getCanonicalName());
 		if(transportJob != null)
 			transportJob.restart();

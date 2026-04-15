@@ -7,7 +7,6 @@ import org.zenframework.z8.server.base.table.system.ScheduledJobs;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.guid;
 
 public class RestartSchedulerAction extends Action {
 	static public class CLASS<T extends RestartSchedulerAction> extends Action.CLASS<T> {
@@ -32,8 +31,8 @@ public class RestartSchedulerAction extends Action {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public void z8_execute(guid recordId, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		Scheduler.restart(ApplicationServer.getDatabase());
 	}
 }
