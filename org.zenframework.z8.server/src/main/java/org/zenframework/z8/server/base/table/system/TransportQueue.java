@@ -54,6 +54,7 @@ public class TransportQueue extends Table {
 		public static String Ordinal = "TransportQueue.ordinal";
 		public static String Processed = "TransportQueue.processed";
 		public static String BytesTransferred = "TransportQueue.bytesTransferred";
+		public static String RestartTransport = "TransportQueue.restartTransport";
 	}
 
 	static public class displayNames {
@@ -67,6 +68,7 @@ public class TransportQueue extends Table {
 		public static String Ordinal = Resources.get(strings.Ordinal);
 		public static String Processed = Resources.get(strings.Processed);
 		public static String BytesTransferred = Resources.get(strings.BytesTransferred);
+		public static String RestartTransport = Resources.get(strings.RestartTransport);
 	}
 
 	static public class CLASS<T extends TransportQueue> extends Table.CLASS<T> {

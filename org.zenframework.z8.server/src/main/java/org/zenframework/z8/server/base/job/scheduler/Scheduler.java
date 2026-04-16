@@ -108,6 +108,11 @@ public class Scheduler implements Runnable {
 		}
 	}
 
+	static public synchronized void restart(IDatabase database) {
+		suspend(database);
+		resume(database);
+	}
+
 	static public boolean register(IDatabase database, Thread thread) {
 		if(destroying)
 			return false;
