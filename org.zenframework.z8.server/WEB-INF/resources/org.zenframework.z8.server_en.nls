@@ -75,6 +75,7 @@
 	<entry key="TransportQueue.ordinal">Number</entry>
 	<entry key="TransportQueue.processed">Procsssed</entry>
 	<entry key="TransportQueue.bytesTransferred">Sent, B</entry>
+	<entry key="TransportQueue.restartTransport">Restarting transport</entry>
 
 	<!-- Tables -->
 	<entry key="Tables.title">Tables</entry>
@@ -184,6 +185,7 @@
 	<entry key="ScheduledJobs.lastStart">Last start</entry>
 	<entry key="ScheduledJobs.lastFinish">Last finish</entry>
 	<entry key="ScheduledJobs.nextStart">Next Start</entry>
+	<entry key="ScheduledJobs.restartScheduler">Restarting the task scheduler</entry>
 
 	<!-- ScheduledJobLogs -->
 	<entry key="ScheduledJobLogs.description">Description</entry>
