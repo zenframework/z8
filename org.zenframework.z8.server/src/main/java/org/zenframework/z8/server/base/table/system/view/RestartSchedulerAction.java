@@ -31,7 +31,7 @@ public class RestartSchedulerAction extends Action {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		Scheduler.restart(ApplicationServer.getDatabase());
 	}

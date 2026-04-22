@@ -33,7 +33,7 @@ public class RestartTransportAction extends Action {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		ScheduledJob transportJob = Scheduler.get(ApplicationServer.getDatabase()).findSystemJob(TransportJob.class.getCanonicalName());
 		if(transportJob != null)

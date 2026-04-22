@@ -3,7 +3,6 @@ package org.zenframework.z8.server.reports.poi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.reports.poi.math.Vector;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
