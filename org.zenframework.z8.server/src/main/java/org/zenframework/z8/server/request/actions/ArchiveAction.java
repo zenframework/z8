@@ -31,7 +31,7 @@ public class ArchiveAction extends RequestAction {
 		JsonArray filesJson = new JsonArray(getRequestParameter(new string("archive")));
 		List<File> filesToArchive = new ArrayList<>();
 		
-		for (int i = 0; i < filesJson.length(); i++) {
+		for (int i = 0; i < filesJson.size(); i++) {
 			JsonObject fileJson = (JsonObject) filesJson.get(i);
 			guid fileId = fileJson.getGuid("id");
 			file currentFile = Files.get(fileId);

@@ -1,0 +1,101 @@
+import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.json.JsonObject;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.entity.Entity"]
+public class Entity extends Object {
+
+	public static final string EntityId = "recordId";
+	public static final string OriginId = "originId";
+
+	public bool operator == (Entity value);
+	public bool operator != (Entity value);
+
+	public EntityTable getTable();
+	public Registry getRegistry();
+
+	public Entity register();
+	public Entity register(Registry registry);
+	public Entity unregister();
+
+	public bool isNull();
+	public bool isRegistered();
+	public bool isInitialized();
+	public bool isPersistent();
+	public bool isChanged();
+	public bool isDeleted();
+
+	public Entity create();
+	public Entity create(guid entityId);
+
+	public Entity delete();
+
+	public string[] keys();
+
+	public primary[string] values();
+	public primary[string] values(string[] keys);
+
+	public bool has(string key);
+	public bool isChanged(string key);
+
+	public primary get(string key);
+
+	public Entity init(string key, primary value);
+	public Entity init(primary[string] values);
+
+	public Entity set(string key, primary value);
+	public Entity set(string key, JsonObject value);
+	public Entity set(string key, JsonArray value);
+	public Entity set(primary[string] values);
+	public Entity set(string linkKey, Entity entity);
+
+	public Entity touch(string key);
+	public Entity touch(string[] keys);
+
+	public string getString(string key);
+	public int getInt(string key);
+	public guid getGuid(string key);
+	public bool getBool(string key);
+	public date getDate(string key);
+	public datespan getDatespan(string key);
+	public JsonObject getJsonObject(string key);
+	public JsonArray getJsonArray(string key);
+
+	public Entity getEntity(string linkKey);
+	public Entity getEntity(guid entityId);
+
+	public guid getEntityId();
+	public Entity setEntityId(guid entityId);
+
+	public guid getOriginId();
+	public Entity setOriginId(guid originId);
+
+	public Entity getOrigin();
+
+	public string toString(bool defaults, bool values, bool changes);
+
+	protected void visitEntities(Visitor visitor);
+	protected void visitEntities(Visitor visitor, Filter filter);
+
+	protected Entity[] findEntities(Filter filter);
+	protected Entity findEntity(Filter filter);
+
+	protected Entity findCopy(guid originId);
+
+	public Entity copy(bool withEntityId);
+	virtual public Entity copy();
+
+	virtual protected void onChange(string key);
+	virtual protected void onRegister();
+	virtual protected void onCreate();
+	virtual protected void onDelete();
+
+	static public guid[] asIds(Entity[] entities);
+
+	static public guid[] asGuidValues(Entity[] entities, string field);
+	static public string[] asStringValues(Entity[] entities, string field);
+	static public primary[] asValues(Entity[] entities, string field);
+
+	static public Entity[] sort(Entity[] entities, string orderBy);
+	static public Entity find(Entity[] entities, guid entityId);
+}

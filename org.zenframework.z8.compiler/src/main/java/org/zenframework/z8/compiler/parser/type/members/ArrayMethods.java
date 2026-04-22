@@ -35,6 +35,12 @@ public class ArrayMethods {
 			// bool isEmpty()
 			methods.add(new Method(new VariableType(compilationUnit, booleanType), "isEmpty", null));
 
+			// TYPE first()
+			methods.add(new Method(value, "first", null));
+
+			// TYPE last()
+			methods.add(new Method(value, "last", null));
+
 			// bool contains(TYPE element)
 			methods.add(new Method(new VariableType(compilationUnit, booleanType), "contains",
 					new Variable[] { new Variable(value, "element") }));
@@ -50,13 +56,16 @@ public class ArrayMethods {
 			// void clear()
 			methods.add(new Method(new VariableType(compilationUnit, voidType), "clear", null));
 
-			// void add(TYPE element)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "add",
+			// TYPE[] add(TYPE element)
+			methods.add(new Method(variableType, "add",
 					new Variable[] { new Variable(value, "element") }));
 
-			// void add(int index, TYPE element)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "add",
+			// TYPE[] add(int index, TYPE element)
+			methods.add(new Method(variableType, "add",
 					new Variable[] { new Variable(new VariableType(compilationUnit, integerType), "index"), new Variable(value, "element") }));
+
+			// void get(int index)
+			methods.add(new Method(value, "get", new Variable[] { new Variable(new VariableType(compilationUnit, integerType), "index") }));
 
 			// void set(int index, TYPE element)
 			methods.add(new Method(new VariableType(compilationUnit, voidType), "set",
@@ -86,21 +95,15 @@ public class ArrayMethods {
 			methods.add(new Method(variableType, "removeAll",
 					new Variable[] { new Variable(variableType, "elements") }));
 
-/*
-			// void operatorAssign(TYPE[])
-			methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ASSIGN, null),
-					new Variable[] { new Variable(variableType, "elements") }));
-
-			// void operatorAddAssign(TYPE[])
-			methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ADD_ASSIGN, null),
-					new Variable[] { new Variable(variableType, "elements") }));
-*/
 			// TYPE[] operatorAdd(TYPE[])
-			methods.add(new Operator(variableType, new OperatorToken(IToken.PLUS, null),
+			methods.add(new Operator(variableType, new OperatorToken(IToken.Plus, null),
 					new Variable[] { new Variable(variableType, "elements") }));
 
 			// TYPE[] sort()
 			methods.add(new Method(new VariableType(variableType), "sort", null));
+
+			// TYPE[] reverse()
+			methods.add(new Method(new VariableType(variableType), "reverse", null));
 
 			// TYPE[] unique()
 			methods.add(new Method(new VariableType(variableType), "unique", null));
@@ -123,25 +126,24 @@ public class ArrayMethods {
 			// void clear()
 			methods.add(new Method(new VariableType(compilationUnit, voidType), "clear", null));
 
-			// void add(Key key, Value value)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "add",
+			// Value get(Key key)
+			methods.add(new Method(value, "get", new Variable[] { new Variable(key, "key") }));
+
+			// Value add(Key key, Value value)
+			methods.add(new Method(value, "add",
 					new Variable[] { new Variable(key, "key"), new Variable(value, "value") }));
 
 			// void add(Value[Key] map)
-			methods.add(new Method(new VariableType(compilationUnit, voidType), "add",
-					new Variable[] { new Variable(variableType, "map") }));
+			methods.add(new Method(new VariableType(compilationUnit, voidType), "add", new Variable[] { new Variable(variableType, "map") }));
 
 			// Value remove(Key key)
-			methods.add(new Method(value, "remove",
-					new Variable[] { new Variable(key, "key") }));
+			methods.add(new Method(value, "remove", new Variable[] { new Variable(key, "key") }));
 
 			// bool containsKey(Key key)
-			methods.add(new Method(new VariableType(compilationUnit, booleanType), "containsKey",
-					new Variable[] { new Variable(key, "key") }));
+			methods.add(new Method(new VariableType(compilationUnit, booleanType), "containsKey", new Variable[] { new Variable(key, "key") }));
 
 			// bool containsValue(Value value)
-			methods.add(new Method(new VariableType(compilationUnit, booleanType), "containsValue",
-					new Variable[] { new Variable(value, "value") }));
+			methods.add(new Method(new VariableType(compilationUnit, booleanType), "containsValue", new Variable[] { new Variable(value, "value") }));
 
 			// Key[] keys()
 			VariableType returnType = new VariableType(key);
@@ -153,20 +155,8 @@ public class ArrayMethods {
 			returnType.addRightKey(null);
 			methods.add(new Method(returnType, "values", null));
 
-/*
-			// void operatorAssign(TYPE[])
-			{
-				Variable[] parameters = new Variable[] { new Variable(variableType, "elements") };
-				methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ASSIGN, null), parameters));
-			}
-
-			// void operatorAddAssign(TYPE[])
-			methods.add(new Operator(new VariableType(compilationUnit, voidType), new OperatorToken(IToken.ADD_ASSIGN, null),
-					new Variable[] { new Variable(variableType, "elements") }));
-*/
-
 			// TYPE[] operatorAdd(TYPE[])
-			methods.add(new Operator(variableType, new OperatorToken(IToken.PLUS, null),
+			methods.add(new Operator(variableType, new OperatorToken(IToken.Plus, null),
 					new Variable[] { new Variable(variableType, "elements") }));
 		}
 

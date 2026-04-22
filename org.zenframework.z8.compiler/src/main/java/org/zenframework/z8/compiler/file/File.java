@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.runtime.IPath;
+import org.zenframework.z8.compiler.util.FileUtil;
 
 public class File {
 
@@ -22,7 +23,7 @@ public class File {
 
 	private static final String Charset = "UTF-8";
 
-	private static final java.io.File TEMP_DIR = new java.io.File(new java.io.File(System.getProperty("java.io.tmpdir")), "z8-compiler");
+	private static final java.io.File CACHE_DIR = new java.io.File(FileUtil.getUserHomeDirectory(), ".z8/cache");
 	private static final Map<IPath, File> ARCHIVE_CACHE = new HashMap<IPath, File>();
 
 	private final IPath path;
@@ -46,7 +47,7 @@ public class File {
 		ZipFile zipfile = null;
 		try {
 			zipfile = new ZipFile(absolute.toString());
-			File file = new File(path, new java.io.File(TEMP_DIR, path.lastSegment() + '@' + Integer.toString(absolute.hashCode(), 16)), Type.ARCHIVE);
+			File file = new File(path, new java.io.File(CACHE_DIR, path.lastSegment() + '@' + Integer.toString(absolute.hashCode(), 16)), Type.ARCHIVE);
 			ARCHIVE_CACHE.put(absolute, file);
 			return file;
 		} catch (IOException e) {

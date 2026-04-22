@@ -1,5 +1,42 @@
+import org.zenframework.z8.lang.Object;
+
 [native "org.zenframework.z8.server.base.json.parser.JsonPath"]
-public class JsonPath {
+public class JsonPath extends Object {
+
+	public JsonPath operator = (string value);
+
+	public int length();
+	public string name(int part);
+
+	public JsonPath getParent();
+
+	public string getString(JsonObject json);
+	public string getString(JsonArray json);
+	public int getInt(JsonObject json);
+	public int getInt(JsonArray json);
+	public decimal getDecimal(JsonObject json);
+	public decimal getDecimal(JsonArray json);
+	public bool getBool(JsonObject json);
+	public bool getBool(JsonArray json);
+	public guid getGuid(JsonObject json);
+	public guid getGuid(JsonArray json);
+	public date getDate(JsonObject json);
+	public date getDate(JsonArray json);
+
+	public JsonArray getJsonArray(JsonObject json);
+	public JsonArray getJsonArray(JsonArray json);
+	public JsonObject getJsonObject(JsonObject json);
+	public JsonObject getJsonObject(JsonArray json);
+
+	public string get(JsonObject json, string defaultValue);
+	public int get(JsonObject json, int defaultValue);
+	public decimal get(JsonObject json, decimal defaultValue);
+	public bool get(JsonObject json, bool defaultValue);
+	public guid get(JsonObject json, guid defaultValue);
+	public date get(JsonObject json, date defaultValue);
+
+	public JsonArray get(JsonObject json, JsonArray defaultValue);
+	public JsonObject get(JsonObject json, JsonObject defaultValue);
 
 	public static JsonPath path(string path);
 

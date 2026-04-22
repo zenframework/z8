@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.runtime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -88,29 +89,20 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	}
 
 	public boolean addAll(int index, TYPE[] items) {
-		return doAddAll(index, items);
+		return doAddAll(index, Arrays.asList(items));
 	}
 
-	private <T extends TYPE> boolean doAddAll(int index, Collection<T> items) {
+	private <T extends TYPE> boolean doAddAll(int index, Iterable<T> items) {
+		boolean modified = false;
+
 		for(T item : items) {
 			if(set == null || !contains(item)) {
-				super.add(index, item);
-				index++;
+				super.add(index++, item);
+				modified = true;
 			}
 		}
 
-		return true;
-	}
-
-	private <T extends TYPE> boolean doAddAll(int index, T[] items) {
-		for(T item : items) {
-			if(set == null || !contains(item)) {
-				super.add(index, item);
-				index++;
-			}
-		}
-
-		return true;
+		return modified;
 	}
 
 	public void remove(Collection<? extends TYPE> elements) {
@@ -146,18 +138,16 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void doAddAll(Object array) {
+	private RCollection<TYPE> doAddAll(Object array) {
 		if(array instanceof Collection)
 			addAll((Collection<TYPE>)array);
 		else
 			addAll((TYPE[])array);
+		return this;
 	}
 
 	public RCollection<TYPE> operatorAdd(Object array) {
-		RCollection<TYPE> result = new RCollection<TYPE>();
-		result.doAddAll(this);
-		result.doAddAll(array);
-		return result;
+		return new RCollection<TYPE>().doAddAll(this).doAddAll(array);
 	}
 
 	public integer z8_size() {
@@ -168,28 +158,30 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		return new bool(size() == 0);
 	}
 
+	public TYPE z8_first() {
+		return isEmpty() ? null : get(0);
+	}
+
+	public TYPE z8_last() {
+		return isEmpty() ? null : get(size() - 1);
+	}
+
 	public bool z8_contains(TYPE element) {
 		return new bool(contains(element));
 	}
 
 	@SuppressWarnings("unchecked")
 	public bool z8_isSubsetOf(Object elements) {
-		if(elements instanceof Collection)
-			return new bool(isSubsetOf((Collection<? extends TYPE>)elements));
-		return new bool(isSubsetOf((TYPE[])elements));
+		return new bool(elements instanceof Collection ? isSubsetOf((Collection<? extends TYPE>)elements)
+				: isSubsetOf((TYPE[])elements));
 	}
 
 	public boolean isSubsetOf(Collection<? extends TYPE> elements) {
-		for(TYPE element : this) {
-			if(!elements.contains(element))
-				return false;
-		}
-
-		return true;
+		return elements.containsAll(this);
 	}
 
 	public boolean isSubsetOf(TYPE[] elements) {
-		return isSubsetOf(new RCollection<TYPE>(elements));
+		return isSubsetOf(Arrays.asList(elements));
 	}
 
 	public integer z8_indexOf(TYPE element) {
@@ -200,12 +192,14 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		clear();
 	}
 
-	public void z8_add(TYPE element) {
+	public RCollection<TYPE> z8_add(TYPE element) {
 		add(element);
+		return this;
 	}
 
-	public void z8_add(integer index, TYPE element) {
+	public RCollection<TYPE> z8_add(integer index, TYPE element) {
 		add(index.getInt(), element);
+		return this;
 	}
 
 	public void z8_set(integer index, TYPE element) {
@@ -232,8 +226,8 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		return remove(index.getInt());
 	}
 
-	public boolean z8_remove(TYPE element) {
-		return remove(element);
+	public bool z8_remove(TYPE element) {
+		return new bool(remove(element));
 	}
 
 	public void z8_remove(RCollection<? extends TYPE> elements) {
@@ -254,26 +248,26 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		return this;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public RCollection<TYPE> z8_sort() {
 		Collections.sort((List<Comparable>)this);
 		return this;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public RCollection<TYPE> z8_reverse() {
+		Collections.reverse((List<Comparable>)this);
+		return this;
+	}
+
 	public RCollection<TYPE> z8_unique() {
-		LinkedHashSet<TYPE> set = new LinkedHashSet();
-		set.addAll(this);
-		RCollection<TYPE> result = new RCollection();
-		result.addAll(set);
-		return result;
+		return new RCollection<TYPE>(new LinkedHashSet<TYPE>(this));
 	}
 
 	public string z8_join() {
 		return z8_join(new string(""));
 	}
 
-	@SuppressWarnings("rawtypes")
 	public string z8_join(string separator) {
 		String result = "";
 		boolean first = true;
@@ -282,7 +276,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 			first = false;
 
 			if(element instanceof CLASS) {
-				OBJECT object = (OBJECT)((CLASS)element).get();
+				OBJECT object = (OBJECT)((CLASS<?>)element).get();
 				result += object.z8_toString();
 			} else if(element instanceof primary) {
 				primary primary = (primary)element;

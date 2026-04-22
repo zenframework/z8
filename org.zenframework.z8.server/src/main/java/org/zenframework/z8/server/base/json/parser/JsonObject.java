@@ -73,21 +73,18 @@ public class JsonObject extends OBJECT {
 	}
 
 	public bool z8_isEmpty() {
-		return new bool(object.length() == 0);
+		return new bool(object.size() == 0);
 	}
 
 	public integer z8_length() {
-		return new integer(object.length());
+		return new integer(object.size());
 	}
 
 	public RCollection<string> z8_getNames() {
 		RCollection<string> result = new RCollection<string>();
 
-		String[] names = org.zenframework.z8.server.json.parser.JsonObject.getNames(object);
-
-		for(String name : names) {
+		for (String name : object.getNames())
 			result.add(new string(name));
-		}
 
 		return result;
 	}
@@ -100,90 +97,50 @@ public class JsonObject extends OBJECT {
 		return new string(object.getString(name));
 	}
 
-	public string z8_getString(JsonPath.CLASS<? extends JsonPath> path) {
-		return (string) JsonUtils.wrap(path.get().get().evaluate(object));
-	}
-
 	public integer z8_getInt(string name) {
 		return new integer(object.getLong(name));
-	}
-
-	public integer z8_getInt(JsonPath.CLASS<? extends JsonPath> path) {
-		return (integer) JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public decimal z8_getDecimal(string name) {
 		return new decimal(object.getDouble(name));
 	}
 
-	public decimal z8_getDecimal(JsonPath.CLASS<? extends JsonPath> path) {
-		return (decimal) JsonUtils.wrap(path.get().get().evaluate(object));
-	}
-
 	public bool z8_getBool(string name) {
 		return new bool(object.getBoolean(name));
-	}
-
-	public bool z8_getBool(JsonPath.CLASS<? extends JsonPath> path) {
-		return (bool) JsonUtils.wrap(path.get().get().evaluate(object));
 	}
 
 	public guid z8_getGuid(string name) {
 		return object.getGuid(name);
 	}
 
-	public guid z8_getGuid(JsonPath.CLASS<? extends JsonPath> path) {
-		return (guid) JsonUtils.wrap(path.get().get().evaluate(object));
-	}
-
 	public date z8_getDate(string name) {
 		return date.z8_parse(z8_getString(name));
 	}
 
-	public date z8_getDate(JsonPath.CLASS<? extends JsonPath> path) {
-		return (date) JsonUtils.wrap(path.get().get().evaluate(object));
-	}
-
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(string name) {
-		org.zenframework.z8.server.json.parser.JsonArray array = this.object.getJsonArray(name);
-		JsonArray.CLASS<? extends JsonArray> cls = new JsonArray.CLASS<JsonArray>(null);
-		cls.get().set(array);
-		return cls;
-	}
-
-	@SuppressWarnings("unchecked")
-	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(JsonPath.CLASS<? extends JsonPath> path) {
-		return (JsonArray.CLASS<? extends JsonArray>) JsonUtils.wrap(path.get().get().evaluate(object));
+		return JsonArray.getJsonArray(this.object.getJsonArray(name));
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(string name) {
-		org.zenframework.z8.server.json.parser.JsonObject object = this.object.getJsonObject(name);
-		JsonObject.CLASS<? extends JsonObject> cls = new JsonObject.CLASS<JsonObject>(null);
-		cls.get().set(object);
-		return cls;
-	}
-
-	@SuppressWarnings("unchecked")
-	public JsonObject.CLASS<? extends JsonObject> z8_getJsonObject(JsonPath.CLASS<? extends JsonPath> path) {
-		return (JsonObject.CLASS<? extends JsonObject>) JsonUtils.wrap(path.get().get().evaluate(object));
+		return JsonObject.getJsonObject(this.object.getJsonObject(name));
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, primary value) {
-		object.put(name, JsonUtils.unwrap(value));
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		object.set(name, JsonUtils.unwrap(value));
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonArray.CLASS<? extends JsonArray> value) {
 		object.put(name.get(), value.get().get());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_put(string name, JsonObject.CLASS<? extends JsonObject> value) {
 		object.put(name.get(), value.get().getInternalObject());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_put(Field.CLASS<? extends Field> fieldClass) {
@@ -192,9 +149,32 @@ public class JsonObject extends OBJECT {
 	}
 
 	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, primary value) {
+		object.set(name, JsonUtils.unwrap(value));
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, JsonArray.CLASS<? extends JsonArray> value) {
+		object.put(name.get(), value.get().get());
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonObject.CLASS<? extends JsonObject> z8_set(string name, JsonObject.CLASS<? extends JsonObject> value) {
+		object.put(name.get(), value.get().getInternalObject());
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
+	}
+
+	public JsonObject.CLASS<? extends JsonObject> z8_set(Field.CLASS<? extends Field> fieldClass) {
+		Field field = fieldClass.get();
+		return z8_put(field.z8_id(), field.get());
+	}
+
+	@SuppressWarnings("unchecked")
 	public JsonObject.CLASS<? extends JsonObject> z8_remove(string name) {
 		object.remove(name.get());
-		return (JsonObject.CLASS<? extends JsonObject>)getCLASS();
+		return (JsonObject.CLASS<? extends JsonObject>) getCLASS();
 	}
 
 	@Override
@@ -207,22 +187,24 @@ public class JsonObject extends OBJECT {
 		return new string(object.toString());
 	}
 
-	public string z8_toString(integer indentFactor) {
-		return new string(object.toString(indentFactor.getInt()));
-	}
-
 	public static JsonObject.CLASS<JsonObject> getJsonObject(org.zenframework.z8.server.json.parser.JsonObject json) {
+		if (json == null)
+			return null;
+
 		JsonObject.CLASS<JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>(null);
 		jsonObject.get().set(json);
 		return jsonObject;
 	}
 
 	public static JsonObject.CLASS<JsonObject> z8_parse(string source) {
-		return getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get()));
+		return source != null ? getJsonObject(new org.zenframework.z8.server.json.parser.JsonObject(source.get())) : null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static JsonObject.CLASS<? extends JsonObject> z8_fromPrimaryMap(RLinkedHashMap map) {
+		if (map == null)
+			return null;
+
 		JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
 		jsonObject.get().set(new org.zenframework.z8.server.json.parser.JsonObject(map));
 		return jsonObject;
@@ -230,21 +212,29 @@ public class JsonObject extends OBJECT {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static JsonObject.CLASS<? extends JsonObject> z8_fromJsonArrayMap(RLinkedHashMap map) {
+		if (map == null)
+			return null;
+
 		RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>> jsonArrayMap = (RLinkedHashMap<primary, JsonArray.CLASS<? extends JsonArray>>)map;
 		JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
-		for(Map.Entry<primary, JsonArray.CLASS<? extends JsonArray>> ja : jsonArrayMap.entrySet()) {
+
+		for(Map.Entry<primary, JsonArray.CLASS<? extends JsonArray>> ja : jsonArrayMap.entrySet())
 			jsonObject.get().getInternalObject().put(ja.getKey().toString(), ja.getValue().get().get());
-		}
+
 		return jsonObject;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static JsonObject.CLASS<? extends JsonObject> z8_fromJsonObjectMap(RLinkedHashMap map) {
+		if (map == null)
+			return null;
+
 		RLinkedHashMap<primary, JsonObject.CLASS<? extends JsonObject>> jsonObjectMap = (RLinkedHashMap<primary, JsonObject.CLASS<? extends JsonObject>>)map;
 		JsonObject.CLASS<? extends JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>();
-		for(Map.Entry<primary, JsonObject.CLASS<? extends JsonObject>> jo : jsonObjectMap.entrySet()) {
+
+		for(Map.Entry<primary, JsonObject.CLASS<? extends JsonObject>> jo : jsonObjectMap.entrySet())
 			jsonObject.get().getInternalObject().put(jo.getKey().toString(), jo.getValue().get().getInternalObject());
-		}
+
 		return jsonObject;
 	}
 }

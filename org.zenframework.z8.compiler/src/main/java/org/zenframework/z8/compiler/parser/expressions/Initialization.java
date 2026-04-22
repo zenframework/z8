@@ -31,7 +31,7 @@ public abstract class Initialization extends LanguageElement {
 	protected Initialization(ILanguageElement left, OperatorToken operatorToken, ILanguageElement right) {
 		this.left = left;
 		this.right = right;
-		this.operatorToken = operatorToken != null ? new OperatorToken(IToken.ASSIGN, operatorToken.getPosition()) : null;
+		this.operatorToken = operatorToken != null ? new OperatorToken(IToken.Assign, operatorToken.getPosition()) : null;
 	}
 
 	public ILanguageElement getLeftElement() {
@@ -127,7 +127,7 @@ public abstract class Initialization extends LanguageElement {
 		}
 
 		if(candidates.size() != 0) {
-			ITypeCast directCast = operatorToken.getId() == IToken.ASSIGN ? right.getVariableType().getCastTo(leftHandValue.getVariableType()) : null;
+			ITypeCast directCast = operatorToken.getId() == IToken.Assign ? right.getVariableType().getCastTo(leftHandValue.getVariableType()) : null;
 			if(directCast != null)
 					candidates.add(directCast);
 
@@ -139,7 +139,7 @@ public abstract class Initialization extends LanguageElement {
 				setError(getPosition(), "The " + result[0].getContext().getSignature() + " is ambiguous for the type " + type.getSignature());
 				return false;
 			}
-		} else if(operatorToken.getId() == IToken.ASSIGN) {
+		} else if(operatorToken.getId() == IToken.Assign) {
 			typeCast = right.getVariableType().getCastTo(leftHandValue.getVariableType());
 		} else {
 			setError(getPosition(), "The " + operatorToken.getName() + " is undefined for the argument type(s) " + left.getVariableType().getSignature() + ", " + right.getVariableType().getSignature());

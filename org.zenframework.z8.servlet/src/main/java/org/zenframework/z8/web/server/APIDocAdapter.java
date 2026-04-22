@@ -80,6 +80,7 @@ public class APIDocAdapter extends Adapter {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static Configuration getFreeMakerCfg() {
 		// TODO Upgrade freemarker to 2.3.30
 		Configuration freeMarkerCfg = new Configuration();

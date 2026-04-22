@@ -7,6 +7,7 @@ import org.zenframework.z8.compiler.file.FileException;
 import org.zenframework.z8.compiler.parser.grammar.lexer.ABC;
 
 public class StartupCodeGenerator {
+	private static final String RuntimePrefix = "Schema";
 	private static final String RuntimePostfix = "Runtime";
 	private static final String RuntimePackage = "org.zenframework.z8.";
 
@@ -50,7 +51,7 @@ public class StartupCodeGenerator {
 			} else
 				toUpper = true;
 		}
-		return str + RuntimePostfix;
+		return RuntimePrefix + str + RuntimePostfix;
 	}
 
 	private static void generateResource(Project project, IPath resourcePath, String content) throws FileException {

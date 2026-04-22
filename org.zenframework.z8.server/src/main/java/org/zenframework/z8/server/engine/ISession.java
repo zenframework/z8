@@ -9,10 +9,13 @@ public interface ISession extends RmiSerializable, Serializable {
 
 	public IUser user();
 	public void setUser(IUser user);
+	public void switchUser(IUser user);
+	public void restoreUser();
 
 	public IServerInfo getServerInfo();
 	public ISession setServerInfo(IServerInfo serverInfo);
 
 	public ISession touch();
 	public long getLastAccessTime();
+
 }

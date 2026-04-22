@@ -18,6 +18,7 @@ import org.zenframework.z8.server.db.sql.functions.numeric.Abs;
 import org.zenframework.z8.server.db.sql.functions.numeric.Ceil;
 import org.zenframework.z8.server.db.sql.functions.numeric.Exp;
 import org.zenframework.z8.server.db.sql.functions.numeric.Floor;
+import org.zenframework.z8.server.db.sql.functions.numeric.IsNaN;
 import org.zenframework.z8.server.db.sql.functions.numeric.Ln;
 import org.zenframework.z8.server.db.sql.functions.numeric.Power;
 import org.zenframework.z8.server.db.sql.functions.numeric.Round;
@@ -43,6 +44,10 @@ public class sql_decimal extends sql_primary {
 	@Override
 	public sql_string z8_toString() {
 		return new sql_string(new ToString(this));
+	}
+
+	public sql_bool z8_isNaN() {
+		return new sql_bool(new IsNaN(this));
 	}
 
 	public sql_integer z8_sign() {

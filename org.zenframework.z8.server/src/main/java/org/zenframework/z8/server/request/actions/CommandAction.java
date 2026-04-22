@@ -55,7 +55,7 @@ public class CommandAction extends RequestAction {
 	private void parseParameters(Action action) {
 		JsonArray parameters = new JsonArray(getRequestParameter(Json.parameters));
 
-		for(int i = 0; i < parameters.length(); i++) {
+		for(int i = 0; i < parameters.size(); i++) {
 			JsonObject object = parameters.getJsonObject(i);
 			IParameter parameter = action.getParameter(object.getString(Json.id));
 			parameter.parse(object.has(Json.value) ? object.getString(Json.value) : null);

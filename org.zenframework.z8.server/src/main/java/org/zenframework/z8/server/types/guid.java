@@ -1,6 +1,6 @@
 package org.zenframework.z8.server.types;
 
-import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -10,23 +10,13 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class guid extends primary {
-
 	private static final long serialVersionUID = -8410843852109029003L;
 
 	private static final UUID nullValue = UUID.fromString("00000000-0000-0000-0000-000000000000");
+	public static final guid Null = new guid();
 
 	private UUID value;
 
-	static final public guid Null = new guid() {
-
-		private static final long serialVersionUID = 1745933898572308263L;
-
-		@Override
-		public void set(String guid) {
-			throw new UnsupportedOperationException();
-		}
-
-	};
 
 	public guid() {
 		value = nullValue;
@@ -41,15 +31,14 @@ public class guid extends primary {
 	}
 
 	public guid(String guid) {
-		if (guid != null)
+		if(guid != null)
 			set(guid);
 		else
 			set(nullValue);
 	}
 
 	public guid(byte[] data) {
-		BigInteger ui = new BigInteger(data);
-		set(ui.toString(16));
+		this(create(data));
 	}
 
 	public guid(long mostSigBits, long leastSigBits) {
@@ -76,6 +65,13 @@ public class guid extends primary {
 		return new guid(new UUID(n1, n2));
 	}
 
+	static public guid create(byte[] data) {
+		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES * 2);
+		buffer.put(data);
+		buffer.flip();
+		return new guid(buffer.getLong(), buffer.getLong());
+	}
+
 	@Override
 	public String toString() {
 		return value.toString().toUpperCase();
@@ -85,25 +81,27 @@ public class guid extends primary {
 		return (useDelimiter ? value.toString() : value.toString().replace("-", "")).toUpperCase();
 	}
 
+	public byte[] toByteArray() {
+		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES * 2);
+		buffer.putLong(value.getMostSignificantBits());
+		buffer.putLong(value.getLeastSignificantBits());
+		return buffer.array();
+	}
+
 	public UUID get() {
 		return value;
 	}
 
-	public void set(UUID value) {
+	private void set(UUID value) {
 		this.value = value;
 	}
 
-	public void set(guid guid) {
-		set(guid != null ? guid.value : null);
-	}
-
-	public void set(String guid) {
-		if (guid == null || guid.trim().equals("") || guid.trim().equals("0")) {
+	private void set(String guid) {
+		if(guid == null || guid.trim().equals("") || guid.trim().equals("0")) {
 			value = nullValue;
 		} else {
-			if (guid.length() == 32)
-				guid = guid.substring(0, 8) + "-" + guid.substring(8, 12) + "-" + guid.substring(12, 16) + "-"
-						+ guid.substring(16, 20) + "-" + guid.substring(20, 32);
+			if(guid.length() == 32)
+				guid = guid.substring(0, 8) + "-" + guid.substring(8, 12) + "-" + guid.substring(12, 16) + "-" + guid.substring(16, 20) + "-" + guid.substring(20, 32);
 			value = UUID.fromString(guid);
 		}
 	}
@@ -115,7 +113,7 @@ public class guid extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor dbtype) {
-		switch (dbtype) {
+		switch(dbtype) {
 		case Oracle:
 			return "HEXTORAW('" + toString(false) + "')";
 		case Postgres:
@@ -132,8 +130,8 @@ public class guid extends primary {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof guid)
-			return operatorEqu((guid) obj).get();
+		if(obj instanceof guid)
+			return operatorEqu((guid)obj).get();
 		return false;
 	}
 
@@ -152,11 +150,11 @@ public class guid extends primary {
 	}
 
 	public bool operatorEqu(guid x) {
-		return new bool(value.equals(x.value));
+		return new bool(x != null && value.equals(x.value));
 	}
 
 	public bool operatorNotEqu(guid x) {
-		return new bool(!value.equals(x.value));
+		return new bool(x != null && !value.equals(x.value));
 	}
 
 	public RCollection<integer> z8_components() {
@@ -188,6 +186,6 @@ public class guid extends primary {
 	}
 
 	static public guid z8_parse(string string) {
-		return new guid(string != null ? string.get() : null);
+		return string != null ? new guid(string.get()) : null;
 	}
 }

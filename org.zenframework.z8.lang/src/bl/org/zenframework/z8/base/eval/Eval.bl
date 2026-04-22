@@ -1,0 +1,19 @@
+import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.json.JsonObject;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.eval.Eval"]
+public class Eval extends Object {
+	public Eval setVariable(string name, primary value);
+	public Eval setVariable(string name, JsonObject value);
+	public Eval setVariable(string name, JsonArray value);
+
+	public Eval clear();
+
+	public string getContextInfo();
+
+	public string[] getErrors();
+
+	public bool evaluateBoolean(string expression);
+	public string evaluateText(string expression);
+}

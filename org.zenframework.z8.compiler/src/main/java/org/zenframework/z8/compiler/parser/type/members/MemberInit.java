@@ -12,7 +12,6 @@ import org.zenframework.z8.compiler.core.IVariable;
 import org.zenframework.z8.compiler.core.IVariableType;
 import org.zenframework.z8.compiler.parser.BuiltinNative;
 import org.zenframework.z8.compiler.parser.expressions.Initialization;
-import org.zenframework.z8.compiler.parser.expressions.OperatorNew;
 import org.zenframework.z8.compiler.parser.expressions.QualifiedName;
 import org.zenframework.z8.compiler.parser.grammar.lexer.token.OperatorToken;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
@@ -26,6 +25,7 @@ public class MemberInit extends Initialization implements IInitializer {
 		return (QualifiedName)getLeftElement();
 	}
 
+	@Override
 	public String getName() {
 		return getQualifiedName().toString();
 	}
@@ -33,26 +33,6 @@ public class MemberInit extends Initialization implements IInitializer {
 	@Override
 	public int hashCode() {
 		return getName().hashCode();
-	}
-
-	@Override
-	public String getLeftName() {
-		QualifiedName qualifiedName = (QualifiedName)getLeftElement();
-		return qualifiedName.toString();
-	}
-
-	@Override
-	public String getRightName() {
-		ILanguageElement initializer = getRightElement();
-
-		if(initializer instanceof OperatorNew) {
-			OperatorNew type = (OperatorNew)initializer;
-			return type.getVariableType().getJavaNew(getStaticContext());
-		}
-
-		CodeGenerator codeGenerator = new CodeGenerator(getCompilationUnit());
-		initializer.getCode(codeGenerator);
-		return codeGenerator.toString();
 	}
 
 	@Override
@@ -76,7 +56,7 @@ public class MemberInit extends Initialization implements IInitializer {
 			MemberInit memberInit = (MemberInit)object;
 
 			if(getDeclaringType().equals(memberInit.getDeclaringType()))
-				return getLeftName().equals(memberInit.getLeftName());
+				return getName().equals(memberInit.getName());
 		}
 
 		return false;
@@ -94,8 +74,8 @@ public class MemberInit extends Initialization implements IInitializer {
 
 		if(initializer != null && initializer instanceof MemberInit) {
 			if(declaringType.equals(initializer.getDeclaringType())) {
-				setError(initializer.getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName() + " in type " + declaringType.getUserName());
-				setError(getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getLeftName() + " in type " + declaringType.getUserName());
+				setError(initializer.getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getName() + " in type " + declaringType.getUserName());
+				setError(getLeftElement().getPosition(), "Duplicate initialization of " + initializer.getName() + " in type " + declaringType.getUserName());
 			} else
 				declaringType.addInitializer(this);
 		} else
@@ -109,7 +89,7 @@ public class MemberInit extends Initialization implements IInitializer {
 	}
 
 	private boolean isConstructor1Assignment() {
-		return getVariableType().isReference() && getOperator() != null && getOperator().getId() == IToken.ASSIGN;
+		return getVariableType().isReference() && getOperator() != null && getOperator().getId() == IToken.Assign;
 	}
 
 	@Override

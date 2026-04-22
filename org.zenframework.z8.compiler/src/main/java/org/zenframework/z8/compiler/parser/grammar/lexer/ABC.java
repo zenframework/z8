@@ -4,7 +4,7 @@ public class ABC {
 	public static int TabulatorLength = 4;
 
 	public static boolean isAllowed(char chr) {
-		return chr != '\\' && chr != '^' && chr != '`' && chr != '~' && chr != '$' && chr != '#' && chr != '@' && Character.isJavaIdentifierPart(chr);
+		return chr != '\\' && chr != '`' && chr != '$' && chr != '#' && chr != '@' && Character.isJavaIdentifierPart(chr);
 	}
 
 	public static boolean isPrintable(char chr) {

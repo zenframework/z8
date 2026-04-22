@@ -59,6 +59,11 @@ public class QualifiedName extends LanguageElement {
 		return variableTypes != null ? variableTypes.get(index) : null;
 	}
 
+	@Override
+	public boolean containsQualifiedName(String name) {
+		return toString().startsWith(name);
+	}
+
 	public int getTokenCount() {
 		return tokens.size();
 	}

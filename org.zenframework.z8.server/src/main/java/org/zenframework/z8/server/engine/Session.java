@@ -16,6 +16,7 @@ public class Session implements ISession {
 
 	private String id;
 	private IUser user;
+	private IUser originalUser;
 	private IServerInfo serverInfo;
 
 	private long lastAccessTime;
@@ -49,8 +50,18 @@ public class Session implements ISession {
 
 	@Override
 	public void setUser(IUser user) {
-		this.user = user;
+		this.user = originalUser = user;
 		lastAccessTime = System.currentTimeMillis();
+	}
+
+	@Override
+	public void switchUser(IUser user) {
+		this.user = user;
+	}
+
+	@Override
+	public void restoreUser() {
+		this.user = originalUser;
 	}
 
 	@Override

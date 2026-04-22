@@ -183,7 +183,7 @@ public class FileConverter {
 			return file;
 
 		JsonArray stamps = new JsonArray(stampsString);
-		if (stamps.length() == 0)
+		if (stamps.size() == 0)
 			return file;
 
 		File source = file;
@@ -206,7 +206,7 @@ public class FileConverter {
 
 			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 
-			for (int i = 0; i < stamps.length(); ++i) {
+			for (int i = 0; i < stamps.size(); ++i) {
 				try {
 					JsonObject stampInfo = stamps.getJsonObject(i);
 					processStamp(stamper, stampInfo, size.getHeight(), pages);

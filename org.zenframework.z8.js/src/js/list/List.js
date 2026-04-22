@@ -776,8 +776,12 @@ Z8.define('Z8.list.List', {
 
 	removeRecords: function(records) {
 		var items = [];
-		for(i = 0, length = records.length; i < length; i++)
-			items.push(this.getItem(records[i].id));
+		for(i = 0, length = records.length; i < length; i++) {
+			var item = this.getItem(records[i].id);
+			// TODO Null-check is workaround
+			if (item != null)
+				items.push(item);
+		}
 
 		this.removeItems(items);
 	},

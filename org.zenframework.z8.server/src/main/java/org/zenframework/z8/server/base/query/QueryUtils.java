@@ -101,10 +101,10 @@ public class QueryUtils {
 	}
 
 	static public void setFieldValues(Query query, JsonObject record) {
-		if(record == null)
+		if (record == null)
 			return;
 
-		for(String fieldId : JsonObject.getNames(record)) {
+		for (String fieldId : record.getNames()) {
 			Field field = query.findFieldById(fieldId);
 			if(field != null && field.type() != FieldType.Binary)
 				QueryUtils.setFieldValue(field, record.getString(fieldId), null);
@@ -130,10 +130,10 @@ public class QueryUtils {
 	static public Collection<Field> parseFields(Query query, JsonArray json, String context) {
 		Collection<Field> fields = new ArrayList<Field>();
 
-		if(json.length() == 0)
+		if (json.size() == 0)
 			return query.fields();
 
-		for(int index = 0; index < json.length(); index++) {
+		for(int index = 0; index < json.size(); index++) {
 			Object object = json.get(index);
 			String name = (context != null && !context.isEmpty() ? context + '.' : "") +
 					(object instanceof JsonObject ? ((JsonObject)object).getString(Json.id) : (String)object);

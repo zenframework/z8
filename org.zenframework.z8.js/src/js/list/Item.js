@@ -91,8 +91,8 @@ Z8.define('Z8.list.Item', {
 
 		if(this.isTree()) {
 			var collapserCls = 'fa fa-caret-right icon';
-			if (!this.isCollapsed())
-				collapserCls += ' fa-rotate-90 fa-transform-transition';
+			if (this.isCollapsed())
+				collapserCls += ' fa-rotate-270 fa-transform-transition';
 			var collapserIcon = { tag: 'i', cls: collapserCls, html: String.htmlText() };
 			var collapser = { tag: 'span', cls: 'collapser', cn: [collapserIcon] };
 			icons.push(collapser);
@@ -388,7 +388,7 @@ Z8.define('Z8.list.Item', {
 	collapse: function(collapsed) {
 		if(this.collapsed != collapsed) {
 			this.collapsed = collapsed;
-			DOM.rotate(this.collapserIcon, collapsed ? 0 : 90);
+			DOM.rotate(this.collapserIcon, collapsed ? 270 : 0);
 			this.getList().onItemCollapse(this, collapsed);
 		}
 	},

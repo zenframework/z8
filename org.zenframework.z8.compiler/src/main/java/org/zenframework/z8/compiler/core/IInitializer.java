@@ -2,21 +2,18 @@ package org.zenframework.z8.compiler.core;
 
 public interface IInitializer extends ILanguageElement {
 	@Override
-	IAttribute[] getAttributes();
+	public IAttribute[] getAttributes();
 
 	@Override
-	IType getDeclaringType();
+	public IType getDeclaringType();
 
 	@Override
-	IVariableType getVariableType();
+	public IVariableType getVariableType();
 
-	String getLeftName();
+	public String getName();
 
-	String getRightName();
+	public ILanguageElement getLeftElement();
+	public ILanguageElement getRightElement();
 
-	ILanguageElement getLeftElement();
-
-	ILanguageElement getRightElement();
-
-	IToken getOperator();
+	public IToken getOperator();
 }

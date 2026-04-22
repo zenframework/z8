@@ -5,6 +5,7 @@ import org.zenframework.z8.base.security.User;
 [native "org.zenframework.z8.server.runtime.OBJECT"]
 public class Object {
 	static public User user();
+	static public User system();
 
 	virtual protected void constructor();
 
@@ -26,6 +27,7 @@ public class Object {
 	public bool operator != (Object object);
 
 	virtual public string toString();
+	virtual public int compare(Object o);
 
 	virtual public void write(JsonWriter writer);
 
@@ -38,4 +40,5 @@ public class Object {
 
 	static public Object newInstance(string className);
 	static public Object newNamedInstance(string name);
+	static public Object getNamedSingleton(string name);
 }

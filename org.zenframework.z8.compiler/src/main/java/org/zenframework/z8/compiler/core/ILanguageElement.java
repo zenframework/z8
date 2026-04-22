@@ -3,59 +3,42 @@ package org.zenframework.z8.compiler.core;
 import org.zenframework.z8.compiler.workspace.CompilationUnit;
 
 public interface ILanguageElement extends IAttributed, ISource {
-	ILanguageElement getParent();
+	public ILanguageElement getParent();
+	public void setParent(ILanguageElement parent);
 
-	void setParent(ILanguageElement parent);
+	public IType getDeclaringType();
+	public IMethod getDeclaringMethod();
 
-	IType getDeclaringType();
+	public boolean getStaticContext();
+	public void setStaticContext(boolean context);
 
-	IMethod getDeclaringMethod();
+	public IVariable getVariable();
+	public IVariableType getVariableType();
 
-	boolean getStaticContext();
+	public boolean hasError();
+	public boolean hasFatalError();
+	public void setError(IPosition position, String message);
+	public void setFatalError(IPosition position, String message);
 
-	void setStaticContext(boolean context);
+	public boolean resolveTypes(CompilationUnit source, IType declaringType);
+	public boolean resolveStructure(CompilationUnit source, IType declaringType);
+	public boolean checkSemantics(CompilationUnit source, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context);
+	public boolean resolveNestedTypes(CompilationUnit source, IType declaringType);
 
-	IVariable getVariable();
+	public boolean isQualifiedName();
+	public boolean isOperatorNew();
 
-	IVariableType getVariableType();
+	public void getCode(CodeGenerator codeGenerator);
+	public void getClassCode(CodeGenerator codeGenerator);
+	public void getStaticBlock(CodeGenerator codeGenerator);
+	public void getStaticConstructor(CodeGenerator codeGenerator);
+	public void getConstructor(CodeGenerator codeGenerator);
+	public void getConstructor1(CodeGenerator codeGenerator);
+	public void getConstructor2(CodeGenerator codeGenerator);
 
-	boolean hasError();
+	public ILanguageElement getElementAt(int offset);
+	public ILanguageElement getElementAt(int offset, int length);
+	public ILanguageElement getElementAt(IPosition position);
 
-	boolean hasFatalError();
-
-	void setError(IPosition position, String message);
-
-	void setFatalError(IPosition position, String message);
-
-	boolean resolveTypes(CompilationUnit source, IType declaringType);
-
-	boolean resolveStructure(CompilationUnit source, IType declaringType);
-
-	boolean checkSemantics(CompilationUnit source, IType declaringType, IMethod declaringMethod, IVariable leftHandValue, IVariableType context);
-
-	boolean resolveNestedTypes(CompilationUnit source, IType declaringType);
-
-	boolean isQualifiedName();
-
-	boolean isOperatorNew();
-
-	void getCode(CodeGenerator codeGenerator);
-
-	void getClassCode(CodeGenerator codeGenerator);
-
-	void getStaticBlock(CodeGenerator codeGenerator);
-
-	void getStaticConstructor(CodeGenerator codeGenerator);
-
-	void getConstructor(CodeGenerator codeGenerator);
-
-	void getConstructor1(CodeGenerator codeGenerator);
-
-	void getConstructor2(CodeGenerator codeGenerator);
-
-	ILanguageElement getElementAt(int offset);
-
-	ILanguageElement getElementAt(int offset, int length);
-
-	ILanguageElement getElementAt(IPosition position);
+	public boolean containsQualifiedName(String name);
 }

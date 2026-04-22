@@ -4,8 +4,8 @@ public final class sql_int extends sql_primary {
 
 	public operator sql_decimal();
 
-	public sql_int operator-();
-	public sql_int operator+();
+	public sql_int operator - ();
+	public sql_int operator + ();
 
 	public sql_int operator + (sql_int value);
 	public sql_int operator - (sql_int value);
@@ -31,6 +31,12 @@ public final class sql_int extends sql_primary {
 	public sql_bool operator >= (sql_decimal value);
 	public sql_bool operator == (sql_decimal value);
 	public sql_bool operator != (sql_decimal value);
+
+	public sql_int operator ~ ();
+
+	public sql_int operator & (sql_int value);
+	public sql_int operator | (sql_int value);
+	public sql_int operator ^ (sql_int value);
 
 	public sql_int sign();
 	public sql_int abs();

@@ -9,7 +9,14 @@ public class Application extends Object {
 	static public bool isRequest();
 	static public bool isMultitenant();
 
+	static public guid userId();
+	static public guid systemId();
+
 	static public User user();
+	static public User system();
+
+	static public void switchUser(User user);
+	static public void restoreUser();
 
 	static public int currentTimeMillis();
 

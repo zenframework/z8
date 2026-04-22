@@ -60,6 +60,11 @@ public class ArrayAccess extends LanguageElement implements IJavaTypeCast {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return array.containsQualifiedName(name) || expression.containsQualifiedName(name);
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		return super.resolveTypes(compilationUnit, declaringType) && array.resolveTypes(compilationUnit, declaringType) && expression.resolveTypes(compilationUnit, declaringType);
 	}

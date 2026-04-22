@@ -55,7 +55,7 @@ public class JumpStatement extends LanguageElement implements IStatement {
 		if(!super.checkSemantics(compilationUnit, declaringType, declaringMethod, null, null))
 			return false;
 
-		if(jump.getId() == IToken.RETURN) {
+		if(jump.getId() == IToken.Return) {
 			IVariableType returnType = declaringMethod.getVariableType();
 
 			IType voidType = Primary.resolveType(compilationUnit, Primary.Void);
@@ -93,12 +93,12 @@ public class JumpStatement extends LanguageElement implements IStatement {
 
 	@Override
 	public boolean returnsOnAllControlPaths() {
-		return jump.getId() == IToken.RETURN;
+		return jump.getId() == IToken.Return;
 	}
 
 	@Override
 	public boolean breaksControlFlow() {
-		if(jump.getId() == IToken.RETURN)
+		if(jump.getId() == IToken.Return)
 			return true;
 
 		ILanguageElement parent = getParent();
@@ -110,7 +110,7 @@ public class JumpStatement extends LanguageElement implements IStatement {
 			parent = parent.getParent();
 		}
 
-		setError(getPosition(), (jump.getId() == IToken.CONTINUE ? "continue" : "break") + " cannot be used outside of a loop");
+		setError(getPosition(), (jump.getId() == IToken.Continue ? "continue" : "break") + " cannot be used outside of a loop");
 		return false;
 	}
 
@@ -118,13 +118,13 @@ public class JumpStatement extends LanguageElement implements IStatement {
 	public void getCode(CodeGenerator codeGenerator) {
 		codeGenerator.getCompilationUnit().setLineNumbers(getSourceRange().getLine(), codeGenerator.getCurrentLine());
 
-		if(jump.getId() == IToken.BREAK) {
+		if(jump.getId() == IToken.Break) {
 			codeGenerator.append("break;");
 			codeGenerator.breakLine();
-		} else if(jump.getId() == IToken.CONTINUE) {
+		} else if(jump.getId() == IToken.Continue) {
 			codeGenerator.append("continue;");
 			codeGenerator.breakLine();
-		} else if(jump.getId() == IToken.RETURN) {
+		} else if(jump.getId() == IToken.Return) {
 			codeGenerator.append("return");
 
 			if(expression != null) {

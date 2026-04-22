@@ -9,6 +9,9 @@ public final class decimal extends primary {
 	static public int RoundHalfEven = 6;
 	static public int RoundUnnecessary = 7;
 
+	static public decimal Min;
+	static public decimal Max;
+
 	public operator string();
 	public operator sql_decimal();
 

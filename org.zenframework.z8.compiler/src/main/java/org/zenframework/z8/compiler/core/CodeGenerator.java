@@ -41,6 +41,16 @@ public class CodeGenerator {
 		return this;
 	}
 
+	public CodeGenerator append(ILanguageElement element) {
+		element.getCode(this);
+		return this;
+	}
+
+	public CodeGenerator append(ITypeCast typeCast, ILanguageElement element) {
+		typeCast.getCode(this, element);
+		return this;
+	}
+
 	public CodeGenerator append(CodeGenerator generator) {
 		buffer.append(generator.buffer);
 		line += generator.line;

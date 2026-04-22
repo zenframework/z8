@@ -135,7 +135,7 @@ public class Enum extends AbstractType {
 
 				@Override
 				public String getName() {
-					return new OperatorToken(IToken.EQU, null).getName();
+					return new OperatorToken(IToken.Equ, null).getName();
 				}
 
 				@Override
@@ -152,7 +152,7 @@ public class Enum extends AbstractType {
 
 				@Override
 				public String getName() {
-					return new OperatorToken(IToken.NOT_EQU, null).getName();
+					return new OperatorToken(IToken.NotEqu, null).getName();
 				}
 
 				@Override

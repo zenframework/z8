@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.db.sql.expressions;
 
 public enum Operation {
-	None(""),
+	None("none"),
 	Not(Names.Not),
 	Minus(Names.Minus),
 	Add(Names.Add),
@@ -11,6 +11,9 @@ public enum Operation {
 	Mod(Names.Mod),
 	And(Names.And),
 	Or(Names.Or),
+	BitwiseAnd(Names.BitwiseAnd),
+	BitwiseOr(Names.BitwiseOr),
+	Xor(Names.Xor),
 	Eq(Names.Eq),
 	NotEq(Names.NotEq),
 	LT(Names.LT),
@@ -74,6 +77,10 @@ public enum Operation {
 		static protected final String LE = "le";
 		static protected final String GE = "ge";
 
+		static protected final String BitwiseAnd = "bitwiseAnd";
+		static protected final String BitwiseOr = "bitwiseOr";
+		static protected final String Xor = "xor";
+
 		static protected final String BeginsWith = "beginsWith";
 		static protected final String NotBeginsWith = "notBeginsWith";
 		static protected final String EndsWith = "endsWith";
@@ -125,9 +132,11 @@ public enum Operation {
 	}
 
 	static public Operation fromString(String string) {
-		for (Operation value : values())
-			if (value.name().equalsIgnoreCase(string))
+		for(Operation value : values()) {
+			if(value.name().equalsIgnoreCase(string))
 				return value;
-		throw new RuntimeException("Unknown operation: '" + string + "'");
+		}
+
+		return Eq;
 	}
 }

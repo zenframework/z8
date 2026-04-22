@@ -29,7 +29,7 @@ Z8.define('Z8.form.field.Files', {
 	],
 
 	initComponent: function() {
-		this.store = new Z8.data.Store({ model: 'Z8.data.file.Model' });
+		this.store = this.store || new Z8.data.Store({ model: 'Z8.data.file.Model' });
 		this.callParent();
 	},
 

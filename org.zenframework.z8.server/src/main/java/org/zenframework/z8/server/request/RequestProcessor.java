@@ -63,12 +63,12 @@ public class RequestProcessor {
 
 		if(!finished) {
 			JsonObject writer = new JsonObject();
-			writer.put(Json.request, id);
-			writer.put(Json.success, true);
-			writer.put(Json.type, "event");
-			writer.put(Json.retry, id);
-			writer.put(Json.server, ApplicationServer.id);
-			writer.put(Json.session, request.getSession().id());
+			writer.set(Json.request, id);
+			writer.set(Json.success, true);
+			writer.set(Json.type, "event");
+			writer.set(Json.retry, id);
+			writer.set(Json.server, ApplicationServer.id);
+			writer.set(Json.session, request.getSession().id());
 			response.setContent(writer.toString());
 		} else {
 			requests.remove(id);

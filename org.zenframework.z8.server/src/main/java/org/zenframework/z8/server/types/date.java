@@ -20,8 +20,12 @@ public class date extends primary {
 	public static long UtcMax = 95617584000000l;
 
 	final static public String DefaultTimeZoneId = "Europe/Moscow";
+
 	final static public date Min = new date(UtcMin);
+	final static public long MinTicks = Min.getTicks();
+
 	final static public date Max = new date(UtcMax);
+	final static public long MaxTicks = Max.getTicks();
 
 	static {
 		TimeZone.setDefault(TimeZone.getTimeZone(DefaultTimeZoneId));
@@ -33,15 +37,23 @@ public class date extends primary {
 	}
 
 	public date(int year, int month, int day) {
-		set(year, month, day, 0, 0, 0);
+		this(year, month, day, 0, 0, 0);
 	}
 
 	public date(int year, int month, int day, int hour, int minute, int second) {
-		set(year, month, day, hour, minute, second);
+		this(year, month, day, hour, minute, second, 0);
+	}
+
+	public date(int year, int month, int day, int hour, int minute, int second, int milliseconds) {
+		set(year, month, day, hour, minute, second, milliseconds);
 	}
 
 	public date(long milliseconds) {
 		setTicks(milliseconds);
+	}
+
+	public date(integer milliseconds) {
+		setTicks(milliseconds.get());
 	}
 
 	public date(GregorianCalendar gc) {
@@ -72,6 +84,11 @@ public class date extends primary {
 
 		if (date.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")) {
 			set(date, "yyyy-MM-dd'T'HH:mm:ssXXX");
+			return;
+		}
+
+		if (date.matches("\\d+")) {
+			setTicks(Long.parseLong(date));
 			return;
 		}
 
@@ -190,15 +207,16 @@ public class date extends primary {
 	}
 
 	public void set(String string, String format) {
+		if(string == null || string.isEmpty()) {
+			set(date.Min);
+			return;
+		}
+
 		try {
-			if(string == null || string.isEmpty()) {
-				set(date.Min);
-			} else {
-				Date date = new SimpleDateFormat(format).parse(string);
-				setTicks(date.getTime());
-			}
+			Date date = new SimpleDateFormat(format).parse(string);
+			setTicks(date.getTime());
 		} catch(ParseException e) {
-			throw new exception(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -366,9 +384,15 @@ public class date extends primary {
 	static boolean isEqualDate(date left, date right) {
 		return left.year() == right.year() && left.month() == right.month() && left.day() == right.day();
 	}
+
 	@Override
 	public String toString() {
+		// TODO Long.toString(getTicks());
 		return format("yyyy-MM-dd'T'HH:mm:ssXXX");
+	}
+
+	public String toIsoString() {
+		return toString("T", "");
 	}
 
 	public String toString(String timeSeparator, String zoneSeparator) {
@@ -407,6 +431,74 @@ public class date extends primary {
 		return result;
 	}
 
+	static public date parse(String timestamp) {
+		return new date(timestamp);
+	}
+
+	static public date parseIsoString(String isoString) {
+		if(isoString == null || isoString.isEmpty())
+			return date.Min;
+
+		// yyyy-MM-ddThh:mm[:ss[.m]][+hh:mm[:ss]]
+		// 0123456789012345 678 9?   012345 678
+
+		date date = new date();
+
+		int length = isoString.length(); 
+		int year = Integer.parseInt(isoString.substring(0, 4));
+		int month = Integer.parseInt(isoString.substring(5, 7));
+		int day = Integer.parseInt(isoString.substring(8, 10));
+		int hours = Integer.parseInt(isoString.substring(11, 13));
+		int minutes = Integer.parseInt(isoString.substring(14, 16));
+
+		boolean hasSeconds = length > 17 && isoString.charAt(16) == ':'; 
+		int seconds = hasSeconds ? Integer.parseInt(isoString.substring(17, 19)) : 0;
+
+		int shift = hasSeconds ? 0 : 3;
+
+		int index = 19 - shift;
+
+		int millis = 0;
+		boolean hasMillis = length > index && isoString.charAt(index) == '.';
+
+		if(hasMillis) {
+			int offsetStart = StringUtils.indexOfAny(isoString, index, "-+Z");
+			int millisStart = index + 1;
+			int millisEnd = offsetStart != -1 ? offsetStart : length;
+			millis = Integer.parseInt(isoString.substring(millisStart, millisEnd));
+			index = millisEnd;
+		}
+
+		boolean hasZone = index < length;
+
+		if(hasZone) {
+			char zoneChar = isoString.charAt(index);
+			int zoneOffset = 0;
+
+			if(zoneChar != 'Z') {
+				int zoneSign = zoneChar == '+' ? 1 : -1;
+
+				index += 3;
+				int zoneHours = Integer.parseInt(isoString.substring(index - 2, index));
+
+				index += 3;
+				int zoneMinutes = Integer.parseInt(isoString.substring(index - 2, index));
+
+				index += 3;
+				int zoneSeconds = index <= length ? Integer.parseInt(isoString.substring(index - 2, index)) : 0;
+
+				zoneOffset = zoneSign * zoneHours * datespan.TicksPerHour + zoneMinutes * datespan.TicksPerMinute + zoneSeconds * datespan.TicksPerSecond;
+			} else
+				zoneOffset = TimeZone.getDefault().getOffset(new GregorianCalendar(year, month, day, hours, minutes, seconds).getTimeInMillis());
+
+			date.setZoneOffset(zoneOffset);
+		}
+
+		date.set(year, month, day, hours, minutes, seconds, millis);
+
+		return date;
+	}
+
 	public String format(String format) {
 		return format(new SimpleDateFormat(format));
 	}
@@ -422,7 +514,7 @@ public class date extends primary {
 
 	@Override
 	public String toDbConstant(DatabaseVendor vendor) {
-		return "" + getTicks();
+		return Long.toString(getTicks());
 	}
 
 	@Override
@@ -473,27 +565,27 @@ public class date extends primary {
 	}
 
 	public bool operatorEqu(date x) {
-		return new bool(value.compareTo(x.get()) == 0);
+		return new bool(x != null && value.compareTo(x.get()) == 0);
 	}
 
 	public bool operatorNotEqu(date x) {
-		return new bool(value.compareTo(x.get()) != 0);
+		return new bool(x != null && value.compareTo(x.get()) != 0);
 	}
 
 	public bool operatorLess(date x) {
-		return new bool(value.compareTo(x.get()) < 0);
+		return new bool(x != null && value.compareTo(x.get()) < 0);
 	}
 
 	public bool operatorMore(date x) {
-		return new bool(value.compareTo(x.get()) > 0);
+		return new bool(x != null && value.compareTo(x.get()) > 0);
 	}
 
 	public bool operatorLessEqu(date x) {
-		return new bool(value.compareTo(x.get()) <= 0);
+		return new bool(x != null && value.compareTo(x.get()) <= 0);
 	}
 
 	public bool operatorMoreEqu(date x) {
-		return new bool(value.compareTo(x.get()) >= 0);
+		return new bool(x != null && value.compareTo(x.get()) >= 0);
 	}
 
 	static public date z8_now() {
@@ -664,8 +756,16 @@ public class date extends primary {
 		return new string(format(format.get()));
 	}
 
+	public string z8_toIsoString() {
+		return new string(toIsoString());
+	}
+
 	static public date z8_parse(string string) {
-		return string != null ? new date(string.get()) : null;
+		return string != null ? parse(string.get()) : null;
+	}
+
+	static public date z8_parseIsoString(string string) {
+		return string != null ? parseIsoString(string.get()) : null;
 	}
 
 	static public date z8_parse(string string, string format) {

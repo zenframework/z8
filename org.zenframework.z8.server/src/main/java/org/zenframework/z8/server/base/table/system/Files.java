@@ -194,21 +194,29 @@ public class Files extends Table {
 		}
 	}
 
-	public static InputStream getInputStream(file file) throws IOException {
-		guid fileId = file.id;
-
+	private static void copyFileFromDatabase(guid fileId, File path) throws IOException {
 		Files table = newInstance();
 
 		Field data = table.data.get();
 		Field size = table.size.get();
 		Collection<Field> fields = Arrays.asList(data, size);
 
-		if(!fileId.isNull() && table.readRecord(fileId, fields)) {
-			file.size = new integer(size.integer().get());
-			return data.binary().get();
-		}
+		try {
+			if (fileId.isNull() || !table.readRecord(fileId, fields))
+				throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
 
-		return null;
+			path.getParentFile().mkdirs();
+
+			long fileSize = size.integer().get();
+			long copiedSize = IOUtils.copyLarge(data.binary().get(), new FileOutputStream(path));
+
+			if (fileSize != 0 && copiedSize != fileSize) { 
+				path.delete();
+				throw new RuntimeException("Files.java:get(file file) file broken, fileId: " + fileId +  ", path: " + path.getAbsolutePath());
+			}
+		} finally {
+			table.close();
+		}
 	}
 
 	public static file get(guid fileId) {
@@ -217,32 +225,25 @@ public class Files extends Table {
 		Field path = table.path.get();
 		Collection<Field> fields = Arrays.asList(path);
 
-		if(!fileId.isNull() && table.readRecord(fileId, fields))
-			return new file(fileId, path.string().get());
+		try {
+			if(fileId.isNull() || !table.readRecord(fileId, fields))
+				return null;
 
-		return null;
+			return new file(fileId, path.string().get());
+		} finally {
+			table.close();
+		}
 	}
 
 	public static file get(file file) throws IOException {
 		File path = getFullStoragePath(file);
 
-		if(!path.exists()) {
-			InputStream inputStream = getInputStream(file);
-
-			if(inputStream == null)
-				throw new RuntimeException("Files.java:get(file file) inputStream == null, path: " + path.getAbsolutePath());
-
-			path.getParentFile().mkdirs();
-			long copiedSize = IOUtils.copyLarge(inputStream, new FileOutputStream(path));
-			long fileSize = file.size.get(); 
-			if (fileSize != 0 && copiedSize != fileSize) { 
-				path.delete();
-				throw new RuntimeException("Files.java:get(file file) file broken, fileId: " + file.id.get() +  ", path: " + path.getAbsolutePath());
-			}
-		}
+		if(!path.exists())
+			copyFileFromDatabase(file.id, path);
 
 		file.set(new InputOnlyFileItem(path, file.name.get()));
 		file.size = new integer(path.length());
+
 		return file;
 	}
 

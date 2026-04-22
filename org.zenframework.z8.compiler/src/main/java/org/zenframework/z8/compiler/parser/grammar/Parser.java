@@ -186,7 +186,7 @@ public class Parser {
 		if(expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression)expression;
 
-			if(unary.getOperatorToken().getId() == IToken.MINUS && unary.getExpression() instanceof Constant) {
+			if(unary.getOperatorToken().getId() == IToken.Minus && unary.getExpression() instanceof Constant) {
 				ConstantToken constantToken = ((Constant)unary.getExpression()).getToken();
 
 				if(constantToken instanceof IntegerToken) {
@@ -239,30 +239,30 @@ public class Parser {
 
 		void setToken(IToken token) {
 			switch(token.getId()) {
-			case IToken.STATIC: {
+			case IToken.Static: {
 				if(staticToken == null) {
 					staticToken = token;
 					return;
 				}
 				break;
 			}
-			case IToken.AUTO: {
+			case IToken.Auto: {
 				if(autoToken == null) {
 					autoToken = token;
 					return;
 				}
 				break;
 			}
-			case IToken.VIRTUAL: {
+			case IToken.Virtual: {
 				if(virtualToken == null) {
 					virtualToken = token;
 					return;
 				}
 				break;
 			}
-			case IToken.PUBLIC:
-			case IToken.PROTECTED:
-			case IToken.PRIVATE: {
+			case IToken.Public:
+			case IToken.Protected:
+			case IToken.Private: {
 				if(accessToken == null) {
 					accessToken = token;
 					return;
@@ -1156,7 +1156,6 @@ public class Parser {
 	}
 
 	void onTypeToPostfix() {
-
 		VariableTypeHelper variableTypeHelper = (VariableTypeHelper)pop();
 
 		Indices indices = variableTypeHelper.getIndices();

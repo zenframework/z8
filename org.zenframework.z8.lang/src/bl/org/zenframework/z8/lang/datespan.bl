@@ -28,6 +28,7 @@ public final class datespan extends primary {
 	public void setTotalSeconds(int seconds);
 	public void set(int days, int hours, int minutes, int seconds);
 	public void set(int days, int hours, int minutes, int seconds, int milliseconds);
+	public void set(int ticks);
 
 	public void truncDay();
 	public void truncHour();

@@ -11,7 +11,6 @@ import java.util.UUID;
 import org.eclipse.birt.report.model.api.IllegalOperationException;
 import org.zenframework.z8.server.expression.function.Function;
 import org.zenframework.z8.server.json.parser.JsonArray;
-import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -254,24 +253,44 @@ public class Calculator {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Object getProperty(Object parent, String property) {
-		if (parent instanceof OBJECT) {
-			CLASS value = (CLASS) ((OBJECT) parent).getMember(property);
+	public Object getProperty(Object object, String name) {
+		if (object instanceof Context) {
+			Context context = (Context) object;
+			Object value = context.getVariable(name);
+			if (value != null)
+				return value;
+		}
+
+		if (object instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
+			object = ((org.zenframework.z8.server.base.json.parser.JsonObject) object).get();
+
+		if (object instanceof Map)
+			return getValue(((Map) object).get(name));
+
+		if (object instanceof OBJECT) {
+			CLASS value = (CLASS) ((OBJECT) object).getMember(name);
 			if (value != null)
 				return getValue(value);
 		}
 
 		try {
-			return getValue(parent.getClass().getField(property).get(parent));
+			return getValue(object.getClass().getField(name).get(object));
 		} catch (NoSuchFieldException e) {
 			// Try to find public getter
-			return callMethod(parent, getterName(property));
+			return callMethod(object, getterName(name));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public Object callMethod(Object object, String name, Object... arguments) {
+		if (object instanceof Context) {
+			Context context = (Context) object;
+			Function method = context.getFunction(name);
+			if (method != null)
+				return method.call(arguments);
+		}
+
 		try {
 			Class<?> cls = object instanceof Class ? (Class<?>) object : object.getClass();
 			object = object instanceof Class ? null : object;
@@ -324,7 +343,7 @@ public class Calculator {
 		if (o instanceof CLASS)
 			o = ((CLASS) o).get();
 
-		if (o == null || JsonObject.NULL.equals(o))
+		if (o == null)
 			return null;
 		if (o instanceof Boolean)
 			return new bool((Boolean) o);

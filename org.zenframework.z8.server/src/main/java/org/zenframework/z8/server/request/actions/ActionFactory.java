@@ -166,7 +166,7 @@ public class ActionFactory {
 
 		JsonArray array = new JsonArray(jsonData);
 
-		for(int index = 0; index < array.length(); index++) {
+		for(int index = 0; index < array.size(); index++) {
 			JsonObject object = array.getJsonObject(index);
 
 			Field field = query.findFieldById(object.getString(Json.property));
@@ -194,7 +194,7 @@ public class ActionFactory {
 
 		JsonArray array = new JsonArray(jsonData);
 
-		for(int index = 0; index < array.length(); index++) {
+		for(int index = 0; index < array.size(); index++) {
 			JsonObject object = array.getJsonObject(index);
 
 			Field field = query.findFieldById(object.getString(Json.property));

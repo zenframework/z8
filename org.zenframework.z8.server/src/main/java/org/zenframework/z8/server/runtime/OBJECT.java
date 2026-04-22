@@ -307,6 +307,12 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		string str = z8_toString();
+		return str != null ? str.get() : "null";
+	}
+
 	public bool operatorEqu(OBJECT.CLASS<? extends OBJECT> object) {
 		return new bool(this == object.get());
 	}
@@ -365,8 +371,11 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 		return Application.z8_user();
 	}
 
-	protected void z8_constructor() {
+	static public User.CLASS<? extends User> z8_system() {
+		return Application.z8_system();
 	}
+
+	protected void z8_constructor() {}
 
 	public string z8_getAttribute(string attribute) {
 		return new string(getAttribute(attribute.get()));
@@ -437,5 +446,9 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	static public OBJECT.CLASS<? extends OBJECT> z8_newNamedInstance(string name) {
 		return (OBJECT.CLASS<?>) Runtime.instance().getNamed(name.get()).newInstance().getCLASS();
+	}
+
+	static public OBJECT.CLASS<? extends OBJECT> z8_getNamedSingleton(string name) {
+		return (OBJECT.CLASS<?>) Runtime.instance().getNamed(name.get());
 	}
 }

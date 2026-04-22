@@ -1,0 +1,48 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.Field;
+
+[native "org.zenframework.z8.server.base.entity.EntityTable"]
+public class EntityTable extends Table {
+	[entityValue] recordId;
+
+	public EntityTable setRegistry(Registry registry);
+	public Registry getRegistry();
+
+	virtual protected Entity newEntity();
+	virtual protected Entity newEntity(primary[string] values);
+
+	public Entity readEntity(guid entityId);
+	public Entity readEntity(guid entityId, EntityTable[] dependencies);
+	public Entity readEntity(sql_bool where);
+	public Entity readEntity(EntityTable[] dependencies, sql_bool where);
+	public Entity readEntity(EntityTable[] dependencies, Field[] sortFields, sql_bool where);
+
+	public EntityTable readEntities();
+	public EntityTable readEntities(sql_bool where);
+	public EntityTable readEntities(EntityTable[] dependencies, sql_bool where);
+	public EntityTable readEntities(EntityTable[] dependencies, Field[] sortFields, sql_bool where);
+
+	public Entity getEntity();
+	public Entity[guid] getEntities();
+
+	public Entity create(Entity entity);
+	public Entity update(Entity entity);
+	public Entity destroy(Entity entity);
+
+	public bool exists(Entity entity);
+
+	virtual protected void beforeCreate(Entity entity);
+	virtual protected void afterCreate(Entity entity);
+
+	virtual protected void beforeUpdate(Entity entity);
+	virtual protected void afterUpdate(Entity entity);
+
+	virtual protected void beforeDestroy(Entity entity);
+	virtual protected void afterDestroy(Entity entity);
+
+	virtual protected void afterRead(Entity entity);
+
+	protected EntityTable initFields(Entity entity, bool changedOnly);
+
+	protected Field[] collectEntityFields(EntityTable[] dependencies);
+}

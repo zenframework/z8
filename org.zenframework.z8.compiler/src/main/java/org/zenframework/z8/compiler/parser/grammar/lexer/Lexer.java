@@ -127,7 +127,7 @@ public class Lexer {
 				token = getIdentifier(position);
 
 			if(skipSpaces) {
-				if(token.getId() == IToken.COMMENT || token.getId() == IToken.WHITESPACE || token.getId() == IToken.LINEBREAK)
+				if(token.getId() == IToken.Comment || token.getId() == IToken.Whitespace || token.getId() == IToken.Linebreak)
 					continue;
 
 				break;
@@ -181,7 +181,7 @@ public class Lexer {
 
 		skipWhiteSpaces(position);
 
-		return new Token(IToken.WHITESPACE, new Position(start, position));
+		return new Token(IToken.Whitespace, new Position(start, position));
 	}
 
 	Token getLineBreak(IPosition position) throws TokenException {
@@ -189,7 +189,7 @@ public class Lexer {
 
 		skipLineBreaks(position);
 
-		return new Token(IToken.LINEBREAK, new Position(start, position));
+		return new Token(IToken.Linebreak, new Position(start, position));
 	}
 
 	char getEscape(IPosition position) throws TokenException {
@@ -311,7 +311,7 @@ public class Lexer {
 				buffer.advance(position);
 			}
 
-			return new Token(IToken.COMMENT, new Position(start, position));
+			return new Token(IToken.Comment, new Position(start, position));
 		}
 		int level = 0;
 
@@ -322,7 +322,7 @@ public class Lexer {
 			if(chr == '*' && nextChr == '/') {
 				if(level == 0) {
 					buffer.advance(position, 2);
-					return new Token(IToken.COMMENT, new Position(start, position));
+					return new Token(IToken.Comment, new Position(start, position));
 				}
 
 				level--;
@@ -343,28 +343,30 @@ public class Lexer {
 
 	static {
 		charToId = new HashMap<Character, Integer>();
-		charToId.put('%', IToken.MOD);
-		charToId.put('&', IToken.AND);
-		charToId.put('(', IToken.LBRACE);
-		charToId.put(')', IToken.RBRACE);
-		charToId.put('*', IToken.MUL);
-		charToId.put('/', IToken.DIV);
-		charToId.put('+', IToken.PLUS);
-		charToId.put('-', IToken.MINUS);
-		charToId.put(',', IToken.COMMA);
-		charToId.put('.', IToken.DOT);
-		charToId.put(';', IToken.SEMICOLON);
-		charToId.put('?', IToken.QUESTION);
-		charToId.put('[', IToken.LBRACKET);
-		charToId.put(']', IToken.RBRACKET);
-		charToId.put('|', IToken.OR);
-		charToId.put('{', IToken.LCBRACE);
-		charToId.put('}', IToken.RCBRACE);
-		charToId.put('!', IToken.NOT);
-		charToId.put('=', IToken.ASSIGN);
-		charToId.put('<', IToken.LESS);
-		charToId.put('>', IToken.MORE);
-		charToId.put(':', IToken.COLON);
+		charToId.put('~', IToken.BitwiseNot);
+		charToId.put('&', IToken.BitwiseAnd);
+		charToId.put('|', IToken.BitwiseOr);
+		charToId.put('^', IToken.BitwiseXor);
+		charToId.put('(', IToken.LBrace);
+		charToId.put(')', IToken.RBrace);
+		charToId.put('%', IToken.Mod);
+		charToId.put('*', IToken.Mul);
+		charToId.put('/', IToken.Div);
+		charToId.put('+', IToken.Plus);
+		charToId.put('-', IToken.Minus);
+		charToId.put(',', IToken.Comma);
+		charToId.put('.', IToken.Dot);
+		charToId.put(';', IToken.Semicolon);
+		charToId.put('?', IToken.Question);
+		charToId.put('[', IToken.LBracket);
+		charToId.put(']', IToken.RBracket);
+		charToId.put('{', IToken.LCBrace);
+		charToId.put('}', IToken.RCBrace);
+		charToId.put('!', IToken.Not);
+		charToId.put('=', IToken.Assign);
+		charToId.put('<', IToken.Less);
+		charToId.put('>', IToken.More);
+		charToId.put(':', IToken.Colon);
 	}
 
 	Token getPunctuator(IPosition position) throws TokenException {
@@ -387,40 +389,49 @@ public class Lexer {
 			return getSpecialConst(position);
 		else if(first == '!' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.NOT_EQU, new Position(start, 2));
+			return new OperatorToken(IToken.NotEqu, new Position(start, 2));
 		} else if(first == '=' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.EQU, new Position(start, 2));
+			return new OperatorToken(IToken.Equ, new Position(start, 2));
 		} else if(first == '<' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.LESS_EQU, new Position(start, 2));
+			return new OperatorToken(IToken.LessEqu, new Position(start, 2));
 		} else if(first == '>' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.MORE_EQU, new Position(start, 2));
+			return new OperatorToken(IToken.MoreEqu, new Position(start, 2));
 		} else if(first == '+' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.ADD_ASSIGN, new Position(start, 2));
+			return new OperatorToken(IToken.AddAssign, new Position(start, 2));
 		} else if(first == '-' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.SUB_ASSIGN, new Position(start, 2));
+			return new OperatorToken(IToken.SubAssign, new Position(start, 2));
 		} else if(first == '*' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.MUL_ASSIGN, new Position(start, 2));
+			return new OperatorToken(IToken.MulAssign, new Position(start, 2));
 		} else if(first == '/' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.DIV_ASSIGN, new Position(start, 2));
+			return new OperatorToken(IToken.DivAssign, new Position(start, 2));
 		} else if(first == '%' && second == '=') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.MOD_ASSIGN, new Position(start, 2));
+			return new OperatorToken(IToken.ModAssign, new Position(start, 2));
+		} else if(first == '&' && second == '=') {
+			buffer.advance(position, 2);
+			return new OperatorToken(IToken.BitwiseAndAssign, new Position(start, 2));
+		} else if(first == '|' && second == '=') {
+			buffer.advance(position, 2);
+			return new OperatorToken(IToken.BitwiseOrAssign, new Position(start, 2));
+		} else if(first == '^' && second == '=') {
+			buffer.advance(position, 2);
+			return new OperatorToken(IToken.BitwiseXorAssign, new Position(start, 2));
 		} else if(first == '&' && second == '&') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.AND, new Position(start, 2));
+			return new OperatorToken(IToken.And, new Position(start, 2));
 		} else if(first == '|' && second == '|') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.OR, new Position(start, 2));
+			return new OperatorToken(IToken.Or, new Position(start, 2));
 		} else if(first == '?' && second == ':') {
 			buffer.advance(position, 2);
-			return new OperatorToken(IToken.ELVIS, new Position(start, 2));
+			return new OperatorToken(IToken.Elvis, new Position(start, 2));
 		} else {
 			Integer id = charToId.get(first);
 
@@ -472,46 +483,46 @@ public class Lexer {
 		reserved.add("transient");
 		reserved.add("volatile");
 
-		keywords.put("operator", IToken.OPERATOR);
+		keywords.put("operator", IToken.Operator);
 
-		keywords.put("do", IToken.DO);
-		keywords.put("for", IToken.FOR);
-		keywords.put("while", IToken.WHILE);
+		keywords.put("do", IToken.Do);
+		keywords.put("for", IToken.For);
+		keywords.put("while", IToken.While);
 
-		keywords.put("if", IToken.IF);
-		keywords.put("else", IToken.ELSE);
+		keywords.put("if", IToken.If);
+		keywords.put("else", IToken.Else);
 
-		keywords.put("break", IToken.BREAK);
-		keywords.put("continue", IToken.CONTINUE);
-		keywords.put("return", IToken.RETURN);
+		keywords.put("break", IToken.Break);
+		keywords.put("continue", IToken.Continue);
+		keywords.put("return", IToken.Return);
 
-		keywords.put("this", IToken.THIS);
-		keywords.put("super", IToken.SUPER);
-		keywords.put("container", IToken.CONTAINER);
+		keywords.put("this", IToken.This);
+		keywords.put("super", IToken.Super);
+		keywords.put("container", IToken.Container);
 
-		keywords.put("null", IToken.NULL);
+		keywords.put("null", IToken.Null);
 
-		keywords.put("import", IToken.IMPORT);
-		keywords.put("class", IToken.CLASS);
-		keywords.put("public", IToken.PUBLIC);
-		keywords.put("protected", IToken.PROTECTED);
-		keywords.put("private", IToken.PRIVATE);
-		keywords.put("extends", IToken.EXTENDS);
+		keywords.put("import", IToken.Import);
+		keywords.put("class", IToken.Class);
+		keywords.put("public", IToken.Public);
+		keywords.put("protected", IToken.Protected);
+		keywords.put("private", IToken.Private);
+		keywords.put("extends", IToken.Extends);
 
-		keywords.put("enum", IToken.ENUM);
-		keywords.put("records", IToken.RECORDS);
+		keywords.put("enum", IToken.Enum);
+		keywords.put("records", IToken.Records);
 
-		keywords.put("auto", IToken.AUTO);
-		keywords.put("new", IToken.NEW);
-		keywords.put("static", IToken.STATIC);
+		keywords.put("auto", IToken.Auto);
+		keywords.put("new", IToken.New);
+		keywords.put("static", IToken.Static);
 
-		keywords.put("try", IToken.TRY);
-		keywords.put("catch", IToken.CATCH);
-		keywords.put("finally", IToken.FINALLY);
-		keywords.put("throw", IToken.THROW);
-		keywords.put("virtual", IToken.VIRTUAL);
-		keywords.put("final", IToken.FINAL);
-		keywords.put("instanceof", IToken.INSTANCE_OF);
+		keywords.put("try", IToken.Try);
+		keywords.put("catch", IToken.Catch);
+		keywords.put("finally", IToken.Finally);
+		keywords.put("throw", IToken.Throw);
+		keywords.put("virtual", IToken.Virtual);
+		keywords.put("final", IToken.Final);
+		keywords.put("instanceof", IToken.InstanceOf);
 
 	}
 
@@ -540,7 +551,7 @@ public class Lexer {
 			throw new TokenException(error, position);
 		}
 
-		return new Token(IToken.IDENTIFIER, position, name);
+		return new Token(IToken.Identifier, position, name);
 	}
 
 	String getMantissa(IPosition position) throws TokenException {
@@ -888,7 +899,7 @@ public class Lexer {
 		if(charAt(position) != '-' && charAt(position) != '+')
 			return false;
 
-		if(currentToken.getId() != IToken.NOTHING && !(currentToken instanceof KeywordToken) || currentToken.getId() == IToken.RBRACE)
+		if(currentToken.getId() != IToken.Nothing && !(currentToken instanceof KeywordToken) || currentToken.getId() == IToken.RBrace)
 			return false;
 
 		Position next = new Position(position);

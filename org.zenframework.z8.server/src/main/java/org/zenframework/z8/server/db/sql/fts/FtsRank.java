@@ -9,16 +9,16 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class TsRank extends SqlToken {
+public class FtsRank extends SqlToken {
 	private SqlToken tsvector;
 	private SqlToken tsquery;
 	private Fts config;
 
-	public TsRank(SqlToken tsvector, SqlToken tsquery) {
+	public FtsRank(SqlToken tsvector, SqlToken tsquery) {
 		this(tsvector, tsquery, null);
 	}
 
-	public TsRank(SqlToken tsvector, SqlToken tsquery, Fts config) {
+	public FtsRank(SqlToken tsvector, SqlToken tsquery, Fts config) {
 		this.tsvector = tsvector;
 		this.tsquery = tsquery;
 		this.config = config;

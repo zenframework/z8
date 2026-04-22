@@ -147,7 +147,7 @@ public class TypeBody extends LanguageElement {
 
 				IVariableType[] parameters = operator.getParameterTypes();
 
-				if(operator.isKindOf(IToken.ASSIGN) && parameters.length == 1 && parameters[0].compare(new VariableType(compilationUnit, declaringType)))
+				if(operator.isKindOf(IToken.Assign) && parameters.length == 1 && parameters[0].compare(new VariableType(compilationUnit, declaringType)))
 					assignOperator = operator;
 			}
 		}
@@ -333,15 +333,15 @@ public class TypeBody extends LanguageElement {
 
 			IToken operator = initializer.getOperator();
 
-			if(operator == null || operator.getId() != IToken.ASSIGN || !rightElement.isQualifiedName() && !rightElement.isOperatorNew())
+			if(operator == null || operator.getId() != IToken.Assign || !rightElement.isQualifiedName() && !rightElement.isOperatorNew())
 				continue;
 
-			String leftName = initializer.getLeftName();
+			String leftName = initializer.getName();
 
 			for(int index = references.size() - 1; index >= 0; index--) {
 				IInitializer reference = references.get(index);
 
-				String name = references.get(index).getLeftName();
+				String name = references.get(index).getName();
 
 				if(initializer instanceof IType && !(reference instanceof IType) || reference instanceof IType && !(initializer instanceof IType))
 					continue;
@@ -360,7 +360,7 @@ public class TypeBody extends LanguageElement {
 	class InitializerComparator implements Comparator<IInitializer> {
 		@Override
 		public int compare(IInitializer left, IInitializer right) {
-			return left.getLeftName().compareTo(right.getLeftName());
+			return left.getName().compareTo(right.getName());
 		}
 	}
 
@@ -380,12 +380,12 @@ public class TypeBody extends LanguageElement {
 			if(index == initializers.size())
 				return;
 
-			String rightName = initializers.get(index).getRightName();
+			ILanguageElement right = initializers.get(index).getRightElement();
 
 			for(int i = index + 1; i < initializers.size(); i++) {
-				String leftName = initializers.get(i).getLeftName();
+				String name = initializers.get(i).getName();
 
-				if(leftName.equals(rightName) || leftName.startsWith(rightName + '.') || rightName.startsWith(leftName + '.')) {
+				if(right.containsQualifiedName(name)) {
 					IInitializer initializer = initializers.remove(i);
 					initializers.add(index, initializer);
 

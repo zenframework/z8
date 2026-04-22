@@ -50,7 +50,7 @@ public class ExportAction extends ReadAction {
 
 		JsonArray columns = new JsonArray(getRequestParameter(Json.columns));
 
-		for(int index = 0; index < columns.length(); index++) {
+		for(int index = 0; index < columns.size(); index++) {
 			JsonObject json = (JsonObject)columns.get(index);
 
 			Field field = getQuery().findFieldById(json.getString(Json.id));

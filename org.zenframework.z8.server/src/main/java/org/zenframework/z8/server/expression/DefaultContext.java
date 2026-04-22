@@ -1,11 +1,11 @@
 package org.zenframework.z8.server.expression;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.zenframework.z8.server.expression.function.Format;
 import org.zenframework.z8.server.expression.function.Function;
+import org.zenframework.z8.server.expression.function.Json;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -16,7 +16,7 @@ import org.zenframework.z8.server.types.string;
 
 public class DefaultContext extends Context {
 
-	private Map<String, Variable> variables = new HashMap<String, Variable>();
+	private final Map<String, Variable> variables = new HashMap<String, Variable>();
 	private final Map<String, Function> functions = new HashMap<String, Function>();
 
 	public DefaultContext(Context parent) {
@@ -42,8 +42,8 @@ public class DefaultContext extends Context {
 		return setVariable(new Variable(name, value));
 	}
 
-	public DefaultContext freeze() {
-		variables = Collections.unmodifiableMap(variables);
+	public DefaultContext clear() {
+		variables.clear();
 		return this;
 	}
 
@@ -61,6 +61,11 @@ public class DefaultContext extends Context {
 		return functions.get(name);
 	}
 
+	@Override
+	public String toString() {
+		return new StringBuilder(1024).append("variables: ").append(variables).append(", functions: ").append(functions).toString();
+	}
+
 	public static DefaultContext create() {
 		return new DefaultContext(null)
 				.setVariable("bool", bool.class)
@@ -70,6 +75,7 @@ public class DefaultContext extends Context {
 				.setVariable("guid", guid.class)
 				.setVariable("int", integer.class)
 				.setVariable("string", string.class)
+				.setVariable("json", Json.create())
 				.setFunction(Format.NAME, new Format());
 	}
 }

@@ -233,6 +233,11 @@ public abstract class LanguageElement implements ILanguageElement {
 	}
 
 	@Override
+	public boolean containsQualifiedName(String name) {
+		return false;
+	}
+
+	@Override
 	public boolean resolveTypes(CompilationUnit compilationUnit, IType declaringType) {
 		initialize(compilationUnit, declaringType, null);
 

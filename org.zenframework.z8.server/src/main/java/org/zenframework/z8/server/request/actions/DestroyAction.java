@@ -41,7 +41,7 @@ public class DestroyAction extends RequestAction {
 	private void destroy(JsonArray records) {
 		Query query = getQuery();
 
-		for(int index = 0; index < records.length(); index++) {
+		for(int index = 0; index < records.size(); index++) {
 			Object object = records.get(index);
 			String property = getQuery().primaryKey().id();
 			// data: [{recordId: guid}] or data: [guid]

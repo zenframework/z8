@@ -64,6 +64,15 @@ public class MethodCall extends LanguageElement implements IJavaTypeCast {
 		return variableType;
 	}
 
+	@Override
+	public boolean containsQualifiedName(String name) {
+		for(ILanguageElement argument : arguments) {
+			if(argument.containsQualifiedName(name))
+				return true;
+		}
+		return false;
+	}
+
 	private String makeSignatureList(IVariableType[] variableTypes) {
 		StringBuffer buffer = new StringBuffer();
 

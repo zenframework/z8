@@ -49,16 +49,16 @@ Z8.define('Z8.query.Store', {
 	},
 
 	constructor : function(config) {
-		var fields = this.getFieldsInfo(config);
-
-		var form = { colCount: config.colCount, controls: config.controls, text: config.text, presentation: config.presentation, icon: config.icon, actions: config.actions, reports: config.reports, readOnly: config.readOnly, dependencies: config.dependencies };
-
 		this.readOnly = config.readOnly || false;
+		this.callParent(this.getStoreConfig(config));
+	},
 
+	defineModel: function(config) {
+		var fields = this.getFieldsInfo(config);
 		var request = config.request;
 		var className = request + '/' + fields.hash;
 
-		var model = Z8.define(className, {
+		return Z8.define(className, {
 			extend: 'Z8.data.Model',
 			single: true,
 
@@ -90,8 +90,27 @@ Z8.define('Z8.query.Store', {
 			valueFor: fields.valueFor,
 			valueFrom: fields.valueFrom
 		});
+	},
 
-		var storeConfig = {
+	getFormConfig: function(config) {
+		return {
+			colCount: config.colCount,
+			controls: config.controls,
+			text: config.text,
+			presentation: config.presentation,
+			icon: config.icon,
+			actions: config.actions,
+			reports: config.reports,
+			readOnly: config.readOnly,
+			dependencies: config.dependencies
+		};
+	},
+
+	getStoreConfig: function(config) {
+		var model = this.defineModel(config);
+		var form = this.getFormConfig(config);
+
+		return {
 			model: model,
 
 			data: config.data,
@@ -109,8 +128,6 @@ Z8.define('Z8.query.Store', {
 			params: config.params,
 			form: form
 		};
-
-		this.callParent(storeConfig);
 	},
 
 	getFieldsInfo: function(config) {

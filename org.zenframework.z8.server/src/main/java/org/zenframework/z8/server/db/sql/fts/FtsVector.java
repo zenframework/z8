@@ -10,15 +10,15 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class TsVector extends SqlToken {
+public class FtsVector extends SqlToken {
 	private SqlToken string;
 	private Fts config;
 
-	public TsVector(SqlToken string) {
+	public FtsVector(SqlToken string) {
 		this(string, null);
 	}
 
-	public TsVector(SqlToken string, Fts config) {
+	public FtsVector(SqlToken string, Fts config) {
 		this.string = string;
 		this.config = config;
 	}

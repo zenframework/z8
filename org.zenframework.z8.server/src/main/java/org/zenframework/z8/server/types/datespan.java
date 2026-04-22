@@ -41,9 +41,7 @@ public final class datespan extends primary {
 
 		int length = datespan.length();
 
-		if(datespan == null || datespan.isEmpty()) {
-			set(0, 0, 0, 0);
-		} else if(length < 3) {
+		if(length < 3) {
 			set(0, 0, 0, Integer.parseInt(datespan));
 		} else if(length < 6) {
 			int minutes = Integer.parseInt(datespan.substring(0, 2));
@@ -85,7 +83,7 @@ public final class datespan extends primary {
 	}
 
 	public void set(int days, int hours, int minutes, int seconds, long milliseconds) {
-		set(days * TicksPerDay + hours * TicksPerHour + minutes * TicksPerMinute + seconds * TicksPerSecond + milliseconds);
+		set((long) days * TicksPerDay + (long) hours * TicksPerHour + (long) minutes * TicksPerMinute + (long) seconds * TicksPerSecond + milliseconds);
 	}
 
 	public void set(long ticks) {
@@ -164,6 +162,10 @@ public final class datespan extends primary {
 		set(Day.getInt(), Hour.getInt(), Minute.getInt(), Second.getInt(), Millisecond.get());
 	}
 
+	public void z8_set(integer ticks) {
+		set(ticks.get());
+	}
+
 	public void z8_truncDay() {
 		set((int)days(), 0, 0, 0, 0);
 	}
@@ -240,31 +242,31 @@ public final class datespan extends primary {
 	}
 
 	public bool operatorEqu(datespan x) {
-		return new bool(milliseconds() == x.milliseconds());
+		return new bool(x != null && milliseconds() == x.milliseconds());
 	}
 
 	public bool operatorNotEqu(datespan x) {
-		return new bool(milliseconds() != x.milliseconds());
+		return new bool(x != null && milliseconds() != x.milliseconds());
 	}
 
 	public bool operatorLess(datespan x) {
-		return new bool(milliseconds() < x.milliseconds());
+		return new bool(x != null && milliseconds() < x.milliseconds());
 	}
 
 	public bool operatorMore(datespan x) {
-		return new bool(milliseconds() > x.milliseconds());
+		return new bool(x != null && milliseconds() > x.milliseconds());
 	}
 
 	public bool operatorLessEqu(datespan x) {
-		return new bool(milliseconds() <= x.milliseconds());
+		return new bool(x != null && milliseconds() <= x.milliseconds());
 	}
 
 	public bool operatorMoreEqu(datespan x) {
-		return new bool(milliseconds() >= x.milliseconds());
+		return new bool(x != null && milliseconds() >= x.milliseconds());
 	}
 
 	static public datespan z8_parse(string string) {
-		return string != null ? new datespan(string.get()) : new datespan(0);
+		return new datespan(string.get());
 	}
 
 	public string z8_toString(string frm) {

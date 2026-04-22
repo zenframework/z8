@@ -22,6 +22,8 @@ public class Primary {
 	final static public String Guid = "guid";
 	final static public String Integer = "int";
 	final static public String String = "string";
+	final static public String Vector = "vector";
+	final static public String Bitset = "bitset";
 
 	final static public String SqlBinary = "sql_binary";
 	final static public String SqlBoolean = "sql_bool";
@@ -32,6 +34,8 @@ public class Primary {
 	final static public String SqlGuid = "sql_guid";
 	final static public String SqlInteger = "sql_int";
 	final static public String SqlString = "sql_string";
+	final static public String SqlVector = "sql_vector";
+	final static public String SqlBitset = "sql_bitset";
 
 	final static public String VoidPath = "org/zenframework/z8/lang/void.bl";
 	final static public String PrimaryPath = "org/zenframework/z8/lang/primary.bl";
@@ -46,6 +50,8 @@ public class Primary {
 	final static public String GuidPath = "org/zenframework/z8/lang/guid.bl";
 	final static public String IntegerPath = "org/zenframework/z8/lang/int.bl";
 	final static public String StringPath = "org/zenframework/z8/lang/string.bl";
+	final static public String VectorPath = "org/zenframework/z8/lang/vector.bl";
+	final static public String BitsetPath = "org/zenframework/z8/lang/bitset.bl";
 
 	final static public String SqlBinaryPath = "org/zenframework/z8/lang/sql/sql_binary.bl";
 	final static public String SqlBooleanPath = "org/zenframework/z8/lang/sql/sql_bool.bl";
@@ -56,6 +62,8 @@ public class Primary {
 	final static public String SqlGuidPath = "org/zenframework/z8/lang/sql/sql_guid.bl";
 	final static public String SqlIntegerPath = "org/zenframework/z8/lang/sql/sql_int.bl";
 	final static public String SqlStringPath = "org/zenframework/z8/lang/sql/sql_string.bl";
+	final static public String SqlVectorPath = "org/zenframework/z8/lang/sql/sql_vector.bl";
+	final static public String SqlBitsetPath = "org/zenframework/z8/lang/sql/sql_bitset.bl";
 
 	static private Map<String, IPath> nameToPathMap;
 	static private Map<String, String> primaryToSqlMap;
@@ -76,6 +84,8 @@ public class Primary {
 		nameToPathMap.put(Guid, new Path(GuidPath));
 		nameToPathMap.put(Integer, new Path(IntegerPath));
 		nameToPathMap.put(String, new Path(StringPath));
+		nameToPathMap.put(Vector, new Path(VectorPath));
+		nameToPathMap.put(Bitset, new Path(BitsetPath));
 
 		nameToPathMap.put(SqlBinary, new Path(SqlBinaryPath));
 		nameToPathMap.put(SqlBoolean, new Path(SqlBooleanPath));
@@ -86,6 +96,8 @@ public class Primary {
 		nameToPathMap.put(SqlGuid, new Path(SqlGuidPath));
 		nameToPathMap.put(SqlInteger, new Path(SqlIntegerPath));
 		nameToPathMap.put(SqlString, new Path(SqlStringPath));
+		nameToPathMap.put(SqlVector, new Path(SqlVectorPath));
+		nameToPathMap.put(SqlBitset, new Path(SqlBitsetPath));
 
 		primaryToSqlMap = new HashMap<String, String>();
 

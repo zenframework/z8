@@ -21,55 +21,57 @@ public class OperatorToken extends Token {
 
 	public String getSign() {
 		switch(getId()) {
-		case IToken.EQU:
-			return "==";
-		case IToken.NOT_EQU:
-			return "!=";
-		case IToken.LESS:
-			return "<";
-		case IToken.MORE:
-			return ">";
-		case IToken.LESS_EQU:
-			return "<=";
-		case IToken.MORE_EQU:
-			return ">=";
-		case IToken.PLUS:
-		case IToken.ADD_ASSIGN:
+		case IToken.Not:
+			return "!";
+		case IToken.BitwiseNot:
+			return "~";
+
+		case IToken.Plus:
+		case IToken.AddAssign:
 			return "+";
-		case IToken.MINUS:
-		case IToken.SUB_ASSIGN:
+		case IToken.Minus:
+		case IToken.SubAssign:
 			return "-";
-		case IToken.MUL:
-		case IToken.MUL_ASSIGN:
+		case IToken.Mul:
+		case IToken.MulAssign:
 			return "*";
-		case IToken.DIV:
-		case IToken.DIV_ASSIGN:
+		case IToken.Div:
+		case IToken.DivAssign:
 			return "/";
-		case IToken.MOD:
-		case IToken.MOD_ASSIGN:
+		case IToken.Mod:
+		case IToken.ModAssign:
 			return "%";
 
-		case IToken.NOT:
-			return "!";
-		case IToken.AND:
-			return "&";
-		case IToken.OR:
-			return "|";
+		case IToken.Equ:
+			return "==";
+		case IToken.NotEqu:
+			return "!=";
+		case IToken.Less:
+			return "<";
+		case IToken.More:
+			return ">";
+		case IToken.LessEqu:
+			return "<=";
+		case IToken.MoreEqu:
+			return ">=";
 
-		case IToken.ASSIGN:
+		case IToken.BitwiseAnd:
+		case IToken.BitwiseAndAssign:
+			return "&";
+		case IToken.BitwiseOr:
+		case IToken.BitwiseOrAssign:
+			return "|";
+		case IToken.BitwiseXor:
+		case IToken.BitwiseXorAssign:
+			return "^";
+
+		case IToken.And:
+			return "&&";
+		case IToken.Or:
+			return "||";
+
+		case IToken.Assign:
 			return "=";
-/*
-		case IToken.ADD_ASSIGN:
-			return "+=";
-		case IToken.SUB_ASSIGN:
-			return "-=";
-		case IToken.MUL_ASSIGN:
-			return "*=";
-		case IToken.DIV_ASSIGN:
-			return "/=";
-		case IToken.MOD_ASSIGN:
-			return "%=";
-*/
 		}
 
 		throw new UnsupportedOperationException();
@@ -77,55 +79,57 @@ public class OperatorToken extends Token {
 
 	public String getJavaSign() {
 		switch(getId()) {
-		case IToken.EQU:
-			return "Equ";
-		case IToken.NOT_EQU:
-			return "NotEqu";
-		case IToken.LESS:
-			return "Less";
-		case IToken.MORE:
-			return "More";
-		case IToken.LESS_EQU:
-			return "LessEqu";
-		case IToken.MORE_EQU:
-			return "MoreEqu";
-		case IToken.PLUS:
-		case IToken.ADD_ASSIGN:
+		case IToken.Not:
+			return "Not";
+		case IToken.BitwiseNot:
+			return "Not";
+
+		case IToken.Plus:
+		case IToken.AddAssign:
 			return "Add";
-		case IToken.MINUS:
-		case IToken.SUB_ASSIGN:
+		case IToken.Minus:
+		case IToken.SubAssign:
 			return "Sub";
-		case IToken.MUL:
-		case IToken.MUL_ASSIGN:
+		case IToken.Mul:
+		case IToken.MulAssign:
 			return "Mul";
-		case IToken.DIV:
-		case IToken.DIV_ASSIGN:
+		case IToken.Div:
+		case IToken.DivAssign:
 			return "Div";
-		case IToken.MOD:
-		case IToken.MOD_ASSIGN:
+		case IToken.Mod:
+		case IToken.ModAssign:
 			return "Mod";
 
-		case IToken.NOT:
-			return "Not";
-		case IToken.AND:
+		case IToken.Equ:
+			return "Equ";
+		case IToken.NotEqu:
+			return "NotEqu";
+		case IToken.Less:
+			return "Less";
+		case IToken.More:
+			return "More";
+		case IToken.LessEqu:
+			return "LessEqu";
+		case IToken.MoreEqu:
+			return "MoreEqu";
+
+		case IToken.BitwiseAnd:
+		case IToken.BitwiseAndAssign:
+			return "BitwiseAnd";
+		case IToken.BitwiseOr:
+		case IToken.BitwiseOrAssign:
+			return "BitwiseOr";
+		case IToken.BitwiseXor:
+		case IToken.BitwiseXorAssign:
+			return "Xor";
+
+		case IToken.And:
 			return "And";
-		case IToken.OR:
+		case IToken.Or:
 			return "Or";
 
-		case IToken.ASSIGN:
+		case IToken.Assign:
 			return "Assign";
-/*
-		case IToken.ADD_ASSIGN:
-			return "AddAssign";
-		case IToken.SUB_ASSIGN:
-			return "SubAssign";
-		case IToken.MUL_ASSIGN:
-			return "MulAssign";
-		case IToken.DIV_ASSIGN:
-			return "DivAssign";
-		case IToken.MOD_ASSIGN:
-			return "ModAssign";
-*/
 		}
 
 		throw new UnsupportedOperationException();
