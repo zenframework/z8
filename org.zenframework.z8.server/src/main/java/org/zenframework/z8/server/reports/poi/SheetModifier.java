@@ -268,27 +268,27 @@ public class SheetModifier {
 	private void copyNonNull(Cell source, Cell target) {
 		cellsCopied++;
 
-		target.setCellType(source.getCellTypeEnum());
+		// TODO Use CellType with POI-16
+		target.setCellType(source.getCellType());
 		target.setCellStyle(source.getCellStyle());
 
-		switch (source.getCellTypeEnum()) {
-		case BOOLEAN:
+		switch (source.getCellType()) {
+		case Cell.CELL_TYPE_BOOLEAN:
 			target.setCellValue(source.getBooleanCellValue());
 			break;
-		case ERROR:
+		case Cell.CELL_TYPE_ERROR:
 			target.setCellErrorValue(source.getErrorCellValue());
 			break;
-		case FORMULA:
+		case Cell.CELL_TYPE_FORMULA:
 			target.setCellFormula(source.getCellFormula());
 			break;
-		case NUMERIC:
+		case Cell.CELL_TYPE_NUMERIC:
 			target.setCellValue(source.getNumericCellValue());
 			break;
-		case STRING:
+		case Cell.CELL_TYPE_STRING:
 			target.setCellValue(source.getStringCellValue());
 			break;
-		case BLANK:
-		case _NONE:
+		default:
 			break;
 		}
 	}

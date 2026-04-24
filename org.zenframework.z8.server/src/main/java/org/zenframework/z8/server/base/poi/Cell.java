@@ -28,15 +28,16 @@ public class Cell extends OBJECT {
 	}
 
 	public string z8_getString() {
-		switch(cell.getCellTypeEnum()) {
-		case BOOLEAN:
+		// TODO Use CellType with POI-16
+		switch(cell.getCellType()) {
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
 			return new bool(cell.getBooleanCellValue()).string();
-		case FORMULA:
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
 			return new string(cell.getCellFormula());
-		case NUMERIC:
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
 			double value = cell.getNumericCellValue();
 			return value == (long)value ? new integer((long)value).string() : new decimal(value).string();
-		case STRING:
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
 			return new string(cell.getStringCellValue());
 		default:
 			return new string();

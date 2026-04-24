@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -410,7 +409,7 @@ public class Range {
 			subtotalChild.setCustomVisitor(new SheetModifier.CellVisitor() {
 				@Override
 				public void visit(Row row, int colNum, Cell cell, Vector shift) {
-					if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
+					if (!isString(cell))
 						return;
 
 					Vector ownShift = shift != null ? shift.sub(axisShift) : new Vector();
@@ -453,7 +452,7 @@ public class Range {
 				sheet.visitOriginCells(originBlock, new SheetModifier.CellVisitor() {
 					@Override
 					public void visit(Row originRow, int originCol, Cell originCell, Vector originShift) {
-						if (originCell == null || originCell.getCellTypeEnum() != CellType.STRING)
+						if (!isString(cell))
 							return;
 
 						aggregatorObj.setPositionOffset(info.toOffset());
@@ -548,7 +547,7 @@ public class Range {
 
 		return sheet.getBoundaries();
 	}
-	
+
 	private SheetModifier.CellVisitor getAccumulatingVisitor(SheetModifier sheet,
 			Block subtotalBlock, AggregatorObject aggregatorObj) {
 		return new SheetModifier.CellVisitor() {
@@ -557,13 +556,14 @@ public class Range {
 				if (cell == null)
 					return;
 
-				CellType type = cell.getCellTypeEnum();
+				// TODO Use CellType with POI-16
+				int type = cell.getCellType();
 				Object value;
 
-				if (type == CellType.STRING) {
+				if (type == Cell.CELL_TYPE_STRING) {
 					String cellContent = cell.getStringCellValue();
 					value = evaluateAndSet(cell, cellContent);
-				} else if (type == CellType.NUMERIC) {
+				} else if (type == Cell.CELL_TYPE_NUMERIC) {
 					value = cell.getNumericCellValue();
 				} else {
 					return;
@@ -580,7 +580,7 @@ public class Range {
 				sheet.visitOriginCells(subtotalBlock, new SheetModifier.CellVisitor() {
 					@Override
 					public void visit(Row row, int colNum, Cell subtotalCell, Vector shift) {
-						if (subtotalCell != null && subtotalCell.getCellTypeEnum() == CellType.STRING)
+						if (isString(subtotalCell))
 							source.evaluate(subtotalCell.getStringCellValue());
 					}
 				});
@@ -594,7 +594,7 @@ public class Range {
 		return new SheetModifier.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell, Vector shift) {
-				if (cell == null || cell.getCellTypeEnum() != CellType.STRING)
+				if (!isString(cell))
 					return;
 
 				String cellContent = cell.getStringCellValue();
@@ -602,7 +602,7 @@ public class Range {
 			}
 		};
 	}
-	
+
 	private static class PositionInfo {
 		final boolean isChildCell;
 		final int cumulExpansion;
@@ -624,7 +624,7 @@ public class Range {
 			return axis == Axis.Horizontal ? new Vector(0, offset) : new Vector(offset, 0);
 		}
 	}
-	
+
 	private PositionInfo resolvePosition(List<Range> ranges, Vector templatePos) {
 		int cumulativeExpansion = 0;
 		Axis defaultAxis = Axis.Horizontal;
@@ -654,7 +654,7 @@ public class Range {
 
 		return new PositionInfo(false, cumulativeExpansion, defaultAxis);
 	}
-	
+
 	private Object evaluateAndSet(Cell cell, String expression) {
 		Object value = source.evaluate(expression);
 		if (value instanceof Number)
@@ -672,5 +672,10 @@ public class Range {
 		else
 			cell.setCellValue(value != null ? value.toString() : "");
 		return value;
+	}
+
+	private static boolean isString(Cell cell) {
+		// TODO Use CellType with POI-16
+		return cell != null && cell.getCellType() != Cell.CELL_TYPE_STRING;
 	}
 }

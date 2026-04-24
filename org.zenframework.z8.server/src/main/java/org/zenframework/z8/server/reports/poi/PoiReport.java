@@ -183,7 +183,8 @@ public class PoiReport {
 			workbook.write(fos);
 		} finally {
 			IOUtils.closeQuietly(fos);
-			IOUtils.closeQuietly(workbook);
+			// TODO Uncomment with POI-16
+			//IOUtils.closeQuietly(workbook);
 		}
 	}
 }

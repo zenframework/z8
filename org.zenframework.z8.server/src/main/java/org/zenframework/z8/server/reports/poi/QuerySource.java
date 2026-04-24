@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -85,7 +84,8 @@ public class QuerySource extends DataSource {
 		SheetModifier.CellVisitor visitor = new SheetModifier.CellVisitor() {
 			@Override
 			public void visit(Row row, int colNum, Cell cell, Vector shift) {
-				if (cell != null && cell.getCellTypeEnum() == CellType.STRING)
+				// TODO Use CellType with POI-16
+				if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING)
 					getExpression().extractObjects(cell.getStringCellValue(), extractor);
 			}
 		};
