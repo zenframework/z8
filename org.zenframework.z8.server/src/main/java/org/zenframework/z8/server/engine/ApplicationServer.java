@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.util.Collections;
 
+import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
@@ -132,6 +133,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 		MBeans.getInstance().registerMBeans();
 
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
+		FileConverter.initializePort();
 	}
 
 	@Override
