@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.poi;
 
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.integer;
@@ -28,20 +27,7 @@ public class Cell extends OBJECT {
 	}
 
 	public string z8_getString() {
-		// TODO Use CellType with POI-16
-		switch(cell.getCellType()) {
-		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
-			return new bool(cell.getBooleanCellValue()).string();
-		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
-			return new string(cell.getCellFormula());
-		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
-			double value = cell.getNumericCellValue();
-			return value == (long)value ? new integer((long)value).string() : new decimal(value).string();
-		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
-			return new string(cell.getStringCellValue());
-		default:
-			return new string();
-		}
+		return new string(getCellStringValue(cell));
 	}
 
 	public decimal z8_getDecimal() {
@@ -49,10 +35,27 @@ public class Cell extends OBJECT {
 	}
 
 	public integer z8_getInt() {
-		return new integer((long)cell.getNumericCellValue());
+		return new integer((long) cell.getNumericCellValue());
 	}
-	
+
 	public date z8_getDate() {
 		return new date(cell.getDateCellValue());
+	}
+
+	static public String getCellStringValue(org.apache.poi.ss.usermodel.Cell cell) {
+		// TODO Use CellType with POI-16
+		switch (cell.getCellType()) {
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+			return Boolean.toString(cell.getBooleanCellValue());
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
+			return cell.getCellFormula();
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+			double value = cell.getNumericCellValue();
+			return value == (long) value ? Long.toString((long) value) : Double.toString(value);
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+			return cell.getStringCellValue();
+		default:
+			return "";
+		}
 	}
 }

@@ -597,7 +597,7 @@ public class Range {
 				if (!isString(cell))
 					return;
 
-				String cellContent = cell.getStringCellValue();
+				String cellContent = org.zenframework.z8.server.base.poi.Cell.getCellStringValue(cell);
 				evaluateAndSet(cell, cellContent);
 			}
 		};
