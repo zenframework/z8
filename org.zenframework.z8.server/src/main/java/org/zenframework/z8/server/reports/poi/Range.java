@@ -676,6 +676,6 @@ public class Range {
 
 	private static boolean isString(Cell cell) {
 		// TODO Use CellType with POI-16
-		return cell != null && cell.getCellType() != Cell.CELL_TYPE_STRING;
+		return cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING;
 	}
 }
