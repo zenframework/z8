@@ -111,7 +111,10 @@ public class Scheduler implements Runnable {
 
 	static public synchronized void restart(IDatabase database) {
 		suspend(database);
+		Trace.logEvent("Scheduler has stopped");
+
 		resume(database);
+		Trace.logEvent("Scheduler has been launched.");
 	}
 
 	static public boolean register(IDatabase database, Thread thread) {
