@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.runtime;
 
-import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.security.SecurityLog;
@@ -22,7 +22,6 @@ public interface IRuntime {
 	Collection<guid> jobKeys();
 
 	Collection<Executable.CLASS<? extends Executable>> executables();
-	Collection<guid> executableKeys();
 	Collection<OBJECT.CLASS<? extends OBJECT>> named();
 
 	Collection<OBJECT.CLASS<? extends OBJECT>> systemTools();
@@ -33,11 +32,9 @@ public interface IRuntime {
 	Table.CLASS<? extends Table> getTableByName(String name);
 	Table.CLASS<? extends Table> getTableByKey(guid key);
 
-	Executable.CLASS<? extends Executable> getExecutable(String className);
 	Executable.CLASS<? extends Executable> getExecutableByName(String name);
-	Executable.CLASS<? extends Executable> getExecutableByKey(guid key);
 
-	public OBJECT.CLASS<? extends OBJECT> getNamed(String name);
+	OBJECT.CLASS<? extends OBJECT> getNamed(String name);
 
 	OBJECT.CLASS<? extends OBJECT> getRequest(String className);
 	OBJECT.CLASS<? extends OBJECT> getRequestByKey(guid key);
@@ -50,5 +47,7 @@ public interface IRuntime {
 
 	Class<?> loadClass(String className) throws ClassNotFoundException;
 
-	URL getUrl();
+	List<OBJECT> getControlObjects();
+
+	boolean isDynamic();
 }

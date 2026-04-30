@@ -60,8 +60,7 @@ public class StringField extends Field {
 
 	@Override
 	public String sqlType(DatabaseVendor vendor) {
-		String name = type().vendorType(vendor);
-		return name + "(" + length.get() + ")";
+		return type().vendorSqlType(vendor, length.get());
 	}
 
 	@Override

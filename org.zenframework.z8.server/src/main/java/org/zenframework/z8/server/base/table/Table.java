@@ -143,6 +143,16 @@ public class Table extends TableBase {
 		return Math.abs(Integer.toString(result).hashCode());
 	}
 
+	public String controlData() {
+		StringBuilder str = new StringBuilder(1024);
+		for(Field field : getPrimaryFields()) {
+			if (str.length() > 0)
+				str.append(", ");
+			str.append(field.controlData());
+		}
+		return str.toString();
+	}
+
 	@Override
 	public int priority() {
 		return priority != null ? priority.getInt() : Runtime.modelGraph().getTablePriority(this);

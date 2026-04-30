@@ -314,6 +314,11 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
+	public String sqlType(DatabaseVendor vendor) {
+		return type().vendorSqlType(vendor);
+	}
+
+	@Override
 	public int scale() {
 		return 0;
 	}
@@ -638,7 +643,11 @@ abstract public class Field extends Control implements IField {
 		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
 		return Math.abs(name.hashCode());
 	}
-	
+
+	public String controlData() {
+		return name() + " " + sqlType(DatabaseVendor.Postgres);
+	}
+
 	private boolean pathHasJoin() {
 		if (path == null || path.isEmpty())
 			return false;

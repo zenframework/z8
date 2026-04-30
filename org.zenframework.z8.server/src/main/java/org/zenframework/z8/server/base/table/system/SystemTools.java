@@ -8,6 +8,7 @@ import java.util.List;
 import org.zenframework.z8.server.base.form.Desktop;
 import org.zenframework.z8.server.base.table.system.view.AuthorityCenterView;
 import org.zenframework.z8.server.base.table.system.view.InterconnectionCenterView;
+import org.zenframework.z8.server.base.table.system.view.RuntimeView;
 import org.zenframework.z8.server.db.generator.SchemaGenerator;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
@@ -16,10 +17,9 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
 
-
 public class SystemTools extends Desktop {
-	static public guid Id = new SystemTools.CLASS<SystemTools>().key();
 	static public String ClassId = new SystemTools.CLASS<SystemTools>().classId();
+	static public guid Id = guid.create(ClassId);
 
 	static public class strings {
 		public final static String Title = "SystemTools.title";
@@ -37,6 +37,7 @@ public class SystemTools extends Desktop {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(SystemTools.class);
+			setAttribute(Request, Boolean.toString(true));
 			setDisplayName(displayNames.Title);
 		}
 
@@ -47,7 +48,6 @@ public class SystemTools extends Desktop {
 	}
 
 	private static Comparator<OBJECT.CLASS<? extends OBJECT>> SystemToolComparator = new Comparator<OBJECT.CLASS<? extends OBJECT>>() {
-
 		@Override
 		public int compare(OBJECT.CLASS<? extends OBJECT> o1, OBJECT.CLASS<? extends OBJECT> o2) {
 			return Integer.compare(systemToolIndex(o1), systemToolIndex(o2));
@@ -57,6 +57,7 @@ public class SystemTools extends Desktop {
 
 	private List<OBJECT.CLASS<? extends OBJECT>> systemTools;
 
+	public OBJECT.CLASS<? extends OBJECT> runtime = new RuntimeView.CLASS<RuntimeView>(this);
 	public OBJECT.CLASS<? extends OBJECT> generator = new SchemaGenerator.CLASS<SchemaGenerator>(this);
 
 	public SystemTools(IObject container) {
@@ -85,6 +86,7 @@ public class SystemTools extends Desktop {
 				objects.add(systemTool);
 		}
 
+		objects.add(runtime);
 		objects.add(generator);
 	}
 
@@ -92,21 +94,21 @@ public class SystemTools extends Desktop {
 	public void constructor2() {
 		super.constructor2();
 
-		if (ApplicationServer.getDatabase().isLatestVersion()) {
+		if(ApplicationServer.getDatabase().isLatestVersion()) {
 			int index = 0;
-			for (OBJECT.CLASS<? extends OBJECT> systemTool : systemTools)
+			for(OBJECT.CLASS<? extends OBJECT> systemTool : systemTools)
 				systemTool.setIndex("systemTool" + index++);
 		}
 
+		runtime.setIndex("runtime");
 		generator.setIndex("generator");
 	}
 
 	private static int systemToolIndex(OBJECT.CLASS<? extends OBJECT> cls) {
 		try {
 			return Integer.parseInt(cls.getAttribute(SystemTool));
-		} catch (Throwable e) {
+		} catch(Throwable e) {
 			return 1000;
 		}
 	}
-
 }

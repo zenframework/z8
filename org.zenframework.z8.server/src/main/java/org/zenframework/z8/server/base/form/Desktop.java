@@ -62,9 +62,4 @@ public class Desktop extends OBJECT {
 		}
 		return result;
 	}
-
-	@Override
-	public int controlSum() {
-		return Math.abs(classId().hashCode());
-	}
 }

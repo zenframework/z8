@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.value;
 
 import java.io.InputStream;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -59,16 +58,6 @@ public class BinaryField extends Field {
 	@Override
 	public primary parse(String value) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public String sqlType(DatabaseVendor vendor) {
-		String name = type().vendorType(vendor);
-
-		if(vendor == DatabaseVendor.SqlServer)
-			return name + "(MAX)";
-
-		return name;
 	}
 
 	public sql_binary sql_binary() {

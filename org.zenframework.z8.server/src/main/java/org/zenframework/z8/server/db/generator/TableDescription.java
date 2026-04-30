@@ -65,4 +65,25 @@ public class TableDescription {
 	void addLink(ForeignKey relation) {
 		links.add(relation);
 	}
+
+	int controlSum() {
+		int result = 0;
+
+		for(Column column : columns)
+			result += column.controlSum();
+
+		// Static records skipped
+
+		return Math.abs(Integer.toString(result).hashCode());
+	}
+
+	public String controlData() {
+		StringBuilder str = new StringBuilder(1024);
+		for(Column column : columns) {
+			if (str.length() > 0)
+				str.append(", ");
+			str.append(column.controlData());
+		}
+		return str.toString();
+	}
 }

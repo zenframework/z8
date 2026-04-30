@@ -233,6 +233,19 @@
 
 	<entry key="Exception.unknownDatabase">Неподдерживаемая база данных</entry>
 
+	<!-- RuntimeView -->
+	<entry key="RuntimeView.title">Объекты системы</entry>
+	<entry key="RuntimeView.id">Id</entry>
+	<entry key="RuntimeView.className">Системное имя</entry>
+	<entry key="RuntimeView.name">Имя</entry>
+	<entry key="RuntimeView.displayName">Заголовок</entry>
+	<entry key="RuntimeView.controlSum">Контрольная сумма</entry>
+	<entry key="RuntimeView.newName">Новое имя</entry>
+	<entry key="RuntimeView.newDisplayName">Новый заголовок</entry>
+	<entry key="RuntimeView.newControlSum">Новая контрольная сумма</entry>
+	<entry key="RuntimeView.changed">Изменено</entry>
+	<entry key="RuntimeView.export">Экспортировать</entry>
+
 	<!-- Generator -->
 	<entry key="Generator.displayName">Генерация схемы данных</entry>
 	<entry key="Generator.schedulerStopped">Планировщик заданий остановлен</entry>

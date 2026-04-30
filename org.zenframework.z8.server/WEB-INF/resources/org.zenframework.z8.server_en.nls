@@ -233,6 +233,19 @@
 
 	<entry key="Exception.unknownDatabase">Unknown database</entry>
 
+	<!-- RuntimeView -->
+	<entry key="RuntimeView.title">Runtime objects</entry>
+	<entry key="RuntimeView.id">Id</entry>
+	<entry key="RuntimeView.className">Class</entry>
+	<entry key="RuntimeView.name">Name</entry>
+	<entry key="RuntimeView.displayName">Display name</entry>
+	<entry key="RuntimeView.controlSum">Control sum</entry>
+	<entry key="RuntimeView.newName">New name</entry>
+	<entry key="RuntimeView.newDisplayName">New display name</entry>
+	<entry key="RuntimeView.newControlSum">New control sum</entry>
+	<entry key="RuntimeView.changed">Changed</entry>
+	<entry key="RuntimeView.export">Export</entry>
+
 	<!-- Generator -->
 	<entry key="Generator.displayName">Generate database scheme</entry>
 	<entry key="Generator.schedulerStopped">Scheduler stopped</entry>

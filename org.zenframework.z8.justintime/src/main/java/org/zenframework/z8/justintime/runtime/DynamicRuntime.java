@@ -4,20 +4,20 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
-import org.zenframework.z8.server.runtime.ComplexRuntime;
+import org.zenframework.z8.server.runtime.FilterRuntime;
 import org.zenframework.z8.server.runtime.IRuntime;
+import org.zenframework.z8.server.runtime.Runtimes;
 
-public class DynamicRuntime extends ComplexRuntime {
-
+public class DynamicRuntime extends FilterRuntime {
 	private static class DynamicClassLoader extends URLClassLoader {
 
 		private final Workspace workspace;
@@ -35,9 +35,15 @@ public class DynamicRuntime extends ComplexRuntime {
 
 	}
 
+	public static DynamicRuntime instance() {
+		if (instance == null)
+			throw new RuntimeException("DynamicRuntime not initialized");
+		return instance;
+	}
+
 	private static DynamicRuntime instance;
 
-	private final Map<String, IRuntime> dynamics = new HashMap<String, IRuntime>();
+	private final Map<String, IRuntime> dynamics = Collections.synchronizedMap(new HashMap<String, IRuntime>());
 
 	public DynamicRuntime() {
 		for (Workspace workspace : Workspace.workspaces())
@@ -50,57 +56,46 @@ public class DynamicRuntime extends ComplexRuntime {
 	}
 
 	@Override
-	protected List<IRuntime> runtimes() {
-		String schema = ApplicationServer.getSchema();
-		List<IRuntime> runtimes = new LinkedList<IRuntime>(super.runtimes());
-		synchronized (dynamics) {
-			IRuntime runtime = dynamics.get(schema);
-			if (runtime != null)
-				runtimes.add(runtime);
-		}
-		return runtimes;
+	public boolean isDynamic() {
+		return true;
 	}
 
 	@Override
-	protected void addRuntime(IRuntime runtime) {
-		String schema = Workspace.getSchema(runtime.getUrl());
-		synchronized (dynamics) {
-			dynamics.put(schema, runtime);
-			Trace.logEvent("Schema '" + schema + "' dynamic code loaded");
-		}
+	protected IRuntime runtime() {
+		return dynamics.get(ApplicationServer.getSchema());
 	}
 
 	public void loadDynamic() {
 		loadDynamic(Workspace.workspace(ApplicationServer.getSchema()));
 	}
 
-	public void loadDynamic(Workspace workspace) {
-		try {
-			ClassLoader cl = new DynamicClassLoader(workspace);
-			loadRuntimes(cl, workspace.getJavaClasses());
-		} catch (Exception e) {
-			Trace.logError(e);
-		}
-	}
-
 	public void unloadDynamic() {
 		IDatabase database = ApplicationServer.getDatabase();
-		String schema = database.schema();
+
 		try {
 			Scheduler.suspend(database);
-			synchronized (dynamics) {
-				dynamics.remove(schema);
-			}
+			dynamics.remove(database.schema());
 			Runtime.getRuntime().gc();
 		} finally {
 			Scheduler.resume(database);
 		}
 	}
 
-	public static DynamicRuntime instance() {
-		if (instance == null)
-			throw new RuntimeException("DynamicRuntime not initialized");
-		return instance;
+	private void loadDynamic(Workspace workspace) {
+		String schema = workspace.getSchema();
+
+		if (schema == null)
+			return;
+
+		try {
+			Collection<IRuntime> runtimes = Runtimes.loadRuntimes(new DynamicClassLoader(workspace), workspace.getJavaClasses());
+			if (!runtimes.isEmpty()) {
+				dynamics.put(schema, runtimes.iterator().next());
+				Trace.logEvent("Schema '" + schema + "' dynamic code loaded");
+			}
+		} catch (Throwable e) {
+			Trace.logError("Couldn't load schema '" + schema + "' dynamic code", e);
+		}
 	}
 
 	private static URL toURL(File file) {
@@ -110,5 +105,4 @@ public class DynamicRuntime extends ComplexRuntime {
 			throw new RuntimeException(e);
 		}
 	}
-
 }
