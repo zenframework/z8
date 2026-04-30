@@ -121,7 +121,7 @@ public class Generator {
 		Settings.save(Settings.Version, guid.Null, "Version", "Schema version", version.getVersion(), 0, true);
 		Settings.save(Settings.VersionDetails, guid.Null, "Version details", "Schema version details", version.getDetails().toString(), 0, true);
 
-		logger.info("Control sum: " + version);
+		logger.info("Control sum: " + version.getVersion());
 		logger.progress(100);
 	}
 
