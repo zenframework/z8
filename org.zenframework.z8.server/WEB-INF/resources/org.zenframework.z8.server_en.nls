@@ -77,6 +77,9 @@
 	<entry key="TransportQueue.bytesTransferred">Sent, B</entry>
 	<entry key="TransportQueue.restartTransport">Restarting transport</entry>
 
+	<!-- RestartTransportAction -->
+	<entry key="Transport.restart">Transport has been restarted</entry>
+
 	<!-- Tables -->
 	<entry key="Tables.title">Tables</entry>
 	<entry key="Tables.classId">System name</entry>
@@ -195,6 +198,10 @@
 	<entry key="ScheduledJobLogs.errors">Errors</entry>
 	<entry key="ScheduledJobLogs.file">Log file</entry>
 	<entry key="ScheduledJobLogs.fileSize">Log file, bytes</entry>
+
+	<!-- RestartSchedulerAction -->
+	<entry key="Scheduler.suspend">Scheduler has stopped</entry>
+	<entry key="Scheduler.resume">Scheduler has been launched</entry>
 
 	<!-- JobsView -->
 	<entry key="JobsView.job">Job</entry>

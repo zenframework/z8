@@ -24,6 +24,7 @@ import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.logs.LogCleanupJob;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Request;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
 public class Scheduler implements Runnable {
@@ -72,6 +73,7 @@ public class Scheduler implements Runnable {
 		}
 
 		start(database);
+		Trace.logEvent(Resources.get("Scheduler.resume"));
 	}
 
 	static public void suspend(IDatabase database) {
@@ -84,6 +86,7 @@ public class Scheduler implements Runnable {
 		}
 
 		stop(database);
+		Trace.logEvent(Resources.get("Scheduler.suspend"));
 	}
 
 	static public void stop(IDatabase database) {
@@ -111,10 +114,7 @@ public class Scheduler implements Runnable {
 
 	static public synchronized void restart(IDatabase database) {
 		suspend(database);
-		Trace.logEvent("Scheduler has stopped");
-
 		resume(database);
-		Trace.logEvent("Scheduler has been launched.");
 	}
 
 	static public boolean register(IDatabase database, Thread thread) {

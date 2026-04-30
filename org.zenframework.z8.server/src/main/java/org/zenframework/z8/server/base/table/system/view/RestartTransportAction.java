@@ -8,6 +8,7 @@ import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 
@@ -39,7 +40,7 @@ public class RestartTransportAction extends Action {
 		ScheduledJob transportJob = Scheduler.get(ApplicationServer.getDatabase()).findSystemJob(TransportJob.class.getCanonicalName());
 		if(transportJob != null) {
 			transportJob.restart();
-			Trace.logEvent("Transport has been restarted");
+			Trace.logEvent(Resources.get("Transport.restart"));
 		}
 	}
 }
