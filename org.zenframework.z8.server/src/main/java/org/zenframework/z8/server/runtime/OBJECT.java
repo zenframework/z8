@@ -54,7 +54,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public int controlSum() {
-		return 0;
+		return Math.abs(classId().hashCode());
 	}
 
 	@Override

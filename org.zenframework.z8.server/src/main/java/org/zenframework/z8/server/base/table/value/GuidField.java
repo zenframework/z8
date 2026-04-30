@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -41,16 +40,6 @@ public class GuidField extends Field {
 	@Override
 	public FieldType type() {
 		return FieldType.Guid;
-	}
-
-	@Override
-	public String sqlType(DatabaseVendor vendor) {
-		String name = type().vendorType(vendor);
-
-		if(vendor == DatabaseVendor.Oracle)
-			return name + "(16)";
-
-		return name;
 	}
 
 	public sql_guid sql_guid() {

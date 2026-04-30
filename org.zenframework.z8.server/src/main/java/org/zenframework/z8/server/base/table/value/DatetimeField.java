@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -43,11 +42,6 @@ public class DatetimeField extends Field {
 	@Override
 	public FieldType type() {
 		return FieldType.Datetime;
-	}
-
-	@Override
-	public String sqlType(DatabaseVendor vendor) {
-		return type().vendorType(vendor);
 	}
 
 	public sql_date sql_date() {

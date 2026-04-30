@@ -48,6 +48,7 @@ public class TextField extends StringField {
 
 		if(vendor == DatabaseVendor.SqlServer)
 			return name + "(MAX)";
+
 		return name;
 	}
 

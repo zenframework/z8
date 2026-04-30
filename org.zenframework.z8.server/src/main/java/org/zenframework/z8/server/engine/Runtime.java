@@ -1,24 +1,23 @@
 package org.zenframework.z8.server.engine;
 
-import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.runtime.ComplexRuntime;
-import org.zenframework.z8.server.runtime.OBJECT;
+import org.zenframework.z8.server.runtime.IRuntime;
+import org.zenframework.z8.server.runtime.Runtimes;
 import org.zenframework.z8.server.runtime.ServerRuntime;
-import org.zenframework.z8.server.utils.StringUtils;
 
 public class Runtime extends ComplexRuntime {
 
 	static private Runtime runtime;
 	static private ModelGraph modelGraph;
-	static private String version;
+	static private Version version;
 
 	private Runtime() {
 		addRuntime(new ServerRuntime());
-		loadRuntimes(getClass().getClassLoader());
+		for (IRuntime runtime : Runtimes.loadRuntimes(getClass().getClassLoader()))
+			addRuntime(runtime);
 	}
 
-	static public Runtime instance() {
+	static public synchronized Runtime instance() {
 		if(runtime == null)
 			runtime = new Runtime();
 		return runtime;
@@ -30,23 +29,10 @@ public class Runtime extends ComplexRuntime {
 		return modelGraph;
 	}
 
-	static public String version() {
-		if(version != null)
-			return version;
+	static public Version version() {
+		if(version == null)
+			version = Version.getVersion(instance());
 
-		int controlSum = 0;
-
-		for(Table.CLASS<? extends Table> cls : instance().tables())
-			controlSum += cls.newInstance().controlSum();
-
-		for(OBJECT.CLASS<? extends OBJECT> cls : instance().entries()) {
-			if(!cls.instanceOf(SystemTools.class))
-				controlSum += cls.newInstance().controlSum();
-		}
-
-		version = StringUtils.padLeft("" + Math.abs(controlSum), 10, '0');
-		version = version.substring(0, 1) + "." + version.substring(1, 4) + "." + version.substring(4, 7) + "." + version.substring(7);
 		return version;
 	}
-
 }

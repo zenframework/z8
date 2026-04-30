@@ -271,13 +271,13 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public boolean isLatestVersion() {
+		if(!isSystemInstalled())
+			return false;
+
 		if(isLatestVersion)
 			return isLatestVersion;
 
-		if(!tableExists(Settings.TableName))
-			return false;
-
-		String version = Runtime.version();
+		String version = Runtime.version().getVersion();
 		String currentVersion = Settings.version();
 
 		return (isLatestVersion = version.equals(currentVersion));

@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -39,16 +38,6 @@ public class DatespanField extends Field {
 	@Override
 	public FieldType type() {
 		return FieldType.Datespan;
-	}
-
-	@Override
-	public String sqlType(DatabaseVendor vendor) {
-		String name = type().vendorType(vendor);
-
-		if(vendor == DatabaseVendor.Oracle) {
-			return name + "(19, 0)";
-		}
-		return name;
 	}
 
 	public sql_datespan sql_datespan() {

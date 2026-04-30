@@ -92,6 +92,10 @@ public class TableGenerator {
 		return table;
 	}
 
+	public TableDescription getTableDescription() {
+		return dbTable;
+	}
+
 	public GeneratorAction getAction() {
 		return action;
 	}

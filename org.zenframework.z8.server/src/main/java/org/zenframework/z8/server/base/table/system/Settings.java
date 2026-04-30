@@ -30,6 +30,7 @@ public class Settings extends TreeTable {
 	final static public String TableName = "SystemSettings";
 
 	final static public guid Version = guid.create(strings.Version);
+	final static public guid VersionDetails = guid.create(strings.VersionDetails);
 	final static public guid WebAppUrl = guid.create(strings.WebAppUrl);
 
 	static public class fieldNames {
@@ -44,6 +45,7 @@ public class Settings extends TreeTable {
 		public final static String Value = "Settings.value";
 
 		public final static String Version = "system.version";
+		public final static String VersionDetails = "system.version.details";
 		public final static String WebAppUrl = "system.webappurl";
 	}
 

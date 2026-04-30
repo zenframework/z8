@@ -1,13 +1,16 @@
 package org.zenframework.z8.server.runtime;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.Table;
+import org.zenframework.z8.server.base.table.system.SystemTools;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
 
@@ -18,7 +21,6 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	protected Map<String, Executable.CLASS<? extends Executable>> executableClasses = new HashMap<String, Executable.CLASS<? extends Executable>>();
 	protected Map<String, Executable.CLASS<? extends Executable>> executableNames = new HashMap<String, Executable.CLASS<? extends Executable>>();
-	protected Map<guid, Executable.CLASS<? extends Executable>> executableKeys = new HashMap<guid, Executable.CLASS<? extends Executable>>();
 
 	protected Map<String, OBJECT.CLASS<? extends OBJECT>> entryClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
 	protected Map<guid, OBJECT.CLASS<? extends OBJECT>> entryKeys = new HashMap<guid, OBJECT.CLASS<? extends OBJECT>>();
@@ -34,8 +36,6 @@ public abstract class AbstractRuntime implements IRuntime {
 	protected Map<String, OBJECT.CLASS<? extends OBJECT>> namedClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
 
 	protected SecurityLog.CLASS<? extends SecurityLog> securityLog = null;
-
-	protected URL url;
 
 	protected AbstractRuntime() {
 		Trace.logEvent("Runtime '" + getClass().getCanonicalName() + "' loaded");
@@ -53,12 +53,7 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@Override
 	public Collection<Executable.CLASS<? extends Executable>> executables() {
-		return executableKeys.values();
-	}
-
-	@Override
-	public Collection<guid> executableKeys() {
-		return executableKeys.keySet();
+		return executableNames.values();
 	}
 
 	@Override
@@ -152,18 +147,8 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
-	public Executable.CLASS<? extends Executable> getExecutable(String className) {
-		return executableClasses.get(className);
-	}
-
-	@Override
 	public Executable.CLASS<? extends Executable> getExecutableByName(String name) {
 		return executableNames.get(name);
-	}
-
-	@Override
-	public Executable.CLASS<? extends Executable> getExecutableByKey(guid key) {
-		return executableKeys.get(key);
 	}
 
 	@Override
@@ -177,6 +162,38 @@ public abstract class AbstractRuntime implements IRuntime {
 	}
 
 	@Override
+	public List<OBJECT> getControlObjects() {
+		Map<String, OBJECT> map = new HashMap<String, OBJECT>();
+
+		for(Table.CLASS<? extends Table> cls : tableClasses.values())
+			map.put(cls.classId(), cls.newInstance());
+
+		for(OBJECT.CLASS<? extends OBJECT> cls : jobClasses.values())
+			map.put(cls.classId(), cls.newInstance());
+
+		for(OBJECT.CLASS<? extends OBJECT> cls : entryClasses.values()) {
+			if(!cls.instanceOf(SystemTools.class))
+				map.put(cls.classId(), cls.newInstance());
+		}
+
+		List<OBJECT> objects = new ArrayList<OBJECT>(map.values());
+
+		objects.sort(new Comparator<OBJECT>() {
+			@Override
+			public int compare(OBJECT o1, OBJECT o2) {
+				return o1.classId().compareTo(o2.classId());
+			}
+		});
+
+		return objects;
+	}
+
+	@Override
+	public boolean isDynamic() {
+		return false;
+	}
+
+	@Override
 	public int hashCode() {
 		return getClass().hashCode();
 	}
@@ -186,25 +203,20 @@ public abstract class AbstractRuntime implements IRuntime {
 		return obj != null && getClass().equals(obj.getClass());
 	}
 
-	@Override
-	public URL getUrl() {
-		return url;
-	}
-
-	public void setUrl(URL url) {
-		this.url = url;
-	}
-
 	@SuppressWarnings("unchecked")
 	protected void addTable(Table.CLASS<? extends Table> cls) {
 		for(Table.CLASS<? extends Table> table : tableClasses.values().toArray(new Table.CLASS[tableClasses.size()])) {
+			if(cls.getClass().isAssignableFrom(table.getClass()))
+				return;
+
 			if(table.getClass().isAssignableFrom(cls.getClass()) && table.name().equals(cls.name())) {
 				tableClasses.remove(table.classId());
 				tableNames.remove(table.name());
 				tableKeys.remove(table.key());
-			} else if(cls.getClass().isAssignableFrom(table.getClass()))
-				return;
+				break;
+			}
 		}
+
 		tableClasses.put(cls.classId(), cls);
 		tableNames.put(cls.name(), cls);
 		tableKeys.put(cls.key(), cls);
@@ -212,17 +224,17 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	@SuppressWarnings("unchecked")
 	protected void addExecutable(Executable.CLASS<? extends Executable> cls) {
-		for(Executable.CLASS<? extends Executable> executable : executableClasses.values().toArray(new Executable.CLASS[executableClasses.size()])) {
-			if(executable.getClass().isAssignableFrom(cls.getClass()) && executable.name().equals(cls.name())) {
-				executableClasses.remove(executable.classId());
-				executableNames.remove(executable.name());
-				executableKeys.remove(executable.key());
-			} else if(cls.getClass().isAssignableFrom(executable.getClass()))
+		for(Executable.CLASS<? extends Executable> executable : executableNames.values().toArray(new Executable.CLASS[executableNames.size()])) {
+			if(cls.getClass().isAssignableFrom(executable.getClass()))
 				return;
+
+			if(executable.getClass().isAssignableFrom(cls.getClass()) && executable.name().equals(cls.name())) {
+				executableNames.remove(executable.name());
+				break;
+			}
 		}
-		executableClasses.put(cls.classId(), cls);
+
 		executableNames.put(cls.name(), cls);
-		executableKeys.put(cls.key(), cls);
 	}
 
 	protected void addRequest(OBJECT.CLASS<? extends OBJECT> cls) {
@@ -271,7 +283,7 @@ public abstract class AbstractRuntime implements IRuntime {
 			securityLog = cls;
 	}
 
-	protected void mergeRuntime(IRuntime runtime) {
+	protected void addRuntime(IRuntime runtime) {
 		for(Table.CLASS<? extends Table> table : runtime.tables())
 			addTable(table);
 
@@ -295,5 +307,4 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		addSecurityLog(runtime.securityLog());
 	}
-
 }

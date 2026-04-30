@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.functions.If;
@@ -41,16 +40,6 @@ public class BoolField extends Field {
 	@Override
 	public FieldType type() {
 		return FieldType.Boolean;
-	}
-
-	@Override
-	public String sqlType(DatabaseVendor vendor) {
-		String name = type().vendorType(vendor);
-
-		if(vendor == DatabaseVendor.Oracle) {
-			return name + "(1)";
-		}
-		return name;
 	}
 
 	public bool z8_getDefault() {

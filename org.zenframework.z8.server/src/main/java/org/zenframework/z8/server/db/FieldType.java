@@ -162,6 +162,89 @@ public enum FieldType {
 		}
 	}
 
+	public String vendorSqlType(DatabaseVendor vendor, Object... params) {
+		String type = vendorType(vendor);
+
+		switch(this) {
+		case Attachments:
+		case Binary:
+		case File:
+		case Text:
+			if (vendor == DatabaseVendor.Oracle)
+				type += "(MAX)";
+			break;
+
+		case Boolean:
+			if (vendor == DatabaseVendor.Oracle)
+				type += "(1)";
+			break;
+		case Integer:
+		case Datespan:
+			if(vendor == DatabaseVendor.Oracle)
+				type += "(19, 0)";
+			break;
+
+		case Guid:
+			if (vendor == DatabaseVendor.Oracle)
+				type += "(16)";
+			break;
+
+		case Decimal:
+			type += "(" + params[0] + ", " + params[1] + ")"; // precision, scale
+			break;
+
+		case Geometry:
+			if (vendor == DatabaseVendor.Postgres)
+				type += "(Geometry, " + params[0] + ")"; // SRS
+			break;
+
+		case String:
+			type += "(" + params[0] + ")"; // length
+			break;
+
+		default:
+			break;
+		}
+
+		return type;
+	}
+
+	public static FieldType parse(String name, Object... params) {
+		name = name.toLowerCase();
+
+		if (name.equals("blob") || name.equals("varbinary") || name.equals("bytea"))
+			return Binary;
+
+		if (name.equals("raw") || name.equals("uniqueidentifier") || name.equals("uuid"))
+			return Guid;
+
+		if (name.equals("tinyint") || name.equals("smallint"))
+			return Boolean;
+
+		if (name.equals("bigint"))
+			return Integer;
+
+		if (name.equals("numeric"))
+			return Decimal;
+
+		if (name.equals("geometry"))
+			return Geometry;
+
+		if (name.equals("nvarchar2") || name.equals("nvarchar") || name.equals("character varying"))
+			return String;
+
+		if (!name.equals("number"))
+			throw new IllegalArgumentException("Unknown SQL type " + name);
+
+		int precision = params.length > 0 && params[0] instanceof Number ? ((Number) params[0]).intValue() : 0;
+		int scale = params.length > 1 && params[1] instanceof Number ? ((Number) params[1]).intValue() : 0;
+
+		if (precision == 1)
+			return Boolean;
+
+		return scale == 0 ? Integer : Decimal;
+	}
+
 	public boolean isNumeric() {
 		return this == Integer || this == Decimal;
 	}
