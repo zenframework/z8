@@ -49,11 +49,11 @@ public class Version {
 
 		for(OBJECT object : objects) {
 			JsonObject json = new JsonObject();
-			json.set(RecordId, object.getCLASS().key());
-			json.set(ClassName, object.classId());
-			json.set(Name, object.name());
-			json.set(DisplayName, object.displayName());
-			json.set(ControlSum, Integer.toString(object.controlSum()));
+			json.put(RecordId, object.getCLASS().key());
+			json.put(ClassName, object.classId());
+			json.put(Name, object.name());
+			json.put(DisplayName, object.displayName());
+			json.put(ControlSum, Integer.toString(object.controlSum()));
 			details.add(json);
 			controlSum += object.controlSum();
 		}
@@ -61,11 +61,11 @@ public class Version {
 		String version = formatVersion(controlSum);
 
 		JsonObject json = new JsonObject();
-		json.set(RecordId, Settings.Version);
-		json.set(ClassName, Version);
-		json.set(Name, Version);
-		json.set(DisplayName, "Database version");
-		json.set(ControlSum, version);
+		json.put(RecordId, Settings.Version);
+		json.put(ClassName, Version);
+		json.put(Name, Version);
+		json.put(DisplayName, "Database version");
+		json.put(ControlSum, version);
 		details.insert(0, json);
 
 		return new Version(version, details);
@@ -79,22 +79,22 @@ public class Version {
 			JsonObject record = data.getJsonObject(i);
 			JsonObject newRecord = remove(newData, ClassName, record.getString(ClassName));
 			if (newRecord != null) {
-				record.set(NewName, newRecord.getString(Name));
-				record.set(NewDisplayName, newRecord.getString(DisplayName));
-				record.set(NewControlSum, newRecord.getString(ControlSum));
-				record.set(Changed, !equals(record.getString(ControlSum), record.getString(NewControlSum)));
+				record.put(NewName, newRecord.getString(Name));
+				record.put(NewDisplayName, newRecord.getString(DisplayName));
+				record.put(NewControlSum, newRecord.getString(ControlSum));
+				record.put(Changed, !equals(record.getString(ControlSum), record.getString(NewControlSum)));
 			}
 		}
 
 		for (int i = 0; i < newData.size(); i++) {
 			JsonObject record = newData.getJsonObject(i);
-			record.set(NewName, record.getString(Name));
-			record.set(Name, "");
-			record.set(NewDisplayName, record.getString(DisplayName));
-			record.set(DisplayName, "");
-			record.set(NewControlSum, record.getString(ControlSum));
-			record.set(ControlSum, "");
-			record.set(Changed, true);
+			record.put(NewName, record.getString(Name));
+			record.put(Name, "");
+			record.put(NewDisplayName, record.getString(DisplayName));
+			record.put(DisplayName, "");
+			record.put(NewControlSum, record.getString(ControlSum));
+			record.put(ControlSum, "");
+			record.put(Changed, true);
 			data.add(record);
 		}
 
