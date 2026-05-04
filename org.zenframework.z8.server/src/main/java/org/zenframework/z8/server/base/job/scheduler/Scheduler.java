@@ -152,7 +152,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private void start() {
-		if(suspended || thread != null || !database.isSystemInstalled() || !database.isLatestVersion())
+		if(suspended || thread != null)
 			return;
 
 		thread = new Thread(this, database.schema() + " scheduler");
@@ -183,6 +183,13 @@ public class Scheduler implements Runnable {
 	public void run() {
 		ApplicationServer.setRequest(new Request(new Session(database.schema())));
 
+		if (!database.isSystemInstalled() || !database.isLatestVersion()) {
+			Trace.logEvent("System is not installed or database has older version. Stopping scheduler '" + database.schema() + "'");
+			return;
+		}
+
+		Trace.logEvent("Scheduler '" + database.schema() + "' started");
+
 		while(thread != null) {
 			try {
 				initializeJobs();
@@ -200,6 +207,8 @@ public class Scheduler implements Runnable {
 			if(!sleep(1 * 1000))
 				break;
 		}
+
+		Trace.logEvent("Scheduler '" + database.schema() + "' stopped");
 
 		ApplicationServer.setRequest(null);
 	}
