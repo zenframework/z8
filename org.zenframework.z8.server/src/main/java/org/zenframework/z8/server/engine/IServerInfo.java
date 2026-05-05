@@ -11,9 +11,12 @@ public interface IServerInfo extends RmiSerializable, Serializable {
 	IApplicationServer getServer();
 	String getId();
 	String[] getDomains();
+
 	String getWebAppUrl();
 	String getDatabaseVersion();
 	String getRuntimeVersion();
+	String getGitHash();
+	long getBuildTimestamp();
 
 	Map<String, String> getSettings();
 	String getSetting(String name) throws RemoteException;

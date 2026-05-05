@@ -149,6 +149,8 @@
 	<entry key="HubServerView.webAppUrl">Web App URL</entry>
 	<entry key="HubServerView.databaseVersion">Database version</entry>
 	<entry key="HubServerView.runtimeVersion">Runtime version</entry>
+	<entry key="HubServerView.gitHash">Git hash</entry>
+	<entry key="HubServerView.buildTime">Build time</entry>
 	<entry key="HubServerView.properties">Properties</entry>
 	<entry key="HubServerView.unregister">Remove</entry>
 

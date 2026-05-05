@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
@@ -29,6 +30,8 @@ abstract public class HubServerView extends Query {
 		static public String WebAppUrl = "HubServerView.webAppUrl";
 		static public String DatabaseVersion = "HubServerView.databaseVersion";
 		static public String RuntimeVersion = "HubServerView.runtimeVersion";
+		static public String GitHash = "HubServerView.gitHash";
+		static public String BuildTime = "HubServerView.buildTime";
 		static public String Properties = "HubServerView.properties";
 
 		static public String Unregister = "HubServerView.unregister";
@@ -43,6 +46,8 @@ abstract public class HubServerView extends Query {
 		static public String WebAppUrl = Resources.get(strings.WebAppUrl);
 		static public String DatabaseVersion = Resources.get(strings.DatabaseVersion);
 		static public String RuntimeVersion = Resources.get(strings.RuntimeVersion);
+		static public String GitHash = Resources.get(strings.GitHash);
+		static public String BuildTime = Resources.get(strings.BuildTime);
 		static public String Properties = Resources.get(strings.Properties);
 
 		static public String Unregister = Resources.get(strings.Unregister);
@@ -74,6 +79,8 @@ abstract public class HubServerView extends Query {
 	private StringField.CLASS<StringField> webAppUrl = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> databaseVersion = new StringField.CLASS<StringField>(this);
 	private StringField.CLASS<StringField> runtimeVersion = new StringField.CLASS<StringField>(this);
+	private StringField.CLASS<StringField> gitHash = new StringField.CLASS<StringField>(this);
+	private DatetimeField.CLASS<DatetimeField> buildTime = new DatetimeField.CLASS<DatetimeField>(this);
 	private TextField.CLASS<TextField> properties = new TextField.CLASS<TextField>(this);
 
 	private Action.CLASS<Action> unregister = new Action.CLASS<Action>(this);
@@ -93,6 +100,8 @@ abstract public class HubServerView extends Query {
 		objects.add(webAppUrl);
 		objects.add(databaseVersion);
 		objects.add(runtimeVersion);
+		objects.add(gitHash);
+		objects.add(buildTime);
 		objects.add(domains);
 		objects.add(properties);
 		objects.add(unregister);
@@ -103,9 +112,13 @@ abstract public class HubServerView extends Query {
 		super.constructor2();
 
 		readOnly = bool.True;
-		colCount = new integer(3);
+		colCount = new integer(4);
 
 		recordId.setIndex("recordId");
+
+		serverId.setIndex("serverId");
+		serverId.setDisplayName(displayNames.ServerId);
+		serverId.get().width = new integer(150);
 
 		host.setIndex("host");
 		host.setDisplayName(displayNames.Host);
@@ -119,10 +132,6 @@ abstract public class HubServerView extends Query {
 		active.setIcon("fa-heartbeat");
 		active.setDisplayName(displayNames.Active);
 
-		serverId.setIndex("serverId");
-		serverId.setDisplayName(displayNames.ServerId);
-		serverId.get().width = new integer(150);
-
 		databaseVersion.setIndex("databaseVersion");
 		databaseVersion.setDisplayName(displayNames.DatabaseVersion);
 		databaseVersion.get().width = new integer(150);
@@ -131,25 +140,40 @@ abstract public class HubServerView extends Query {
 		runtimeVersion.setDisplayName(displayNames.RuntimeVersion);
 		runtimeVersion.get().width = new integer(150);
 
+		buildTime.setIndex("buildTime");
+		buildTime.setDisplayName(displayNames.BuildTime);
+		buildTime.get().width = new integer(150);
+
+		gitHash.setIndex("gitHash");
+		gitHash.setDisplayName(displayNames.GitHash);
+		gitHash.get().width = new integer(150);
+
 		webAppUrl.setIndex("webAppUrl");
 		webAppUrl.setDisplayName(displayNames.WebAppUrl);
 		webAppUrl.get().width = new integer(150);
-		webAppUrl.get().colSpan = new integer(3);
+		webAppUrl.get().colSpan = new integer(4);
 
 		domains.setIndex("domains");
 		domains.setDisplayName(displayNames.Domains);
-		domains.get().colSpan = new integer(3);
+		domains.get().colSpan = new integer(4);
 
 		properties.setIndex("properties");
 		properties.setDisplayName(displayNames.Properties);
-		properties.get().colSpan = new integer(3);
+		properties.get().colSpan = new integer(4);
 
+		// 1st row
+		registerControl(serverId);
 		registerControl(host);
 		registerControl(port);
 		registerControl(active);
-		registerControl(serverId);
+
+		// 2nd row
 		registerControl(databaseVersion);
 		registerControl(runtimeVersion);
+		registerControl(gitHash);
+		registerControl(buildTime);
+
+		// Other rows
 		registerControl(webAppUrl);
 		registerControl(domains);
 		registerControl(properties);
@@ -171,12 +195,14 @@ abstract public class HubServerView extends Query {
 			for(IServerInfo server : getServers()) {
 				JsonObject object = new JsonObject();
 				object.put(recordId.id(), getUrl(server));
+				object.put(serverId.id(), server.getId());
 				object.put(host.id(), getHost(server));
 				object.put(port.id(), getPort(server));
 				object.put(active.id(), server.isAlive());
-				object.put(serverId.id(), server.getId());
 				object.put(databaseVersion.id(), server.getDatabaseVersion());
 				object.put(runtimeVersion.id(), server.getRuntimeVersion());
+				object.put(gitHash.id(), server.getGitHash());
+				object.put(buildTime.id(), server.getBuildTimestamp());
 				object.put(webAppUrl.id(), server.getWebAppUrl());
 				object.put(domains.id(), getDomains(server));
 				object.put(properties.id(), server.getProperties().toString());

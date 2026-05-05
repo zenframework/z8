@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.config.BuildProperties;
 import org.zenframework.z8.server.types.datespan;
 
 public class ServerInfo implements IServerInfo {
@@ -73,6 +74,17 @@ public class ServerInfo implements IServerInfo {
 	@Override
 	public String getWebAppUrl() {
 		return settings.get(ApplicationServer.WebAppUrl);
+	}
+
+	@Override
+	public String getGitHash() {
+		return properties.get(BuildProperties.GitCommit);
+	}
+
+	@Override
+	public long getBuildTimestamp() {
+		String timestamp = properties.get(BuildProperties.BuildTimestamp);
+		return timestamp != null && !timestamp.isEmpty() ? Long.parseLong(timestamp) : 0L;
 	}
 
 	@Override
