@@ -5,34 +5,33 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.types.datespan;
 
 public class ServerInfo implements IServerInfo {
 
 	private static final long serialVersionUID = 5011706173964296365L;
+
 	private static final long TenMinutes = 10 * datespan.TicksPerMinute;
 	private static final long ThreeDays = 3 * datespan.TicksPerDay;
+
+	private Map<String, String> settings = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<String, String>();
 
 	private IApplicationServer server;
 	private String id;
 	private String[] domains;
-	private String webAppUrl;
 
 	private long firstFailure = 0;
 	private long lastChecked = 0;
 
-	public ServerInfo() {
-	}
+	public ServerInfo() {}
 
-	public ServerInfo(IApplicationServer server, String id) {
+	public ServerInfo(IApplicationServer server) throws RemoteException {
 		this.server = server;
-		this.id = id;
-	}
-
-	public ServerInfo(IApplicationServer server, String[] domains) {
-		this.server = server;
-		this.domains = domains;
+		this.id = server.id();
 	}
 
 	@Override
@@ -45,10 +44,10 @@ public class ServerInfo implements IServerInfo {
 		return server;
 	}
 
-	@Override
-	public void setServer(IApplicationServer server) {
+	public ServerInfo setServer(IApplicationServer server) {
 		this.server = server;
 		lastChecked = 0;
+		return this;
 	}
 
 	@Override
@@ -56,9 +55,9 @@ public class ServerInfo implements IServerInfo {
 		return id;
 	}
 
-	@Override
-	public void setId(String id) {
+	public ServerInfo setId(String id) {
 		this.id = id;
+		return this;
 	}
 
 	@Override
@@ -66,19 +65,56 @@ public class ServerInfo implements IServerInfo {
 		return domains;
 	}
 
-	@Override
-	public void setDomains(String[] domains) {
+	public ServerInfo setDomains(String[] domains) {
 		this.domains = domains;
+		return this;
 	}
 
 	@Override
 	public String getWebAppUrl() {
-		return webAppUrl;
+		return settings.get(ApplicationServer.WebAppUrl);
 	}
 
 	@Override
-	public void setWebAppUrl(String webAppUrl) {
-		this.webAppUrl = webAppUrl;
+	public String getDatabaseVersion() {
+		return settings.get(ApplicationServer.DatabaseVersion);
+	}
+
+	@Override
+	public String getRuntimeVersion() {
+		return settings.get(ApplicationServer.RuntimeVersion);
+	}
+
+	@Override
+	public String getSetting(String name) throws RemoteException {
+		return settings.get(name);
+	}
+
+	@Override
+	public Map<String, String> getSettings() {
+		return properties;
+	}
+
+	public ServerInfo setSettings(Map<String, String> settings) {
+		this.settings.clear();
+		this.settings.putAll(settings);
+		return this;
+	}
+
+	@Override
+	public String getProperty(String name) throws RemoteException {
+		return properties.get(name);
+	}
+
+	@Override
+	public Map<String, String> getProperties() {
+		return properties;
+	}
+
+	public ServerInfo setProperties(Map<String, String> properties) {
+		this.properties.clear();
+		this.properties.putAll(properties);
+		return this;
 	}
 
 	@Override
@@ -90,14 +126,15 @@ public class ServerInfo implements IServerInfo {
 			server.probe();
 			firstFailure = lastChecked = 0;
 			return true;
-		} catch(RemoteException e) {
-		}
+		} catch(RemoteException e) {}
 
 		long time = System.currentTimeMillis();
+
 		if(lastChecked == 0)
 			firstFailure = time;
 
 		lastChecked = time;
+
 		return false;
 	}
 
@@ -119,23 +156,26 @@ public class ServerInfo implements IServerInfo {
 		RmiIO.writeLong(out, serialVersionUID);
 
 		RmiIO.writeString(out, id);
-		out.writeObject(domains);
 		out.writeObject(server);
-		out.writeObject(webAppUrl);
+		out.writeObject(domains);
+		out.writeObject(settings);
+		out.writeObject(properties);
 
 		RmiIO.writeLong(out, firstFailure);
 		RmiIO.writeLong(out, lastChecked);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
 		id = RmiIO.readString(in);
-		domains = (String[])in.readObject();
-		server = (IApplicationServer)in.readObject();
-		webAppUrl = (String)in.readObject();
+		server = (IApplicationServer) in.readObject();
+		domains = (String[]) in.readObject();
+		settings = (Map<String, String>) in.readObject();
+		properties = (Map<String, String>) in.readObject();
 
 		firstFailure = RmiIO.readLong(in);
 		lastChecked = RmiIO.readLong(in);

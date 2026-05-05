@@ -55,15 +55,8 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	public void register(IApplicationServer server) throws RemoteException {
-		String host = ProxyUtils.getHost(server);
-
-		if(!host.equals("127.0.0.1")) {
-			String[] domains = server.domains();
-			String webAppUrl = server.webAppUrl();
-			ServerInfo si = new ServerInfo(server, domains);
-			si.setWebAppUrl(webAppUrl);
-			addServer(si);
-		}
+		if(!ProxyUtils.isLocalServer(server))
+			addServer(newServerInfo(server).setDomains(server.domains()));
 	}
 
 	@Override
@@ -93,9 +86,9 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	}
 
 	private IServerInfo findServer(String domain) throws RemoteException {
-		IServerInfo[] servers = getServers();
+		ServerInfo[] servers = getServers();
 
-		for(IServerInfo server : servers) {
+		for(ServerInfo server : servers) {
 			if(!ArrayUtils.contains(server.getDomains(), domain))
 				continue;
 

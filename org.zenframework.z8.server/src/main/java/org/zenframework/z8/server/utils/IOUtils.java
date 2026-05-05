@@ -233,6 +233,11 @@ public class IOUtils {
 			closeQuietly(closeable);
 	}
 
+	static public void closeQuietly(Closeable... closeables) {
+		for(Closeable closeable : closeables)
+			closeQuietly(closeable);
+	}
+
 	static public byte[] zip(byte[] bytes) {
 		return zip(bytes, 0, bytes.length);
 	}

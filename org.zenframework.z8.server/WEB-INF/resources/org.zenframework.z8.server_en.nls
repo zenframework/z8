@@ -147,6 +147,9 @@
 	<entry key="HubServerView.serverId">Server Id</entry>
 	<entry key="HubServerView.domains">Domains</entry>
 	<entry key="HubServerView.webAppUrl">Web App URL</entry>
+	<entry key="HubServerView.databaseVersion">Database version</entry>
+	<entry key="HubServerView.runtimeVersion">Runtime version</entry>
+	<entry key="HubServerView.properties">Properties</entry>
 	<entry key="HubServerView.unregister">Remove</entry>
 
 	<!-- AuthorityCenterView -->
