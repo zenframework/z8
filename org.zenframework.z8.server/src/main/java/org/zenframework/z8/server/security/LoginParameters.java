@@ -132,6 +132,8 @@ public class LoginParameters {
 		if (userId != null)
 			map.put(UserId, userId.toString());
 		map.put(Trusted, Boolean.toString(trusted));
+		for(String key : parameters.keySet())
+			map.put(key, parameters.get(key));
 		return map;
 	}
 }
