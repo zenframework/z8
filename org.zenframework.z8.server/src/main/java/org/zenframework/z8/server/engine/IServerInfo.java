@@ -3,22 +3,24 @@ package org.zenframework.z8.server.engine;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 public interface IServerInfo extends RmiSerializable, Serializable {
-	public Proxy getProxy();
+	Proxy getProxy();
 
-	public IApplicationServer getServer();
-	public void setServer(IApplicationServer server);
+	IApplicationServer getServer();
+	String getId();
+	String[] getDomains();
+	String getWebAppUrl();
+	String getDatabaseVersion();
+	String getRuntimeVersion();
 
-	public String getId();
-	public void setId(String id);
+	Map<String, String> getSettings();
+	String getSetting(String name) throws RemoteException;
 
-	public String[] getDomains();
-	public void setDomains(String[] domains);
+	Map<String, String> getProperties();
+	String getProperty(String name) throws RemoteException;
 
-	public String getWebAppUrl();
-	public void setWebAppUrl(String webAppUrl);
-
-	public boolean isAlive() throws RemoteException;	// temporary unavailable
-	public boolean isDead() throws RemoteException;		// dead
+	boolean isAlive() throws RemoteException;	// temporary unavailable
+	boolean isDead() throws RemoteException;	// dead
 }

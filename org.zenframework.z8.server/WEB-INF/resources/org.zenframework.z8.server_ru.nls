@@ -141,19 +141,22 @@
 
 	<!-- HubServerView -->
 	<entry key="HubServerView.id">Id</entry>
-	<entry key="HubServerView.host">Application server host</entry>
-	<entry key="HubServerView.port">Port</entry>
-	<entry key="HubServerView.active">Up</entry>
-	<entry key="HubServerView.serverId">Server Id</entry>
-	<entry key="HubServerView.domains">Domains</entry>
-	<entry key="HubServerView.webAppUrl">Web App URL</entry>
+	<entry key="HubServerView.host">Хост сервера приложений</entry>
+	<entry key="HubServerView.port">Порт</entry>
+	<entry key="HubServerView.active">Активен</entry>
+	<entry key="HubServerView.serverId">Id сервера</entry>
+	<entry key="HubServerView.domains">Домены</entry>
+	<entry key="HubServerView.webAppUrl">URL веб-прложения</entry>
+	<entry key="HubServerView.databaseVersion">Версия БД</entry>
+	<entry key="HubServerView.runtimeVersion">Версия кода</entry>
+	<entry key="HubServerView.properties">Свойства</entry>
 	<entry key="HubServerView.unregister">Удалить</entry>
 
 	<!-- AuthorityCenterView -->
-	<entry key="AuthorityCenterView.title">Authority Center</entry>
+	<entry key="AuthorityCenterView.title">Центр авторизации</entry>
 
 	<!-- InterconnectionCenterView -->
-	<entry key="InterconnectionCenterView.title">Interconnection Center</entry>
+	<entry key="InterconnectionCenterView.title">Центр подключений</entry>
 
 	<!-- Roles -->
 	<entry key="Roles.title">Группы безопасности</entry>

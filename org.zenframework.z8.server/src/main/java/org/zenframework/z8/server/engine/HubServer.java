@@ -3,10 +3,8 @@ package org.zenframework.z8.server.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,9 +14,9 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.IOUtils;
 
 abstract public class HubServer extends RmiServer implements IHubServer {
-	private static final long serialVersionUID = -3444119932500940159L;
+	private static final long serialVersionUID = -3444119932500940158L;
 
-	private Collection<IServerInfo> servers = new ArrayList<IServerInfo>();
+	private Collection<ServerInfo> servers = new ArrayList<ServerInfo>();
 
 	protected HubServer(int port) throws RemoteException {
 		super(port);
@@ -36,25 +34,25 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		return getServers();
 	}
 
-	protected IServerInfo[] getServers() {
+	protected ServerInfo[] getServers() {
 		synchronized(this) {
-			return servers.toArray(new IServerInfo[0]);
+			return servers.toArray(new ServerInfo[0]);
 		}
 	}
 
-	private void add(IServerInfo server) {
+	private void add(ServerInfo server) {
 		synchronized(this) {
 			servers.add(server);
 		}
 	}
 
-	private void remove(IServerInfo server) {
+	private void remove(ServerInfo server) {
 		synchronized(this) {
 			servers.remove(server);
 		}
 	}
 
-	protected void sendToBottom(IServerInfo server) {
+	protected void sendToBottom(ServerInfo server) {
 		if(servers.size() > 1) {
 			synchronized(this) {
 				servers.remove(server);
@@ -63,34 +61,32 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 		}
 	}
 
-	protected void addServer(IServerInfo server) {
-		IServerInfo existing = findServer(server.getServer());
+	protected void addServer(ServerInfo server) {
+		ServerInfo existing = findServer(server.getServer());
 
-		if(existing != null) {
-			existing.setId(server.getId());
-			existing.setDomains(server.getDomains());
-			existing.setWebAppUrl(server.getWebAppUrl());
-			existing.setServer(server.getServer());
-		} else
+		if(existing != null)
+			existing.setId(server.getId()).setServer(server.getServer()).setDomains(server.getDomains())
+					.setSettings(server.getSettings()).setProperties(server.getProperties());
+		else
 			add(server);
 
 		saveServers();
 	}
 
 	protected void removeServer(IApplicationServer server) {
-		IServerInfo info = findServer(server);
+		ServerInfo info = findServer(server);
 
 		if(info != null)
 			removeServer(info);
 	}
 
-	protected void removeServer(IServerInfo server) {
+	protected void removeServer(ServerInfo server) {
 		remove(server);
 		saveServers();
 	}
 
-	protected IServerInfo findServer(IApplicationServer server) {
-		for(IServerInfo existing : getServers()) {
+	protected ServerInfo findServer(IApplicationServer server) {
+		for(ServerInfo existing : getServers()) {
 			if(existing.equals(server))
 				return existing;
 		}
@@ -102,46 +98,62 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 
 	private void saveServers() {
 		File cacheFile = cacheFile();
+
 		if (cacheFile == null)
 			return;
 
+		ObjectOutputStream out = null;
+
 		try {
-			OutputStream file = new FileOutputStream(cacheFile);
-			ObjectOutputStream out = new ObjectOutputStream(file);
+			out = new ObjectOutputStream(new FileOutputStream(cacheFile));
 
 			out.writeLong(serialVersionUID);
 
 			synchronized(this) {
 				out.writeObject(servers);
 			}
-
-			IOUtils.closeQuietly(out);
-			IOUtils.closeQuietly(file);
-
 		} catch(Throwable e) {
 			Trace.logEvent(ErrorUtils.getMessage(e));
+		} finally {
+			IOUtils.closeQuietly(out);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private void restoreServers() {
-		try {
-			File file = cacheFile();
+		File file = cacheFile();
 
-			if(file == null || !file.exists())
+		if(file == null || !file.exists())
+			return;
+
+		ObjectInputStream in = null;
+
+		try {
+			in = new ObjectInputStream(new FileInputStream(file));
+
+			if(serialVersionUID != in.readLong())
 				return;
 
-			InputStream fileIn = new FileInputStream(file);
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-			if(serialVersionUID == objectIn.readLong())
-				servers = (Collection<IServerInfo>)objectIn.readObject();
-
-			IOUtils.closeQuietly(objectIn);
-			IOUtils.closeQuietly(fileIn);
-
+			synchronized(this) {
+				servers = (Collection<ServerInfo>)in.readObject();
+			}
 		} catch(Throwable e) {
 			Trace.logEvent(ErrorUtils.getMessage(e));
+		} finally {
+			IOUtils.closeQuietly(in);
 		}
+	}
+
+	protected static ServerInfo newServerInfo(IApplicationServer server) throws RemoteException {
+		ServerInfo serverInfo = new ServerInfo(server);
+
+		try {
+			serverInfo.setSettings(server.settings()).setProperties(server.properties());
+		} catch (Throwable e) {
+			// Old version support
+			Trace.logError("Can't get application server '" + serverInfo.getId() + "' properties. The application server seems to be older version", e);
+		}
+
+		return serverInfo;
 	}
 }

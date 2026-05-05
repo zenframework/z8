@@ -12,6 +12,16 @@ import sun.rmi.transport.LiveRef;
 import sun.rmi.transport.tcp.TCPEndpoint;
 
 public class ProxyUtils {
+	static public final String LocalHost = "127.0.0.1";
+
+	static public boolean isLocalHost(String host) {
+		return LocalHost.equals(host);
+	}
+
+	static public boolean isLocalServer(IServer server) {
+		return isLocalHost(getHost(server));
+	}
+
 	static public Proxy getProxy(IServer server) {
 		return server instanceof Proxy ? (Proxy)server : ((RmiServer)server).proxy();
 	}

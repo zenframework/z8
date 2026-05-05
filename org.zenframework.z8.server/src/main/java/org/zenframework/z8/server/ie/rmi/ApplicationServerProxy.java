@@ -2,6 +2,7 @@ package org.zenframework.z8.server.ie.rmi;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.xml.GNode;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -100,7 +101,12 @@ public class ApplicationServerProxy implements IApplicationServer {
 	}
 
 	@Override
-	public String webAppUrl() throws RemoteException {
+	public Map<String, String> settings() throws RemoteException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Map<String, String> properties() throws RemoteException {
 		throw new UnsupportedOperationException();
 	}
 }
