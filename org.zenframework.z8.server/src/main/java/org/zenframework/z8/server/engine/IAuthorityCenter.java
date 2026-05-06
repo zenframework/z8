@@ -10,16 +10,16 @@ public interface IAuthorityCenter extends IHubServer {
 	int MaxLoginLength = 128;
 	int MaxPasswordLength = 32;
 
-	public IUser register(LoginParameters loginParameters, String password, String requestHost) throws RemoteException;
-	public IUser verify(String verification, String schema, String requestHost) throws RemoteException;
-	public IUser remindInit(String login, String schema, String requestHost) throws RemoteException;
-	public IUser remind(String verification, String schema, String requestHost) throws RemoteException;
-	public IUser changePassword(String verification, String password, String schema, String requestHost) throws RemoteException;
+	IUser register(LoginParameters loginParameters, String password, String requestHost) throws RemoteException;
+	IUser verify(String verification, String schema, String requestHost) throws RemoteException;
+	IUser remindInit(String login, String schema, String requestHost) throws RemoteException;
+	IUser remind(String verification, String schema, String requestHost) throws RemoteException;
+	IUser changePassword(String verification, String password, String schema, String requestHost) throws RemoteException;
 
-	public ISession authorize(String session, String server) throws RemoteException;
-	public ISession login(LoginParameters loginParameters, String password) throws RemoteException;
-	public ISession trustedLogin(LoginParameters loginParameters, boolean createIfNotExist) throws RemoteException;
+	ISession authorize(String session, String server) throws RemoteException;
+	ISession login(LoginParameters loginParameters, String password) throws RemoteException;
+	ISession trustedLogin(LoginParameters loginParameters, boolean createIfNotExist) throws RemoteException;
 
-	public void userChanged(guid user, String schema) throws RemoteException;
-	public void roleChanged(guid role, String schema) throws RemoteException;
+	void userChanged(guid user, String schema) throws RemoteException;
+	void roleChanged(guid role, String schema) throws RemoteException;
 }

@@ -363,8 +363,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	private void unregister() {
 		try {
 			ServerConfig.authorityCenter().unregister(this);
-		} catch(Throwable e) {
-		}
+		} catch(Throwable e) {}
 	}
 
 	private void releaseConnections() {

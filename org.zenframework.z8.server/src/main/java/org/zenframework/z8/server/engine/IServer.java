@@ -4,10 +4,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface IServer extends Remote {
-	public String id() throws RemoteException;
-	
-	public void start() throws RemoteException;
-	public void stop() throws RemoteException;
+	String id() throws RemoteException;
 
-	public void probe() throws RemoteException;
+	void start() throws RemoteException;
+	void stop() throws RemoteException;
+
+	void probe() throws RemoteException;
 }

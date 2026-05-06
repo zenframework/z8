@@ -66,7 +66,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	public IApplicationServer connect(String domain) throws RemoteException {
-		IServerInfo server = findServer(domain);
+		IServerInfo server = findServerByDomain(domain);
 		return server != null ? server.getServer() : null;
 	}
 
@@ -85,7 +85,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 		return cacheEnabled ? new File(Folders.WorkingPath, cache) : null;
 	}
 
-	private IServerInfo findServer(String domain) throws RemoteException {
+	private IServerInfo findServerByDomain(String domain) throws RemoteException {
 		ServerInfo[] servers = getServers();
 
 		for(ServerInfo server : servers) {

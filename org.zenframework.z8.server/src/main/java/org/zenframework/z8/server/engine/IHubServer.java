@@ -6,5 +6,7 @@ public interface IHubServer extends IServer {
 	void register(IApplicationServer server) throws RemoteException;
 	void unregister(IApplicationServer server) throws RemoteException;
 
-	public IServerInfo[] servers() throws RemoteException;
+	IServerInfo get(String id) throws RemoteException;
+
+	IServerInfo[] servers() throws RemoteException;
 }

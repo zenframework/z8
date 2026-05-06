@@ -3,13 +3,13 @@ package org.zenframework.z8.server.base.table.system.view;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.engine.IHubServer;
 import org.zenframework.z8.server.engine.IServerInfo;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.json.parser.JsonArray;
@@ -83,7 +83,7 @@ abstract public class HubServerView extends Query {
 	private DatetimeField.CLASS<DatetimeField> buildTime = new DatetimeField.CLASS<DatetimeField>(this);
 	private TextField.CLASS<TextField> properties = new TextField.CLASS<TextField>(this);
 
-	private Action.CLASS<Action> unregister = new Action.CLASS<Action>(this);
+//	private UnregisterServerAction.CLASS<UnregisterServerAction> unregister = new UnregisterServerAction.CLASS<UnregisterServerAction>(this);
 
 	public HubServerView(IObject container) {
 		super(container);
@@ -104,7 +104,7 @@ abstract public class HubServerView extends Query {
 		objects.add(buildTime);
 		objects.add(domains);
 		objects.add(properties);
-		objects.add(unregister);
+//		objects.add(unregister);
 	}
 
 	@Override
@@ -161,6 +161,9 @@ abstract public class HubServerView extends Query {
 		properties.setDisplayName(displayNames.Properties);
 		properties.get().colSpan = new integer(4);
 
+//		unregister.setIndex("unregister");
+//		unregister.setDisplayName(displayNames.Unregister);
+
 		// 1st row
 		registerControl(serverId);
 		registerControl(host);
@@ -178,10 +181,8 @@ abstract public class HubServerView extends Query {
 		registerControl(domains);
 		registerControl(properties);
 
-		unregister.setDisplayName(displayNames.Unregister);
-/*
-		actions.add(unregister);
-*/
+//		actions.add(unregister);
+
 		names.add(host);
 		names.add(port);
 		names.add(active);
@@ -192,7 +193,7 @@ abstract public class HubServerView extends Query {
 		JsonArray data = new JsonArray();
 
 		try {
-			for(IServerInfo server : getServers()) {
+			for(IServerInfo server : getHubServer().servers()) {
 				JsonObject object = new JsonObject();
 				object.put(recordId.id(), getUrl(server));
 				object.put(serverId.id(), server.getId());
@@ -215,8 +216,7 @@ abstract public class HubServerView extends Query {
 		}
 	}
 
-	abstract protected IServerInfo[] getServers() throws Throwable;
-	abstract protected void unregister(IServerInfo server) throws Throwable;
+	abstract public IHubServer getHubServer();
 
 	private String getDomains(IServerInfo server) {
 		String[] domains = server.getDomains();

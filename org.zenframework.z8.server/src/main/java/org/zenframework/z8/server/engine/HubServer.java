@@ -30,6 +30,11 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	}
 
 	@Override
+	public IServerInfo get(String id) throws RuntimeException {
+		return findServer(id);
+	}
+
+	@Override
 	public IServerInfo[] servers() throws RemoteException {
 		return getServers();
 	}
@@ -83,6 +88,15 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 	protected void removeServer(ServerInfo server) {
 		remove(server);
 		saveServers();
+	}
+
+	protected ServerInfo findServer(String id) {
+		for(ServerInfo existing : getServers()) {
+			if(existing.getId().equals(id))
+				return existing;
+		}
+
+		return null;
 	}
 
 	protected ServerInfo findServer(IApplicationServer server) {
