@@ -37,9 +37,7 @@ public class ExportSource implements RmiSerializable, Serializable {
 
 	public ExportSource(Table table, Collection<Field> fields, boolean exportAll, SqlToken where) {
 		this(table, fields, exportAll);
-
-		if(where != null)
-			initRecords(where);
+		initRecords(where);
 	}
 
 	private ExportSource(Table table, Collection<Field> fields, boolean exportAll) {
