@@ -1,0 +1,4 @@
+[native "org.zenframework.z8.server.base.json.parser.JsonUtil"]
+public class JsonUtil {
+	static public string prettyPrint(JsonObject json, int indent);
+}
