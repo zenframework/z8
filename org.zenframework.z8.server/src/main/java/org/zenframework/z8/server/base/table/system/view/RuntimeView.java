@@ -205,7 +205,7 @@ public class RuntimeView extends Query {
 
 	@Override
 	public JsonArray getData() {
-		return Version.getVersionDiff(Version.readVersion(ApplicationServer.getSchema()),
+		return Version.getVersionDiff(Version.getDatabaseVersion(ApplicationServer.getSchema()),
 				Version.getVersion(Runtime.instance()));
 	}
 

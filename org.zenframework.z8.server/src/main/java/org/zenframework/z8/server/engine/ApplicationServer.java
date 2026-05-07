@@ -3,7 +3,11 @@ package org.zenframework.z8.server.engine;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
@@ -12,6 +16,7 @@ import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.xml.GNode;
+import org.zenframework.z8.server.config.BuildProperties;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.ie.Message;
@@ -36,6 +41,11 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	static private final ThreadLocal<IRequest> currentRequest = new ThreadLocal<IRequest>();
 
 	static public final String id = guid.create().toString();
+
+	static public final String WebAppUrl = "webapp.url";
+	static public final String DatabaseVersion = "database.version";
+	static public final String RuntimeVersion = "runtime.version";
+	static public final Collection<String> BuildPropertiesKeys = Arrays.asList(BuildProperties.ApplicationName, BuildProperties.ApplicationVersion, BuildProperties.BuildTimestamp, BuildProperties.GitCommit, BuildProperties.GitBranch);
 
 	static private ApplicationServer instance;
 
@@ -154,14 +164,31 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	}
 
 	@Override
-	public String webAppUrl() {
+	public Map<String, String> settings() throws RemoteException {
+		Map<String, String> settings = new HashMap<String, String>();
+
 		try {
 			setRequest(new Request(new Session(getSchema())));
-			return Settings.webAppUrl();
+
+			settings.put(WebAppUrl, Settings.webAppUrl());
+			settings.put(DatabaseVersion, Settings.version());
+			settings.put(RuntimeVersion, Runtime.version().getVersion());
 		} finally {
 			releaseConnections();
 			setRequest(null);
 		}
+
+		return settings;
+	}
+
+	@Override
+	public Map<String, String> properties() throws RemoteException {
+		Map<String, String> properties = new HashMap<String, String>();
+
+		for (String key : BuildPropertiesKeys)
+			properties.put(key, BuildProperties.instance().getProperty(key));
+
+		return properties;
 	}
 
 	@Override

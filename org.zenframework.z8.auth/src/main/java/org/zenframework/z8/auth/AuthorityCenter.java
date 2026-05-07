@@ -70,7 +70,7 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 
 	@Override
 	public void register(IApplicationServer server) throws RemoteException {
-		addServer(new ServerInfo(server, server.id()));
+		addServer(newServerInfo(server));
 		registerInterconnection(server);
 	}
 
@@ -83,15 +83,13 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	private void registerInterconnection(IApplicationServer server) throws RemoteException {
 		try {
 			ServerConfig.interconnectionCenter().register(server);
-		} catch(Throwable e) {
-		}
+		} catch(Throwable e) {}
 	}
 
 	private void unregisterInterconnection(IApplicationServer server) throws RemoteException {
 		try {
 			ServerConfig.interconnectionCenter().unregister(server);
-		} catch(Throwable e) {
-		}
+		} catch(Throwable e) {}
 	}
 
 	@Override
@@ -187,9 +185,9 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 	}
 
 	private IServerInfo nextServer(String serverId) throws RemoteException {
-		IServerInfo[] servers = getServers();
+		ServerInfo[] servers = getServers();
 
-		for(IServerInfo server : servers) {
+		for(ServerInfo server : servers) {
 			if(serverId != null && !server.getId().equals(serverId))
 				continue;
 
@@ -231,7 +229,6 @@ public class AuthorityCenter extends HubServer implements IAuthorityCenter {
 				if(server.isAlive())
 					center.register(server.getServer());
 			}
-		} catch(Throwable e) {
-		}
+		} catch(Throwable e) {}
 	}
 }
