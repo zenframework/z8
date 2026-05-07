@@ -1,14 +1,18 @@
 package org.zenframework.z8.compiler.workspace;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.eclipse.core.resources.IResource;
 import org.zenframework.z8.compiler.file.File;
-import org.zenframework.z8.compiler.file.FileException;
+import org.zenframework.z8.compiler.resources.NlsHandler;
+import org.zenframework.z8.compiler.resources.NlsHandler.Filter;
+import org.zenframework.z8.compiler.util.IOUtil;
 import org.zenframework.z8.compiler.util.Set;
+
 
 public class NlsUnit extends Resource {
 	private Properties properties = new Properties();
@@ -81,21 +85,18 @@ public class NlsUnit extends Resource {
 		buildPending = false;
 
 		InputStream in = null;
+
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		NlsHandler handler = new NlsHandler(NlsHandler.newAttributeFilter(Filter.SERVER, Filter.TRUE), properties);
+
 		try {
 			in = File.fromPath(getAbsolutePath()).inputStream();
-			properties.loadFromXML(in);
-		} catch(FileNotFoundException e) {
-			error(new FileException(getPath(), e.getMessage()));
-		} catch(IOException e) {
-			error(new FileException(getPath(), e.getMessage()));
-		} catch (FileException e) {
+			SAXParser parser = factory.newSAXParser();
+			parser.parse(in, handler);
+		} catch (Exception e) {
 			error(e);
 		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {}
-			}
+			IOUtil.closeQuietly(in);
 		}
 
 		reportMessages();

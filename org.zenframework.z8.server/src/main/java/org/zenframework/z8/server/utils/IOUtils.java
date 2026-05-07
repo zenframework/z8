@@ -23,6 +23,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.encoding;
 
+// org.zenframework.z8.server.utils <-> org.zenframework.z8.compiler.util.IOUtil
 public class IOUtils {
 
 	public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
@@ -220,6 +221,7 @@ public class IOUtils {
 		return readText(resource.openStream());
 	}
 
+	// The same org.zenframework.z8.compiler.util.IOUtils
 	static public void closeQuietly(Closeable closable) {
 		try {
 			if(closable != null)
