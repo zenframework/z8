@@ -7,6 +7,8 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.ie.rmi.TransportJob;
+import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 
@@ -36,7 +38,9 @@ public class RestartTransportAction extends Action {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		ScheduledJob transportJob = Scheduler.get(ApplicationServer.getDatabase()).findSystemJob(TransportJob.class.getCanonicalName());
-		if(transportJob != null)
+		if(transportJob != null) {
 			transportJob.restart();
+			Trace.logEvent(Resources.get("Transport.restart"));
+		}
 	}
 }

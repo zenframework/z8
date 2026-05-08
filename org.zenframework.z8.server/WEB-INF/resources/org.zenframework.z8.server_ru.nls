@@ -77,6 +77,9 @@
 	<entry key="TransportQueue.bytesTransferred">Отправлено, Б</entry>
 	<entry key="TransportQueue.restartTransport">Перезапуск транспорта</entry>
 
+	<!-- RestartTransportAction -->
+	<entry key="Transport.restart">Транспортное сообщение было перезапущено</entry>
+
 	<!-- Tables -->
 	<entry key="Tables.title">Таблицы</entry>
 	<entry key="Tables.classId">Системное имя</entry>
@@ -200,6 +203,10 @@
 	<entry key="ScheduledJobLogs.errors">Ошибки</entry>
 	<entry key="ScheduledJobLogs.file">Лог-файл</entry>
 	<entry key="ScheduledJobLogs.fileSize">Лог-файл, байт</entry>
+
+	<!-- RestartSchedulerAction -->
+	<entry key="Scheduler.suspend">Планировщик задач был остановлен</entry>
+	<entry key="Scheduler.resume">Планировщик задач был запущен</entry>
 
 	<!-- JobsView -->
 	<entry key="JobsView.job">Задание</entry>
