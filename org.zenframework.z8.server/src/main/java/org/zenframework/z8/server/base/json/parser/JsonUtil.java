@@ -16,7 +16,7 @@ public class JsonUtil {
 
 	static public String prettyPrint(org.zenframework.z8.server.json.parser.JsonObject json, int indent) {
 		Gson gson = new Gson();
-		JsonElement je = JsonParser.parseString(json.toString());
+		JsonElement je = new JsonParser().parse(json.toString());
 
 		StringWriter stringWriter = new StringWriter();
 		JsonWriter jsonWriter = new JsonWriter(stringWriter);
