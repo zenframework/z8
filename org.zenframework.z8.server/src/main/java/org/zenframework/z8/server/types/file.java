@@ -325,10 +325,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	}
 
 	public String getHash() {
-		if(hash == null || hash.isEmpty())
-			hash = new string(calculateHash());
-
-		return hash.get();
+		return z8_getHash().get();
 	}
 
 	public InputStream getInputStream() {
