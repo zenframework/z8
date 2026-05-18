@@ -35,6 +35,7 @@ public class file extends primary {
 	public string extension();
 	public date lastModified();
 	public int getLocation();
+	public string getHash();
 
 	public string read();
 	public string read(encoding charset);

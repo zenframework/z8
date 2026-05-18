@@ -21,6 +21,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
@@ -63,6 +64,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public guid user = guid.Null;
 	public string author = new string();
 	public integer location = Unknown;
+	public string hash = new string();
 
 	public RLinkedHashMap<string, string> details = new RLinkedHashMap<string, string>();
 
@@ -179,6 +181,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		id = new guid(json.has(Json.id) ? json.getString(Json.id) : "");
 		user = new guid(json.has(Json.user) ? json.getString(Json.user) : "");
 		author = new string(json.has(Json.author) ? json.getString(Json.author) : "");
+		hash = new string(json.has(Json.hash) ? json.getString(Json.hash) : "");
 
 		if (json.has(Json.details)) {
 			String detailsString = json.getString(Json.details);
@@ -243,6 +246,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		json.put(Json.user, user);
 		json.put(Json.author, author);
 		json.put(Json.details, details);
+		json.put(Json.hash, hash);
 		return json;
 	}
 
@@ -254,6 +258,7 @@ public class file extends primary implements RmiSerializable, Serializable {
 		writer.writeProperty(Json.id, id);
 		writer.writeProperty(Json.user, user);
 		writer.writeProperty(Json.author, author);
+		writer.writeProperty(Json.hash, hash);
 
 		writer.startObject(Json.details);
 		for(string key : details.keySet())
@@ -308,6 +313,22 @@ public class file extends primary implements RmiSerializable, Serializable {
 
 	public File toFile() {
 		return getAbsolutePath();
+	}
+
+	private String calculateHash() {
+		InputStream inputStream = getInputStream();
+		try {
+			return inputStream == null ? "" : DigestUtils.sha256Hex(inputStream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getHash() {
+		if(hash == null || hash.isEmpty())
+			hash = new string(calculateHash());
+
+		return hash.get();
 	}
 
 	public InputStream getInputStream() {
@@ -795,9 +816,16 @@ public class file extends primary implements RmiSerializable, Serializable {
 	public file z8_unzip(file directory) {
 		return unzip(directory.getAbsolutePath());
 	}
-	
+
 	public integer z8_getLocation() {
 		return location;
+	}
+	
+	public string z8_getHash() {
+		if(hash == null || hash.isEmpty())
+			hash = new string(calculateHash());
+
+		return hash;
 	}
 
 	static public RCollection<file> z8_parse(string json) {
