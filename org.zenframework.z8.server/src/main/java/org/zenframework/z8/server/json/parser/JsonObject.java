@@ -1559,4 +1559,53 @@ public class JsonObject extends HashMap<String, Object> {
 		}
 	}
 
+	public bool getBool(string key) {
+		return getBool(key.get());
+	}
+
+	public bool getBool(String key) {
+		try {
+			return new bool(getBoolean(key));
+		} catch (JsonException e) {
+			return null;
+		}
+	}
+
+	public date getDate(string key) {
+		return getDate(key.get());
+	}
+
+	public date getDate(String key) {
+		try {
+			return new date(getLong(key));
+		} catch (Exception e) {
+			Object o = opt(key);
+			return o == null ? null : new date(o.toString());
+		}
+	}
+
+	public decimal getDecimal(string key) {
+		return getDecimal(key.get());
+	}
+
+	public decimal getDecimal(String key) {
+		try {
+			return new decimal(getDouble(key));
+		} catch (JsonException e) {
+			return null;
+		}
+	}
+
+	public integer getInteger(string key) {
+		return getInteger(key.get());
+	}
+
+	public integer getInteger(String key) {
+		try {
+			return new integer(getLong(key));
+		} catch (JsonException e) {
+			return null;
+		}
+	}
+
 }

@@ -5,6 +5,10 @@ public class Reports {
 
 	public static final String DefaultDesign = "default.rptdesign";
 
+	// Engines
+	public static final String BIRT = "birt";
+	public static final String POI = "poi";
+
 	// for Layout:
 	public static final String FirstPageHeader = "CaptionCenter";
 	public static final String ReportBody = "ReportBody";
@@ -18,6 +22,7 @@ public class Reports {
 	public static final String Pdf = "pdf";
 	public static final String Excel = "xls";
 	public static final String Word = "doc";
+	public static final String WordX = "docx";
 	public static final String Html = "html";
 	public static final String Powerpoint = "ppt";
 

@@ -36,7 +36,7 @@ public class Cell extends OBJECT {
 
 	public string z8_getString() {
 		switch(cell.getCellType()) {
-		case String: 
+		case String:
 			return new string(cell.getStringCellValue());
 		case Numeric:
 			double value = cell.getNumericCellValue();
@@ -47,6 +47,22 @@ public class Cell extends OBJECT {
 			return new string(cell.getCellFormula());
 		default:
 			return new string();
+		}
+	}
+
+	static public String getCellStringValue(org.apache.poi.ss.usermodel.Cell cell) {
+		switch (cell.getCellType()) {
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+			return java.lang.Boolean.toString(cell.getBooleanCellValue());
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
+			return cell.getCellFormula();
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+			double value = cell.getNumericCellValue();
+			return value == (long) value ? Long.toString((long) value) : Double.toString(value);
+		case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+			return cell.getStringCellValue();
+		default:
+			return "";
 		}
 	}
 
