@@ -528,7 +528,13 @@ public class ReadAction extends RequestAction {
 	}
 
 	private void addNullRecordFilter(Field primaryKey) {
-		SqlToken left = getFilter(primaryKey, guid.Null, Operation.NotEq);
+		// OLD VERSION: SqlToken left = getFilter(primaryKey, guid.Null, Operation.NotEq);
+		// WARNING: Using '>' (GT) instead of '<>' (NotEq) is a deliberate performance optimization.
+		// The guid.Null ('0000...') is technically the absolute minimum value.
+		// The '>' operator forces the query planner to utilize a range index scan
+		// and prevents a Full Table Scan without breaking the planner's statistics.
+		// DO NOT change back to '<>', as it will degrade query performance!
+		SqlToken left = getFilter(primaryKey, guid.Null, Operation.GT);
 
 		if(hasRightJoin) {
 			SqlToken right = getIsNullFilter(primaryKey, Operation.None);
