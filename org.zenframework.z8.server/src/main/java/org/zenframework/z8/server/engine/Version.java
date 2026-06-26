@@ -22,6 +22,8 @@ public class Version {
 
 	static public final String Version = "Version";
 
+	static private final String NullVersion = formatVersion(0);
+
 	private final String version;
 	private final JsonArray details;
 
@@ -101,14 +103,10 @@ public class Version {
 		return data;
 	}
 
-	static public Version readVersion(String schema) {
+	static public Version getDatabaseVersion(String schema) {
+		String version = Settings.get(Settings.Version, NullVersion);
 		JsonArray details = new JsonArray(Settings.get(Settings.VersionDetails, "[]"));
-		JsonObject version = find(details, ClassName, Version);
-		return new Version(version != null ? version.getString(ControlSum) : formatVersion(0), details);
-	}
-
-	static private JsonObject find(JsonArray data, String field, String value) {
-		return findRemove(data, field, value, false);
+		return new Version(version, details);
 	}
 
 	static private JsonObject remove(JsonArray data, String field, String value) {

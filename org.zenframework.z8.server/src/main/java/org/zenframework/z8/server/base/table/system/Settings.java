@@ -119,8 +119,15 @@ public class Settings extends TreeTable {
 		{
 			LinkedHashMap<IField, primary> record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string(strings.Version));
+			record.put(description.get(), new string("Database version"));
 			record.put(lock.get(), RecordLock.Full);
 			addRecord(Version, record);
+
+			record = new LinkedHashMap<IField, primary>();
+			record.put(name.get(), new string(strings.VersionDetails));
+			record.put(description.get(), new string("Database version details"));
+			record.put(lock.get(), RecordLock.Full);
+			addRecord(VersionDetails, record);
 
 			record = new LinkedHashMap<IField, primary>();
 			record.put(name.get(), new string("Web App URL"));
