@@ -44,15 +44,16 @@ public class ForeignKey {
 	}
 
 	public void drop() throws SQLException {
-		if(!dropped) {
-			Connection connection = ConnectionManager.get();
-			IDatabase database = connection.database();
-			DatabaseVendor vendor = database.vendor();
+		if (dropped)
+			return;
 
-			String sql = "alter table " + database.tableName(table) + " drop constraint " + vendor.quote(name);
-			DmlStatement.execute(sql);
+		Connection connection = ConnectionManager.get();
+		IDatabase database = connection.database();
+		DatabaseVendor vendor = database.vendor();
 
-			dropped = true;
-		}
+		String sql = "alter table " + database.tableName(table) + " drop constraint " + vendor.quote(name);
+		DmlStatement.execute(sql);
+
+		dropped = true;
 	}
 }

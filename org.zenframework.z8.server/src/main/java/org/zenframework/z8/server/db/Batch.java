@@ -8,8 +8,8 @@ import org.zenframework.z8.server.logs.Trace;
 
 public class Batch {
 	private class Data {
-		public Statement statement;
-		public int count = 0;
+		Statement statement;
+		int count = 0;
 
 		Data(Statement statement) {
 			this.statement = statement;
