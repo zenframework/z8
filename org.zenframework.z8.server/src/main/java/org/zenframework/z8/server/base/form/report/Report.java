@@ -92,7 +92,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 	}
 
 	public void registerDataSource(DataSource source) {
-		sources.put(source.index(), source);
+		sources.put(source.get().getObject().index(), source);
 	}
 
 	public file run(guid recordId) {

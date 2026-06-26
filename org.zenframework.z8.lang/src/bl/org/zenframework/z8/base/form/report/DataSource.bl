@@ -6,6 +6,7 @@ import org.zenframework.z8.lang.Object;
 public class DataSource extends Object {
 	public void operator = (Query source);
 	public void operator = (JsonArray source);
+	public void operator = (CustomData source);
 	public void operator = (Object source);
 
 	public int getIndex();

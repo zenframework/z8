@@ -17,14 +17,6 @@ public class Wrapper<V> extends OBJECT {
 		}
 	}
 
-	public static <V> Wrapper<V> instance(OBJECT container, String index) {
-		Wrapper.CLASS<Wrapper<V>> instance = new Wrapper.CLASS<Wrapper<V>>(container);
-		instance.setIndex(index);
-		if (container != null)
-			container.objects.add(instance);
-		return instance.get();
-	}
-
 	private V value;
 
 	public Wrapper(IObject container) {

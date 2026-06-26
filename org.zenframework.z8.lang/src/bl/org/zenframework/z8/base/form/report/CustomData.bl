@@ -1,0 +1,11 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.report.CustomData"]
+public class CustomData extends Object {
+
+	public int getIndex();
+
+	virtual public int count();
+	virtual public void open();
+	virtual public void close();
+}

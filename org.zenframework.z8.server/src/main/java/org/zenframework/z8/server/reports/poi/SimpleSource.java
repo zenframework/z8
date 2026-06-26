@@ -11,7 +11,9 @@ public class SimpleSource extends DataSource {
 	}
 
 	@Override
-	protected boolean internalNext() {
+	public boolean next() {
+		super.next();
+
 		return getIndex() == 0;
 	}
 

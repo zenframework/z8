@@ -2,6 +2,7 @@ package org.zenframework.z8.server.base.form.report;
 
 import org.zenframework.z8.server.base.json.parser.JsonArray;
 import org.zenframework.z8.server.base.query.Query;
+import org.zenframework.z8.server.reports.poi.CustomSource;
 import org.zenframework.z8.server.reports.poi.JsonSource;
 import org.zenframework.z8.server.reports.poi.QuerySource;
 import org.zenframework.z8.server.reports.poi.SimpleSource;
@@ -43,6 +44,10 @@ public class DataSource extends OBJECT {
 
 	public void operatorAssign(JsonArray.CLASS<? extends JsonArray> source) {
 		this.source = new JsonSource(source.get());
+	}
+
+	public void operatorAssign(CustomData.CLASS<? extends CustomData> source) {
+		this.source = new CustomSource(source.get());
 	}
 
 	public void operatorAssign(OBJECT.CLASS<? extends OBJECT> source) {
