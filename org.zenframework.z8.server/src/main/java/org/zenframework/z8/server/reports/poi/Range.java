@@ -19,7 +19,6 @@ import org.zenframework.z8.server.expression.ObjectContext;
 import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Vector;
-import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -83,10 +82,6 @@ public class Range {
 	public Range setSource(DataSource source) {
 		this.source = source.setRange(this);
 		return this;
-	}
-
-	public Range setSource(OBJECT source) {
-		return setSource(DataSource.toDataSource(source));
 	}
 
 	public Block getBlock() {

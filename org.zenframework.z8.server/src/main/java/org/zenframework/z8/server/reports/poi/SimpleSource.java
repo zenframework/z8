@@ -24,4 +24,8 @@ public class SimpleSource extends DataSource {
 	public int count() {
 		return 1;
 	}
+
+	static public SimpleSource newDefault() {
+		return new SimpleSource(new OBJECT.CLASS<OBJECT>(null).get());
+	}
 }

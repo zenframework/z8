@@ -48,6 +48,7 @@ public class JsonSource extends DataSource {
 	@Override
 	public Object getCurrentValue(String path) {
 		Object currentItem = item.get();
+
 		if (currentItem == null)
 			return null;
 
