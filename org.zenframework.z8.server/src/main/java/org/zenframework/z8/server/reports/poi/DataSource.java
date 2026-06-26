@@ -1,26 +1,16 @@
 package org.zenframework.z8.server.reports.poi;
 
-import org.zenframework.z8.server.base.json.parser.JsonArray;
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.expression.Expression;
 import org.zenframework.z8.server.runtime.CLASS;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.integer;
 
 public abstract class DataSource {
-	private static final String Index = "index";
+	public static final String Index = "index";
 
 	protected Range range;
 	protected Wrapper<integer> index;
 	private boolean initialized = false;
-
-	public static DataSource toDataSource(OBJECT source) {
-		if (source instanceof Query)
-			return new QuerySource((Query) source);
-		if (source instanceof JsonArray)
-			return new JsonSource((JsonArray) source);
-		return new SimpleSource(source);
-	}
 
 	public DataSource setRange(Range range) {
 		this.range = range;
@@ -50,12 +40,10 @@ public abstract class DataSource {
 
 	public boolean next() {
 		index.set(new integer(index.get().getInt() + 1));
-		return internalNext();
+		return false;
 	}
 
 	public void close() {}
-
-	protected abstract boolean internalNext();
 
 	public Object evaluate(String value) {
 		return getExpression().evaluateText(value);
@@ -65,6 +53,10 @@ public abstract class DataSource {
 
 	public abstract int count();
 
+	public Object getCurrentValue(String fieldId) {
+		return null;
+	}
+
 	protected void initialize() {
 		initialized = true;
 		index = getObjectProperty(Index);
@@ -73,11 +65,15 @@ public abstract class DataSource {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <V> Wrapper<V> getObjectProperty(String id) {
 		CLASS value = (CLASS) getObject().getMember(id);
-		return value != null ? (Wrapper<V>) value.get() : Wrapper.instance(getObject(), id);
+		return value != null ? (Wrapper<V>) value.get() : addObject(getObject(), id);
 	}
 
-	public Object getCurrentValue(String fieldId) {
-		return null;
+	private static <V> Wrapper<V> addObject(OBJECT container, String index) {
+		Wrapper.CLASS<Wrapper<V>> instance = new Wrapper.CLASS<Wrapper<V>>(container);
+		instance.setIndex(index);
+		if (container != null)
+			container.objects.add(instance);
+		return instance.get();
 	}
 
 }

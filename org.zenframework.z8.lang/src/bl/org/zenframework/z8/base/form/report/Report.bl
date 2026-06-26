@@ -19,9 +19,15 @@ public class Report extends Object {
 	public string template;
 	public string format;
 
-	// POI-only options
+	/* >>> POI-only options >>> */
+
 	public Range[] ranges;
 	public string[][int] hiddenColumns;
+
+	public DataSource getDataSource(Object source);
+	public DataSource getDataSource(string index);
+
+	/* <<< POI-only options <<< */
 
 	public file run(guid recordId);
 

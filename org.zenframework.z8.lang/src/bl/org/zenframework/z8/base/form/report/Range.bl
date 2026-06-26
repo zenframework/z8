@@ -18,6 +18,6 @@ public class Range extends Object {
 	public static final int Vertical = 0;
 	public static final int Horizontal = 1;
 
-	public Object source;
+	public DataSource source;
 	public Range[] ranges;
 }

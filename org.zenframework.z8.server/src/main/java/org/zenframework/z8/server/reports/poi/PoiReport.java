@@ -77,7 +77,7 @@ public class PoiReport {
 		Range sheetRange = ranges.get(sheet);
 
 		if (sheetRange == null)
-			ranges.put(sheet, sheetRange = new Range().setReport(this).setName("Sheet[" + sheet + ']').setSource(new OBJECT.CLASS<OBJECT>(null).get()));
+			ranges.put(sheet, sheetRange = new Range().setReport(this).setName("Sheet[" + sheet + ']').setSource(SimpleSource.newDefault()));
 
 		sheetRange.addRange(range);
 

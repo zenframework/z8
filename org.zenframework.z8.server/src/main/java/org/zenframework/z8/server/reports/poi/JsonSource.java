@@ -38,7 +38,9 @@ public class JsonSource extends DataSource {
 	}
 
 	@Override
-	protected boolean internalNext() {
+	public boolean next() {
+		super.next();
+
 		int index = getIndex();
 		boolean hasNext = index < json.get().size();
 		item.set(hasNext ? json.get().get(index) : null);
@@ -48,6 +50,7 @@ public class JsonSource extends DataSource {
 	@Override
 	public Object getCurrentValue(String path) {
 		Object currentItem = item.get();
+
 		if (currentItem == null)
 			return null;
 
