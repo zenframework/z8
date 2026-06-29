@@ -25,7 +25,7 @@ public class CustomData extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public integer z8_getIndex() {
-		return ((Wrapper<integer>) getMember(org.zenframework.z8.server.reports.poi.DataSource.Index)).get();
+		return ((Wrapper<integer>) getMember(org.zenframework.z8.server.reports.poi.DataSource.Index).get()).get();
 	}
 
 	public integer z8_count() {
