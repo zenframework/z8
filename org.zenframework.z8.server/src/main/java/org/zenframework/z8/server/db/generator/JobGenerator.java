@@ -17,6 +17,7 @@ import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class JobGenerator {
 	@SuppressWarnings("unused")
@@ -34,21 +35,25 @@ public class JobGenerator {
 	}
 
 	public void run() {
-		Connection connection = ConnectionManager.get();
+		Connection connection = null;
 
 		try {
+			connection = ConnectionManager.get();
 			connection.beginTransaction();
-			writeJobs();
+			dropJobs();
+			createJobs();
 			connection.commit();
 		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
+			if (connection != null)
+				connection.rollback();
+			logger.error(e, ErrorUtils.getMessage(e));
 		} finally {
-			connection.release();
+			if (connection != null)
+				connection.release();
 		}
 	}
 
-	private void writeJobs() {
+	private void dropJobs() {
 		jobs.read(Arrays.asList(jobs.primaryKey()), jobs.primaryKey().notInVector(jobKeys));
 
 		while(jobs.next()) {
@@ -57,20 +62,19 @@ public class JobGenerator {
 			scheduledJobs.destroy(new Equ(scheduledJobs.job.get(), job));
 			jobs.destroy(job);
 		}
-
-		createJobs();
 	}
 
 	private void createJobs() {
 		jobs.read(Arrays.asList(jobs.primaryKey()), jobs.primaryKey().inVector(jobKeys));
-		while(jobs.next()) {
+
+		while (jobs.next()) {
 			guid job = jobs.recordId();
 			setJobProperties(Runtime.instance().getJobByKey(job).newInstance());
 			jobs.update(job);
 			jobKeys.remove(job);
 		}
 
-		for(guid key : jobKeys) {
+		for (guid key : jobKeys) {
 			setJobProperties(Runtime.instance().getJobByKey(key).newInstance());
 			jobs.create(key);
 		}
@@ -83,10 +87,10 @@ public class JobGenerator {
 
 		String jobCron = job.getAttribute(IObject.Job);
 
-		if(jobCron == null)
+		if (jobCron == null)
 			return;
 
-		if(!scheduledJobs.hasRecord(new Equ(scheduledJobs.job.get(), job.key()))) {
+		if (!scheduledJobs.hasRecord(new Equ(scheduledJobs.job.get(), job.key()))) {
 			scheduledJobs.active.get().set(new bool(!jobCron.isEmpty()));
 			scheduledJobs.job.get().set(job.key());
 			scheduledJobs.cron.get().set(jobCron);

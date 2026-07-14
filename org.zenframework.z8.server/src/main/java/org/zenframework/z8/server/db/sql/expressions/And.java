@@ -15,13 +15,13 @@ public class And extends Expression {
 	static public String sqlAnd = "and";
 
 	static public And fromList(Collection<SqlToken> tokens) {
-		if(tokens.size() < 2)
+		if (tokens.size() < 2)
 			throw new RuntimeException("And.fromList: incorrect number of parameters");
 
 		Iterator<SqlToken> iterator = tokens.iterator();
 		And and = new And(iterator.next(), iterator.next());
 
-		while(iterator.hasNext())
+		while (iterator.hasNext())
 			and = new And(and, iterator.next());
 
 		return and;

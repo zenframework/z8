@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.engine;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.types.encoding;
 
 public interface IDatabase {
@@ -51,6 +52,7 @@ public interface IDatabase {
 	public boolean isExternal();
 
 	public DatabaseVendor vendor();
+	public DatabaseDialect dialect();
 
 	public int id();
 	public String schema();

@@ -118,8 +118,8 @@ public class binary extends primary {
 	}
 
 	@Override
-	public String toDbConstant(DatabaseVendor dbtype) {
-		switch(dbtype) {
+	public String toDbConstant(DatabaseVendor vendor) {
+		switch(vendor) {
 		case Postgres:
 		case Oracle:
 			return "null";

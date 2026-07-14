@@ -51,7 +51,7 @@ public class GeometryField extends Field {
 
 	@Override
 	public String sqlType(DatabaseVendor vendor) {
-		return type().vendorSqlType(vendor, srs.get());
+		return vendor.dialect().formatSqlType(type(), srs.get());
 	}
 
 	public sql_geometry sql_geometry() {

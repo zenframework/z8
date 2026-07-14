@@ -18,7 +18,5 @@ public interface ITable {
 
 	public Collection<IForeignKey> getForeignKeys();
 
-	public Collection<IField> getIndices();
-
-	public Collection<IField> getUniqueIndices();
+	public Collection<IField> getIndexedFields();
 }

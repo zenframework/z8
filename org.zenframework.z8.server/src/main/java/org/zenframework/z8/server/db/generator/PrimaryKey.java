@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PrimaryKey {
-	public String name;
-	public String tableName;
-	public Collection<String> fields = new ArrayList<String>();
+	public final String name;
+	public final String tableName;
+
+	private final Collection<String> fields = new ArrayList<String>();
 
 	PrimaryKey(String name, String tableName, String fieldName) {
 		this.name = name;
@@ -14,12 +15,21 @@ public class PrimaryKey {
 		this.fields.add(fieldName);
 	}
 
+	public void addField(String field) {
+		fields.add(field);
+	}
+
+	public Collection<String> getFields() {
+		return fields;
+	}
+
 	@Override
 	public String toString() {
 		String s = name;
-		for(String col : fields) {
+
+		for (String col : fields)
 			s += " " + col;
-		}
+
 		return s;
 	}
 }

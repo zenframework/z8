@@ -1,7 +1,7 @@
 package org.zenframework.z8.server.db.generator;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 
 public class Column {
 	public String name;
@@ -10,6 +10,8 @@ public class Column {
 	public int scale;
 	public boolean nullable;
 	public String defaultValue;
+
+	private int controlSum = 0;
 
 	public Column(String name, String type, int size, int scale, boolean nullable, String defaultValue) {
 		this.name = name;
@@ -30,10 +32,16 @@ public class Column {
 	}
 
 	public int controlSum() {
-		return Math.abs((name + " " + fieldType().vendorSqlType(DatabaseVendor.Postgres, size, scale)).hashCode());
+		if (controlSum == 0)
+			controlSum = calculateControlSum();
+		return controlSum;
 	}
 
 	public String controlData() {
-		return name + " " + fieldType().vendorSqlType(DatabaseVendor.Postgres, size, scale);
+		return name + " " + DatabaseDialect.Default.formatSqlType(fieldType(), size, scale);
+	}
+
+	protected int calculateControlSum() {
+		return Math.abs(controlData().hashCode());
 	}
 }

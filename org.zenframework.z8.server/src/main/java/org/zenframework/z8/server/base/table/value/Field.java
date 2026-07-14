@@ -225,8 +225,8 @@ abstract public class Field extends Control implements IField {
 	public String format(DatabaseVendor vendor, FormatOptions options) {
 		String alias = options.getFieldAlias(this);
 
-		if(alias == null)
-			return owner().getAlias() + '.' + vendor.quote(name());
+		if (alias == null)
+			return owner().getAlias() + '.' + vendor.dialect().quote(name());
 
 		return alias;
 	}
@@ -315,7 +315,7 @@ abstract public class Field extends Control implements IField {
 
 	@Override
 	public String sqlType(DatabaseVendor vendor) {
-		return type().vendorSqlType(vendor);
+		return vendor.dialect().formatSqlType(type());
 	}
 
 	@Override
@@ -327,6 +327,7 @@ abstract public class Field extends Control implements IField {
 		return width != null ? width.getInt() : 0;
 	}
 
+	@Override
 	public boolean indexed() {
 		return indexed != null ? indexed.get() : false;
 	}
@@ -335,6 +336,7 @@ abstract public class Field extends Control implements IField {
 		return trigram != null ? trigram.get() : false;
 	}
 
+	@Override
 	public boolean unique() {
 		return unique != null ? unique.get() : false;
 	}
@@ -639,9 +641,8 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
-	public int controlSum() {
-		String name = name() + " " + sqlType(DatabaseVendor.Postgres);
-		return Math.abs(name.hashCode());
+	protected int calculateControlSum() {
+		return Math.abs(controlData().hashCode());
 	}
 
 	public String controlData() {

@@ -14,15 +14,15 @@ public class Insert extends DmlStatement {
 	static public Insert create(Query query, Collection<Field> fields) {
 		Connection connection = query.getConnection();
 		IDatabase database = connection.database();
-		DatabaseVendor vendor = database.vendor();
 
 		String insertFields = "";
 		String insertValues = "";
 
-		for(Field field : fields) {
-			if(field.isExpression())
+		for (Field field : fields) {
+			if (field.isExpression())
 				continue;
-			insertFields += (insertFields.isEmpty() ? "" : ", ") + vendor.quote(field.name());
+
+			insertFields += (insertFields.isEmpty() ? "" : ", ") + connection.dialect().quote(field.name());
 			insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
 		}
 

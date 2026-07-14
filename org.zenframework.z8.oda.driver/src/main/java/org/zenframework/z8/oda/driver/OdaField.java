@@ -285,6 +285,16 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public boolean indexed() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean unique() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public primary getDefaultValue() {
 		throw new UnsupportedOperationException();
 	}

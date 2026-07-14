@@ -1,7 +1,6 @@
 package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.base.query.Query;
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.json.Json;
@@ -40,16 +39,6 @@ public class TextField extends StringField {
 	@Override
 	public FieldType metaType() {
 		return bool.True.equals(singleLine) ? FieldType.String : super.metaType();
-	}
-
-	@Override
-	public String sqlType(DatabaseVendor vendor) {
-		String name = type().vendorType(vendor);
-
-		if(vendor == DatabaseVendor.SqlServer)
-			return name + "(MAX)";
-
-		return name;
 	}
 
 	@Override

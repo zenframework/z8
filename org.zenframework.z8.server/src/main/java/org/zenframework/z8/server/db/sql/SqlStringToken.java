@@ -17,8 +17,7 @@ public class SqlStringToken extends SqlToken {
 	}
 
 	@Override
-	public void collectFields(Collection<IField> fields) {
-	}
+	public void collectFields(Collection<IField> fields) {}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
@@ -27,6 +26,6 @@ public class SqlStringToken extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return type; //FieldType.Null;
+		return type; // FieldType.Null;
 	}
 }

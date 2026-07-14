@@ -14,6 +14,7 @@ import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class EntriesGenerator {
 	@SuppressWarnings("unused")
@@ -30,42 +31,45 @@ public class EntriesGenerator {
 	}
 
 	public void run() {
-		Connection connection = ConnectionManager.get();
+		Connection connection = null;
 
 		try {
+			connection = ConnectionManager.get();
 			connection.beginTransaction();
-			writeEntries();
+			dropEntries();
+			createEntries();
 			connection.commit();
 		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
+			if (connection != null)
+				connection.rollback();
+			logger.error(e, ErrorUtils.getMessage(e));
 		} finally {
-			connection.release();
+			if (connection != null)
+				connection.release();
 		}
 	}
 
-	private void writeEntries() {
+	private void dropEntries() {
 		entries.read(Arrays.asList(entries.primaryKey()), entries.primaryKey().notInVector(entryKeys));
 
-		while(entries.next()) {
+		while (entries.next()) {
 			guid entry = entries.recordId();
 			userEntries.destroy(new Equ(userEntries.entry.get(), entry));
 			entries.destroy(entry);
 		}
-
-		createEntries();
 	}
 
 	private void createEntries() {
 		entries.read(Arrays.asList(entries.primaryKey()), entries.primaryKey().inVector(entryKeys));
-		while(entries.next()) {
+
+		while (entries.next()) {
 			guid entry = entries.recordId();
 			setEntryProperties(Runtime.instance().getEntryByKey(entry).newInstance());
 			entries.update(entry);
 			entryKeys.remove(entry);
 		}
 
-		for(guid key : entryKeys) {
+		for (guid key : entryKeys) {
 			setEntryProperties(Runtime.instance().getEntryByKey(key).newInstance());
 			entries.create(key);
 		}

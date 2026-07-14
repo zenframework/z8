@@ -11,9 +11,9 @@ public class CallStatement extends Statement {
 	private Collection<primary> parameters;
 
 	static public CallStatement create(Connection connection, String name, Collection<primary> parameters) {
-		String sql = "{ call " + connection.vendor().quote(name) + "(";
+		String sql = "{ call " + connection.dialect().quote(name) + "(";
 
-		for(int i = 0; i < parameters.size(); i++)
+		for (int i = 0; i < parameters.size(); i++)
 			sql += (i != 0 ? ", " : "") + "?";
 
 		sql += ")}";

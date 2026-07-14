@@ -37,6 +37,8 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	private CLASS<? extends OBJECT> cls = null;
+	private int controlSum;
+
 	public Members objects = new Members(this);
 
 	public OBJECT() {
@@ -53,8 +55,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	@Override
-	public int controlSum() {
-		return Math.abs(classId().hashCode());
+	public final int controlSum() {
+		if (controlSum == 0)
+			controlSum = calculateControlSum();
+		return controlSum;
 	}
 
 	@Override
@@ -365,6 +369,10 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	@Override
 	public void deserialize(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	}
+
+	protected int calculateControlSum() {
+		return Math.abs(classId().hashCode());
 	}
 
 	static public User.CLASS<? extends User> z8_user() {
