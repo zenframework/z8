@@ -1,62 +1,42 @@
 package org.zenframework.z8.server.db;
 
-import org.zenframework.z8.server.utils.StringUtils;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
+import org.zenframework.z8.server.db.dialect.H2Dialect;
+import org.zenframework.z8.server.db.dialect.OracleDialect;
+import org.zenframework.z8.server.db.dialect.PostgresDialect;
+import org.zenframework.z8.server.db.dialect.SqlServerDialect;
 
 public enum DatabaseVendor {
-	Oracle(names.Oracle),
-	SqlServer(names.SqlServer),
-	Postgres(names.Postgres),
-	H2(names.H2);
+	Oracle(new OracleDialect()),
+	SqlServer(new SqlServerDialect()),
+	Postgres(new PostgresDialect()),
+	H2(new H2Dialect());
 
-	class names {
-		static protected final String Oracle = "Oracle";
-		static protected final String SqlServer = "SqlServer";
-		static protected final String Postgres = "Postgres";
-		static protected final String H2 = "H2";
+	private final DatabaseDialect dialect;
+
+	private DatabaseVendor(DatabaseDialect dialect) {
+		this.dialect = dialect;
 	}
 
-	private String fName = null;
-
-	DatabaseVendor(String name) {
-		fName = name;
+	public DatabaseDialect dialect() {
+		return dialect;
 	}
 
-	@Override
-	public String toString() {
-		return fName;
-	}
-
-	public static DatabaseVendor fromString(String string) {
-		if(string == null)
+	public static DatabaseVendor fromString(String name) {
+		if (name == null)
 			return DatabaseVendor.Postgres;
 
-		string = string.toUpperCase();
+		name = name.toUpperCase();
 
-		if(string.contains(names.Oracle.toUpperCase()))
+		if (name.contains(OracleDialect.Name.toUpperCase()))
 			return DatabaseVendor.Oracle;
-		else if(string.contains(names.SqlServer.toUpperCase()))
+		else if (name.contains(SqlServerDialect.Name.toUpperCase()))
 			return DatabaseVendor.SqlServer;
-		else if(string.contains(names.Postgres.toUpperCase()))
+		else if (name.contains(PostgresDialect.Name.toUpperCase()))
 			return DatabaseVendor.Postgres;
-		else if(string.contains(names.H2.toUpperCase()))
+		else if (name.contains(H2Dialect.Name.toUpperCase()))
 			return DatabaseVendor.H2;
 		else
 			return DatabaseVendor.Postgres;
-	}
-
-	public String sqlName(String name) {
-		return this == Oracle && name.length() > 15 ? StringUtils.translit(name, 30) : name;
-	}
-
-	public String quote(String name) {
-		return quoteOpen() + sqlName(name) + quoteClose();
-	}
-
-	private char quoteOpen() {
-		return this == Oracle || this == Postgres || this == H2 ? '"' : '[';
-	}
-
-	private char quoteClose() {
-		return this == Oracle || this == Postgres || this == H2 ? '"' : ']';
 	}
 }

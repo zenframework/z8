@@ -70,13 +70,8 @@ public final class bool extends primary {
 	}
 
 	@Override
-	public String toDbConstant(DatabaseVendor dbtype) {
-		switch(dbtype) {
-		case SqlServer:
-			return toNumber();
-		default:
-			return toNumber();
-		}
+	public String toDbConstant(DatabaseVendor vendor) {
+		return toNumber();
 	}
 
 	@Override

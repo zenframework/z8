@@ -65,10 +65,10 @@ public class SchemaGenerator extends Executable {
 
 			z8_beforeStart();
 
-			new Generator(logger).run();
+			new Generator(database, logger).run();
 
 			z8_afterFinish();
-		} catch(Throwable e) {
+		} catch (Throwable e) {
 			logger.error(e);
 		} finally {
 			ApplicationServer.restoreEventsLevel();

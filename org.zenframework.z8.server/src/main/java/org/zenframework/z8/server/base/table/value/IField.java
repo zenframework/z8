@@ -16,6 +16,9 @@ public interface IField extends IObject {
 	public int size();
 	public int scale();
 
+	public boolean indexed();
+	public boolean unique();
+
 	public primary getDefaultValue();
 
 	public primary get();

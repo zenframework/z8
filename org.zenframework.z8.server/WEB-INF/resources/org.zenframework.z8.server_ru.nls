@@ -270,7 +270,7 @@
 	<entry key="Generator.dropTableError">Ошибка. Таблица ''{0}'' - удаление  не выполнено. {1}</entry>
 	<entry key="Generator.dropForeignKeyError">Ошибка. Таблица ''{0}'' - удаление внешнего ключа {1} закончилось неудачей. {2}</entry>
 	<entry key="Generator.dropIndexError">Ошибка. Таблица ''{0}'' - удаление индекса {1} закончилось неудачей. {2}</entry>
-	<entry key="Generator.createForeignKeyError">Ошибка. Таблица ''{0}''({1}) - создание внешнего ключа на таблицу ''{2}''({3}) закончилось неудачей. {4}</entry>
+	<entry key="Generator.createForeignKeyError">Ошибка. Таблица ''{0}'' - создание внешнего ключа на таблицу ''{1}'' закончилось неудачей. {2}</entry>
 	<entry key="Generator.createUniqueIndexError">Ошибка. Таблица "{1}"({2}) - создание уникального индекса "{0}" не выполнено. {3}</entry>
 	<entry key="Generator.createIndexError">Ошибка. Таблица ''{1}''({2}) - создание индекса ''{0}'' не выполнено. {3}</entry>
 	<entry key="Generator.insertRecordsError">Изменение записи, ключ {0} в таблице ''{1}''({2}), закончилось неудачей. {3}</entry>

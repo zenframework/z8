@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.base.table.system.Users;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.SelectStatement;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
@@ -40,7 +41,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	private boolean external = false;
 
-	private DatabaseVendor vendor = DatabaseVendor.SqlServer;
+	private DatabaseVendor vendor;
 
 	static private Map<IDatabase, Object> locks = new HashMap<IDatabase, Object>();
 	static private Map<String, IDatabase> databases = new HashMap<String, IDatabase>();
@@ -128,6 +129,11 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 	}
 
 	@Override
+	public DatabaseDialect dialect() {
+		return vendor.dialect();
+	}
+
+	@Override
 	public String schema() {
 		return schema;
 	}
@@ -183,7 +189,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public String tableName(String name) {
-		return vendor.quote(schema()) + "." + vendor.quote(name);
+		return dialect().formatTableName(this, name);
 	}
 
 	@Override
@@ -238,20 +244,16 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public void renameTable(String tableName, String newTableName) {
-		DatabaseVendor vendor = vendor();
-
-		String sql = "alter table if exists " + tableName(tableName) + " rename to " + vendor.quote(newTableName);
+		String sql = "alter table if exists " + tableName(tableName) + " rename to " + dialect().quote(newTableName);
 		ConnectionManager.get().execute(sql);
 	}
 
 	@Override
 	public void renameField(String tableName, String fieldName, String newFieldName) {
-		DatabaseVendor vendor = vendor();
-
-		if(!fieldExists(tableName, fieldName))
+		if (!fieldExists(tableName, fieldName))
 			return;
 
-		String sql = "alter table " + tableName(tableName) + " rename column " + vendor.quote(fieldName) + " to " + vendor.quote(newFieldName);
+		String sql = "alter table " + tableName(tableName) + " rename column " + dialect().quote(fieldName) + " to " + dialect().quote(newFieldName);
 		ConnectionManager.get().execute(sql);
 	}
 
@@ -263,7 +265,7 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public boolean isSystemInstalled() {
-		if(isSystemInstalled)
+		if (isSystemInstalled)
 			return isSystemInstalled;
 
 		return isSystemInstalled = tableExists(Users.TableName);
@@ -271,11 +273,11 @@ public class Database implements IDatabase, RmiSerializable, Serializable {
 
 	@Override
 	public boolean isLatestVersion() {
-		if(!isSystemInstalled())
-			return false;
-
-		if(isLatestVersion)
+		if (isLatestVersion)
 			return isLatestVersion;
+
+		if (!isSystemInstalled())
+			return false;
 
 		String version = Runtime.version().getVersion();
 		String currentVersion = Settings.version();

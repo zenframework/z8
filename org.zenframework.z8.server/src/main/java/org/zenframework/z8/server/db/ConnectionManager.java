@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IDatabase;
 
@@ -18,6 +19,10 @@ public class ConnectionManager {
 
 	public static DatabaseVendor vendor() {
 		return database().vendor();
+	}
+
+	public static DatabaseDialect dialect() {
+		return database().dialect();
 	}
 
 	public static Connection get() {

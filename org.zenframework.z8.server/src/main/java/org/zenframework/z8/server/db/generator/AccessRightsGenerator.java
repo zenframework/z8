@@ -28,6 +28,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class AccessRightsGenerator {
 	private Tables tables = new Tables.CLASS<Tables>().get();
@@ -52,9 +53,10 @@ public class AccessRightsGenerator {
 	}
 
 	public void run() {
-		Connection connection = ConnectionManager.get();
+		Connection connection = null;
 
 		try {
+			connection = ConnectionManager.get();
 			connection.beginTransaction();
 
 			clearTables();
@@ -65,10 +67,12 @@ public class AccessRightsGenerator {
 
 			connection.commit();
 		} catch(Throwable e) {
-			connection.rollback();
-			throw new RuntimeException(e);
+			if (connection != null)
+				connection.rollback();
+			logger.error(e, ErrorUtils.getMessage(e));
 		} finally {
-			connection.release();
+			if (connection != null)
+				connection.release();
 		}
 	}
 
@@ -86,7 +90,8 @@ public class AccessRightsGenerator {
 
 	private void createTables() {
 		tables.read(Arrays.asList(tables.primaryKey()), tables.primaryKey().inVector(tableKeys));
-		while(tables.next()) {
+
+		while (tables.next()) {
 			guid tableId = tables.recordId();
 			Table table = Runtime.instance().getTableByKey(tableId).newInstance();
 			setTableProperties(table);
@@ -96,14 +101,14 @@ public class AccessRightsGenerator {
 			tableKeys.remove(tableId);
 		}
 
-		for(guid key : tableKeys) {
+		for (guid key : tableKeys) {
 			Table table = Runtime.instance().getTableByKey(key).newInstance();
 			setTableProperties(table);
 			tables.create(key);
 
 			createFields(table);
 
-			for(IRole role : getRoles()) {
+			for (IRole role : getRoles()) {
 				IAccess access = role.access();
 
 				rta.role.get().set(role.id());
@@ -122,7 +127,7 @@ public class AccessRightsGenerator {
 	private void clearRequests() {
 		requests.read(Arrays.asList(requests.primaryKey()), requests.primaryKey().notInVector(requestKeys));
 
-		while(requests.next()) {
+		while (requests.next()) {
 			guid requestId = requests.recordId();
 			rra.destroy(new Equ(rra.request.get(), requestId));
 			requests.destroy(requestId);
@@ -131,7 +136,8 @@ public class AccessRightsGenerator {
 
 	private void createRequests() {
 		requests.read(Arrays.asList(requests.primaryKey()), requests.primaryKey().inVector(requestKeys));
-		while(requests.next()) {
+
+		while (requests.next()) {
 			guid requestId = requests.recordId();
 			OBJECT request = Runtime.instance().getRequestByKey(requestId).newInstance();
 			setRequestProperties(request);
@@ -139,12 +145,12 @@ public class AccessRightsGenerator {
 			requestKeys.remove(requestId);
 		}
 
-		for(guid key : requestKeys) {
+		for (guid key : requestKeys) {
 			OBJECT request = Runtime.instance().getRequestByKey(key).newInstance();
 			setRequestProperties(request);
 			requests.create(key);
 
-			for(IRole role : getRoles()) {
+			for (IRole role : getRoles()) {
 				IAccess access = role.access();
 
 				rra.role.get().set(role.id());
@@ -163,7 +169,7 @@ public class AccessRightsGenerator {
 		fields.read(Arrays.asList(fields.primaryKey()),
 				new And(new Equ(fields.table.get(), table.key()), fields.primaryKey().notInVector(fieldKeys)));
 
-		while(fields.next()) {
+		while (fields.next()) {
 			guid fieldId = fields.recordId();
 			rfa.destroy(new Equ(rfa.field.get(), fieldId));
 			fields.destroy(fieldId);
@@ -177,7 +183,8 @@ public class AccessRightsGenerator {
 		Collection<guid> fieldKeys = new HashSet<guid>(fieldsMap.keySet());
 
 		fields.read(Arrays.asList(fields.primaryKey()), fields.primaryKey().inVector(fieldKeys));
-		while(fields.next()) {
+
+		while (fields.next()) {
 			guid fieldId = fields.recordId();
 			setFieldProperties(fieldsMap.get(fieldId), table.key());
 			fields.update(fieldId);
@@ -185,10 +192,10 @@ public class AccessRightsGenerator {
 			fieldKeys.remove(fieldId);
 		}
 
-		for(guid key : fieldKeys) {
+		for (guid key : fieldKeys) {
 			setFieldProperties(fieldsMap.get(key), table.key());
 			fields.create(key);
-			for(IRole role : getRoles()) {
+			for (IRole role : getRoles()) {
 				IAccess access = role.access();
 
 				rfa.role.get().set(role.id());
@@ -226,7 +233,7 @@ public class AccessRightsGenerator {
 	}
 
 	private Collection<IRole> getRoles() {
-		if(roles == null) {
+		if (roles == null) {
 			Roles rolesTable = new Roles.CLASS<Roles>(null).get();
 			roles = rolesTable.get();
 		}
@@ -236,7 +243,7 @@ public class AccessRightsGenerator {
 	private String displayName(Field field) {
 		String name = field.displayName();
 
-		if(name != null && !name.isEmpty())
+		if (name != null && !name.isEmpty())
 			return name;
 
 		name = field.name();

@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.functions.InVector;
+import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
@@ -138,6 +139,9 @@ public class Settings extends TreeTable {
 	}
 
 	static private String get(guid property) {
+		if (!ApplicationServer.getUser().database().isSystemInstalled())
+			return null;
+
 		try {
 			Settings settings = new Settings.CLASS<Settings>().get();
 			Field value = settings.value.get();
