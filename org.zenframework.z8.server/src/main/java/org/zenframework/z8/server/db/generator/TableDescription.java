@@ -46,7 +46,7 @@ public class TableDescription {
 	}
 
 	public void addField(Column field) {
-		columns.put(field.name, field);
+		columns.put(field.getName(), field);
 	}
 
 	public void setPrimaryKey(PrimaryKey primaryKey) {
@@ -54,7 +54,7 @@ public class TableDescription {
 	}
 
 	public void addIndex(Index index) {
-		indexes.put(index.name, index);
+		indexes.put(index.getName(), index);
 	}
 
 	public void addForeignKey(ForeignKey foreignKey) {

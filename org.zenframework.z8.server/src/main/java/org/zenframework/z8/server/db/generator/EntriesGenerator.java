@@ -17,7 +17,6 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class EntriesGenerator {
-	@SuppressWarnings("unused")
 	private ILogger logger;
 
 	private Entries entries = new Entries.CLASS<Entries>().get();

@@ -104,7 +104,7 @@ public class DataSchema {
 				Index index = table.getIndex(indexName);
 
 				if (index == null)
-					table.addIndex(new Index(tableName, column, indexName, unique, true));
+					table.addIndex(new Index(tableName, column, indexName, unique));
 				else
 					index.addField(column);
 			}

@@ -55,7 +55,7 @@ public abstract class DatabaseDialect {
 	}
 
 	public String getCreateIndex(IDatabase database, Index index) {
-		return "create " + (index.unique ? "unique " : "") + "index " + quote(index.name) + " on " + formatTableName(database, index.tableName) + " " + formatIndexField(index);
+		return "create " + (index.isUnique() ? "unique " : "") + "index " + quote(index.getName()) + " on " + formatTableName(database, index.getTableName()) + " " + formatIndexField(index);
 	}
 
 	public String getDropIndex(IDatabase database, String tableName, String indexName) throws SQLException {
@@ -63,7 +63,7 @@ public abstract class DatabaseDialect {
 	}
 
 	public String getCreatePrimaryKey(IDatabase database, PrimaryKey primaryKey) {
-		return "ALTER TABLE " + formatTableName(database, primaryKey.tableName) + " ADD PRIMARY KEY(" + StringUtils.join(quote(primaryKey.getFields()), ", ") + ")";
+		return "ALTER TABLE " + formatTableName(database, primaryKey.getTableName()) + " ADD PRIMARY KEY(" + StringUtils.join(quote(primaryKey.getFields()), ", ") + ")";
 	}
 
 	public String getCreateForeignKey(IDatabase database, ForeignKey foreignKey) {
@@ -151,7 +151,7 @@ public abstract class DatabaseDialect {
 	}
 
 	public String formatIndexField(Index index) {
-		String fieldName = quote(index.fields.get(0));
+		String fieldName = quote(index.getField());
 		switch(index.fieldType()) {
 		case String:
 			boolean trigram = index.trigram();

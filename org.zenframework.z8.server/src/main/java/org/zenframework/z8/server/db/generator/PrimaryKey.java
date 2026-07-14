@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PrimaryKey {
-	public final String name;
-	public final String tableName;
-
+	private final String name;
+	private final String tableName;
 	private final Collection<String> fields = new ArrayList<String>();
 
 	PrimaryKey(String name, String tableName, String fieldName) {
@@ -21,6 +20,14 @@ public class PrimaryKey {
 
 	public Collection<String> getFields() {
 		return fields;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getTableName() {
+		return tableName;
 	}
 
 	@Override

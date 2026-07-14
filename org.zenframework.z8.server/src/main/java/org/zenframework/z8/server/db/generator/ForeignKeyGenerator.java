@@ -10,7 +10,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class ForeignKeyGenerator {
-
 	private final IDatabase database;
 	private final ForeignKey foreignKey;
 	private final GeneratorAction action;

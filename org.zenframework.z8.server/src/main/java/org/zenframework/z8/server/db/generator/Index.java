@@ -15,24 +15,21 @@ public class Index {
 	public static final String Trigram = "trigram";
 	public static final String CaseInsensitive = "caseInsensitive";
 
-	public final String name;
-	public final String tableName;
-	public final List<String> fields = new ArrayList<String>();
-	public final Map<String, Object> properties = new HashMap<String, Object>();
-	public final boolean unique;
+	private final String name;
+	private final String tableName;
+	private final List<String> fields = new ArrayList<String>();
+	private final Map<String, Object> properties = new HashMap<String, Object>();
+	private final boolean unique;
 
-	private boolean exists;
-
-	public Index(String tableName, String fieldName, String name, boolean unique, boolean exists) {
+	public Index(String tableName, String fieldName, String name, boolean unique) {
 		this.tableName = tableName;
 		this.fields.add(fieldName);
 		this.name = name;
 		this.unique = unique;
-		this.exists = exists;
 	}
 
-	public Index(String tableName, IField field, int index, boolean exists) {
-		this(tableName, field.name(), (field.unique() ? "Unq" : "Idx") + index + tableName, field.unique(), exists);
+	public Index(String tableName, IField field, int index) {
+		this(tableName, field.name(), (field.unique() ? "Unq" : "Idx") + index + tableName, field.unique());
 		properties.put(Type, field.type());
 		properties.put(Trigram, ((Field) field).trigram());
 		properties.put(CaseInsensitive, ((Field) field).caseInsensitive());
@@ -42,12 +39,24 @@ public class Index {
 		fields.add(field);
 	}
 
-	public boolean isExists() {
-		return exists;
+	public String getField() {
+		return fields.get(0);
 	}
 
-	public void setExists(boolean exists) {
-		this.exists = exists;
+	public String getName() {
+		return name;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	public boolean isUnique() {
+		return unique;
 	}
 
 	@SuppressWarnings("unchecked")

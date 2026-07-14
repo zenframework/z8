@@ -124,7 +124,7 @@ public class TableGenerator {
 
 		for (IField field : table.getIndexedFields()) {
 			try {
-				Index index = new Index(table.name(), field, i++, false);
+				Index index = new Index(table.name(), field, i++);
 				DmlStatement.execute(database.dialect().getCreateIndex(database, index));
 				debug("create index " + index);
 			} catch(SQLException e) {
@@ -139,11 +139,11 @@ public class TableGenerator {
 
 		for (Index index : dbTable.getIndexes().values()) {
 			try {
-				DmlStatement.execute(database.dialect().getDropIndex(database, index.tableName, index.name));
+				DmlStatement.execute(database.dialect().getDropIndex(database, index.getTableName(), index.getName()));
 				debug("drop index " + index);
 			} catch(ObjectNotFoundException e) {
 			} catch(SQLException e) {
-				logger.error(e, Resources.format("Generator.dropIndexError", index.tableName, index.name, ErrorUtils.getMessage(e)));
+				logger.error(e, Resources.format("Generator.dropIndexError", index.getTableName(), index.getName(), ErrorUtils.getMessage(e)));
 			}
 		}
 	}
@@ -217,15 +217,15 @@ public class TableGenerator {
 
 			if (type == FieldType.Guid)
 				name = new If(new IsNull(field), guid.Null.sql_guid(), new SqlField(field)).format(vendor, options);
-			else if (postgres && dbField.type.equals("uuid") && type == FieldType.Integer)
+			else if (postgres && dbField.getType().equals("uuid") && type == FieldType.Integer)
 				name = "null";
-			else if (postgres && dbField.type.startsWith("character") && type == FieldType.Text)
+			else if (postgres && dbField.getType().startsWith("character") && type == FieldType.Text)
 				name = new ToBytes(field).format(vendor, options);
-			else if (postgres && dbField.type.startsWith("bytea") && type == FieldType.String)
+			else if (postgres && dbField.getType().startsWith("bytea") && type == FieldType.String)
 				name = new ToString(field).format(vendor, options);
-			else if (oracle && (dbField.type.startsWith("BLOB") || dbField.type.startsWith("NCLOB")))
+			else if (oracle && (dbField.getType().startsWith("BLOB") || dbField.getType().startsWith("NCLOB")))
 				name = "null";
-			else if (postgres && dbField.type.startsWith("timestamp") && (type == FieldType.Date || type == FieldType.Datetime)) {
+			else if (postgres && dbField.getType().startsWith("timestamp") && (type == FieldType.Date || type == FieldType.Datetime)) {
 				SqlToken condition = new Rel(field, Operation.LT, new SqlStringToken("'1900-01-01 00:00:00'", FieldType.Datetime));
 				SqlToken yes = new sql_integer(date.UtcMin);
 				SqlToken no = new SqlStringToken("extract(epoch from " + new SqlField(field).format(vendor, options) + ") * 1000", FieldType.Integer);

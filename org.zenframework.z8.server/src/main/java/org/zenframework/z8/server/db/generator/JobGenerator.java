@@ -20,7 +20,6 @@ import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class JobGenerator {
-	@SuppressWarnings("unused")
 	private ILogger logger;
 
 	private Jobs jobs = new Jobs.CLASS<Jobs>().get();
