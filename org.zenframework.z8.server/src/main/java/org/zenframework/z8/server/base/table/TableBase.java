@@ -9,7 +9,6 @@ import java.util.Map;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
-import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -48,19 +47,21 @@ public class TableBase extends Query implements ITable {
 	@Override
 	public Collection<IForeignKey> getForeignKeys() {
 		LinkedHashSet<IForeignKey> foreignKeys = new LinkedHashSet<IForeignKey>();
-		for(OBJECT.CLASS<? extends OBJECT> link : getLinks()) {
-			if(link.instanceOf(IForeignKey.class) && link.foreignKey())
-				foreignKeys.add((IForeignKey)link.get());
+
+		for (OBJECT.CLASS<? extends OBJECT> link : getLinks()) {
+			if (link.instanceOf(IForeignKey.class) && link.foreignKey())
+				foreignKeys.add((IForeignKey) link.get());
 		}
+
 		return foreignKeys;
 	}
 
 	@Override
-	public Collection<IField> getIndices() {
+	public Collection<IField> getIndexedFields() {
 		List<IField> result = new ArrayList<IField>();
 
-		for(Field field : getDataFields()) {
-			if(field.indexed() && !field.unique())
+		for (Field field : getDataFields()) {
+			if (field.indexed() || field.unique())
 				result.add(field);
 		}
 
@@ -68,20 +69,7 @@ public class TableBase extends Query implements ITable {
 	}
 
 	@Override
-	public Collection<IField> getUniqueIndices() {
-		List<IField> result = new ArrayList<IField>();
-
-		for(Field field : getDataFields()) {
-			if(field.unique() && !(field instanceof Link))
-				result.add(field);
-		}
-
-		return result;
-	}
-
-	@Override
-	public void initStaticRecords() {
-	}
+	public void initStaticRecords() {}
 
 	public void addRecord(guid key, Map<IField, primary> values) {
 		for(Map<IField, primary> record : staticRecords) {

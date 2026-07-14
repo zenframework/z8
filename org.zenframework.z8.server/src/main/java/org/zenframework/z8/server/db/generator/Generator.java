@@ -1,120 +1,109 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.Settings;
 import org.zenframework.z8.server.db.ConnectionManager;
-import org.zenframework.z8.server.db.DatabaseVendor;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.engine.Version;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.guid;
-import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Generator {
 	public static final String SchemaGenerateLock = "SchemaGenerate";
 
-	private ILogger logger;
+	private IDatabase database;
 	private Collection<Table.CLASS<Table>> tables;
+	private ILogger logger;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Generator(ILogger logger) {
+	public Generator(IDatabase database, ILogger logger) {
+		this.database = database;
+		this.tables = (Collection) Runtime.instance().tables();
 		this.logger = logger;
-		tables = (Collection)Runtime.instance().tables();
 	}
 
-	public void run() throws SQLException {
-		run(DataSchema.getTables("%"));
-	}
-
-	private void run(Map<String, TableDescription> existingTables) {
-		List<TableGenerator> generators = getTableGenerators(existingTables);
+	public void run() {
+		IDatabase database = ConnectionManager.database();
+		Collection<TableGenerator> tables = getChangedTableGenerators(database, new DataSchema().initialize());
+		Collection<ForeignKeyGenerator> foreignKeys = getChangedForeignKeyGenerators(database, tables);
 
 		logger.progress(0);
 
-		int total = 5 * generators.size();
-		float progress = 0.0f;
+		int total = 5 * tables.size() + 2 * foreignKeys.size() + 3;
+		int progress = 0;
 
-		debug("drop keys");
+		debug("drop foreign keys");
 
-		for(TableGenerator generator : generators) {
-			generator.dropAllKeys();
-			logger.progress(Math.round(++progress / total * 100));
+		for (ForeignKeyGenerator generator : foreignKeys) {
+			generator.drop();
+			logger.progress(++progress * 100 / total);
+		}
+
+		debug("drop indexes");
+
+		for (TableGenerator generator : tables) {
+			generator.dropIndexes();
+			logger.progress(++progress * 100 / total);
 		}
 
 		debug("generate tables");
 
-		for(TableGenerator generator : generators) {
-			String name = generator.name();
-			int dbControlSum = generator.getTableDescription().controlSum();
-			int clsControlSum = generator.table().controlSum();
-
-			if (dbControlSum != clsControlSum) {
-				debug(name + " control sum " + dbControlSum + " != " + clsControlSum + ", generating");
-				debug(name + "(DB)  " + generator.getTableDescription().controlData());
-				debug(name + "(CLS) " + generator.table().controlData());
-				generator.create();
-			} else {
-				debug(name + " control sum unchanged, skipped");
-			}
-
-			logger.progress(Math.round(++progress / total * 100));
+		for (TableGenerator generator : tables) {
+			generator.create();
+			logger.progress(++progress * 100 / total);
 			ConnectionManager.release();
 		}
 
 		debug("create records");
 
-		for(TableGenerator generator : generators) {
+		for (TableGenerator generator : tables) {
 			generator.createRecords();
-			logger.progress(Math.round(++progress / total * 100));
+			logger.progress(++progress * 100 / total);
 			ConnectionManager.release();
 		}
 
 		debug("create primary keys");
 
-		for(TableGenerator generator : generators) {
+		for (TableGenerator generator : tables) {
 			generator.createPrimaryKey();
-			logger.progress(Math.round(++progress / total * 100));
+			logger.progress(++progress * 100 / total);
 		}
 
 		debug("create entries");
 
-		try {
-			new EntriesGenerator(logger).run();
-		} catch(Throwable e) {
-			logger.error(e, ErrorUtils.getMessage(e));
-		}
+		new EntriesGenerator(logger).run();
+		logger.progress(++progress * 100 / total);
 
-		debug("Create jobs");
+		debug("create jobs");
 
-		try {
-			new JobGenerator(logger).run();
-		} catch(Throwable e) {
-			logger.error(e, ErrorUtils.getMessage(e));
-		}
+		new JobGenerator(logger).run();
+		logger.progress(++progress * 100 / total);
 
 		debug("create access rights");
 
-		try {
-			new AccessRightsGenerator(logger).run();
-		} catch(Throwable e) {
-			logger.error(e, ErrorUtils.getMessage(e));
+		new AccessRightsGenerator(logger).run();
+		logger.progress(++progress * 100 / total);
+
+		debug("create indexes");
+
+		for (TableGenerator generator : tables) {
+			generator.createIndexes();
+			logger.progress(++progress * 100 / total);
 		}
 
 		debug("create foreign keys");
 
-		for(TableGenerator generator : generators) {
-			try {
-				generator.createForeignKeys();
-			} catch(Throwable e) {
-				logger.error(e, ErrorUtils.getMessage(e));
-			}
-			logger.progress(Math.round(++progress / total * 100));
+		for (ForeignKeyGenerator generator : foreignKeys) {
+			generator.create();
+			logger.progress(++progress * 100 / total);
 		}
 
 		Version version = Runtime.version();
@@ -125,28 +114,68 @@ public class Generator {
 		logger.progress(100);
 	}
 
-	private List<TableGenerator> getTableGenerators(Map<String, TableDescription> existingTables) {
-		List<TableGenerator> generators = new ArrayList<TableGenerator>();
+	private Collection<TableGenerator> getChangedTableGenerators(IDatabase database, DataSchema dataSchema) {
+		Map<String, TableDescription> existingTables = dataSchema.getTables();
+		Collection<TableGenerator> generators = new ArrayList<TableGenerator>();
 
-		for(Table.CLASS<? extends Table> table : tables) {
-			GeneratorAction action;
+		for (Table.CLASS<? extends Table> tableClass : tables) {
+			TableDescription description = existingTables.get(database.dialect().formatSqlName(tableClass.name()));
+			Table table = tableClass.newInstance();
+			String name = tableClass.name();
 
-			DatabaseVendor vendor = ConnectionManager.get().vendor();
-			TableDescription description = existingTables.get(vendor.sqlName(table.name()));
-
-			if(description != null && description.isView())
-				continue;
-
-			if(description != null) {
-				action = GeneratorAction.Alter;
-				generators.add(new TableGenerator(table, action, description, logger));
+			if (description == null) {
+				generators.add(new TableGenerator(database, tableClass, GeneratorAction.Create, new TableDescription(name), logger));
+				debug(name + " doesn't exist, creating");
+			} else if (description.controlSum() == table.controlSum() || table.skipRecreation()) {
+				//generators.add(new TableGenerator(database, tableClass, GeneratorAction.Skip, description, logger));
+				//debug(name + " skipped");
 			} else {
-				action = GeneratorAction.Create;
-				generators.add(new TableGenerator(table, action, new TableDescription(table.name(), false), logger));
+				generators.add(new TableGenerator(database, tableClass, GeneratorAction.Recreate, description, logger));
+				debug(name + " control sum " + description.controlSum() + " != " + table.controlSum() + ", recreating");
+				//debug(name + "(DB)  " + description.controlData());
+				//debug(name + "(CLS) " + table.controlData());
 			}
 		}
 
 		return generators;
+	}
+
+	private Collection<ForeignKeyGenerator> getChangedForeignKeyGenerators(IDatabase database, Collection<TableGenerator> tables) {
+		Map<ForeignKey, ForeignKeyGenerator> generators = new HashMap<ForeignKey, ForeignKeyGenerator>();
+
+		for (TableGenerator generator : tables) {
+			if (generator.getAction() == GeneratorAction.Create || generator.getAction() == GeneratorAction.Recreate)
+				collectForeignKeyGenerators(generator, generators);
+		}
+
+		for (TableGenerator generator : tables) {
+			if (generator.getAction() == GeneratorAction.Create || generator.getAction() == GeneratorAction.Recreate)
+				collectRefererGenerators(generator, generators);
+		}
+
+		return generators.values();
+	}
+
+	private void collectForeignKeyGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
+		Set<ForeignKey> existingForeignKeys = new HashSet<ForeignKey>(table.dbTable().getForeignKeys());
+		int index = 0;
+
+		for (IForeignKey link : table.table().getForeignKeys()) {
+			ForeignKey foreignKey = new ForeignKey(table.table().name(), link, index++);
+			GeneratorAction action = existingForeignKeys.remove(foreignKey) ? GeneratorAction.Recreate : GeneratorAction.Create;
+			generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, action, logger));
+		}
+
+		for (ForeignKey foreignKey : existingForeignKeys)
+			generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, GeneratorAction.Drop, logger));
+	}
+
+	private void collectRefererGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
+		for (ForeignKey foreignKey : table.dbTable().getReferers()) {
+			ForeignKeyGenerator generator = generators.get(foreignKey);
+			if (generator == null)
+				generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, GeneratorAction.Recreate, logger));
+		}
 	}
 
 	private static void debug(String message) {

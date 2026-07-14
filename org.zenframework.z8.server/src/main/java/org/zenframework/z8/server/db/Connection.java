@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.datespan;
@@ -250,6 +251,10 @@ public class Connection {
 
 	public DatabaseVendor vendor() {
 		return database.vendor();
+	}
+
+	public DatabaseDialect dialect() {
+		return database.dialect();
 	}
 
 	private void checkAndReconnect(SQLException exception) throws SQLException {

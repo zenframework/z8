@@ -13,9 +13,8 @@ public class Delete extends DmlStatement {
 	static public Delete create(Query query, guid recordId) {
 		Connection connection = query.getConnection();
 		IDatabase database = connection.database();
-		DatabaseVendor vendor = database.vendor();
 
-		String sql = "delete from " + database.tableName(query.name()) + " where " + vendor.quote(query.primaryKey().name()) + "=?";
+		String sql = "delete from " + database.tableName(query.name()) + " where " + connection.dialect().quote(query.primaryKey().name()) + "=?";
 
 		Delete delete = (Delete)connection.getStatement(sql);
 		return delete != null ? delete.initialize(recordId) : new Delete(query.getConnection(), sql, Integer.MAX_VALUE - query.priority(), recordId);

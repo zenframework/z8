@@ -119,6 +119,11 @@ public class Table extends TableBase {
 		super.beforeUpdate(recordId);
 	}
 
+	public boolean skipRecreation() {
+		String generatorAttr = getAttribute("tableGenerator");
+		return generatorAttr != null && generatorAttr.equals("skipRecreation");
+	}
+
 	public Map<guid, Field> getFieldsMap() {
 		Map<guid, Field> map = new HashMap<guid, Field>();
 
@@ -129,13 +134,13 @@ public class Table extends TableBase {
 	}
 
 	@Override
-	public int controlSum() {
+	protected int calculateControlSum() {
 		int result = 0;
 
-		for(Field field : getPrimaryFields())
+		for (Field field : getPrimaryFields())
 			result += field.controlSum();
 /*
-		for(Map<IField, primary> record : getStaticRecords()) {
+		for (Map<IField, primary> record : getStaticRecords()) {
 			for(primary value : record.values())
 				result += Math.abs(value.hashCode());
 		}
@@ -145,11 +150,13 @@ public class Table extends TableBase {
 
 	public String controlData() {
 		StringBuilder str = new StringBuilder(1024);
-		for(Field field : getPrimaryFields()) {
+
+		for (Field field : getPrimaryFields()) {
 			if (str.length() > 0)
 				str.append(", ");
 			str.append(field.controlData());
 		}
+
 		return str.toString();
 	}
 

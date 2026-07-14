@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.query.ReadLock;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.ILink;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
@@ -76,6 +77,10 @@ public class Select {
 
 	public DatabaseVendor vendor() {
 		return database().vendor();
+	}
+
+	public DatabaseDialect dialect() {
+		return database().dialect();
 	}
 
 	public Collection<Field> getFields() {
@@ -238,19 +243,17 @@ public class Select {
 
 		DatabaseVendor vendor = vendor();
 		String result = "";
-
 		int index = 0;
-		for(Field field : fields) {
-			result += (result.isEmpty() ? "" : ", ") + "\n\t" + formatField(field, index, vendor, options);
-			index++;
-		}
+
+		for (Field field : fields)
+			result += (result.isEmpty() ? "" : ", ") + "\n\t" + formatField(field, index++, vendor, options);
+
 		return result;
 	}
 
 	private String queryName(Query query) {
 		IDatabase database = database();
-		DatabaseVendor vendor = vendor();
-		return query != null ? database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias() : "";
+		return query != null ? database.dialect().formatTableAlias(database, query.name(), query.getAlias()) : "";
 	}
 
 	private String emptyFrom() {
@@ -287,7 +290,7 @@ public class Select {
 	}
 
 	private String formatWhere(FormatOptions options) {
-		if(where == null)
+		if (where == null)
 			return "";
 
 		return "\n" + "where" + "\n\t" + where.format(vendor(), options, true);
@@ -298,7 +301,7 @@ public class Select {
 
 		options.setOrderBy(true);
 
-		for(Field field : orderBy)
+		for (Field field : orderBy)
 			result += (result.isEmpty() ? "" : ", ") + new SqlField(field).format(vendor(), options) + " " + field.sortDirection;
 
 		options.setOrderBy(false);
@@ -309,14 +312,14 @@ public class Select {
 	private String formatGroupBy(FormatOptions options) {
 		String result = "";
 
-		for(Field field : groupBy)
+		for (Field field : groupBy)
 			result += (result.isEmpty() ? "" : ", ") + getFieldName(field, vendor(), options);
 
 		return result.isEmpty() ? "" : ("\ngroup by\n\t" + result);
 	}
 
 	protected String formatHaving(FormatOptions options) {
-		if(having == null)
+		if (having == null)
 			return "";
 
 		return "\n" + "having" + "\n\t" + having.format(vendor(), options, true);

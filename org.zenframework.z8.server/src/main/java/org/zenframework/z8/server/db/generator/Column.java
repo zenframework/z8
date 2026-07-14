@@ -1,15 +1,17 @@
 package org.zenframework.z8.server.db.generator;
 
-import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 
 public class Column {
-	public String name;
-	public String type;
-	public int size;
-	public int scale;
-	public boolean nullable;
-	public String defaultValue;
+	private final String name;
+	private final String type;
+	private final int size;
+	private final int scale;
+	private final boolean nullable;
+	private final String defaultValue;
+
+	private int controlSum = 0;
 
 	public Column(String name, String type, int size, int scale, boolean nullable, String defaultValue) {
 		this.name = name;
@@ -25,15 +27,45 @@ public class Column {
 		return "name " + name + " type " + type + " size " + Integer.toString(size) + " scale " + Integer.toString(scale) + " nullable " + Boolean.toString(nullable) + " default " + defaultValue;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public int getScale() {
+		return scale;
+	}
+
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
 	public FieldType fieldType() {
 		return FieldType.parse(type, size, scale);
 	}
 
 	public int controlSum() {
-		return Math.abs((name + " " + fieldType().vendorSqlType(DatabaseVendor.Postgres, size, scale)).hashCode());
+		if (controlSum == 0)
+			controlSum = calculateControlSum();
+		return controlSum;
 	}
 
 	public String controlData() {
-		return name + " " + fieldType().vendorSqlType(DatabaseVendor.Postgres, size, scale);
+		return name + " " + DatabaseDialect.Default.formatSqlType(fieldType(), size, scale);
+	}
+
+	protected int calculateControlSum() {
+		return Math.abs(controlData().hashCode());
 	}
 }

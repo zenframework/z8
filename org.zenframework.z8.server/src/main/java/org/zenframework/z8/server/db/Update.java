@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
@@ -23,28 +24,30 @@ public class Update extends DmlStatement {
 		Connection connection = query.getConnection();
 		IDatabase database = connection.database();
 		DatabaseVendor vendor = database.vendor();
+		DatabaseDialect dialect = connection.dialect();
 
-		String sql = "update " + database.tableName(query.name()) + (vendor == DatabaseVendor.SqlServer ? " as " : " ") + query.getAlias();
+		String sql = dialect.getUpdate(database, query.name(), query.getAlias());
 
 		String set = "";
 
-		for(Field field : fields) {
-			if(field.isPrimaryKey() || field.isExpression())
+		for (Field field : fields) {
+			if (field.isPrimaryKey() || field.isExpression())
 				continue;
-			set += (set.isEmpty() ? "" : ", ") + vendor.quote(field.name()) + "=" + "?";
+			set += (set.isEmpty() ? "" : ", ") + dialect.quote(field.name()) + "=" + "?";
 		}
 
 		String whereClause = "";
 
-		if(recordId != null)
-			whereClause = vendor.quote(query.primaryKey().name()) + "=?";
+		if (recordId != null)
+			whereClause = dialect.quote(query.primaryKey().name()) + "=?";
 
-		if(where != null)
+		if (where != null)
 			whereClause += (whereClause.isEmpty() ? "" : " and ") + "(" + where.format(vendor, new FormatOptions(), true) + ")";
 
 		sql += " set " + set + (whereClause.isEmpty() ? "" : " where " + whereClause);
 
-		Update update = (Update)connection.getStatement(sql);
+		Update update = (Update) connection.getStatement(sql);
+
 		return update != null ? update.initialize(fields, recordId) : new Update(query.getConnection(), sql, query.priority(), fields, recordId);
 	}
 

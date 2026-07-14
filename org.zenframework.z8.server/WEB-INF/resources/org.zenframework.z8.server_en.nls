@@ -266,7 +266,7 @@
 	<entry key="Generator.dropTableError">Error. Table ''{0}'' - dropping error. {1}</entry>
 	<entry key="Generator.dropForeignKeyError">Error. Table ''{0}'' - foreign key dropping error {1}. {2}</entry>
 	<entry key="Generator.dropIndexError">Error. Table ''{0}'' - index dropping error {1}. {2}</entry>
-	<entry key="Generator.createForeignKeyError">Error. Table ''{0}''({1}) - error creating foreign key to table ''{2}''({3}). {4}</entry>
+	<entry key="Generator.createForeignKeyError">Error. Table ''{0}'' - error creating foreign key to table ''{1}''. {2}</entry>
 	<entry key="Generator.createUniqueIndexError">Error. Table "{1}"({2}) - error creating unique index "{0}". {3}</entry>
 	<entry key="Generator.createIndexError">Error. Table ''{1}''({2}) - error creating index ''{0}''. {3}</entry>
 	<entry key="Generator.insertRecordsError">Error inserting record {0} to table ''{1}''({2}). {3}</entry>

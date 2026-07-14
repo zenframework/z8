@@ -51,7 +51,7 @@ public class SqlExceptionConverter {
 			throw e;
 	}
 
-	static private void oracle(SQLException e) throws RuntimeException {
+	static private void oracle(SQLException e) {
 		switch(e.getErrorCode()) {
 		case 1:
 		case 2437:

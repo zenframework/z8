@@ -180,8 +180,8 @@ public final class datespan extends primary {
 	}
 
 	@Override
-	public String toDbConstant(DatabaseVendor dbtype) {
-		switch(dbtype) {
+	public String toDbConstant(DatabaseVendor vendor) {
+		switch(vendor) {
 		case SqlServer:
 			return "(" + z8_milliseconds().toString() + ")";
 		default:

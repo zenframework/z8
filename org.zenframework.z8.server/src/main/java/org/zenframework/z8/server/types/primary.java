@@ -13,7 +13,7 @@ public abstract class primary implements Comparable<primary>, Serializable {
 		throw new UnsupportedOperationException();
 	}
 
-	public String toDbConstant(DatabaseVendor dbtype) {
+	public String toDbConstant(DatabaseVendor vendor) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -61,7 +61,7 @@ public class DecimalField extends Field {
 
 	@Override
 	public String sqlType(DatabaseVendor vendor) {
-		return type().vendorSqlType(vendor, precision.get(), scale.get());
+		return vendor.dialect().formatSqlType(type(), precision.get(), scale.get());
 	}
 
 	public sql_decimal sql_decimal() {

@@ -81,18 +81,12 @@ public class SqlConst extends SqlToken {
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
 		String result = value.toDbConstant(vendor);
 
-		if(logicalContext && value.type() == FieldType.Boolean)
+		if (logicalContext && value.type() == FieldType.Boolean)
 			return result + "=1";
 
-		if(value.type() == FieldType.String) {
-			switch(vendor) {
-			case Oracle:
-			case Postgres:
-			case SqlServer:
-			case H2:
-				return new SqlStringToken(result, FieldType.String).format(vendor, options, logicalContext);
-			}
-		}
+		if (value.type() == FieldType.String)
+			return new SqlStringToken(result, FieldType.String).format(vendor, options, logicalContext);
+
 		return result;
 	}
 

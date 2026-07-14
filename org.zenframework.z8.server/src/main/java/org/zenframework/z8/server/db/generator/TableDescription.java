@@ -1,89 +1,96 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TableDescription {
 	private String name;
-	private boolean isView;
-	private Collection<Column> columns = new ArrayList<Column>();
+	private Map<String, Column> columns = new HashMap<String, Column>();
+	private Map<String, Index> indexes = new HashMap<String, Index>();
+	private Map<String, ForeignKey> foreignKeys = new HashMap<String, ForeignKey>();
+	private Map<String, ForeignKey> referers = new HashMap<String, ForeignKey>();
 	private PrimaryKey primaryKey;
-	private Collection<Index> indices = new ArrayList<Index>();
-	private Collection<Index> uniqueIndices = new ArrayList<Index>();
-	private Collection<ForeignKey> links = new HashSet<ForeignKey>();
+	private int controlSum = 0;
 
-	public TableDescription(String name, boolean isView) {
+	public TableDescription(String name) {
 		this.name = name;
-		this.isView = isView;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public boolean isView() {
-		return isView;
-	}
-
-	public Collection<Column> getColumns() {
+	public Map<String, Column> getColumns() {
 		return columns;
 	}
 
-	public PrimaryKey getPK() {
+	public PrimaryKey getPrimaryKey() {
 		return primaryKey;
 	}
 
-	public Collection<Index> getIndexes() {
-		return indices;
+	public Map<String, Index> getIndexes() {
+		return indexes;
 	}
 
-	public Collection<Index> getUniqueIndexes() {
-		return uniqueIndices;
+	public Index getIndex(String name) {
+		return indexes.get(name);
 	}
 
-	public Collection<ForeignKey> getRelations() {
-		return links;
+	public Collection<ForeignKey> getForeignKeys() {
+		return foreignKeys.values();
 	}
 
-	void addField(Column field) {
-		columns.add(field);
+	public Collection<ForeignKey> getReferers() {
+		return referers.values();
 	}
 
-	void setPK(PrimaryKey pk) {
-		primaryKey = pk;
+	public void addField(Column field) {
+		columns.put(field.getName(), field);
 	}
 
-	void addIndex(Index idx) {
-		indices.add(idx);
+	public void setPrimaryKey(PrimaryKey primaryKey) {
+		this.primaryKey = primaryKey;
 	}
 
-	void addUniqueIndex(Index idx) {
-		uniqueIndices.add(idx);
+	public void addIndex(Index index) {
+		indexes.put(index.getName(), index);
 	}
 
-	void addLink(ForeignKey relation) {
-		links.add(relation);
+	public void addForeignKey(ForeignKey foreignKey) {
+		foreignKeys.put(foreignKey.getName(), foreignKey);
 	}
 
-	int controlSum() {
+	public void addReferer(ForeignKey foreignKey) {
+		referers.put(foreignKey.getName(), foreignKey);
+	}
+
+	public int controlSum() {
+		if (controlSum == 0)
+			controlSum = calculateControlSum();
+		return controlSum;
+	}
+
+	public String controlData() {
+		StringBuilder str = new StringBuilder(1024);
+
+		for (Column column : columns.values()) {
+			if (str.length() > 0)
+				str.append(", ");
+			str.append(column.controlData());
+		}
+
+		return str.toString();
+	}
+
+	protected int calculateControlSum() {
 		int result = 0;
 
-		for(Column column : columns)
+		for (Column column : columns.values())
 			result += column.controlSum();
 
 		// Static records skipped
 
 		return Math.abs(Integer.toString(result).hashCode());
-	}
-
-	public String controlData() {
-		StringBuilder str = new StringBuilder(1024);
-		for(Column column : columns) {
-			if (str.length() > 0)
-				str.append(", ");
-			str.append(column.controlData());
-		}
-		return str.toString();
 	}
 }
