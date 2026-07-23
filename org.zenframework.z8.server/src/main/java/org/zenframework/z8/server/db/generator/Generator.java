@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,12 +33,13 @@ public class Generator {
 
 	public void run() {
 		IDatabase database = ConnectionManager.database();
-		Collection<TableGenerator> tables = getChangedTableGenerators(database, new DataSchema().initialize());
-		Collection<ForeignKeyGenerator> foreignKeys = getChangedForeignKeyGenerators(database, tables);
+		List<TableGenerator> allTables = getTableGenerators(database, new DataSchema().initialize());
+		List<TableGenerator> changedTables = filterUnchanged(allTables);
+		List<ForeignKeyGenerator> foreignKeys = getChangedForeignKeyGenerators(database, changedTables);
 
 		logger.progress(0);
 
-		int total = 5 * tables.size() + 2 * foreignKeys.size() + 3;
+		int total = 4 * changedTables.size() + allTables.size() + 2 * foreignKeys.size() + 3;
 		int progress = 0;
 
 		debug("drop foreign keys");
@@ -49,14 +51,14 @@ public class Generator {
 
 		debug("drop indexes");
 
-		for (TableGenerator generator : tables) {
+		for (TableGenerator generator : changedTables) {
 			generator.dropIndexes();
 			logger.progress(++progress * 100 / total);
 		}
 
 		debug("generate tables");
 
-		for (TableGenerator generator : tables) {
+		for (TableGenerator generator : changedTables) {
 			generator.create();
 			logger.progress(++progress * 100 / total);
 			ConnectionManager.release();
@@ -64,7 +66,7 @@ public class Generator {
 
 		debug("create records");
 
-		for (TableGenerator generator : tables) {
+		for (TableGenerator generator : allTables) {
 			generator.createRecords();
 			logger.progress(++progress * 100 / total);
 			ConnectionManager.release();
@@ -72,7 +74,7 @@ public class Generator {
 
 		debug("create primary keys");
 
-		for (TableGenerator generator : tables) {
+		for (TableGenerator generator : changedTables) {
 			generator.createPrimaryKey();
 			logger.progress(++progress * 100 / total);
 		}
@@ -94,7 +96,7 @@ public class Generator {
 
 		debug("create indexes");
 
-		for (TableGenerator generator : tables) {
+		for (TableGenerator generator : changedTables) {
 			generator.createIndexes();
 			logger.progress(++progress * 100 / total);
 		}
@@ -114,9 +116,9 @@ public class Generator {
 		logger.progress(100);
 	}
 
-	private Collection<TableGenerator> getChangedTableGenerators(IDatabase database, DataSchema dataSchema) {
+	private List<TableGenerator> getTableGenerators(IDatabase database, DataSchema dataSchema) {
 		Map<String, TableDescription> existingTables = dataSchema.getTables();
-		Collection<TableGenerator> generators = new ArrayList<TableGenerator>();
+		List<TableGenerator> generators = new ArrayList<TableGenerator>();
 
 		for (Table.CLASS<? extends Table> tableClass : tables) {
 			TableDescription description = existingTables.get(database.dialect().formatSqlName(tableClass.name()));
@@ -126,21 +128,21 @@ public class Generator {
 			if (description == null) {
 				generators.add(new TableGenerator(database, tableClass, GeneratorAction.Create, new TableDescription(name), logger));
 				debug(name + " doesn't exist, creating");
-			} else if (description.controlSum() == table.controlSum() || table.skipRecreation()) {
-				//generators.add(new TableGenerator(database, tableClass, GeneratorAction.Skip, description, logger));
-				//debug(name + " skipped");
-			} else {
+			} else if (description.controlSum() != table.controlSum() && !table.skipRecreation()) {
 				generators.add(new TableGenerator(database, tableClass, GeneratorAction.Recreate, description, logger));
 				debug(name + " control sum " + description.controlSum() + " != " + table.controlSum() + ", recreating");
 				//debug(name + "(DB)  " + description.controlData());
 				//debug(name + "(CLS) " + table.controlData());
+			} else {
+				generators.add(new TableGenerator(database, tableClass, GeneratorAction.Skip, description, logger));
+				//debug(name + " skipped");
 			}
 		}
 
 		return generators;
 	}
 
-	private Collection<ForeignKeyGenerator> getChangedForeignKeyGenerators(IDatabase database, Collection<TableGenerator> tables) {
+	private List<ForeignKeyGenerator> getChangedForeignKeyGenerators(IDatabase database, Collection<TableGenerator> tables) {
 		Map<ForeignKey, ForeignKeyGenerator> generators = new HashMap<ForeignKey, ForeignKeyGenerator>();
 
 		for (TableGenerator generator : tables) {
@@ -153,7 +155,7 @@ public class Generator {
 				collectRefererGenerators(generator, generators);
 		}
 
-		return generators.values();
+		return new ArrayList<ForeignKeyGenerator>(generators.values());
 	}
 
 	private void collectForeignKeyGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
@@ -176,6 +178,16 @@ public class Generator {
 			if (generator == null)
 				generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, GeneratorAction.Recreate, logger));
 		}
+	}
+
+	private static List<TableGenerator> filterUnchanged(List<TableGenerator> generators) {
+		List<TableGenerator> filtered = new ArrayList<TableGenerator>(generators.size());
+
+		for (TableGenerator generator : generators)
+			if (generator.getAction() != GeneratorAction.Skip)
+				filtered.add(generator);
+
+		return filtered;
 	}
 
 	private static void debug(String message) {
