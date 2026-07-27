@@ -39,7 +39,7 @@ public class Generator {
 
 		logger.progress(0);
 
-		int total = 4 * changedTables.size() + allTables.size() + 2 * foreignKeys.size() + 3;
+		int total = 5 * changedTables.size() + allTables.size() + 2 * foreignKeys.size() + 3;
 		int progress = 0;
 
 		debug("drop foreign keys");
@@ -105,6 +105,13 @@ public class Generator {
 
 		for (ForeignKeyGenerator generator : foreignKeys) {
 			generator.create();
+			logger.progress(++progress * 100 / total);
+		}
+
+		debug("optimize tables");
+
+		for(TableGenerator generator : changedTables) {
+			generator.optimizeTable();
 			logger.progress(++progress * 100 / total);
 		}
 
