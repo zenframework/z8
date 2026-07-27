@@ -79,6 +79,10 @@ public abstract class DatabaseDialect {
 		return "update " + formatTableAlias(database, tableName, alias);
 	}
 
+	public String getOptimizeTable(IDatabase database, String tableName) {
+		return null;
+	}
+
 	public String quote(String name) {
 		return '"' + name + '"';
 	}

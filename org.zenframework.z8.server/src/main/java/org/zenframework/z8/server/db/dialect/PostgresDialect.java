@@ -56,6 +56,11 @@ public class PostgresDialect extends DatabaseDialect {
 	}
 
 	@Override
+	public String getOptimizeTable(IDatabase database, String tableName) {
+		return "vacuum analyze " + formatTableName(database, tableName);
+	}
+
+	@Override
 	public String formatDefaultValue(String defaultValue, String typeName) {
 		defaultValue = defaultValue.replace("::" + typeName, "");
 

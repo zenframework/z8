@@ -270,4 +270,5 @@
 	<entry key="Generator.createUniqueIndexError">Error. Table "{1}"({2}) - error creating unique index "{0}". {3}</entry>
 	<entry key="Generator.createIndexError">Error. Table ''{1}''({2}) - error creating index ''{0}''. {3}</entry>
 	<entry key="Generator.insertRecordsError">Error inserting record {0} to table ''{1}''({2}). {3}</entry>
+	<entry key="Generator.optimizeTableError">Error. Table ''{0}'' - error optimization. {1}</entry>
 </properties>
