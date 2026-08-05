@@ -32,7 +32,7 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 	static private final ThreadLocal<Map<String, Sequencer>> sequencers = new ThreadLocal<Map<String, Sequencer>>();
 
 	private String key;
-	private long defaultValue = 1;
+	private long defaultValue = 0;
 	private long increment = 1;
 
 	private guid id = null;
