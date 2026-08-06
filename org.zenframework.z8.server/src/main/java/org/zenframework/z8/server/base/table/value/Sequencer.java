@@ -179,7 +179,7 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 	}
 
 	static public integer z8_next(string key, integer increment) {
-		return z8_next(key, increment, new integer(1));
+		return z8_next(key, increment, new integer(0));
 	}
 
 	static public integer z8_next(string key, integer increment, integer defaultValue) {
