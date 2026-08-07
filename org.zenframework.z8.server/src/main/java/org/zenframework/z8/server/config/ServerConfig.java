@@ -229,6 +229,7 @@ public class ServerConfig extends Properties {
 
 	static private String officeHome;
 	static private int officePort;
+	static private int baseOfficePort;
 
 	static private String spnegoDomainRealm;
 	static private String spnegoPropertiesPath;
@@ -387,6 +388,7 @@ public class ServerConfig extends Properties {
 
 		officeHome = instance.getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 		officePort = instance.getProperty(OfficePort, 8100);
+		baseOfficePort = officePort;
 
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = instance.getProperty(SpnegoPropertiesPath, "");
@@ -819,6 +821,14 @@ public class ServerConfig extends Properties {
 
 	static public int officePort() {
 		return officePort;
+	}
+
+	static public void setOfficePort(int port) {
+		officePort = port;
+	}
+
+	static public int baseOfficePort() {
+		return baseOfficePort;
 	}
 
 	static public boolean webClientHashPassword() {
