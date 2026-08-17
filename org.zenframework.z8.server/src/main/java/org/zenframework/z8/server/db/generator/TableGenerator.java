@@ -148,6 +148,20 @@ public class TableGenerator {
 		}
 	}
 
+	public void optimizeTable() {
+		String tableName = table().name();
+
+		try {
+			String sql = database.dialect().getOptimizeTable(database, tableName);
+			if (sql != null) {
+				DmlStatement.execute(sql);
+				debug("Optimized: " + tableName);
+			}
+		} catch(SQLException e) {
+			logger.error(e, Resources.format("Generator.optimizeTableError", tableName, ErrorUtils.getMessage(e)));
+		}
+	}
+
 	private void recreateTable() throws SQLException {
 		String tableName = table().name();
 		String tmpName = Integer.toString(Math.abs(tableName.hashCode()));
