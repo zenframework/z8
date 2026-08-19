@@ -1,0 +1,15 @@
+import org.zenframework.z8.base.json.JsonObject;
+import org.zenframework.z8.lang.sql.sql_primary;
+
+[native "org.zenframework.z8.server.base.table.value.JsonObjectExpression"]
+public class JsonObjectExpression extends Expression {
+	aggregation = Aggregation.Array;
+
+	virtual public JsonObject get();
+	virtual public JsonObject[] array();
+
+	public JsonObjectExpression operator = (Field[] fields);
+	public JsonObjectExpression operator = (sql_primary[string] values);
+
+	public operator sql_string();
+}
