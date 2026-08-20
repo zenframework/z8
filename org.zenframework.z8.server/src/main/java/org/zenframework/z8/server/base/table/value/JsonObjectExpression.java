@@ -1,9 +1,5 @@
 package org.zenframework.z8.server.base.table.value;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.zenframework.z8.server.base.json.parser.JsonObject;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
@@ -30,7 +26,7 @@ public class JsonObjectExpression extends Expression {
 		}
 	}
 
-	protected  Map<String, SqlToken> jsonValues = new HashMap<String, SqlToken>();
+	protected JsonBuildObject json;
 
 	public JsonObjectExpression(IObject container) {
 		super(container);
@@ -55,7 +51,7 @@ public class JsonObjectExpression extends Expression {
 
 	@Override
 	protected SqlToken z8_expression() {
-		return new JsonBuildObject(jsonValues);
+		return json;
 	}
 
 	public JsonObject.CLASS<? extends JsonObject> z8_get() {
@@ -67,16 +63,12 @@ public class JsonObjectExpression extends Expression {
 	}
 
 	public JsonObjectExpression.CLASS<? extends JsonObjectExpression> operatorAssign(RCollection fields) {
-		jsonValues.clear();
-		Collection<? extends Field.CLASS<? extends Field>> source = (Collection<? extends Field.CLASS<? extends Field>>)fields;
-		source.forEach(f -> jsonValues.put(f.index(), new SqlField(f.get())));
+		json = new JsonBuildObject(CLASS.asList(fields));
 		return (JsonObjectExpression.CLASS<?>)this.getCLASS();
 	}
 
 	public JsonObjectExpression.CLASS<? extends JsonObjectExpression> operatorAssign(RLinkedHashMap values) {
-		jsonValues.clear();
-		Map<string, SqlToken> source = (Map<string, SqlToken>)values;
-		source.forEach((key, value) -> jsonValues.put(key.get(), value));
+		json = new JsonBuildObject(values);
 		return (JsonObjectExpression.CLASS<?>)this.getCLASS();
 	}
 }
