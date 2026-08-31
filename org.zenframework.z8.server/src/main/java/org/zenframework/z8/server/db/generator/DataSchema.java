@@ -11,7 +11,6 @@ import org.zenframework.z8.server.engine.IDatabase;
 
 public class DataSchema {
 	private final Map<String, TableDescription> tables = new HashMap<String, TableDescription>();
-	private final Map<String, ForeignKey> foreignKeys = new HashMap<String, ForeignKey>();
 
 	public DataSchema initialize() {
 		try {
@@ -27,10 +26,6 @@ public class DataSchema {
 
 	public Map<String, TableDescription> getTables() {
 		return tables;
-	}
-
-	public Map<String, ForeignKey> getForeignKeys() {
-		return foreignKeys;
 	}
 
 	private void collectTableDescriptions() throws SQLException {
@@ -134,8 +129,6 @@ public class DataSchema {
 					referer.addForeignKey(foreignKey);
 				if (reference != null)
 					reference.addReferer(foreignKey);
-
-				foreignKeys.put(foreignKey.getName(), foreignKey);
 			}
 		} finally {
 			cursor.close();

@@ -162,6 +162,12 @@ public class TableGenerator {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return (tableClass != null ? tableClass.get().getClass().getSimpleName() : "-")
+				+ '[' + dbTable + ", " + action + ']';
+	}
+
 	private void recreateTable() throws SQLException {
 		String tableName = table().name();
 		String tmpName = Integer.toString(Math.abs(tableName.hashCode()));

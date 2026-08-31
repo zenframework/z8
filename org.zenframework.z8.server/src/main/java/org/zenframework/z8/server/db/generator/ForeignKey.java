@@ -1,11 +1,16 @@
 package org.zenframework.z8.server.db.generator;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ForeignKey {
 	private final String referenceTable;
 	private final String referenceField;
 	private final String table;
 	private final String field;
 	private final String name;
+	private String oldName;
 
 	public ForeignKey(String referenceTable, String referenceField, String table, String field, String name) {
 		this.referenceTable = referenceTable;
@@ -13,10 +18,7 @@ public class ForeignKey {
 		this.table = table;
 		this.field = field;
 		this.name = name;
-	}
-
-	public ForeignKey(String table, IForeignKey fk, int index) {
-		this(fk.getReferencedTable().name(), fk.getReferer().name(), table, fk.getFieldDescriptor().name(), "FK" + index + "_" + table);
+		this.oldName = name;
 	}
 
 	public String getReferenceTable() {
@@ -39,6 +41,15 @@ public class ForeignKey {
 		return name;
 	}
 
+	public String getOldName() {
+		return oldName;
+	}
+
+	public ForeignKey setOldName(String oldName) {
+		this.oldName = oldName;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
 		return (referenceTable + '|' + referenceField + '|' + table + '|' + field + '|').hashCode();
@@ -56,6 +67,16 @@ public class ForeignKey {
 
 	@Override
 	public String toString() {
-		return name + "('" + table + "'.'" + field + "' -> '" + referenceTable + "'.'" + referenceField + "')";
+		return (oldName != null ? "[" + oldName + '/' + name + ']' : name)
+				+ "('" + table + "'.'" + field + "' -> '" + referenceTable + "'.'" + referenceField + "')";
+	}
+
+	public static Map<ForeignKey, String> toNamesMap(Collection<ForeignKey> foreignKeys) {
+		Map<ForeignKey, String> names = new HashMap<ForeignKey, String>();
+
+		for (ForeignKey foreignKey : foreignKeys)
+			names.put(foreignKey, foreignKey.getName());
+
+		return names;
 	}
 }
