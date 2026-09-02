@@ -22,7 +22,7 @@ public class TransportQueueView extends TransportQueue {
 		}
 	}
 
-	protected RestartTransportAction.CLASS<RestartTransportAction> restartTransport = new RestartTransportAction.CLASS<RestartTransportAction>(this);
+	//protected RestartTransportAction.CLASS<RestartTransportAction> restartTransport = new RestartTransportAction.CLASS<RestartTransportAction>(this);
 
 	private TransportQueueView(IObject container) {
 		super(container);
@@ -32,7 +32,7 @@ public class TransportQueueView extends TransportQueue {
 	public void initMembers() {
 		super.initMembers();
 
-		objects.add(restartTransport);
+		//objects.add(restartTransport);
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class TransportQueueView extends TransportQueue {
 		names.add(sender);
 		names.add(ordinal);
 
-		restartTransport.setIndex("restartTransport");
+		//restartTransport.setIndex("restartTransport");
 
-		actions.add(restartTransport);
+		//actions.add(restartTransport);
 	}
 }
