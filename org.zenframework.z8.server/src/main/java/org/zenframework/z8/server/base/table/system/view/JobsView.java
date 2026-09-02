@@ -93,9 +93,9 @@ public class JobsView extends ScheduledJobs {
 		active.get().colSpan = new integer(2);
 		logErrorsOnly.get().colSpan = new integer(2);
 
-		lastStart.get().colSpan = new integer(2);
-		lastFinish.get().colSpan = new integer(2);
-		nextStart.get().colSpan = new integer(2);
+		lastStart.get().colSpan = new integer(3);
+		lastFinish.get().colSpan = new integer(3);
+		nextStart.get().colSpan = new integer(3);
 
 		jobs.get().name.setDisplayName(displayNames.Job);
 		users.get().name.setDisplayName(displayNames.User);

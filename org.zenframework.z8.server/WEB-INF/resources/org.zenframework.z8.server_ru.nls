@@ -190,9 +190,9 @@
 	<entry key="ScheduledJobs.cron">CRON-выражение</entry>
 	<entry key="ScheduledJobs.logErrorsOnly">Логировать только ошибки</entry>
 	<entry key="ScheduledJobs.active">Активно</entry>
-	<entry key="ScheduledJobs.lastStart">Последний запуск</entry>
-	<entry key="ScheduledJobs.lastStart">Последнее завершение</entry>
-	<entry key="ScheduledJobs.nextStart">Следующий запуск</entry>
+	<entry key="ScheduledJobs.lastStart">Последний запуск (начало)</entry>
+	<entry key="ScheduledJobs.lastFinish">Последний запуск (окончание)</entry>
+	<entry key="ScheduledJobs.nextStart">Следующий запуск (плановый)</entry>
 	<entry key="ScheduledJobs.restartScheduler">Перезапуск планировщика задач</entry>
 
 	<!-- ScheduledJobLogs -->
