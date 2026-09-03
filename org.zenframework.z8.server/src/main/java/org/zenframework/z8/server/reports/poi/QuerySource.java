@@ -60,7 +60,9 @@ public class QuerySource extends DataSource {
 	}
 
 	@Override
-	protected boolean internalNext() {
+	public boolean next() {
+		super.next();
+
 		if (range.isAggregation()) {
 			try {
 				return aggregated;

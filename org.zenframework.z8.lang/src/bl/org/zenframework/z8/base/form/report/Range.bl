@@ -13,11 +13,12 @@ public class Range extends Object {
 	//   - [subtotalsBy source.field.id()] - Field ID for grouping, subtotal inserted when field value changes
 	//   - [subotalsMerge "A1:B1,"B3:C3"] - stretch merged regions to full group length when subtotal group changes
 	//   - [merge ""A1:B1,"B3:C3"] - additional merged regions to process (static positions)
+	//   - [sheetName "Январь"] - Excel sheet name
 
 	// Records insertion axis
 	public static final int Vertical = 0;
 	public static final int Horizontal = 1;
 
-	public Object source;
+	public DataSource source;
 	public Range[] ranges;
 }

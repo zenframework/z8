@@ -63,6 +63,8 @@ public class Report extends OBJECT implements Runnable, IReport {
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
 	public RLinkedHashMap<integer, RCollection<string>> hiddenColumns = new RLinkedHashMap<integer, RCollection<string>>();
 
+	private final Map<String, DataSource> sources = new HashMap<String, DataSource>();
+
 	public Report(IObject container) {
 		super(container);
 	}
@@ -91,6 +93,10 @@ public class Report extends OBJECT implements Runnable, IReport {
 	public void write(JsonWriter writer) {
 		super.write(writer);
 		writer.writeProperty(Json.format, format());
+	}
+
+	public void registerDataSource(DataSource source) {
+		sources.put(source.get().getObject().index(), source);
 	}
 
 	public file run(guid recordId) {
@@ -143,7 +149,7 @@ public class Report extends OBJECT implements Runnable, IReport {
 		PoiReport report = new PoiReport(options).setContext(this).setHiddenColumns(hiddenColumnsToInt());
 
 		for (Range.CLASS<Range> range : ranges)
-			report.addRange(range.get().getSheet(), range.get().asPoiRange());
+			report.addRange(range.get().getSheet(), range.get().asPoiRange(this));
 
 		IMonitor monitor = ApplicationServer.getMonitor();
 
@@ -159,6 +165,16 @@ public class Report extends OBJECT implements Runnable, IReport {
 
 	public file z8_run(guid recordId) {
 		return run(recordId);
+	}
+
+	@SuppressWarnings("unchecked")
+	public DataSource.CLASS<? extends DataSource> z8_getDataSource(OBJECT.CLASS<? extends OBJECT> source) {
+		return (DataSource.CLASS<? extends DataSource>) sources.get(source.index()).getCLASS();
+	}
+
+	@SuppressWarnings("unchecked")
+	public DataSource.CLASS<? extends DataSource> z8_getDataSource(string index) {
+		return (DataSource.CLASS<? extends DataSource>) sources.get(index.get()).getCLASS();
 	}
 
 	private Map<Integer, Collection<Integer>> hiddenColumnsToInt() {

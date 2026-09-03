@@ -1,0 +1,15 @@
+import org.zenframework.z8.base.json.JsonArray;
+import org.zenframework.z8.base.query.Query;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.report.DataSource"]
+public class DataSource extends Object {
+	public void operator = (Query source);
+	public void operator = (JsonArray source);
+	public void operator = (CustomData source);
+	public void operator = (Object source);
+
+	public int getIndex();
+
+	// TODO get metadata
+}

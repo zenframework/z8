@@ -13,7 +13,10 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetView;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetViews;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.db.Connection;
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -29,6 +32,7 @@ import org.zenframework.z8.server.utils.IOUtils;
 public class PoiReport {
 
 	private final Map<Integer, Range> ranges = new HashMap<Integer, Range>();
+	private final Map<Integer, String> sheetNames = new HashMap<Integer, String>();
 	private final Map<Integer, Collection<Integer>> hiddenColumns = new HashMap<Integer, Collection<Integer>>();
 	private final ReportOptions options;
 
@@ -77,9 +81,12 @@ public class PoiReport {
 		Range sheetRange = ranges.get(sheet);
 
 		if (sheetRange == null)
-			ranges.put(sheet, sheetRange = new Range().setReport(this).setName("Sheet[" + sheet + ']').setSource(new OBJECT.CLASS<OBJECT>(null).get()));
+			ranges.put(sheet, sheetRange = new Range().setReport(this).setName("Sheet[" + sheet + ']').setSheet(sheet).setSource(SimpleSource.newDefault()));
 
 		sheetRange.addRange(range);
+
+		if (range.getSheetName() != null && !sheetNames.containsKey(sheet))
+			sheetNames.put(sheet, range.getSheetName());
 
 		return this;
 	}
@@ -143,6 +150,8 @@ public class PoiReport {
 
 		XSSFWorkbook workbook = loadXlsx(outputFile);
 
+		multiplySheets(workbook);
+
 		SheetModifier sheet = new SheetModifier().setWorkbook(workbook);
 
 		try {
@@ -158,6 +167,30 @@ public class PoiReport {
 		saveXlsx(workbook, outputFile);
 
 		return outputFile;
+	}
+
+	private void multiplySheets(XSSFWorkbook workbook) {
+		int prototype = workbook.getNumberOfSheets() - 1;
+		int last = -1;
+
+		for (int sheet : ranges.keySet())
+			last = Math.max(last, sheet);
+
+		for (int sheet = prototype + 1; sheet <= last; sheet++)
+			fixSheetViews(workbook.cloneSheet(prototype));
+
+		for (Map.Entry<Integer, String> entry : sheetNames.entrySet())
+			workbook.setSheetName(entry.getKey(), entry.getValue());
+	}
+
+	private static void fixSheetViews(XSSFSheet sheet) {
+		CTSheetViews views = sheet.getCTWorksheet().getSheetViews();
+
+		if (views == null)
+			return;
+
+		for (CTSheetView view : views.getSheetViewArray())
+			view.setWorkbookViewId(view.getWorkbookViewId());
 	}
 
 	private void hideColumns(XSSFWorkbook workbook) {
