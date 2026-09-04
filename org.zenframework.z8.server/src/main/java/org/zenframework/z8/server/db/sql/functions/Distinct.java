@@ -23,12 +23,22 @@ public class Distinct extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean isLogicalContext) {
-		StringBuilder result = new StringBuilder(1024);
-		if (vendor == DatabaseVendor.Postgres)
-			result.append("distinct ").append(token.format(vendor, options, isLogicalContext));
-		else
+		boolean asJson = options.isOrderBy();
+		String expression = token.format(vendor, options, isLogicalContext);
+
+		switch (vendor) {
+		case Postgres:
+		case Oracle:
+		case H2:
+			return "DISTINCT " + expression;
+		case SqlServer:
+			if (asJson)
+				return "DISTINCT '\"' + " + expression + " + '\"'";
+			else
+				return "DISTINCT " + expression;
+		default:
 			throw new UnknownDatabaseException();
-		return result.toString();
+		}
 	}
 
 	@Override

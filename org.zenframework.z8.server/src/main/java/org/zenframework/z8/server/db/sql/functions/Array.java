@@ -1,17 +1,22 @@
 package org.zenframework.z8.server.db.sql.functions;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.StringJoiner;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
 public class Array extends SqlToken {
 	private SqlToken token;
+	private Collection<Field> orderBy = new ArrayList<Field>();
 	private boolean distinct;
 
 	public Array(SqlToken token, boolean distinct) {
@@ -19,29 +24,64 @@ public class Array extends SqlToken {
 		this.distinct = distinct;
 	}
 
+	public Array(SqlToken token, boolean distinct, Collection<Field> orderBy) {
+		this(token, distinct);
+		this.orderBy.addAll(orderBy);
+	}
+
 	@Override
 	public void collectFields(Collection<IField> fields) {
 		token.collectFields(fields);
+		for(Field orderField: orderBy)
+			new SqlField(orderField).collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
-		String result = "";
+		boolean asJson = options.isOrderBy();
+		if (token.type() == FieldType.Text) 
+			token = new ToString(token); 
+		if (distinct) 
+			token = new Distinct(token); 
+		String expression = token.format(vendor, options);
+		String orderFields= "";
+		if (!orderBy.isEmpty()) {
+			StringJoiner sj = new StringJoiner(", ");
+			orderBy.forEach(field -> sj.add(new SqlField(field).format(vendor, options, logicalContext) + " " + field.sortDirection));
+			orderFields = sj.toString();
+		}
+
 		switch(vendor) {
 		case Oracle:
-			result = "collect";
-			break;
-		case Postgres:
-			result = options.isOrderBy() ? "array_agg" : "json_agg";
-			if (token.type() == FieldType.Text)
-				token = new ToString(token);
-			if (distinct)
-				token = new Distinct(token);
-			break;
+		case H2: {
+			if (asJson) {
+				String orderSql = orderFields.isEmpty() ? "" : " ORDER BY " + orderFields;
+				return "JSON_ARRAYAGG(" + expression + orderSql + ")";
+			} else {
+				String orderSql = orderFields.isEmpty() ? " WITHIN GROUP (ORDER BY (SELECT NULL))"
+														: " WITHIN GROUP (ORDER BY " + orderFields + ")";
+				return "LISTAGG(" + expression + ", ',')" + orderSql;
+			}
+		}
+		case Postgres: {
+			String functionName = asJson ? "json_agg" : "array_agg";
+			String orderSql = orderFields.isEmpty() ? "" : " ORDER BY " + orderFields;
+			return functionName + "(" + expression + orderSql + ")";
+		}
+		case SqlServer: {
+			String orderSql = orderFields.isEmpty() ? "" : " WITHIN GROUP (ORDER BY " + orderFields + ")";
+			if (asJson) {
+				 if (distinct)
+					 return "'[' + STRING_AGG(" + expression + ", ',')" + orderSql + " + ']'";
+				 else
+					 return "'[' + STRING_AGG('\"' + " + expression + " + '\"', ',')" + orderSql + " + ']'";
+			} else {
+				return "STRING_AGG(" + expression + ", ',')" + orderSql;
+			}
+		}
 		default:
 			throw new UnknownDatabaseException();
 		}
-		return result + '('  + token.format(vendor, options) + ')';
 	}
 
 	@Override
