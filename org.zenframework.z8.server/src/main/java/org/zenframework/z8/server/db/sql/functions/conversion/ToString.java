@@ -59,8 +59,6 @@ public class ToString extends SqlToken {
 			return value.format(vendor, options);
 
 		case SqlServer:
-			if (type == FieldType.Text)
-				return value.format(vendor, options);
 			return "Cast(" + value.format(vendor, options) + " as nvarchar(max))";
 
 		case H2:
