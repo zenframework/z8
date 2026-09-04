@@ -47,7 +47,7 @@ public class Array extends SqlToken {
 		String orderFields= "";
 		if (!orderBy.isEmpty()) {
 			StringJoiner sj = new StringJoiner(", ");
-			orderBy.forEach(field -> sj.add(new SqlField(field).format(vendor, options, logicalContext) + " " + field.sortDirection));
+			orderBy.forEach(field -> sj.add(new SqlField(field).format(vendor, options) + " " + field.sortDirection));
 			orderFields = sj.toString();
 		}
 
@@ -71,10 +71,10 @@ public class Array extends SqlToken {
 		case SqlServer: {
 			String orderSql = orderFields.isEmpty() ? "" : " WITHIN GROUP (ORDER BY " + orderFields + ")";
 			if (asJson) {
-				 if (distinct)
-					 return "'[' + STRING_AGG(" + expression + ", ',')" + orderSql + " + ']'";
-				 else
-					 return "'[' + STRING_AGG('\"' + " + expression + " + '\"', ',')" + orderSql + " + ']'";
+				if (distinct)
+					return "'[' + STRING_AGG(" + expression + ", ',')" + orderSql + " + ']'";
+				else
+					return "'[' + STRING_AGG('\"' + " + expression + " + '\"', ',')" + orderSql + " + ']'";
 			} else {
 				return "STRING_AGG(" + expression + ", ',')" + orderSql;
 			}
