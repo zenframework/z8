@@ -14,17 +14,17 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class JsonArray extends SqlToken {
+public class JsonAgg extends SqlToken {
 	private SqlToken token;
 	private Collection<Field> orderBy = new ArrayList<Field>();
 	private boolean distinct;
 
-	public JsonArray(SqlToken token, boolean distinct) {
+	public JsonAgg(SqlToken token, boolean distinct) {
 		this.token = token;
 		this.distinct = distinct;
 	}
 
-	public JsonArray(SqlToken token, boolean distinct, Collection<Field> orderBy) {
+	public JsonAgg(SqlToken token, boolean distinct, Collection<Field> orderBy) {
 		this(token, distinct);
 		this.orderBy.addAll(orderBy);
 	}

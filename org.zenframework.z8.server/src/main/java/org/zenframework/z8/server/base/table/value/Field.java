@@ -78,6 +78,7 @@ abstract public class Field extends Control implements IField {
 
 	public RCollection<Field.CLASS<? extends Field>> columns = new RCollection<Field.CLASS<? extends Field>>();
 	public RCollection<Field.CLASS<? extends Field>> usedFields = new RCollection<Field.CLASS<? extends Field>>();
+	public RCollection<Field.CLASS<? extends Field>> arrayOrderBy = new RCollection<Field.CLASS<? extends Field>>();
 
 	private primary originalValue;
 	private boolean changed = false;
@@ -361,6 +362,10 @@ abstract public class Field extends Control implements IField {
 
 	public Collection<Field> getUsedFields() {
 		return CLASS.asList(usedFields);
+	}
+
+	public Collection<Field> getArrayOrderBy() {
+		return CLASS.asList(arrayOrderBy);
 	}
 
 	@Override
