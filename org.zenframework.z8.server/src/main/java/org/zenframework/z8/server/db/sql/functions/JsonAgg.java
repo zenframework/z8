@@ -45,9 +45,14 @@ public class JsonAgg extends SqlToken {
 		String expression = token.format(vendor, options);
 		String orderFields= "";
 		if (!orderBy.isEmpty()) {
+			boolean aggregationWasEnabled = options.isAggregationEnabled();
+			if(aggregationWasEnabled)
+				options.disableAggregation();
 			StringJoiner sj = new StringJoiner(", ");
 			orderBy.forEach(field -> sj.add(new SqlField(field).format(vendor, options) + " " + field.sortDirection));
 			orderFields = sj.toString();
+			if(aggregationWasEnabled)
+				options.enableAggregation();
 		}
 
 		switch(vendor) {
