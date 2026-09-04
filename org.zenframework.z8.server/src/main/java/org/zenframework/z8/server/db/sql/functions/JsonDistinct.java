@@ -9,10 +9,10 @@ import org.zenframework.z8.server.db.sql.FormatOptions;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
-public class Distinct extends SqlToken {
+public class JsonDistinct extends SqlToken {
 	private SqlToken token;
 
-	public Distinct(SqlToken token) {
+	public JsonDistinct(SqlToken token) {
 		this.token = token;
 	}
 
@@ -29,8 +29,9 @@ public class Distinct extends SqlToken {
 		case Postgres:
 		case Oracle:
 		case H2:
-		case SqlServer:
 			return "DISTINCT " + expression;
+		case SqlServer:
+			return "DISTINCT '\"' + " + expression + " + '\"'";
 		default:
 			throw new UnknownDatabaseException();
 		}

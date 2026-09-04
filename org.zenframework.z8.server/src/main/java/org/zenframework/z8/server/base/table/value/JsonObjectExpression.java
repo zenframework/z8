@@ -43,7 +43,7 @@ public class JsonObjectExpression extends Expression {
 		JsonArray jsonArray = new JsonArray(json.get());
 
 		RCollection result = new RCollection();
-		for(int i = 0; i < jsonArray.length(); i++)
+		for(int i = 0; i < jsonArray.size(); i++)
 			result.add(JsonObject.getJsonObject(jsonArray.getJsonObject(i)));
 
 		return result;
