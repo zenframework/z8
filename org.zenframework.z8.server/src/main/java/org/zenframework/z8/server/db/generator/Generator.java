@@ -161,16 +161,24 @@ public class Generator {
 
 	private void collectForeignKeyGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
 		Map<ForeignKey, String> existingForeignKeys = ForeignKey.toNamesMap(table.dbTable().getForeignKeys());
+		GeneratorAction tableAction = table.getAction();
 		int index = 0;
 
-		if (table.getAction() == GeneratorAction.Create || table.getAction() == GeneratorAction.Recreate) {
-			for (IForeignKey link : table.table().getForeignKeys()) {
-				String tableName = table.table().name();
-				ForeignKey foreignKey = new ForeignKey(link.getReferencedTable().name(), link.getReferer().name(), tableName, link.getFieldDescriptor().name(), "FK" + index++ + "_" + tableName);
-				String existingName = existingForeignKeys.remove(foreignKey);
-				GeneratorAction action = existingName != null ? GeneratorAction.Recreate : GeneratorAction.Create;
-				generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey.setOldName(existingName), action, logger));
-			}
+		if (tableAction == GeneratorAction.Skip && tableAction != GeneratorAction.Drop) {
+			GeneratorAction keyAction = tableAction == GeneratorAction.Drop ? GeneratorAction.Drop : GeneratorAction.Recreate;
+			for (Map.Entry<ForeignKey, String> entry : existingForeignKeys.entrySet())
+				generators.put(entry.getKey(), new ForeignKeyGenerator(database, entry.getKey(), keyAction, logger));
+			return;
+		}
+
+		// Create or recreate
+
+		for (IForeignKey link : table.table().getForeignKeys()) {
+			String tableName = table.table().name();
+			ForeignKey foreignKey = new ForeignKey(link.getReferencedTable().name(), link.getReferer().name(), tableName, link.getFieldDescriptor().name(), "FK" + index++ + "_" + tableName);
+			String existingName = existingForeignKeys.remove(foreignKey);
+			GeneratorAction action = existingName != null ? GeneratorAction.Recreate : GeneratorAction.Create;
+			generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey.setOldName(existingName), action, logger));
 		}
 
 		for (ForeignKey foreignKey : existingForeignKeys.keySet())
