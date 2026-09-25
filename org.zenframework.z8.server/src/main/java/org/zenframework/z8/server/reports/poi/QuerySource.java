@@ -121,11 +121,6 @@ public class QuerySource extends DataSource {
 	}
 
 	@Override
-	public Collection<String> getCurrentValueIds() {
-		return fields.keySet();
-	}
-
-	@Override
 	public String normalize(String id) {
 		return id;
 	}

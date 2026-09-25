@@ -85,10 +85,6 @@ public abstract class DataSource {
 		return null;
 	}
 
-	public Collection<String> getCurrentValueIds() {
-		return Collections.emptyList();
-	}
-
 	public void accumulate(AggregatorObject aggregator) {
 		for (String id : getAggregatedIds())
 			aggregator.accumulate(aggregatorKey(id), getCurrentValue(id), getAggregation(id, Aggregation.None));
