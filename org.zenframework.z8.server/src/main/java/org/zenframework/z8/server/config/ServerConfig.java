@@ -3,16 +3,12 @@ package org.zenframework.z8.server.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.zenframework.z8.server.engine.IApplicationServer;
 import org.zenframework.z8.server.engine.IAuthorityCenter;
@@ -20,11 +16,12 @@ import org.zenframework.z8.server.engine.IInterconnectionCenter;
 import org.zenframework.z8.server.engine.IWebServer;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.types.encoding;
-import org.zenframework.z8.server.utils.StringUtils;
 
-public class ServerConfig extends Properties {
+public class ServerConfig extends Config {
 
 	static private final long serialVersionUID = 3564936578688816088L;
+
+	static private final String LibFolder = "lib";
 
 	static private final String Z8SystemPrefix = "z8.";
 
@@ -156,8 +153,10 @@ public class ServerConfig extends Properties {
 	static final private String MonitoringServerPort = "monitoring.server.port";
 	static final private String MonitoringServerThreads = "monitoring.server.threads";
 
-
+	static private File configPath;
 	static private File workingPath;
+	static private File applicationPath;
+	static private File libPath;
 
 	static private String language;
 
@@ -287,13 +286,12 @@ public class ServerConfig extends Properties {
 	private ServerConfig() {}
 
 	public static void load(String configFilePath) throws IOException {
-		if(instance != null)
+		if (instance != null)
 			return;
 
-		instance = new ServerConfig();
-
 		File configFile = new File(configFilePath != null ? configFilePath : DefaultConfigurationFileName);
-		workingPath = configFile.getCanonicalFile().getParentFile();
+
+		instance = new ServerConfig();
 
 		try {
 			instance.load(new FileInputStream(configFile));
@@ -309,6 +307,11 @@ public class ServerConfig extends Properties {
 			}
 /* <<<<<<<<<<<<<<<<< to remove */
 		}
+
+		configPath = configFile.getCanonicalFile().getParentFile();
+		applicationPath = getApplicationPath(configPath);
+		workingPath = configFile.getCanonicalFile().getParentFile();
+		libPath = new File(applicationPath, LibFolder);
 
 		language = instance.getProperty(Language, DefaultLanguage);
 
@@ -432,18 +435,23 @@ public class ServerConfig extends Properties {
 		monitoringServerThreads = instance.getProperty(MonitoringServerThreads, 3);
 	}
 
-	// ///////////////////////////////////////////////////////////////
-	// Properties overrides
+	static private File getApplicationPath(File defaultValue) throws IOException {
+		try {
+			File codeBasePath = new File(ServerConfig.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getCanonicalFile();
+			File parentPath = codeBasePath.getParentFile();
+
+			if (codeBasePath.isFile() && parentPath.getName().equals(LibFolder))
+				return parentPath.getParentFile();
+
+			return defaultValue;
+		} catch (URISyntaxException e) {
+			throw new IOException(e);
+		}
+	}
 
 	@Override
 	public String getProperty(String key) {
 		return System.getProperty(Z8SystemPrefix + key, super.getProperty(key));
-	}
-
-	@Override
-	public String getProperty(String key, String defaultValue) {
-		String value = getProperty(key);
-		return value != null && !value.isEmpty() ? value : defaultValue;
 	}
 
 	@Override
@@ -456,56 +464,7 @@ public class ServerConfig extends Properties {
 		return result;
 	}
 
-	public boolean getProperty(String key, boolean defaultValue) {
-		String value = getProperty(key);
-		return value != null && !value.isEmpty() ? Boolean.parseBoolean(value) : defaultValue;
-	}
-
-	public int getProperty(String key, int defaultValue) {
-		try {
-			return Integer.parseInt(getProperty(key));
-		} catch(NumberFormatException e) {
-			return defaultValue;
-		}
-	}
-
-	public String[] getProperty(String key, String[] defaultValue) {
-		String value = getProperty(key);
-
-		if(value == null || value.trim().isEmpty())
-			return defaultValue;
-
-		String[] values = value.split("\\,");
-
-		String[] result = new String[values.length];
-
-		for (int i = 0; i < values.length; i++)
-			result[i] = values[i].trim();
-
-		return result;
-	}
-
-	public int[] getProperty(String key, int[] defaultValue) {
-		String value = getProperty(key);
-
-		if(value == null || value.trim().isEmpty())
-			return defaultValue;
-
-		String[] values = value.split("\\,");
-
-		int[] result = new int[values.length];
-
-		try {
-			for(int i = 0; i < values.length; i++)
-				result[i] = Integer.parseInt(values[i].trim());
-		} catch(NumberFormatException e) {
-			return defaultValue;
-		}
-
-		return result;
-	}
-
-	public File getFile(String key, String defaultValue) {
+	public File getFile(String key, String defaultValue) throws IOException {
 		String value = getProperty(key, defaultValue);
 
 		if (value == null)
@@ -513,29 +472,7 @@ public class ServerConfig extends Properties {
 
 		File file = new File(value);
 
-		try {
-			return file.isAbsolute() ? file : new File(workingPath, value).getCanonicalFile();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public List<String> getList(String key, String defaultValue, String delimiter) {
-		return StringUtils.asList(getProperty(key, defaultValue), delimiter);
-	}
-
-	public Map<String, String> getMap(String key, String defaultValue, String pattern) {
-		String value = getProperty(key, defaultValue);
-
-		if (value == null)
-			return Collections.emptyMap();
-
-		Map<String, String> map = new HashMap<String, String>();
-		Matcher matcher = Pattern.compile(pattern).matcher(value);
-		while (matcher.find())
-			map.put(matcher.group("key"), matcher.group("value"));
-
-		return Collections.unmodifiableMap(map);
+		return file.isAbsolute() ? file : new File(workingPath, value).getCanonicalFile();
 	}
 
 	public String getHost(String key, String defaultValue) {
@@ -543,21 +480,15 @@ public class ServerConfig extends Properties {
 		return localhost.equals(host) ? Rmi.localhost : host;
 	}
 
-	private Map<String, String> filterParameters(String prefix) {
-		Map<String, String> filtered = new HashMap<String, String>();
-		for (String name : stringPropertyNames())
-			if (name.startsWith(prefix))
-				filtered.put(name.substring(prefix.length()), getProperty(name));
-		return filtered;
-	}
-
 	static public Properties getEffectiveProperties() {
 		Properties effective = new Properties(instance);
+
 		for (Object keyObj : System.getProperties().keySet()) {
 			String key = (String) keyObj;
 			if (key.startsWith(Z8SystemPrefix))
 				effective.setProperty(key, System.getProperty(key));
 		}
+
 		return effective;
 	}
 
@@ -621,8 +552,20 @@ public class ServerConfig extends Properties {
 		return databaseCharset;
 	}
 
+	static public File configPath() {
+		return configPath;
+	}
+
+	static public File applicationPath() {
+		return applicationPath;
+	}
+
 	static public File workingPath() {
 		return workingPath;
+	}
+
+	static public File libPath() {
+		return libPath;
 	}
 
 	static public String applicationServerHost() {

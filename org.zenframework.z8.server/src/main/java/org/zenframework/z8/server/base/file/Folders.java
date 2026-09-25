@@ -6,6 +6,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.types.file;
 
 public class Folders {
+
 	public static final String Files = "files";
 	public static final String Temp = Files + file.separator + "temp";
 	public static final String Logs = Files + file.separator + "logs";
@@ -15,5 +16,6 @@ public class Folders {
 	public static final String ReportsOutput = Reports + file.separator + "generated";
 
 	public static final File Base = ServerConfig.workingPath();
+	public static final File Lib = ServerConfig.libPath();
 
 }

@@ -156,4 +156,5 @@ abstract public class HubServer extends RmiServer implements IHubServer {
 
 		return serverInfo;
 	}
+
 }

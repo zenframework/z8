@@ -40,9 +40,15 @@ public class BuildProperties extends Properties {
 	}
 
 	public static BuildProperties instance() {
-		if (instance == null)
-			instance = new BuildProperties(new File(Folders.Base, FileName));
-		return instance;
+		if (instance != null)
+			return instance;
+
+		File file = new File(Folders.Lib, FileName);
+
+		if (!file.exists())
+			file = new File(Folders.Base, FileName);
+
+		return instance = new BuildProperties(file);
 	}
 
 	public static String getApplicationName() {
