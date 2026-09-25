@@ -11,11 +11,9 @@ import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.zenframework.z8.server.base.json.Json;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.expression.DefaultContext;
-import org.zenframework.z8.server.expression.ObjectContext;
 import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Vector;
@@ -46,10 +44,12 @@ public class Range {
 	private String subtotalsBy;
 	private Block subtotalBlock = null;
 	private Vector groupStartPosition = null;
-	private Vector lastResize = new Vector();
-	private SheetModifier.CellVisitor customVisitor = null;
 	private int sheet;
 	private String sheetName;
+
+	private AggregatorObject aggregator;
+	private Range aggregatorOwner;
+	private boolean subtotal = false;
 
 	private final List<Range> ranges = new ArrayList<Range>();
 	private final Set<Block> subtotalMerges = new HashSet<Block>();
@@ -216,13 +216,24 @@ public class Range {
 		return ranges;
 	}
 
-	public Vector getLastResize() {
-		return lastResize;
-	}
-	
-	public Range setCustomVisitor(SheetModifier.CellVisitor visitor) {
-		this.customVisitor = visitor;
+	private Range setAggregator(AggregatorObject aggregator, Range owner, boolean subtotal) {
+		this.aggregator = aggregator;
+		this.aggregatorOwner = owner;
+		this.subtotal = subtotal;
+
+		for (Range range : ranges)
+			range.setAggregator(aggregator, owner, subtotal);
+
 		return this;
+	}
+
+	public String key(String id) {
+		StringBuilder key = new StringBuilder(id);
+
+		for (Range range = this; range != null && range != aggregatorOwner; range = range.parent)
+			key.append('/').append(range.source.getIndex());
+
+		return key.toString();
 	}
 
 	public Range addRange(Range range) {
@@ -272,31 +283,14 @@ public class Range {
 		source.prepare(sheet);
 
 		Object previousGroupValue = null;
-		AggregatorObject aggregatorObj = null;
 		boolean firstRow = true;
 
-		SheetModifier.CellVisitor dataVisitor;
-		
-		if (subtotalsBy != null && !subtotalsBy.isEmpty()) {
-			aggregatorObj = new AggregatorObject();
+		boolean grouped = subtotalsBy != null && !subtotalsBy.isEmpty();
 
-			ObjectContext context = new ObjectContext(
-				DefaultContext.create()
-					.setVariable("agg", aggregatorObj)
-					.setVariable(Json.parameters.get(), ApplicationServer.getRequest().getParameters()),
-				report.getContext()
-			);
+		if (grouped)
+			setAggregator(new AggregatorObject(), this, false);
 
-			report.getExpression().setContext(context);
-
-			if (subtotalBlock != null)
-				dataVisitor = getAccumulatingVisitor(sheet, subtotalBlock, aggregatorObj);
-			else
-				dataVisitor = getBaseVisitor();
-
-		} else {
-			dataVisitor = getBaseVisitor();
-		}
+		SheetModifier.CellVisitor dataVisitor = getBaseVisitor();
 
 		Block target = block.move(baseShift);
 		Block filled = new Block(target.start(), block.size().component(axis.orthogonal()));
@@ -310,7 +304,7 @@ public class Range {
 			source.open();
 
 			while (source.next()) {
-				if (aggregatorObj != null && !firstRow) {
+				if (grouped && !firstRow) {
 					Object currentValue = source.getCurrentValue(subtotalsBy);
 
 					if (!objectsEqual(previousGroupValue, currentValue)) {
@@ -320,46 +314,47 @@ public class Range {
 
 						Vector subtotalPosition = filled.end(axis);
 
-						Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition, aggregatorObj);
+						Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition);
 
 						shift = shift.add(subtotalShift);
 						target = block.move(shift);
 						groupStartPosition = shift;
 
-						aggregatorObj.reset();
+						aggregator.reset();
 					}
 				}
+
+				if (aggregator != null && !subtotal)
+					source.accumulate(aggregator);
 
 				if (!shift.isZero())
 					sheet.copy(block, target.start(), false);
 
 				target = target.resize(applyInnerRanges(sheet, shift));
 
-				SheetModifier.CellVisitor visitor = customVisitor != null ? customVisitor : dataVisitor;
 				sheet.applyInnerMergedRegions(block, shift, getInnerBoundaries())
-					.visitSheetCells(shift, target, visitor);
+					.visitSheetCells(shift, target, dataVisitor);
 
 				filled = Block.boundaries(filled, target);
 				shift = shift.add(target.size(axis));
 				target = block.move(shift);
 
-				if (aggregatorObj != null) {
+				if (grouped) {
 					previousGroupValue = source.getCurrentValue(subtotalsBy);
 					firstRow = false;
-
 				}
 			}
 
-			if (aggregatorObj != null && !firstRow) {
+			if (grouped && !firstRow) {
 				Vector groupResize = shift.sub(Vector.unit(axis)).sub(groupStartPosition);
 
 				sheet.applyGroupMerges(groupStartPosition, groupResize, subtotalMerges, block, axis);
 
 				Vector subtotalPosition = filled.end(axis);
-				Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition, aggregatorObj);
+				Vector subtotalShift = insertSubtotalRow(sheet, subtotalPosition);
 				filled = filled.resize(subtotalShift);
 
-				aggregatorObj.reset();
+				aggregator.reset();
 			}
 
 		} finally {
@@ -378,7 +373,6 @@ public class Range {
 							+ " -> " + baseShift + ", " + filled + "\n\t- boundaries " + boundaries + " -> "
 							+ boundaries.move(baseShift).resize(resize) + "\n\t- stat: " + sheet.getStat());
 
-		this.lastResize = resize;
 		return resize;
 	}
 
@@ -390,97 +384,85 @@ public class Range {
 		return a.equals(b);
 	}
 
-	private Vector insertSubtotalRow(SheetModifier sheet, Vector subtotalPosition,
-			AggregatorObject aggregatorObj) {
+	private Vector insertSubtotalRow(SheetModifier sheet, Vector subtotalPosition) {
 		if (subtotalBlock == null)
 			return new Vector();
 
-		final Vector axisShift = subtotalPosition.component(axis)
-			.sub(subtotalBlock.start().component(axis));
-
+		Vector axisShift = subtotalPosition.component(axis).sub(subtotalBlock.start().component(axis));
 		Vector templateOffset = subtotalBlock.start().sub(block.start());
 
-		final Range subtotalRange = new Range()
-			.setReport(report)
-			.setBlock(subtotalBlock)
-			.setBoundaries(subtotalBlock)
-			.setSource(new SimpleSource(report.getContext()))
-			.setAxis(axis);
+		DataSource aggregatedSource = source.aggregated(aggregator, 1);
 
-		int cumul = 0;
-		for (Range child : ranges) {
-			final Axis childAxis = child.getAxis();
-			final int childCumul = cumul;
+		Range subtotalRange = new Range()
+				.setReport(report)
+				.setParent(this)
+				.setName(name)
+				.setBlock(subtotalBlock)
+				.setBoundaries(subtotalBlock)
+				.setSource(aggregatedSource)
+				.setAxis(axis);
 
-			Range subtotalChild = new Range()
-					.setReport(report)
-					.setBlock(child.getBlock().move(templateOffset))
-					.setBoundaries(child.getBoundaries() != null
-						? child.getBoundaries().move(templateOffset)
-						: child.getBlock().move(templateOffset))
-					.setSource(child.getSource())
-					.setAxis(child.getAxis());
+		for (Range child : ranges)
+			subtotalRange.addRange(child.copyForSubtotal(templateOffset));
 
-			subtotalChild.setCustomVisitor(new SheetModifier.CellVisitor() {
-				@Override
-				public void visit(Row row, int colNum, Cell cell, Vector shift) {
-					if (!isString(cell))
-						return;
+		subtotalRange.setAggregator(aggregator, subtotalRange, true);
 
-					Vector ownShift = shift != null ? shift.sub(axisShift) : new Vector();
-					int ownOffset = ownShift.component(childAxis).mod();
-					Vector offsetForAgg = childAxis == Axis.Horizontal
-							? new Vector(0, childCumul + ownOffset)
-							: new Vector(childCumul + ownOffset, 0);
+		DefaultContext context = report.getAggregationContext();
+		List<String> names = new ArrayList<String>();
 
-					aggregatorObj.setPositionOffset(offsetForAgg);
+		subtotalRange.registerAggregated(context, names);
 
-					evaluateAndSet(cell, cell.getStringCellValue());
+		try {
+			subtotalRange.apply(sheet, axisShift);
+		} finally {
+			for (String name : names)
+				context.removeVariable(name);
 
-					aggregatorObj.setPositionOffset(new Vector());
-				}
-			});
-
-			subtotalRange.addRange(subtotalChild);
-			cumul += child.getLastResize().component(child.getAxis()).mod();
+			restoreSources();
 		}
 
-		subtotalRange.setCustomVisitor(new SheetModifier.CellVisitor() {
-			@Override
-			public void visit(Row row, int colNum, Cell cell, Vector shift) {
-				if (cell == null)
-					return;
-
-				Vector livePos = new Vector(row.getRowNum(), colNum);
-				Vector shiftedTemplatePos = livePos.sub(axisShift);
-				PositionInfo info = resolvePosition(subtotalRange.getRanges(), shiftedTemplatePos);
-
-				if (info.isChildCell)
-					return;
-
-				Vector templatePos = info.axis == Axis.Horizontal
-						? new Vector(shiftedTemplatePos.row(), shiftedTemplatePos.col() - info.cumulExpansion)
-						: new Vector(shiftedTemplatePos.row() - info.cumulExpansion, shiftedTemplatePos.col());
-				
-				Block originBlock = new Block(templatePos.row(), templatePos.col(), 1, 1);
-
-				sheet.visitOriginCells(originBlock, new SheetModifier.CellVisitor() {
-					@Override
-					public void visit(Row originRow, int originCol, Cell originCell, Vector originShift) {
-						if (!isString(cell))
-							return;
-
-						aggregatorObj.setPositionOffset(info.toOffset());
-						evaluateAndSet(cell, originCell.getStringCellValue());
-						aggregatorObj.setPositionOffset(new Vector());
-					}
-				});
-			}
-		});
-
-		subtotalRange.apply(sheet, axisShift);
-
 		return subtotalBlock.size(axis);
+	}
+
+	private Range copyForSubtotal(Vector templateOffset) {
+		Block boundaries = getBoundaries() != null ? getBoundaries() : getBlock();
+
+		DataSource aggregatedSource = source.aggregated(aggregator, source.getIndex());
+
+		Range copy = new Range()
+				.setReport(report)
+				.setName(name)
+				.setBlock(getBlock().move(templateOffset))
+				.setBoundaries(boundaries.move(templateOffset))
+				.setSource(aggregatedSource)
+				.setAxis(axis);
+
+		for (Range child : ranges)
+			copy.addRange(child.copyForSubtotal(templateOffset));
+
+		return copy;
+	}
+
+	private void registerAggregated(DefaultContext context, List<String> names) {
+		if (source instanceof AggregatedSource) {
+			AggregatedSource aggregated = (AggregatedSource) source;
+			String root = report.getAggregatedRoot(aggregated.getOrigin().getObject());
+
+			if (root != null && !names.contains(root)) {
+				context.setVariable(root, report.getAggregatedRootObject(root));
+				names.add(root);
+			}
+		}
+
+		for (Range child : ranges)
+			child.registerAggregated(context, names);
+	}
+
+	private void restoreSources() {
+		for (Range child : ranges) {
+			child.getSource().setRange(child);
+			child.restoreSources();
+		}
 	}
 
 	private Vector applyInnerRanges(SheetModifier sheet, Vector shift) {
@@ -563,48 +545,6 @@ public class Range {
 		return sheet.getBoundaries();
 	}
 
-	private SheetModifier.CellVisitor getAccumulatingVisitor(SheetModifier sheet,
-			Block subtotalBlock, AggregatorObject aggregatorObj) {
-		return new SheetModifier.CellVisitor() {
-			@Override
-			public void visit(Row row, int colNum, Cell cell, Vector shift) {
-				if (cell == null)
-					return;
-
-				// TODO Use CellType with POI-16
-				int type = cell.getCellType();
-				Object value;
-
-				if (type == Cell.CELL_TYPE_STRING) {
-					String cellContent = cell.getStringCellValue();
-					value = evaluateAndSet(cell, cellContent);
-				} else if (type == Cell.CELL_TYPE_NUMERIC) {
-					value = cell.getNumericCellValue();
-				} else {
-					return;
-				}
-
-				Vector absolutePos = new Vector(row.getRowNum(), colNum);
-				Vector templatePos = absolutePos.sub(shift);
-
-				aggregatorObj.setCurrentCell(templatePos, value);
-
-				Vector offset = resolvePosition(ranges, templatePos).toOffset();
-				aggregatorObj.setPositionOffset(offset);
-
-				sheet.visitOriginCells(subtotalBlock, new SheetModifier.CellVisitor() {
-					@Override
-					public void visit(Row row, int colNum, Cell subtotalCell, Vector shift) {
-						if (isString(subtotalCell))
-							source.evaluate(subtotalCell.getStringCellValue());
-					}
-				});
-
-				aggregatorObj.setPositionOffset(new Vector());
-			}
-		};
-	}
-
 	private SheetModifier.CellVisitor getBaseVisitor() {
 		return new SheetModifier.CellVisitor() {
 			@Override
@@ -618,60 +558,9 @@ public class Range {
 		};
 	}
 
-	private static class PositionInfo {
-		final boolean isChildCell;
-		final int cumulExpansion;
-		final int offset;
-		final Axis axis;
-
-		PositionInfo(boolean isChildCell, int cumulExpansion, Axis axis) {
-			this(isChildCell, cumulExpansion, axis, cumulExpansion);
-		}
-
-		PositionInfo(boolean isChildCell, int cumulExpansion, Axis axis, int offset) {
-			this.isChildCell = isChildCell;
-			this.cumulExpansion = cumulExpansion;
-			this.axis = axis;
-			this.offset = offset;
-		}
-
-		Vector toOffset() {
-			return axis == Axis.Horizontal ? new Vector(0, offset) : new Vector(offset, 0);
-		}
-	}
-
-	private PositionInfo resolvePosition(List<Range> ranges, Vector templatePos) {
-		int cumulativeExpansion = 0;
-		Axis defaultAxis = Axis.Horizontal;
-
-		for (Range child : ranges) {
-			Axis childAxis = child.getAxis();
-			defaultAxis = childAxis;
-			int childOwnExpansion = child.getLastResize().component(childAxis).mod();
-			int childStart = child.getBlock().start(childAxis).mod();
-			int childEnd = child.getBlock().end(childAxis).mod();
-			int childSize = child.getBlock().size(childAxis).mod();
-			int pos = templatePos.component(childAxis).mod();
-
-			int adjustedStart = childStart + cumulativeExpansion;
-			int adjustedEnd = childEnd + cumulativeExpansion + childOwnExpansion;
-
-			if (pos < adjustedStart)
-				return new PositionInfo(false, cumulativeExpansion, childAxis);
-
-			if (pos < adjustedEnd) {
-				int copyIndex = (pos - adjustedStart) / childSize;
-				return new PositionInfo(true, cumulativeExpansion, childAxis, cumulativeExpansion + copyIndex * childSize);
-			}
-
-			cumulativeExpansion += childOwnExpansion;
-		}
-
-		return new PositionInfo(false, cumulativeExpansion, defaultAxis);
-	}
-
 	private Object evaluateAndSet(Cell cell, String expression) {
 		Object value = source.evaluate(expression);
+
 		if (value instanceof Number)
 			cell.setCellValue(((Number) value).doubleValue());
 		else if (value instanceof integer)

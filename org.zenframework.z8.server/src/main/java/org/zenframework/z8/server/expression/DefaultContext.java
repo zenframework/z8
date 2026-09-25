@@ -42,6 +42,11 @@ public class DefaultContext extends Context {
 		return setVariable(new Variable(name, value));
 	}
 
+	public DefaultContext removeVariable(String name) {
+		variables.remove(name);
+		return this;
+	}
+
 	public DefaultContext clear() {
 		variables.clear();
 		return this;

@@ -34,11 +34,14 @@ public class PoiReport {
 	private final Map<Integer, Range> ranges = new HashMap<Integer, Range>();
 	private final Map<Integer, String> sheetNames = new HashMap<Integer, String>();
 	private final Map<Integer, Collection<Integer>> hiddenColumns = new HashMap<Integer, Collection<Integer>>();
+	private final Map<String, OBJECT> aggregatedRoots = new HashMap<String, OBJECT>();
 	private final ReportOptions options;
 
 	private OBJECT context;
 
 	private Expression expression;
+
+	private DefaultContext aggregationContext;
 
 	public PoiReport(ReportOptions options) {
 		this.options = options;
@@ -96,10 +99,6 @@ public class PoiReport {
 		return this;
 	}
 
-	public OBJECT getContext() {
-		return context;
-	}
-
 	public File execute() {
 		Connection connection = ConnectionManager.get();
 		connection.beginTransaction(); // for large cursors
@@ -120,8 +119,7 @@ public class PoiReport {
 	public Expression getExpression() {
 		if (expression == null)
 			expression = new Expression()
-					.setContext(new ObjectContext(DefaultContext.create()
-							.setVariable(Json.parameters.get(), ApplicationServer.getRequest().getParameters()), context))
+					.setContext(getAggregationContext())
 					.setGetter(new Expression.Getter() {
 						@Override
 						@SuppressWarnings("rawtypes")
@@ -129,17 +127,70 @@ public class PoiReport {
 							if (value instanceof Wrapper)
 								return ((Wrapper) value).get();
 
-							if (value instanceof Field) {
-								Field field = (Field) value;
-								Select cursor = field.getCursor();
-								return cursor == null || cursor.isClosed() ? field : field.get();
-							}
+							if (value instanceof Field)
+								return getFieldValue((Field) value);
 
 							return value;
 						}
 					});
 
 		return expression;
+	}
+
+	public DefaultContext getAggregationContext() {
+		if (aggregationContext == null)
+			aggregationContext = new DefaultContext(new ObjectContext(DefaultContext.create()
+					.setVariable(Json.parameters.get(), ApplicationServer.getRequest().getParameters()), context));
+
+		return aggregationContext;
+	}
+
+	private String aggregatedPath(OBJECT object) {
+		String id = object.id();
+		String prefix = context.id() + '.';
+
+		return id.startsWith(prefix) ? id.substring(prefix.length()) : null;
+	}
+
+	public String getAggregatedRoot(OBJECT object) {
+		String path = aggregatedPath(object);
+
+		if (path == null)
+			return null;
+
+		int dot = path.indexOf('.');
+		return dot < 0 ? path : path.substring(0, dot);
+	}
+
+	public OBJECT getAggregatedRootObject(String root) {
+		OBJECT object = aggregatedRoots.get(root);
+
+		if (object == null) {
+			object = (OBJECT) DataSource.getMember(context, root).getCLASS().newInstance();
+			aggregatedRoots.put(root, object);
+		}
+
+		return object;
+	}
+
+	public OBJECT getAggregatedObject(OBJECT object) {
+		String path = aggregatedPath(object);
+
+		if (path == null)
+			return null;
+
+		int dot = path.indexOf('.');
+		OBJECT root = getAggregatedRootObject(dot < 0 ? path : path.substring(0, dot));
+
+		return dot < 0 ? root : DataSource.getMember(root, path.substring(dot + 1));
+	}
+
+	public static Object getFieldValue(Field field) {
+		if (field.changed())
+			return field.get();
+
+		Select cursor = field.getCursor();
+		return cursor == null || cursor.isClosed() ? field : field.get();
 	}
 
 	private File run() throws IOException, InvalidFormatException {
