@@ -17,6 +17,7 @@ import org.zenframework.z8.server.expression.DefaultContext;
 import org.zenframework.z8.server.reports.poi.math.Axis;
 import org.zenframework.z8.server.reports.poi.math.Block;
 import org.zenframework.z8.server.reports.poi.math.Vector;
+import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.decimal;
@@ -107,7 +108,7 @@ public class Range {
 	public Block getBlock() {
 		if (block == null) {
 			if (parent != null)
-				throw new IllegalStateException(this + " block is not set");
+				throw new IllegalStateException(Resources.format("Report.rangeBlockNotSet", this));
 			block = boundaries;
 		}
 
@@ -241,7 +242,7 @@ public class Range {
 
 		for (Range r : ranges)
 			if (r != range && range.getBoundaries().intersects(r.getBoundaries()))
-				throw new IllegalStateException(range + "  intersect " + r + " by boundaries");
+				throw new IllegalStateException(Resources.format("Report.rangesIntersect", range, r));
 
 		return this;
 	}
@@ -273,12 +274,13 @@ public class Range {
 		}
 
 		if (!block.in(boundaries))
-			throw new IllegalStateException(this + " address " + block + " is out of boundaries " + boundaries);
+			throw new IllegalStateException(Resources.format("Report.rangeOutOfBoundaries", this, block, boundaries));
 
 		Collections.sort(ranges, Comparator);
 
 		if (Trace && ranges.size() > 1)
-			ApplicationServer.getMonitor().logInfo("Report '" + report.getOptions().getName() + "': " + ranges);
+			ApplicationServer.getMonitor()
+					.logInfo(Resources.format("Report.traceRanges", report.getOptions().getName(), ranges));
 
 		source.prepare(sheet);
 
@@ -369,9 +371,9 @@ public class Range {
 
 		if (Trace)
 			ApplicationServer.getMonitor()
-					.logInfo("Report '" + report.getOptions().getName() + "':" + "\n\t- range " + block.toAddress()
-							+ " -> " + baseShift + ", " + filled + "\n\t- boundaries " + boundaries + " -> "
-							+ boundaries.move(baseShift).resize(resize) + "\n\t- stat: " + sheet.getStat());
+					.logInfo(Resources.format("Report.traceRangeApplied", report.getOptions().getName(),
+							block.toAddress(), baseShift, filled, boundaries,
+							boundaries.move(baseShift).resize(resize), sheet.getStat()));
 
 		return resize;
 	}
@@ -540,7 +542,7 @@ public class Range {
 			return boundaries;
 
 		if (ranges.size() > 1)
-			throw new IllegalStateException(this + ": multiple ranges must have defined boundaries");
+			throw new IllegalStateException(Resources.format("Report.rangeBoundariesRequired", this));
 
 		return sheet.getBoundaries();
 	}
