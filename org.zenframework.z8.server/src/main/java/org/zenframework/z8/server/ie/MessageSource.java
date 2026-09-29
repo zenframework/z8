@@ -24,6 +24,7 @@ import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonArray;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -498,10 +499,18 @@ public class MessageSource implements RmiSerializable, Serializable {
 		this.skipFiles = skipFiles;
 	}
 
-	public JsonArray toJson() {
-		JsonArray result = new JsonArray();
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.put("exportAll", exportAll);
+		result.put("skipFiles", skipFiles);
+		result.put("properties", properties);
+
+		JsonArray records = new JsonArray();
 		for(ExportSource src : sources)
-			result.put(src.toJson());
+			records.put(src.toJson());
+		result.put("data", records);
+		result.put("rules", exportRules.toJson());
+
 		return result;
 	}
 }

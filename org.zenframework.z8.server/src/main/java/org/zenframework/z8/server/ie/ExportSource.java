@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.StringJoiner;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.Aggregation;
@@ -141,7 +140,9 @@ public class ExportSource implements RmiSerializable, Serializable {
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
-		result.put(tableName, records);
+		result.put("tableName", tableName);
+		result.put("records", records);
+		result.put("fields", fieldNames);
 		return result;
 	}
 }

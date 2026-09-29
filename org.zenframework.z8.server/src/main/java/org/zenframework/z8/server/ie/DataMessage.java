@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
@@ -274,6 +275,12 @@ public class DataMessage extends Message {
 
 	@Override
 	public String toJson() {
-		return source.toJson().toString();
+		JsonObject result = new JsonObject();
+		result.put("class", getCLASS().name());
+		result.put("type", type);
+		result.put("description", description.toString());
+		result.put("body", source.toJson());
+
+		return result.toString();
 	}
 }

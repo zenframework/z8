@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
 public class ExportRules implements RmiSerializable, Serializable {
@@ -81,5 +82,16 @@ public class ExportRules implements RmiSerializable, Serializable {
 
 		tables = (Map<String, TableRules>)in.readObject();
 		defaultPolicy = (ImportPolicy)in.readObject();
+	}
+
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.put("defaultPolicy", defaultPolicy.name());
+	
+		JsonObject tableRules = new JsonObject();
+		tables.forEach((key, value) -> tableRules.put(key, value.toJson()));
+		result.put("tableRules", tableRules);
+
+		return result;
 	}
 }

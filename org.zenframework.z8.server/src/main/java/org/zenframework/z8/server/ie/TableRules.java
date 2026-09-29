@@ -10,6 +10,7 @@ import java.util.Map;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
 public class TableRules implements RmiSerializable, Serializable {
@@ -54,7 +55,7 @@ public class TableRules implements RmiSerializable, Serializable {
 	public void setPolicy(guid recordId, String field, ImportPolicy policy) {
 		Map<String, ImportPolicy> fields = recordFields.get(recordId);
 
-		if(fields == null) {
+		if (fields == null) {
 			fields = new HashMap<String, ImportPolicy>();
 			recordFields.put(recordId, fields);
 		}
@@ -76,15 +77,15 @@ public class TableRules implements RmiSerializable, Serializable {
 
 		ImportPolicy policy = null;
 
-		if(fieldsMap != null)
+		if (fieldsMap != null)
 			policy = fieldsMap.get(field);
 
-		if(policy != null)
+		if (policy != null)
 			return policy;
 
 		policy = records.get(recordId);
 
-		if(policy != null)
+		if (policy != null)
 			return policy;
 
 		policy = fields.get(field);
@@ -116,9 +117,29 @@ public class TableRules implements RmiSerializable, Serializable {
 		@SuppressWarnings("unused")
 		long version = RmiIO.readLong(in);
 
-		recordFields = (Map<guid, Map<String, ImportPolicy>>)in.readObject();
-		records = (Map<guid, ImportPolicy>)in.readObject();
-		fields = (Map<String, ImportPolicy>)in.readObject();
-		defaultPolicy = (ImportPolicy)in.readObject();
+		recordFields = (Map<guid, Map<String, ImportPolicy>>) in.readObject();
+		records = (Map<guid, ImportPolicy>) in.readObject();
+		fields = (Map<String, ImportPolicy>) in.readObject();
+		defaultPolicy = (ImportPolicy) in.readObject();
+	}
+
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.put("defaultPolicy", defaultPolicy.name());
+		JsonObject recordsObject = new JsonObject();
+		records.forEach((key, value) -> recordsObject.put(key.toString(), value.name()));
+		result.put("records", recordsObject);
+		JsonObject fieldsObject = new JsonObject();
+		fields.forEach((key, value) -> fieldsObject.put(key, value.name()));
+		result.put("fields", fieldsObject);
+		JsonObject recordFieldsObject = new JsonObject();
+		recordFields.forEach((key, value) -> {
+			JsonObject innerJson = new JsonObject();
+			value.forEach((innerKey, innerValue) -> innerJson.put(innerKey, innerValue.name()));
+			recordFieldsObject.put(key.toString(), innerJson);
+		});
+		result.put("recordFields", recordFieldsObject);
+
+		return result;
 	}
 }
