@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -89,6 +90,7 @@ public class ServerConfig extends Config {
 	static final private String TransportJobThreads = "transport.job.threads";
 	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
 	static final private String TransportQueueTransactionSize = "transport.job.transportQueueTransactionSize";
+	static final private String TransportLogFailsFrom = "transport.logFailsFrom";
 	static final private String MessageQueueTransactionSize = "transport.job.messageQueueTransactionSize";
 	static final private String TransportJobIterations = "transport.job.iterations";
 
@@ -217,6 +219,7 @@ public class ServerConfig extends Config {
 	static private int transportQueueTransactionSize;
 	static private int messageQueueTransactionSize;
 	static private int transportJobIterations;
+	private static Set<String> transportLogFailsFrom;
 
 	static private String exchangeJobCron;
 	static private File exchangeFolderIn;
@@ -377,6 +380,8 @@ public class ServerConfig extends Config {
 		transportQueueTransactionSize = instance.getProperty(TransportQueueTransactionSize, 500);
 		messageQueueTransactionSize = instance.getProperty(MessageQueueTransactionSize, 50);
 		transportJobIterations = instance.getProperty(TransportJobIterations, 10);
+		String[] logConfig = instance.getProperty(TransportLogFailsFrom, new String[] { });
+		transportLogFailsFrom = new HashSet<>(Arrays.asList(logConfig));
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
 		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in");
@@ -710,6 +715,10 @@ public class ServerConfig extends Config {
 
 	public static int transportQueueTransactionSize() {
 		return transportQueueTransactionSize;
+	}
+
+	public static Set<String> transportLogFailsFrom() {
+		return transportLogFailsFrom;
 	}
 
 	public static int messageQueueTransactionSize() {

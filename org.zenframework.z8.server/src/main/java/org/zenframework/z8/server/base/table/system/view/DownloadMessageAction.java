@@ -6,6 +6,7 @@ import org.zenframework.z8.server.base.application.Application;
 import org.zenframework.z8.server.base.form.action.Action;
 import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
+import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.file;
@@ -37,9 +38,10 @@ public class DownloadMessageAction extends Action {
 	@Override
 	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		TransportQueue record = TransportQueue.newInstance();
-		for(guid recordId : (Collection<guid>)records) {
-			String jsonString = record.getMessage(recordId).toJson().toString();
-			file json = file.createTempFile("tq-", "json");
+		for (guid recordId : (Collection<guid>) records) {
+			Message message = record.getMessage(recordId);
+			String jsonString = message.toJson().toString();
+			file json = file.createTempFile("tq-" + message.getId() + "-", "json");
 			json.write(jsonString);
 			Application.z8_print(json);
 		}

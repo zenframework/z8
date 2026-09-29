@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.base.table.system.Files;
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Session;
@@ -48,7 +49,8 @@ public class MessageAcceptor {
 		try {
 			return message.accept();
 		} catch (Throwable th) {
-			logMessage(id, message, th);
+			if (shouldLog(message.getSender()))
+				logMessage(id, message, th);
 			throw th;
 		} finally {
 			synchronized (lock) {
@@ -65,19 +67,30 @@ public class MessageAcceptor {
 		return message.getId();
 	}
 
+	private static boolean shouldLog(String sender) {
+		Set<String> shouldLog = ServerConfig.transportLogFailsFrom();
+		if (shouldLog.contains("*")) {
+			return true;
+		}
+		return shouldLog.contains(sender);
+	}
+
 	static private void logMessage(guid id, Message message, Throwable th) {
 		try {
+			String sender = message.getSender().replaceAll("[\\\\/:*?\"<>|]", "_");
 			File logDir = new File(Folders.Base, "failed-messages");
+			logDir = new File(logDir, "from-" + sender);
 			if (!logDir.exists() && !logDir.mkdirs()) {
 				throw new IOException("Не удалось создать директорию для логов: " + logDir.getAbsolutePath());
 			}
 
 			String fileName = String.format("%s_%d.json", id.toString(), System.currentTimeMillis());
 			Path logPath = new File(logDir, fileName).toPath();
-			JsonObject messageJson = message.toJson();
-			if(th != null)
-				messageJson.put("exception", th.getMessage());
-			byte[] bytes = messageJson.toString().getBytes(StandardCharsets.UTF_8);
+			JsonObject rootJson = new JsonObject();
+			rootJson.put("message", message.toJson());
+			String thMessage = th.getMessage();
+			rootJson.put("exception", thMessage == null ? th.getClass().getName() : thMessage);
+			byte[] bytes = rootJson.toString().getBytes(StandardCharsets.UTF_8);
 			java.nio.file.Files.write(logPath, bytes);
 		} catch (Throwable e) {
 			Trace.logError(e);
