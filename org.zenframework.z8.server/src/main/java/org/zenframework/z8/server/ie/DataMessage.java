@@ -276,6 +276,9 @@ public class DataMessage extends Message {
 	@Override
 	public String toJson() {
 		JsonObject result = new JsonObject();
+		result.put("id", getId());
+		result.put("sender", getSender());
+		result.put("address", getAddress());
 		result.put("class", getCLASS().name());
 		result.put("type", type);
 		result.put("description", description.toString());

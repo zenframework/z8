@@ -13,6 +13,7 @@ import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.file;
@@ -144,6 +145,13 @@ public class FileMessage extends Message {
 
 	@Override
 	public String toJson() {
-		return file.toJsonObject().toString();
+		JsonObject result = new JsonObject();
+		result.put("id", getId());
+		result.put("sender", getSender());
+		result.put("address", getAddress());
+		result.put("class", getCLASS().name());
+		result.put("file", file.toJsonObject());
+
+		return result.toString();
 	}
 }
