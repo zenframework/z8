@@ -274,6 +274,6 @@ public class DataMessage extends Message {
 
 	@Override
 	public String toJson() {
-		return source.toJson();
+		return source.toJson().toString();
 	}
 }

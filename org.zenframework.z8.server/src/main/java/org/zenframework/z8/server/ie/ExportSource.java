@@ -16,6 +16,7 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
 public class ExportSource implements RmiSerializable, Serializable {
@@ -138,10 +139,9 @@ public class ExportSource implements RmiSerializable, Serializable {
 		records = (Collection<guid>)in.readObject();
 	}
 
-	public String toJson() {
-		StringJoiner result = new StringJoiner(", ", "{ \"" + tableName + "\": [", "] }");
-		for(guid recordId : records)
-			result.add("'" + recordId + "'");
-		return result.toString();
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.put(tableName, records);
+		return result;
 	}
 }
