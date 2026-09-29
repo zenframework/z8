@@ -76,7 +76,7 @@ public class MessageAcceptor {
 			Path logPath = new File(logDir, fileName).toPath();
 			JsonObject messageJson = message.toJson();
 			if(th != null)
-				messageJson.put("exception", th.toString());
+				messageJson.put("exception", th.getMessage());
 			byte[] bytes = messageJson.toString().getBytes(StandardCharsets.UTF_8);
 			java.nio.file.Files.write(logPath, bytes);
 		} catch (Throwable e) {
