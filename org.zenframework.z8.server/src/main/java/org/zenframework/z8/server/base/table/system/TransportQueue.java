@@ -55,6 +55,7 @@ public class TransportQueue extends Table {
 		public static String Processed = "TransportQueue.processed";
 		public static String BytesTransferred = "TransportQueue.bytesTransferred";
 		public static String RestartTransport = "TransportQueue.restartTransport";
+		public static String DownloadMessage = "TransportQueue.downloadMessage";
 	}
 
 	static public class displayNames {
@@ -69,6 +70,7 @@ public class TransportQueue extends Table {
 		public static String Processed = Resources.get(strings.Processed);
 		public static String BytesTransferred = Resources.get(strings.BytesTransferred);
 		public static String RestartTransport = Resources.get(strings.RestartTransport);
+		public static String DownloadMessage = Resources.get(strings.DownloadMessage);
 	}
 
 	static public class CLASS<T extends TransportQueue> extends Table.CLASS<T> {

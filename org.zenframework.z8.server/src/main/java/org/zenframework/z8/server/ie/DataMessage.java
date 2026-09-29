@@ -271,4 +271,9 @@ public class DataMessage extends Message {
 
 		description.append(table.name() + ": " + recordsCount);
 	}
+
+	@Override
+	public String toJson() {
+		return source.toJson();
+	}
 }

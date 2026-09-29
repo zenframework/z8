@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.Table.CLASS;
@@ -496,5 +497,12 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	public void setSkipFiles(boolean skipFiles) {
 		this.skipFiles = skipFiles;
+	}
+
+	public String toJson() {
+		StringJoiner result = new StringJoiner(",\n", "[", "]");
+		for(ExportSource src : sources)
+			result.add(src.toJson());
+		return result.toString();
 	}
 }

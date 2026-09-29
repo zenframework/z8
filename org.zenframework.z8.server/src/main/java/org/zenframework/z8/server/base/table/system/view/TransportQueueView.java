@@ -22,6 +22,7 @@ public class TransportQueueView extends TransportQueue {
 		}
 	}
 
+	protected DownloadMessageAction.CLASS<DownloadMessageAction> downloadMessage = new DownloadMessageAction.CLASS<DownloadMessageAction>(this);
 	//protected RestartTransportAction.CLASS<RestartTransportAction> restartTransport = new RestartTransportAction.CLASS<RestartTransportAction>(this);
 
 	private TransportQueueView(IObject container) {
@@ -32,6 +33,7 @@ public class TransportQueueView extends TransportQueue {
 	public void initMembers() {
 		super.initMembers();
 
+		objects.add(downloadMessage);
 		//objects.add(restartTransport);
 	}
 
@@ -66,8 +68,10 @@ public class TransportQueueView extends TransportQueue {
 		names.add(sender);
 		names.add(ordinal);
 
+		downloadMessage.setIndex("downloadMessage");
 		//restartTransport.setIndex("restartTransport");
 
+		actions.add(downloadMessage);
 		//actions.add(restartTransport);
 	}
 }

@@ -75,6 +75,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String address;
 	private int failAction = Fail.getInt();
 
+	abstract public String toJson();
+
 	abstract public void setBytesTransferred(long bytesTransferred);
 
 	abstract protected void write(ObjectOutputStream out) throws IOException;
@@ -88,7 +90,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	abstract protected boolean apply();
 
 	abstract protected void initDescription();
-	
+
 	public Message(IObject container) {
 		super(container);
 	}

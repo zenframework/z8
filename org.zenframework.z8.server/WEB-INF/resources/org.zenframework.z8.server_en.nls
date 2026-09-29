@@ -76,6 +76,7 @@
 	<entry key="TransportQueue.processed">Procsssed</entry>
 	<entry key="TransportQueue.bytesTransferred">Sent, B</entry>
 	<entry key="TransportQueue.restartTransport">Restarting transport</entry>
+	<entry key="TransportQueue.downloadMessage">Download message as JSON</entry>
 
 	<!-- RestartTransportAction -->
 	<entry key="Transport.restart">Transport has been restarted</entry>

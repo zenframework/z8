@@ -141,4 +141,9 @@ public class FileMessage extends Message {
 	public void z8_setFile(file file) {
 		setFile(file);
 	}
+
+	@Override
+	public String toJson() {
+		return file.toJsonObject().toString();
+	}
 }

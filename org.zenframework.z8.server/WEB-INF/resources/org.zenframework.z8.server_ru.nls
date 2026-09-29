@@ -76,6 +76,7 @@
 	<entry key="TransportQueue.processed">Обработано</entry>
 	<entry key="TransportQueue.bytesTransferred">Отправлено, Б</entry>
 	<entry key="TransportQueue.restartTransport">Перезапуск транспорта</entry>
+	<entry key="TransportQueue.downloadMessage">Скачать сообщение в формате json</entry>
 
 	<!-- RestartTransportAction -->
 	<entry key="Transport.restart">Транспортное сообщение было перезапущено</entry>
