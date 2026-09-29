@@ -110,10 +110,6 @@ public abstract class DataSource {
 
 	public DataSource aggregated(AggregatorObject aggregator, int count) {
 		OBJECT aggregatedObject = range.getReport().getAggregatedObject(getObject());
-
-		if (aggregatedObject == null)
-			return this;
-
 		return new AggregatedSource(this, aggregator, aggregatedObject, count).setMetadata(metadata);
 	}
 

@@ -419,8 +419,6 @@ public class Range {
 		} finally {
 			for (String name : names)
 				context.removeVariable(name);
-
-			restoreSources();
 		}
 
 		return subtotalBlock.size(axis);
@@ -446,25 +444,16 @@ public class Range {
 	}
 
 	private void registerAggregated(DefaultContext context, List<String> names) {
-		if (source instanceof AggregatedSource) {
-			AggregatedSource aggregated = (AggregatedSource) source;
-			String root = report.getAggregatedRoot(aggregated.getOrigin().getObject());
+		AggregatedSource aggregated = (AggregatedSource) source;
+		String root = report.getAggregatedRoot(aggregated.getOrigin().getObject());
 
-			if (root != null && !names.contains(root)) {
-				context.setVariable(root, report.getAggregatedRootObject(root));
-				names.add(root);
-			}
+		if (!root.isEmpty() && !names.contains(root)) {
+			context.setVariable(root, report.getAggregatedRootObject(root));
+			names.add(root);
 		}
 
 		for (Range child : ranges)
 			child.registerAggregated(context, names);
-	}
-
-	private void restoreSources() {
-		for (Range child : ranges) {
-			child.getSource().setRange(child);
-			child.restoreSources();
-		}
 	}
 
 	private Vector applyInnerRanges(SheetModifier sheet, Vector shift) {

@@ -149,20 +149,20 @@ public class PoiReport {
 		String id = object.id();
 		String prefix = context.id() + '.';
 
-		return id.startsWith(prefix) ? id.substring(prefix.length()) : null;
+		return id.startsWith(prefix) ? id.substring(prefix.length()) : "";
 	}
 
 	public String getAggregatedRoot(OBJECT object) {
 		String path = aggregatedPath(object);
-
-		if (path == null)
-			return null;
-
 		int dot = path.indexOf('.');
+
 		return dot < 0 ? path : path.substring(0, dot);
 	}
 
 	public OBJECT getAggregatedRootObject(String root) {
+		if (root.isEmpty())
+			return new OBJECT.CLASS<OBJECT>(null).get();
+
 		OBJECT object = aggregatedRoots.get(root);
 
 		if (object == null) {
@@ -175,10 +175,6 @@ public class PoiReport {
 
 	public OBJECT getAggregatedObject(OBJECT object) {
 		String path = aggregatedPath(object);
-
-		if (path == null)
-			return null;
-
 		int dot = path.indexOf('.');
 		OBJECT root = getAggregatedRootObject(dot < 0 ? path : path.substring(0, dot));
 
