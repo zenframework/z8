@@ -144,7 +144,7 @@ public class FileMessage extends Message {
 	}
 
 	@Override
-	public String toJson() {
+	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
 		result.put("id", getId());
 		result.put("sender", getSender());
@@ -152,6 +152,6 @@ public class FileMessage extends Message {
 		result.put("class", getCLASS().name());
 		result.put("file", file.toJsonObject());
 
-		return result.toString();
+		return result;
 	}
 }

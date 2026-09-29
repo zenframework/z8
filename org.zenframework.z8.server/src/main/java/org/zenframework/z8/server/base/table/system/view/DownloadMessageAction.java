@@ -38,7 +38,7 @@ public class DownloadMessageAction extends Action {
 	public void z8_execute(RCollection records, Query.CLASS<? extends Query> context, RCollection selected, Query.CLASS<? extends Query> query) {
 		TransportQueue record = TransportQueue.newInstance();
 		for(guid recordId : (Collection<guid>)records) {
-			String jsonString = record.getMessage(recordId).toJson();
+			String jsonString = record.getMessage(recordId).toJson().toString();
 			file json = file.createTempFile("tq-", "json");
 			json.write(jsonString);
 			Application.z8_print(json);

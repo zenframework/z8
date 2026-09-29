@@ -12,6 +12,7 @@ import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
@@ -47,7 +48,7 @@ public class MessageAcceptor {
 		try {
 			return message.accept();
 		} catch (Throwable th) {
-			logMessage(id, message);
+			logMessage(id, message, th);
 			throw th;
 		} finally {
 			synchronized (lock) {
@@ -64,7 +65,7 @@ public class MessageAcceptor {
 		return message.getId();
 	}
 
-	static private void logMessage(guid id, Message message) {
+	static private void logMessage(guid id, Message message, Throwable th) {
 		try {
 			File logDir = new File(Folders.Base, "failed-messages");
 			if (!logDir.exists() && !logDir.mkdirs()) {
@@ -73,9 +74,12 @@ public class MessageAcceptor {
 
 			String fileName = String.format("%s_%d.json", id.toString(), System.currentTimeMillis());
 			Path logPath = new File(logDir, fileName).toPath();
-			byte[] bytes = message.toJson().getBytes(StandardCharsets.UTF_8);
+			JsonObject messageJson = message.toJson();
+			if(th != null)
+				messageJson.put("exception", th.toString());
+			byte[] bytes = messageJson.toString().getBytes(StandardCharsets.UTF_8);
 			java.nio.file.Files.write(logPath, bytes);
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			Trace.logError(e);
 		}
 	}

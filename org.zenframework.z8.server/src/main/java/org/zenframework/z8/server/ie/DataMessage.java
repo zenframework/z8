@@ -274,7 +274,7 @@ public class DataMessage extends Message {
 	}
 
 	@Override
-	public String toJson() {
+	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
 		result.put("id", getId());
 		result.put("sender", getSender());
@@ -284,6 +284,6 @@ public class DataMessage extends Message {
 		result.put("description", description.toString());
 		result.put("body", source.toJson());
 
-		return result.toString();
+		return result;
 	}
 }

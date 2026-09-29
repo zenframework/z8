@@ -21,6 +21,7 @@ import org.zenframework.z8.server.engine.Database;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Session;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.IRequest;
 import org.zenframework.z8.server.request.Request;
@@ -75,7 +76,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	private String address;
 	private int failAction = Fail.getInt();
 
-	abstract public String toJson();
+	abstract public JsonObject toJson();
 
 	abstract public void setBytesTransferred(long bytesTransferred);
 
