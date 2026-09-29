@@ -506,11 +506,18 @@ public class MessageSource implements RmiSerializable, Serializable {
 		result.put("properties", properties);
 
 		JsonArray records = new JsonArray();
-		for(ExportSource src : sources)
-			records.put(src.toJson());
+		sources.forEach(src -> records.put(src.toJson()));
 		result.put("data", records);
 		result.put("rules", exportRules.toJson());
+		result.put("inserts", getRecordInfoJson(inserts));
+		result.put("updates", getRecordInfoJson(updates));
 
+		return result;
+	}
+	
+	private JsonArray getRecordInfoJson(Collection<RecordInfo> infos) {
+		JsonArray result = new JsonArray();
+		infos.forEach(info -> result.put(info.toJson()));
 		return result;
 	}
 }

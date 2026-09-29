@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
+import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.guid;
 
 public class RecordInfo implements RmiSerializable, Serializable {
@@ -75,4 +76,14 @@ public class RecordInfo implements RmiSerializable, Serializable {
 		return String.format("%s[%s]", table, id);
 	}
 
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.put("id", id);
+		result.put("table", table);
+		JsonObject infos = new JsonObject();
+		fields.forEach(field -> infos.put(field.name(), field.value().toString()));
+		result.put("fields", infos);
+
+		return result;
+	}
 }
