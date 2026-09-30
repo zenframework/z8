@@ -84,14 +84,17 @@ public class MessageAcceptor {
 				throw new IOException("Не удалось создать директорию для логов: " + logDir.getAbsolutePath());
 			}
 
-			String fileName = String.format("%s_%d.json", id.toString(), System.currentTimeMillis());
-			Path logPath = new File(logDir, fileName).toPath();
+			String thMessage = th.getMessage();
+			thMessage = thMessage == null ? th.getClass().getName() : thMessage;
+			String fileName = String.format("%s_%d.json", id.toString(), thMessage.hashCode());
+			File logFile = new File(logDir, fileName);
+			if(logFile.exists())
+				return;
 			JsonObject rootJson = new JsonObject();
 			rootJson.put("message", message.toJson());
-			String thMessage = th.getMessage();
-			rootJson.put("exception", thMessage == null ? th.getClass().getName() : thMessage);
+			rootJson.put("exception", thMessage);
 			byte[] bytes = rootJson.toString().getBytes(StandardCharsets.UTF_8);
-			java.nio.file.Files.write(logPath, bytes);
+			java.nio.file.Files.write(logFile.toPath(), bytes);
 		} catch (Throwable e) {
 			Trace.logError(e);
 		}
