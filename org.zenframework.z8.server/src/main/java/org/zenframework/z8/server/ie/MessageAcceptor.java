@@ -3,7 +3,6 @@ package org.zenframework.z8.server.ie;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,7 +87,7 @@ public class MessageAcceptor {
 			thMessage = thMessage == null ? th.getClass().getName() : thMessage;
 			String fileName = String.format("%s_%d.json", id.toString(), thMessage.hashCode());
 			File logFile = new File(logDir, fileName);
-			if(logFile.exists())
+			if(logFile.exists() && logFile.length() > 0)
 				return;
 			JsonObject rootJson = new JsonObject();
 			rootJson.put("message", message.toJson());
