@@ -12,8 +12,10 @@ import org.zenframework.z8.server.db.sql.functions.Array;
 import org.zenframework.z8.server.db.sql.functions.Average;
 import org.zenframework.z8.server.db.sql.functions.Concat;
 import org.zenframework.z8.server.db.sql.functions.Count;
+import org.zenframework.z8.server.db.sql.functions.JsonAgg;
 import org.zenframework.z8.server.db.sql.functions.Max;
 import org.zenframework.z8.server.db.sql.functions.Min;
+import org.zenframework.z8.server.db.sql.functions.ArrayAgg;
 import org.zenframework.z8.server.db.sql.functions.Sum;
 import org.zenframework.z8.server.exceptions.db.UnknownDatabaseException;
 
@@ -48,7 +50,7 @@ public class SqlField extends SqlToken {
 		if(aggregation != Aggregation.None)
 			options.enableAggregation();
 
-		return aggregate(token, options.isAggregationEnabled() ? aggregation : Aggregation.None).format(vendor, options, logicalContext);
+		return aggregate(token, options.isAggregationEnabled() ? aggregation : Aggregation.None, options).format(vendor, options, logicalContext);
 	}
 
 	private SqlToken getToken(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
@@ -63,7 +65,7 @@ public class SqlField extends SqlToken {
 		return new SqlStringToken(alias, type);
 	}
 
-	public SqlToken aggregate(SqlToken token, Aggregation aggregation) {
+	public SqlToken aggregate(SqlToken token, Aggregation aggregation, FormatOptions options) {
 		switch(aggregation) {
 		case Sum:
 			return new Sum(token);
@@ -75,10 +77,16 @@ public class SqlField extends SqlToken {
 			return new Average(token);
 		case Count:
 			return new Count(token);
-		case Array:
-			return new Array(token, false);
+		case Array: 
 		case Distinct:
-			return new Array(token, true);
+			boolean distinct = aggregation == Aggregation.Distinct;
+			Collection<Field> orderBy = field.getArrayOrderBy();
+			if(orderBy.isEmpty()) {
+				return new Array(token, distinct);
+			} else {
+				boolean asJson = !options.isOrderBy();
+				return asJson ? new JsonAgg(token, distinct, orderBy) : new ArrayAgg(token, distinct, orderBy);
+			}
 		case Concat:
 			return new Concat(token);
 		default:

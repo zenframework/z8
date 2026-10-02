@@ -22,6 +22,7 @@ public class Field extends Control {
 
 	public Field[] usedFields;
 	public Field[] columns;                   // Дополнительные колонки в выпадающем списке
+	public Field[] arrayOrderBy;
 
 	public FieldType getType();
 	public string getTypeName();
