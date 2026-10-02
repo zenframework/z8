@@ -9,6 +9,10 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.zenframework.z8.rmi.ObjectIO;
 import org.zenframework.z8.server.base.table.system.Domains;
@@ -43,6 +47,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	static private final int MB = 1024 * 1024;
 	static private final int MessageSizeThreshold = 10 * MB; // 10MB
+	static private final int ImportRetries = 2;
+
+	static private final Set<String> RetriableStates = new HashSet<String>(Arrays.asList("23505" /* duplicate key */));
 
 	static protected final String FileUrlPrefix = "file:";
 	
@@ -338,52 +345,65 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		ApplicationServer.setRequest(request);
 
 		Connection connection = transactive() ? ConnectionManager.get() : null;
+		Throwable lastError = null;
 
 		try {
-			if(connection != null)
-				connection.beginTransaction();
+			for (int i = 0; i < ImportRetries; i++) {
+				try {
+					if (connection != null)
+						connection.beginTransaction();
 
-			boolean result = callImport(localSend);
+					boolean result = callImport(localSend);
 
-			if(connection != null)
-				connection.commit();
+					if (connection != null)
+						connection.commit();
 
-			return result;
-		} catch(Throwable e) {
-			if(connection != null)
-				connection.rollback();
+					return result;
+				} catch (Throwable e) {
+					if (connection != null)
+						connection.rollback();
 
-			onAcceptFail(e);
+					lastError = e;
 
-			if(failAction == Cancel.getInt())
+					if (!isRetriable(e))
+						break;
+				}
+			}
+
+			if (lastError == null)
+				throw new IllegalStateException("Illegal import message state: no result, no error");
+
+			onAcceptFail(lastError);
+
+			if (failAction == Cancel.getInt())
 				return true;
-			if(failAction == Retry.getInt())
+			if (failAction == Retry.getInt())
 				return false;
 
-			Trace.logError("DataMessage [" + sender + '/' + ordinal + "] failed", e);
+			Trace.logError("DataMessage [" + sender + '/' + ordinal + "] failed", lastError);
 
-			throw new RuntimeException(e);
+			throw new RuntimeException(lastError);
 		} finally {
 			ApplicationServer.setRequest(currentRequest);
-			if(!localSend)
+
+			if (!localSend)
 				ConnectionManager.release();
 		}
 	}
 
 	private boolean callImport(boolean localSend) {
-		if(localSend) {
+		if (localSend) {
 			beforeExport();
 			afterExport();
 		}
 
 		beforeImport();
 
-		if(!localSend) {
-			if(!apply())
-				return false;
-		}
+		if (!localSend && !apply())
+			return false;
 
 		afterImport();
+
 		return true;
 	}
 
@@ -407,17 +427,13 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		send();
 	}
 
-	public void z8_beforeImport() {
-	}
+	public void z8_beforeImport() {}
 
-	public void z8_afterImport() {
-	}
+	public void z8_afterImport() {}
 
-	public void z8_beforeExport() {
-	}
+	public void z8_beforeExport() {}
 
-	public void z8_afterExport() {
-	}
+	public void z8_afterExport() {}
 	
 	public void z8_setFailAction(integer action) {
 		failAction = action.getInt();
@@ -425,4 +441,9 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 
 	public void z8_onPrepareFail(exception e) { }
 	public void z8_onAcceptFail(exception e) { }
+
+	private static boolean isRetriable(Throwable e) {
+		return e instanceof SQLException && RetriableStates.contains(((SQLException) e).getSQLState());
+	}
+
 }
