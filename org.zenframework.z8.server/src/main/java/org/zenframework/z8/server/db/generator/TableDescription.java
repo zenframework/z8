@@ -83,6 +83,11 @@ public class TableDescription {
 		return str.toString();
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 	protected int calculateControlSum() {
 		int result = 0;
 

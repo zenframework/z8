@@ -31,7 +31,7 @@ public class ForeignKeyGenerator {
 			debug("drop foreign key " + foreignKey);
 		} catch(ObjectNotFoundException e) {
 		} catch(SQLException e) {
-			logger.error(e, Resources.format("Generator.dropForeignKeyError", foreignKey.getTable(), foreignKey.getName(), ErrorUtils.getMessage(e)));
+			logger.error(e, Resources.format("Generator.dropForeignKeyError", foreignKey.getTable(), foreignKey.getOldName(), ErrorUtils.getMessage(e)));
 		}
 	}
 

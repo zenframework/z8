@@ -72,7 +72,7 @@ public abstract class DatabaseDialect {
 	}
 
 	public String getDropForeignKey(IDatabase database, ForeignKey foreignKey) {
-		return "alter table " + formatTableName(database, foreignKey.getTable()) + " drop constraint " + quote(foreignKey.getName());
+		return "alter table " + formatTableName(database, foreignKey.getTable()) + " drop constraint " + quote(foreignKey.getOldName());
 	}
 
 	public String getUpdate(IDatabase database, String tableName, String alias) {
