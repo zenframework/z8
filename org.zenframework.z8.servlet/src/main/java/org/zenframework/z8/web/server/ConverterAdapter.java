@@ -42,11 +42,6 @@ public class ConverterAdapter extends Adapter {
 	}
 
 	@Override
-	public void stop() {
-		FileConverter.stopOfficeManager();
-	}
-
-	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response, Map<String, String> parameters, List<file> files, ISession session) throws IOException {
 		// URLDecoder.decode заменяет '+' на ' '
 		String encodedUrl = request.getRequestURI().replaceAll("\\+", "%2b");
