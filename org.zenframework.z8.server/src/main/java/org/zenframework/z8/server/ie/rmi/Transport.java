@@ -26,6 +26,7 @@ import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Transport implements Runnable {
@@ -184,12 +185,11 @@ public class Transport implements Runnable {
 			return server;
 		} catch(RemoteException e) {
 			if (ServerConfig.transportFallbackProxy()) {
-				transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center));
+				transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center) + "\nFallback from:\n" + ErrorUtils.getStackTrace(e));
 				return new ApplicationServerProxy(server);
 			}
 
-			transportQueue.setInfo(message.getId(), "Connection to '" + domain + "' failed: " + e.getMessage());
-			Trace.logError(e);
+			transportQueue.setInfo(message.getId(), "Connection to '" + domain + "' failed\n" + ErrorUtils.getStackTrace(e));
 			return null;
 		}
 	}
