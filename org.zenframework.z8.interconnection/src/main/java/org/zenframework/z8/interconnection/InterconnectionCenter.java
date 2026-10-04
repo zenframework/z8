@@ -27,7 +27,8 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	static private InterconnectionCenter instance = null;
 
 	private boolean cacheEnabled;
-	
+	private boolean proxyEnabled;
+
 	public static IInterconnectionCenter launch() throws RemoteException {
 		if(instance == null) {
 			instance = new InterconnectionCenter();
@@ -39,6 +40,7 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 	public InterconnectionCenter() throws RemoteException {
 		super(ServerConfig.interconnectionCenterPort());
 		cacheEnabled = ServerConfig.interconnectionCenterCache();
+		proxyEnabled = ServerConfig.interconnectionCenterProxy();
 	}
 
 	@Override
@@ -72,12 +74,16 @@ public class InterconnectionCenter extends HubServer implements IInterconnection
 
 	@Override
 	public boolean has(IApplicationServer server, Message message) throws RemoteException {
-		return server.has(message);
+		if (proxyEnabled)
+			return server.has(message);
+		throw new UnsupportedOperationException("Proxy mode disabled");
 	}
 
 	@Override
 	public boolean accept(IApplicationServer server, Message message) throws RemoteException {
-		return server.accept(message);
+		if (proxyEnabled)
+			return server.accept(message);
+		throw new UnsupportedOperationException("Proxy mode disabled");
 	}
 
 	@Override

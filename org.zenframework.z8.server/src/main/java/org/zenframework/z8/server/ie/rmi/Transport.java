@@ -181,12 +181,17 @@ public class Transport implements Runnable {
 
 		try {
 			server.probe();
+			return server;
 		} catch(RemoteException e) {
-			transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center));
-			return new ApplicationServerProxy(server);
-		}
+			if (ServerConfig.transportFallbackProxy()) {
+				transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center));
+				return new ApplicationServerProxy(server);
+			}
 
-		return server;
+			transportQueue.setInfo(message.getId(), "Connection to '" + domain + "' failed: " + e.getMessage());
+			Trace.logError(e);
+			return null;
+		}
 	}
 
 	private boolean send(Message message) throws Throwable {

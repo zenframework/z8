@@ -62,6 +62,7 @@ public class ServerConfig extends Config {
 	static final private String InterconnectionCenterHost = "interconnection.center.host";
 	static final private String InterconnectionCenterPort = "interconnection.center.port";
 	static final private String InterconnectionCenterCache = "interconnection.center.cache";
+	static final private String InterconnectionCenterProxy = "interconnection.center.proxy";
 
 	static final private String WebServerPort = "web.server.port";
 	static final private String WebServerHttpHost = "web.server.http.host";
@@ -93,6 +94,7 @@ public class ServerConfig extends Config {
 	static final private String TransportLogFailsFrom = "transport.logFailsFrom";
 	static final private String MessageQueueTransactionSize = "transport.job.messageQueueTransactionSize";
 	static final private String TransportJobIterations = "transport.job.iterations";
+	static final private String TransportFallbackProxy = "transport.fallback.proxy";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
 	static final private String ExchangeFolderIn = "exchange.folder.in";
@@ -187,6 +189,7 @@ public class ServerConfig extends Config {
 	static private String interconnectionCenterHost;
 	static private int interconnectionCenterPort;
 	static private boolean interconnectionCenterCache;
+	static private boolean interconnectionCenterProxy;
 
 	static private int webServerPort;
 	static private String webServerHttpHost;
@@ -219,7 +222,8 @@ public class ServerConfig extends Config {
 	static private int transportQueueTransactionSize;
 	static private int messageQueueTransactionSize;
 	static private int transportJobIterations;
-	private static Set<String> transportLogFailsFrom;
+	static private boolean transportFallbackProxy;
+	static private Set<String> transportLogFailsFrom;
 
 	static private String exchangeJobCron;
 	static private File exchangeFolderIn;
@@ -343,6 +347,7 @@ public class ServerConfig extends Config {
 		interconnectionCenterHost = instance.getHost(InterconnectionCenterHost, Rmi.localhost);
 		interconnectionCenterPort = instance.getProperty(InterconnectionCenterPort, 20000);
 		interconnectionCenterCache = instance.getProperty(InterconnectionCenterCache, false);
+		interconnectionCenterProxy = instance.getProperty(InterconnectionCenterProxy, false);
 
 		webServerPort = instance.getProperty(WebServerPort, 25000);
 		webServerHttpHost = instance.getProperty(WebServerHttpHost, "0.0.0.0");
@@ -380,8 +385,8 @@ public class ServerConfig extends Config {
 		transportQueueTransactionSize = instance.getProperty(TransportQueueTransactionSize, 500);
 		messageQueueTransactionSize = instance.getProperty(MessageQueueTransactionSize, 50);
 		transportJobIterations = instance.getProperty(TransportJobIterations, 10);
-		String[] logConfig = instance.getProperty(TransportLogFailsFrom, new String[] { });
-		transportLogFailsFrom = new HashSet<>(Arrays.asList(logConfig));
+		transportFallbackProxy = instance.getProperty(TransportFallbackProxy, false);
+		transportLogFailsFrom = new HashSet<String>(Arrays.asList(instance.getProperty(TransportLogFailsFrom, new String[] { })));
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
 		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in");
@@ -613,6 +618,10 @@ public class ServerConfig extends Config {
 		return interconnectionCenterCache;
 	}
 
+	static public boolean interconnectionCenterProxy() {
+		return interconnectionCenterProxy;
+	}
+
 	static public boolean traceSql() {
 		return traceSql;
 	}
@@ -727,6 +736,10 @@ public class ServerConfig extends Config {
 
 	public static int transportJobIterations() {
 		return transportJobIterations;
+	}
+
+	static public boolean transportFallbackProxy() {
+		return transportFallbackProxy;
 	}
 
 	static public boolean exchangeJobEnabled() {
