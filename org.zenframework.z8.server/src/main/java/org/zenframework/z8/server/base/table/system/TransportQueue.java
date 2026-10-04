@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.FastSequencer;
 import org.zenframework.z8.server.base.table.value.Field;
+import org.zenframework.z8.server.base.table.value.IntegerExpression;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
@@ -25,6 +26,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_integer;
 
 public class TransportQueue extends Table {
 
@@ -50,6 +52,7 @@ public class TransportQueue extends Table {
 		public static String Sender = "TransportQueue.sender";
 		public static String Address = "TransportQueue.address";
 		public static String Info = "TransportQueue.info";
+		public static String Size = "TransportQueue.size";
 		public static String Result = "TransportQueue.result";
 		public static String Ordinal = "TransportQueue.ordinal";
 		public static String Processed = "TransportQueue.processed";
@@ -65,6 +68,7 @@ public class TransportQueue extends Table {
 		public static String Sender = Resources.get(strings.Sender);
 		public static String Address = Resources.get(strings.Address);
 		public static String Info = Resources.get(strings.Info);
+		public static String Size = Resources.get(strings.Size);
 		public static String Result = Resources.get(strings.Result);
 		public static String Ordinal = Resources.get(strings.Ordinal);
 		public static String Processed = Resources.get(strings.Processed);
@@ -91,6 +95,34 @@ public class TransportQueue extends Table {
 		}
 	}
 
+	static public class SizeExpression extends IntegerExpression {
+		static public class CLASS<T extends SizeExpression> extends IntegerExpression.CLASS<T> {
+			public CLASS() {
+				this(null);
+			}
+
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(SizeExpression.class);
+				setDisplayName(displayNames.Size);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new SizeExpression(container);
+			}
+		}
+
+		public SizeExpression(IObject container) {
+			super(container);
+		}
+
+		public sql_integer z8_expression() {
+			TransportQueue container = (TransportQueue) getContainer();
+			return container.data.get().sql_binary().z8_length();
+		}
+	}
+
 	public StringField.CLASS<? extends StringField> name = new StringField.CLASS<StringField>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 
@@ -103,6 +135,8 @@ public class TransportQueue extends Table {
 	public IntegerField.CLASS<IntegerField> bytesTransferred = new IntegerField.CLASS<IntegerField>(this);
 	public BoolField.CLASS<BoolField> processed = new BoolField.CLASS<BoolField>(this);
 	public TextField.CLASS<TextField> result = new TextField.CLASS<TextField>(this);
+
+	public IntegerExpression.CLASS<? extends IntegerExpression> size = new SizeExpression.CLASS<SizeExpression>(this);
 
 	static public TransportQueue newInstance() {
 		return new TransportQueue.CLASS<TransportQueue>().get();
@@ -126,6 +160,7 @@ public class TransportQueue extends Table {
 		objects.add(bytesTransferred);
 		objects.add(processed);
 		objects.add(result);
+		objects.add(size);
 	}
 
 	@Override
@@ -173,6 +208,8 @@ public class TransportQueue extends Table {
 		processed.setName(fieldNames.Processed);
 		processed.setIndex("processed");
 		processed.setDisplayName(displayNames.Processed);
+
+		size.setIndex("size");
 	}
 
 	public void add(Message message) {
