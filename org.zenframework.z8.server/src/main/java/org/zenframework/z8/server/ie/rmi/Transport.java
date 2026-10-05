@@ -119,7 +119,7 @@ public class Transport implements Runnable {
 			boolean success = true;
 
 			for (int i = 0; i < count; i++) {
-				debug(logHeader() + "cycle {0}/{1}", i + 1, count);
+				debug("cycle {0}/{1}", i + 1, count);
 				prepareMessages();
 				if (!sendMessages()) {
 					success = false;
@@ -191,7 +191,7 @@ public class Transport implements Runnable {
 		IInterconnectionCenter center = ServerConfig.interconnectionCenter();
 		String centerUrl = ProxyUtils.getUrl(center);
 
-		debug("connecting to interconnection center {0}", centerUrl);
+		debug("connecting to Interconnection Center {0}", centerUrl);
 
 		try {
 			center.probe();
