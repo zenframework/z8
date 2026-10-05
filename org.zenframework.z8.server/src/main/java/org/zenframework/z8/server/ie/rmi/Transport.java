@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.ie.rmi;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -7,9 +8,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
@@ -23,16 +24,14 @@ import org.zenframework.z8.server.engine.Session;
 import org.zenframework.z8.server.ie.DataMessage;
 import org.zenframework.z8.server.ie.FileMessage;
 import org.zenframework.z8.server.ie.Message;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
+import org.zenframework.z8.server.utils.LoggerBuilder;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Transport implements Runnable {
-	private static final Log log = LogFactory.getLog("Z8.Transport");
-
 	static private Object lock = new Object();
 	static private Map<String, Transport> workers = new HashMap<String, Transport>();
 
@@ -61,6 +60,7 @@ public class Transport implements Runnable {
 	}
 
 	private final String domain;
+	private final Logger logger;
 	private IApplicationServer server;
 	private Thread thread;
 
@@ -96,7 +96,7 @@ public class Transport implements Runnable {
 
 	public Transport(String domain) {
 		this.domain = domain;
-		Trace.debug("New transport thread '" + domain + "'");
+		this.logger = getLogger(domain);
 	}
 
 	public void start() {
@@ -320,12 +320,13 @@ public class Transport implements Runnable {
 	}
 
 	private void debug(String message, Object... args) {
-		if (log.isDebugEnabled())
-			log.debug(logHeader() + MessageFormat.format(message, args));
+		if (logger != null)
+			logger.log(Level.INFO, logHeader() + MessageFormat.format(message, args));
 	}
 
 	private void error(Throwable e, String message, Object... args) {
-		log.error(logHeader() + MessageFormat.format(message, args), e);
+		if (logger != null)
+			logger.log(Level.SEVERE, logHeader() + MessageFormat.format(message, args), e);
 	}
 
 	public static List<Info> getTransportsInfo() {
@@ -342,4 +343,14 @@ public class Transport implements Runnable {
 
 		return infos;
 	}
+
+	private static Logger getLogger(String domain) {
+		File transportLogFolder = ServerConfig.transportLogFolder();
+
+		if (transportLogFolder == null)
+			return null;
+
+		return new LoggerBuilder().setName(domain).setLogFile(new File(transportLogFolder, domain + ".log")).setLogFormat(ServerConfig.transportLogFormat()).build();
+	}
+
 }

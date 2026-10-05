@@ -1,8 +1,6 @@
 package org.zenframework.z8.server.base.security;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,8 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -26,6 +22,7 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.LoggerBuilder;
 
 public class SecurityLog extends OBJECT {
 
@@ -60,9 +57,6 @@ public class SecurityLog extends OBJECT {
 	private static final ThreadLocal<User.CLASS<User>> threadUser = new ThreadLocal<User.CLASS<User>>();
 
 	private static final String Name = "Security";
-	private static final int FileLimit = 10 * 1024 * 1024;
-	private static final int FileCount = 10;
-
 	private static final Logger Log = getLogger();
 
 	public static final Collection<string> LoggedParameters = Arrays.asList(Json.session, Json.action, Json.ip, Json.user, Json.schema);
@@ -176,44 +170,23 @@ public class SecurityLog extends OBJECT {
 	}
 
 	private static Logger getLogger() {
-		final File securityLogFile = ServerConfig.securityLogFile();
-		final String securityLogFormat = ServerConfig.securityLogFormat();
+		File securityLogFile = ServerConfig.securityLogFile();
 
 		if (securityLogFile == null)
 			return null;
 
-		try {
-			prepareLogFolder(securityLogFile.getParentFile());
-			Handler handler = new FileHandler(securityLogFile.getPath(), FileLimit, FileCount, true);
-			handler.setFormatter(new SimpleFormatter() {
-				@Override
-				public synchronized String format(LogRecord lr) {
-					SecurityLogRecord slr = (SecurityLogRecord) lr;
-					User.CLASS<? extends User> user = z8_user();
-					return String.format(securityLogFormat, new Date(slr.getMillis()),
-							user.get().id, slr.log.z8_format(user).get(),
-							slr.log.z8_format(slr.event.z8_getObject()).get(), slr.event.getAction(),
-							filterParameters(slr.log.getParameters()), slr.event.isSuccess(), slr.getMessage());
-				}
-			});
-			Logger logger = Logger.getLogger(Name);
-			logger.setUseParentHandlers(false);
-			logger.addHandler(handler);
-			return logger;
-		} catch (IOException e) {
-			Trace.logError("Can't initialize security log", e);
-			return null;
-		}
+		final String securityLogFormat = ServerConfig.securityLogFormat();
+		return new LoggerBuilder().setName(Name).setLogFile(securityLogFile).setFormatter(new SimpleFormatter() {
+			@Override
+			public synchronized String format(LogRecord lr) {
+				SecurityLogRecord slr = (SecurityLogRecord) lr;
+				User.CLASS<? extends User> user = z8_user();
+				return String.format(securityLogFormat, new Date(slr.getMillis()),
+						user.get().id, slr.log.z8_format(user).get(),
+						slr.log.z8_format(slr.event.z8_getObject()).get(), slr.event.getAction(),
+						filterParameters(slr.log.getParameters()), slr.event.isSuccess(), slr.getMessage());
+			}
+		}).build();
 	}
 
-	private static void prepareLogFolder(File folder) {
-		folder.mkdirs();
-		for (File file : folder.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".lck");
-			}
-		}))
-			file.delete();
-	}
 }

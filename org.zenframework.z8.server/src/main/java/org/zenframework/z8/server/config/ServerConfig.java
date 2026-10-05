@@ -94,6 +94,8 @@ public class ServerConfig extends Config {
 	static final private String MessageQueueTransactionSize = "transport.job.messageQueueTransactionSize";
 	static final private String TransportJobIterations = "transport.job.iterations";
 	static final private String TransportFallbackProxy = "transport.fallback.proxy";
+	static final private String TransportLogFolder = "transport.log.folder";
+	static final private String TransportLogFormat = "transport.log.format";
 
 	static final private String ExchangeJobCron = "exchange.job.cron";
 	static final private String ExchangeFolderIn = "exchange.folder.in";
@@ -222,6 +224,8 @@ public class ServerConfig extends Config {
 	static private int transportJobIterations;
 	static private boolean transportFallbackProxy;
 	static private Set<String> transportLogFailsFrom;
+	static private File transportLogFolder;
+	static private String transportLogFormat;
 
 	static private String exchangeJobCron;
 	static private File exchangeFolderIn;
@@ -384,6 +388,8 @@ public class ServerConfig extends Config {
 		transportJobIterations = instance.getProperty(TransportJobIterations, 10);
 		transportFallbackProxy = instance.getProperty(TransportFallbackProxy, false);
 		transportLogFailsFrom = new HashSet<String>(Arrays.asList(instance.getProperty(TransportLogFailsFrom, new String[] { })));
+		transportLogFolder = instance.getFile(TransportLogFolder, null);
+		transportLogFormat = instance.getProperty(TransportLogFormat, "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS:%1$tL %4$s %5$s%6$s%n");
 
 		exchangeJobCron = instance.getProperty(ExchangeJobCron, "");
 		exchangeFolderIn = instance.getFile(ExchangeFolderIn, "exchange/in");
@@ -721,6 +727,14 @@ public class ServerConfig extends Config {
 
 	public static Set<String> transportLogFailsFrom() {
 		return transportLogFailsFrom;
+	}
+
+	public static File transportLogFolder() {
+		return transportLogFolder;
+	}
+
+	public static String transportLogFormat() {
+		return transportLogFormat;
 	}
 
 	public static int messageQueueTransactionSize() {
