@@ -89,7 +89,6 @@ public class ServerConfig extends Config {
 	static final private String MaintenenceJobCron = "maintenance.job.cron";
 	static final private String TransportJobCron = "transport.job.cron";
 	static final private String TransportJobThreads = "transport.job.threads";
-	static final private String TransportJobLogStackTrace = "transport.job.logStackTrace";
 	static final private String TransportQueueTransactionSize = "transport.job.transportQueueTransactionSize";
 	static final private String TransportLogFailsFrom = "transport.logFailsFrom";
 	static final private String MessageQueueTransactionSize = "transport.job.messageQueueTransactionSize";
@@ -218,7 +217,6 @@ public class ServerConfig extends Config {
 
 	static private String transportJobCron;
 	static private int transportJobThreads;
-	static private boolean transportJobLogStackTrace;
 	static private int transportQueueTransactionSize;
 	static private int messageQueueTransactionSize;
 	static private int transportJobIterations;
@@ -381,7 +379,6 @@ public class ServerConfig extends Config {
 		maintenanceJobCron = instance.getProperty(MaintenenceJobCron, "");
 		transportJobCron = instance.getProperty(TransportJobCron, "");
 		transportJobThreads = instance.getProperty(TransportJobThreads, 10);
-		transportJobLogStackTrace = instance.getProperty(TransportJobLogStackTrace, false);
 		transportQueueTransactionSize = instance.getProperty(TransportQueueTransactionSize, 500);
 		messageQueueTransactionSize = instance.getProperty(MessageQueueTransactionSize, 50);
 		transportJobIterations = instance.getProperty(TransportJobIterations, 10);
@@ -716,10 +713,6 @@ public class ServerConfig extends Config {
 
 	static public String transportJobCron() {
 		return transportJobCron;
-	}
-
-	static public boolean transportJobLogStackTrace() {
-		return transportJobLogStackTrace;
 	}
 
 	public static int transportQueueTransactionSize() {

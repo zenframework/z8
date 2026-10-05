@@ -53,7 +53,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	static private final Set<String> RetriableStates = new HashSet<String>(Arrays.asList("23505" /* duplicate key */));
 
 	static protected final String FileUrlPrefix = "file:";
-	
+
 	public static final integer Fail = new integer(0);
 	public static final integer Retry = new integer(1);
 	public static final integer Cancel = new integer(2);
@@ -161,8 +161,25 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		this.sender = sender;
 	}
 
+	public int getFailAction() {
+		return failAction;
+	}
+
+	public void setFailAction(integer failAction) {
+		this.failAction = failAction.getInt();
+	}
+
+	public String getFailActionName() {
+		return failAction == Cancel.getInt() ? "cancel" : failAction == Retry.getInt() ? "retry" : "fail";
+	}
+
 	public boolean isExportToFile() {
 		return address.startsWith(FileUrlPrefix);
+	}
+
+	@Override
+	public String toString() {
+		return "[id:" + getId() + ", ord:" + getOrdinal() + ", " + getSender() + "->" + getAddress() + ", onFail:" + getFailActionName() + ']';
 	}
 
 	protected void beforeImport() {
@@ -185,11 +202,11 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void onPrepareFail(Throwable e) {
 		z8_onPrepareFail(new exception(e));
 	}
-	
+
 	public void onAcceptFail(Throwable e) {
 		z8_onAcceptFail(new exception(e));
 	}
-	
+
 	public binary toBinary() {
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -283,25 +300,25 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		else
 			MessageQueue.newInstance().add(this);
 	}
-	
+
 	public boolean prepare() {
 		try {
 			beforeExport();
 			createBody();
-		} catch(Throwable e) {
+			afterExport();
+			return true;
+		} catch (Throwable e) {
 			onPrepareFail(e);
-			if(failAction == Cancel.getInt())
+
+			if (failAction == Cancel.getInt())
 				return true;
-			if(failAction == Retry.getInt())
+			if (failAction == Retry.getInt())
 				return false;
-			Trace.logError(e);
+
 			throw new RuntimeException(e);
 		} finally {
 			failAction = Fail.getInt();
 		}
-		
-		afterExport();
-		return true;
 	}
 
 	public boolean accept() {
@@ -383,7 +400,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			if (failAction == Retry.getInt())
 				return false;
 
-			Trace.logError("DataMessage [" + sender + '/' + ordinal + "] failed", lastError);
+			Trace.logError(toString() + " failed", lastError);
 
 			throw new RuntimeException(lastError);
 		} finally {
@@ -439,7 +456,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	public void z8_afterExport() {}
 	
 	public void z8_setFailAction(integer action) {
-		failAction = action.getInt();
+		setFailAction(action);
 	}
 
 	public void z8_onPrepareFail(exception e) { }

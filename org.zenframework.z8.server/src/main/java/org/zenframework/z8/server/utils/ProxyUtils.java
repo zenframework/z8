@@ -25,7 +25,7 @@ public class ProxyUtils {
 	static public Proxy getProxy(IServer server) {
 		return server instanceof Proxy ? (Proxy)server : ((RmiServer)server).proxy();
 	}
-	
+
 	static public String getUrl(IServer server) {
 		return getUrl(getProxy(server));
 	}

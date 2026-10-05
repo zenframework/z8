@@ -1,14 +1,15 @@
 package org.zenframework.z8.server.ie.rmi;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
@@ -30,6 +31,8 @@ import org.zenframework.z8.server.utils.ErrorUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Transport implements Runnable {
+	private static final Log log = LogFactory.getLog("Z8.Transport");
+
 	static private Object lock = new Object();
 	static private Map<String, Transport> workers = new HashMap<String, Transport>();
 
@@ -57,7 +60,7 @@ public class Transport implements Runnable {
 		}
 	}
 
-	private String domain;
+	private final String domain;
 	private IApplicationServer server;
 	private Thread thread;
 
@@ -66,6 +69,8 @@ public class Transport implements Runnable {
 
 	private int messageQueueSize;
 	private int transportQueueSize;
+	private int messagesPrepared = 0;
+	private int messagesSent = 0;
 
 	static public Transport get(String domain) {
 		synchronized(lock) {
@@ -91,29 +96,41 @@ public class Transport implements Runnable {
 
 	public Transport(String domain) {
 		this.domain = domain;
+		Trace.debug("New transport thread '" + domain + "'");
 	}
 
 	public void start() {
 		thread = new Thread(this, domain);
-		if(Scheduler.register(ApplicationServer.getDatabase(), thread))
+		if (Scheduler.register(ApplicationServer.getDatabase(), thread))
 			Transport.register(this);
 	}
 
 	@Override
 	public void run() {
 		try {
-			if(ServerConfig.isMultitenant())
-				throw new RuntimeException("Transport is incompatible with multitenacy ");
+			if (ServerConfig.isMultitenant())
+				throw new RuntimeException("Transport is incompatible with multitenacy mode");
+
+			debug("started");
 
 			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 
-			for (int i = 0, n = ServerConfig.transportJobIterations(); i < n; i++) {
+			int count = ServerConfig.transportJobIterations();
+			boolean success = true;
+
+			for (int i = 0; i < count; i++) {
+				debug(logHeader() + "cycle {0}/{1}", i + 1, count);
 				prepareMessages();
-				if (!sendMessages())
+				if (!sendMessages()) {
+					success = false;
 					break;
+				}
 			}
-		} catch(Throwable e) {
-			Trace.logError(e);
+
+			debug("{0}. Messages (prepared/sent): {1}/{2}", success ? "finished successfully" : "interrupted", messagesPrepared, messagesSent);
+		} catch (Throwable e) {
+			debug("failed. Messages (prepared/sent): {0}/{1}", messagesPrepared, messagesSent);
+			error(e, "error: " + e.getMessage());
 		} finally {
 			Scheduler.unregister(ApplicationServer.getDatabase(), thread);
 			Transport.unregister(this);
@@ -122,31 +139,38 @@ public class Transport implements Runnable {
 		}
 	}
 
-	private boolean prepareMessages() throws Throwable {
+	private void prepareMessages() throws Throwable {
 		messageQueueSize = messageQueue.count(domain);
 
 		Collection<Message> messages = messageQueue.getMessages(domain);
 
-		for(Message message : messages)
+		for (Message message : messages)
 			prepare(message);
-
-		return !messages.isEmpty();
 	}
 
 	private void prepare(Message message) throws Throwable {
 		Connection connection = ConnectionManager.get();
+		boolean success;
 
 		try {
 			connection.beginTransaction();
 			messageQueue.beginProcessing(message.getId());
-			if(message.prepare())
+			success = message.prepare();
+
+			if (success) {
 				connection.commit();
-			else
-				connection.rollback();
-		} catch(Throwable e) {
+				messagesPrepared++;
+			}
+
+			debug("prepare message {0} {1}", message, success ? "successfully" : "falls to retry");
+		} catch (Throwable e) {
 			connection.rollback();
+			error(e, "prepare message {0} failed", message);
 			throw e;
 		}
+
+		if (!success)
+			connection.rollback();
 	}
 
 	private boolean sendMessages() throws Throwable {
@@ -154,37 +178,49 @@ public class Transport implements Runnable {
 
 		Collection<guid> ids = transportQueue.getMessages(domain);
 
-		for(guid id : ids) {
+		for (guid id : ids) {
 			Message message = transportQueue.getMessage(id);
-			if(!send(message))
+			if (!send(message))
 				return false;
 		}
-		
+
 		return !ids.isEmpty();
 	}
 
 	private IApplicationServer connect(Message message) throws Throwable {
 		IInterconnectionCenter center = ServerConfig.interconnectionCenter();
+		String centerUrl = ProxyUtils.getUrl(center);
+
+		debug("connecting to interconnection center {0}", centerUrl);
 
 		try {
 			center.probe();
-		} catch(Throwable e) {
-			transportQueue.setInfo(message.getId(), "Interconnection Center is unavailable at " + ProxyUtils.getUrl(center));
+			debug("Interconnection Center {0} probed successfully", centerUrl);
+		} catch (Throwable e) {
+			error(e, "Interconnection Center {0} probe failed", centerUrl);
+			transportQueue.setInfo(message.getId(), "Interconnection Center is unavailable at " + centerUrl);
 			return null;
 		}
 
 		IApplicationServer server = ServerConfig.interconnectionCenter().connect(domain);
 
-		if(server == null) {
-			transportQueue.setInfo(message.getId(), "Domain '" + domain + "' is unavailable at Interconnection Center " + ProxyUtils.getUrl(center));
+		if (server == null) {
+			debug("domain [{0}] is unavailable at Interconnection Center {1}", domain, centerUrl);
+			transportQueue.setInfo(message.getId(), "Domain '" + domain + "' is unavailable at Interconnection Center " + centerUrl);
 			return null;
 		}
 
+		String serverUrl = ProxyUtils.getUrl(server);
+
 		try {
 			server.probe();
+			debug("Application Server [{0}] ({1}) probed successfully", domain, serverUrl);
 			return server;
 		} catch(RemoteException e) {
+			error(e, "Application Server [{0}] ({1}) probe failed", domain, serverUrl);
+
 			if (ServerConfig.transportFallbackProxy()) {
+				debug("trying to get Application Server [{0}] ({1}) via Interconnection Center proxy {1}", domain, serverUrl, centerUrl);
 				transportQueue.setInfo(message.getId(), "Sending via Interconnection center: " + ProxyUtils.getUrl(center) + "\nFallback from:\n" + ErrorUtils.getStackTrace(e));
 				return new ApplicationServerProxy(server);
 			}
@@ -195,25 +231,24 @@ public class Transport implements Runnable {
 	}
 
 	private boolean send(Message message) throws Throwable {
-		if(server == null)
+		if (server == null)
 			server = connect(message);
 
-		if(server == null)
+		if (server == null)
 			return false;
 
 		try {
-			return message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
-		} catch(Throwable e) {
-			String str = e.getMessage();
-			if (ServerConfig.transportJobLogStackTrace()) {
-				StringWriter buf = new StringWriter();
-				PrintWriter out = new PrintWriter(buf);
-				out.println(e.getMessage());
-				e.printStackTrace(out);
-				out.flush();
-				str = buf.toString();
-			}
-			transportQueue.setInfo(message.getId(), str);
+			boolean success = message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
+
+			debug("send message {0} {1}", message, success ? "successfully" : "falls to retry");
+
+			if (success)
+				messagesSent++;
+
+			return success;
+		} catch (Throwable e) {
+			error(e, "send message {0} failed", message);
+			transportQueue.setInfo(message.getId(), ErrorUtils.getStackTrace(e));
 			throw e;
 		}
 	}
@@ -274,6 +309,23 @@ public class Transport implements Runnable {
 
 	public Info getInfo() {
 		return new Info(domain, messageQueueSize, transportQueueSize);
+	}
+
+	public String getId() {
+		return domain + '/' + (thread != null ? thread.getId() : "-");
+	}
+
+	private String logHeader() {
+		return "Transport thread [" + getId() + "] ";
+	}
+
+	private void debug(String message, Object... args) {
+		if (log.isDebugEnabled())
+			log.debug(logHeader() + MessageFormat.format(message, args));
+	}
+
+	private void error(Throwable e, String message, Object... args) {
+		log.error(logHeader() + MessageFormat.format(message, args), e);
 	}
 
 	public static List<Info> getTransportsInfo() {
