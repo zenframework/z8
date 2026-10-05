@@ -160,18 +160,23 @@ public class Generator {
 	}
 
 	private void collectForeignKeyGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
-		Map<ForeignKey, String> existingForeignKeys = ForeignKey.toNamesMap(table.dbTable().getForeignKeys());
 		GeneratorAction tableAction = table.getAction();
-		int index = 0;
 
-		if (tableAction == GeneratorAction.Skip && tableAction != GeneratorAction.Drop) {
-			GeneratorAction keyAction = tableAction == GeneratorAction.Drop ? GeneratorAction.Drop : GeneratorAction.Recreate;
+		if (tableAction == GeneratorAction.Skip)
+			return;
+
+		Map<ForeignKey, String> existingForeignKeys = ForeignKey.toNamesMap(table.dbTable().getForeignKeys());
+
+		// Drop table action is unimplemented at the moment. For future use
+		if (tableAction == GeneratorAction.Drop) {
 			for (Map.Entry<ForeignKey, String> entry : existingForeignKeys.entrySet())
-				generators.put(entry.getKey(), new ForeignKeyGenerator(database, entry.getKey(), keyAction, logger));
+				generators.put(entry.getKey(), new ForeignKeyGenerator(database, entry.getKey(), GeneratorAction.Drop, logger));
 			return;
 		}
 
 		// Create or recreate
+
+		int index = 0;
 
 		for (IForeignKey link : table.table().getForeignKeys()) {
 			String tableName = table.table().name();
@@ -183,13 +188,18 @@ public class Generator {
 
 		for (ForeignKey foreignKey : existingForeignKeys.keySet())
 			generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, GeneratorAction.Drop, logger));
+
 	}
 
 	private void collectRefererGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
+		GeneratorAction tableAction = table.getAction();
+
+		if (tableAction != GeneratorAction.Recreate)
+			return;
+
 		for (ForeignKey foreignKey : table.dbTable().getReferers())
 			if (!generators.containsKey(foreignKey))
-				generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey,
-						table.getAction() == GeneratorAction.Drop ? GeneratorAction.Drop : GeneratorAction.Recreate, logger));
+				generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, GeneratorAction.Recreate, logger));
 	}
 
 	private static List<TableGenerator> filterUnchanged(List<TableGenerator> generators) {

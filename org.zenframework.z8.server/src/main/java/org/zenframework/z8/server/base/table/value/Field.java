@@ -34,6 +34,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
+import org.zenframework.z8.server.utils.StringUtils;
 
 abstract public class Field extends Control implements IField {
 	public static class strings {
@@ -651,7 +652,9 @@ abstract public class Field extends Control implements IField {
 	}
 
 	public String controlData() {
-		return name() + " " + sqlType(DatabaseVendor.Postgres);
+		// PostgreSQL silently truncates field name to 64 bytes, or 32 chars in 2-bytes encoding
+		// So we use first 32 chars to calculate control sum
+		return StringUtils.truncate(name(), 32) + " " + sqlType(DatabaseVendor.Postgres);
 	}
 
 	private boolean pathHasJoin() {

@@ -219,4 +219,8 @@ public class StringUtils {
 		return str.toString();
 	}
 
+	public static String truncate(String str, int maxLength) {
+		return str == null || str.length() <= maxLength ? str : str.substring(0, maxLength);
+	}
+
 }

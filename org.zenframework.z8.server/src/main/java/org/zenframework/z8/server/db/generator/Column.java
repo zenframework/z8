@@ -2,6 +2,7 @@ package org.zenframework.z8.server.db.generator;
 
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.dialect.DatabaseDialect;
+import org.zenframework.z8.server.utils.StringUtils;
 
 public class Column {
 	private final String name;
@@ -62,7 +63,9 @@ public class Column {
 	}
 
 	public String controlData() {
-		return name + " " + DatabaseDialect.Default.formatSqlType(fieldType(), size, scale);
+		// PostgreSQL silently truncates field name to 64 bytes, or 32 chars in 2-bytes encoding
+		// So we use first 32 chars to calculate control sum
+		return StringUtils.truncate(name, 32) + " " + DatabaseDialect.Default.formatSqlType(fieldType(), size, scale);
 	}
 
 	protected int calculateControlSum() {
