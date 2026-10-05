@@ -28,7 +28,7 @@ import org.zenframework.z8.server.request.Request;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
-import org.zenframework.z8.server.utils.LoggerBuilder;
+import org.zenframework.z8.server.utils.LogUtils;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Transport implements Runnable {
@@ -136,6 +136,7 @@ public class Transport implements Runnable {
 			Transport.unregister(this);
 			ApplicationServer.setRequest(null);
 			ConnectionManager.release();
+			LogUtils.close(logger);
 		}
 	}
 
@@ -350,7 +351,7 @@ public class Transport implements Runnable {
 		if (transportLogFolder == null)
 			return null;
 
-		return new LoggerBuilder().setName(domain).setLogFile(new File(transportLogFolder, domain + ".log")).setLogFormat(ServerConfig.transportLogFormat()).build();
+		return LogUtils.builder().setName(domain).setLogFile(new File(transportLogFolder, domain + ".log")).setLogFormat(ServerConfig.transportLogFormat()).build();
 	}
 
 }

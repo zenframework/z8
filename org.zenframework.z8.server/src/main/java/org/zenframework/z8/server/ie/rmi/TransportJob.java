@@ -1,6 +1,11 @@
 package org.zenframework.z8.server.ie.rmi;
 
-import java.util.Collection;
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
@@ -11,6 +16,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.utils.ArrayUtils;
+import org.zenframework.z8.server.utils.LogUtils;
 
 public class TransportJob extends Executable {
 	public static class CLASS<T extends TransportJob> extends Executable.CLASS<T> {
@@ -25,7 +31,12 @@ public class TransportJob extends Executable {
 		}
 	}
 
+	static private final String LoggerName = "TransportJob";
+	static private final String LoggerFile = ".job.log";
+
 	static private int lastPosition = 0;
+
+	private Logger logger;
 
 	public TransportJob(IObject container) {
 		super(container);
@@ -34,41 +45,64 @@ public class TransportJob extends Executable {
 
 	@Override
 	protected void z8_execute(RCollection<Parameter.CLASS<? extends Parameter>> parameters) {
+		logger = getLogger();
 		sendMessages();
+		LogUtils.close(logger);
 	}
 
-	private Collection<String> getAddresses() {
-		Collection<String> result = TransportQueue.newInstance().getAddresses();
+	private List<String> getAddresses() {
+		List<String> result = TransportQueue.newInstance().getAddresses();
+		Set<String> set = new HashSet<String>(result);
 
-		for(String address : MessageQueue.newInstance().getAddresses()) {
-			if(!result.contains(address))
+		for (String address : MessageQueue.newInstance().getAddresses()) {
+			if (set.add(address))
 				result.add(address);
 		}
+
 		return result;
 	}
 
 	private void sendMessages() {
 		int maxTreadsCount = ServerConfig.transportJobThreads();
 
-		if(Transport.getCount() >= maxTreadsCount)
+		if (Transport.getCount() >= maxTreadsCount)
 			return;
 
-		String[] addresses = getAddresses().toArray(new String[0]);
+		List<String> addresses = getAddresses();
 
-		if(addresses.length == 0)
+		if (addresses.isEmpty())
 			return;
 
-		int startPosition = lastPosition = ArrayUtils.range(lastPosition, addresses.length);
+		int startPosition = lastPosition = ArrayUtils.range(lastPosition, addresses.size());
+
+		log("running addresses: {0} from {1}", addresses, startPosition);
 
 		do {
-			String address = addresses[lastPosition];
+			String address = addresses.get(lastPosition);
 
 			Transport thread = Transport.get(address);
 
-			if(thread == null)
+			if (thread == null)
 				new Transport(address).start();
 
-			lastPosition = ArrayUtils.range(lastPosition + 1, addresses.length);
+			lastPosition = ArrayUtils.range(lastPosition + 1, addresses.size());
 		} while(lastPosition != startPosition && Transport.getCount() <= maxTreadsCount);
+
+		log("stopped at: {0}", lastPosition);
 	}
+
+	private void log(String message, Object... args) {
+		if (logger != null)
+			logger.info("TransportJob: " + MessageFormat.format(message, args));
+	}
+
+	private static Logger getLogger() {
+		File transportLogFolder = ServerConfig.transportLogFolder();
+
+		if (transportLogFolder == null)
+			return null;
+
+		return LogUtils.builder().setName(LoggerName).setLogFile(new File(transportLogFolder, LoggerFile)).setLogFormat(ServerConfig.transportLogFormat()).build();
+	}
+
 }

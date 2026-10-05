@@ -22,7 +22,7 @@ import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.LoggerBuilder;
+import org.zenframework.z8.server.utils.LogUtils;
 
 public class SecurityLog extends OBJECT {
 
@@ -176,7 +176,7 @@ public class SecurityLog extends OBJECT {
 			return null;
 
 		final String securityLogFormat = ServerConfig.securityLogFormat();
-		return new LoggerBuilder().setName(Name).setLogFile(securityLogFile).setFormatter(new SimpleFormatter() {
+		return LogUtils.builder().setName(Name).setLogFile(securityLogFile).setFormatter(new SimpleFormatter() {
 			@Override
 			public synchronized String format(LogRecord lr) {
 				SecurityLogRecord slr = (SecurityLogRecord) lr;
