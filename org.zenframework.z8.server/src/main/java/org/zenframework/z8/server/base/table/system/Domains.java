@@ -317,7 +317,7 @@ public class Domains extends Table {
 		for (String exclude : excludes)
 			notIn.add(new string(exclude));
 
-		sql_bool where = lastMessageAt.get().sql_date().operatorMore(lastSendAt.get().sql_date()).operatorAnd(address.z8_inVector(notIn).operatorNot());
+		sql_bool where = lastMessageAt.get().sql_date().operatorMoreEqu(lastSendAt.get().sql_date()).operatorAnd(address.z8_inVector(notIn).operatorNot());
 
 		read(Arrays.<Field>asList(address), Arrays.<Field>asList(lastSendAt.get()), where, limit);
 
