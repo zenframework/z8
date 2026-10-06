@@ -59,6 +59,7 @@
 	<entry key="Domains.idleTimeout">Таймаут отправки</entry>
 	<entry key="Domains.expiration">Отправка просрочена</entry>
 	<entry key="Domains.description">Описание</entry>
+	<entry key="Domains.updateDomains">Обновить домены</entry>
 	<entry key="Domains.address.default">Domain</entry>
 
 	<!-- MessageQueue -->

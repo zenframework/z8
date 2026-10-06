@@ -24,8 +24,17 @@ public class DomainsView extends Domains {
 		}
 	}
 
+	protected UpdateDomainsAction.CLASS<UpdateDomainsAction> updateDomains = new UpdateDomainsAction.CLASS<UpdateDomainsAction>(this);
+
 	public DomainsView(IObject container) {
 		super(container);
+	}
+
+	@Override
+	public void initMembers() {
+		super.initMembers();
+
+		objects.add(updateDomains);
 	}
 
 	@Override
@@ -40,6 +49,10 @@ public class DomainsView extends Domains {
 
 		names.add(name);
 		names.add(expiration);
+
+		updateDomains.setIndex("updateDomains");
+
+		actions.add(updateDomains);
 
 		registerControl(name);
 		registerControl(address);

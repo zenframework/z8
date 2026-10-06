@@ -59,6 +59,7 @@
 	<entry key="Domains.idleTimeout">Transport timeout</entry>
 	<entry key="Domains.expiration">Transport expiration</entry>
 	<entry key="Domains.description">Description</entry>
+	<entry key="Domains.updateDomains">Update domains</entry>
 	<entry key="Domains.address.default">Domain</entry>
 
 	<!-- MessageQueue -->

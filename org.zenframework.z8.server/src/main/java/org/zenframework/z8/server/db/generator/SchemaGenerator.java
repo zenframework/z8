@@ -1,15 +1,8 @@
 package org.zenframework.z8.server.db.generator;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.zenframework.z8.server.base.Executable;
 import org.zenframework.z8.server.base.form.action.Parameter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
-import org.zenframework.z8.server.base.table.system.Domains;
-import org.zenframework.z8.server.base.table.system.MessageQueue;
-import org.zenframework.z8.server.base.table.value.DatetimeField;
-import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.EventsLevel;
@@ -18,7 +11,6 @@ import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
-import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.utils.ErrorUtils;
 
@@ -74,8 +66,6 @@ public class SchemaGenerator extends Executable {
 			z8_beforeStart();
 
 			new Generator(database, logger).run();
-
-			updateDomains();
 
 			z8_afterFinish();
 		} catch (Throwable e) {
@@ -133,33 +123,6 @@ public class SchemaGenerator extends Executable {
 		public void progress(int percentDone) {
 			reportProgress(percentDone);
 		}
-	}
-
-	private void updateDomains() {
-		Domains domains = Domains.newInstance();
-
-		Set<String> nonUpdated = domains.getNonUpdated();
-
-		if (nonUpdated.isEmpty())
-			return;
-
-		long start = java.lang.System.currentTimeMillis();
-
-		info("Update domains dates...");
-
-		MessageQueue messages = MessageQueue.newInstance();
-
-		Map<String, date> dates = messages.getLastMessageDates(nonUpdated);
-
-		DatetimeField lastMessageAt = domains.lastMessageAt.get();
-		StringField address = domains.address.get();
-
-		for (Map.Entry<String, date> entry : dates.entrySet()) {
-			lastMessageAt.set(entry.getValue());
-			domains.update(address.sql_string().operatorEqu(new string(entry.getKey()).sql_string()));
-		}
-
-		info("Update domains dates finished in " + (java.lang.System.currentTimeMillis() - start) + "ms");
 	}
 
 }

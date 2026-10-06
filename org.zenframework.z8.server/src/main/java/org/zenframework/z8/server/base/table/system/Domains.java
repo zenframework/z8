@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
@@ -68,6 +69,8 @@ public class Domains extends Table {
 		public final static String IdleTimeout = "Domains.idleTimeout";
 		public final static String Description = "Domains.description";
 
+		public final static String UpdateDomains = "Domains.updateDomains";
+
 		public final static String DefaultAddress = "Domains.address.default";
 	}
 
@@ -83,6 +86,8 @@ public class Domains extends Table {
 		public final static String Expiration = Resources.get(strings.Expiration);
 		public final static String IdleTimeout = Resources.get(strings.IdleTimeout);
 		public final static String Description = Resources.get(strings.Description);
+
+		public final static String UpdateDomains = Resources.get(strings.UpdateDomains);
 
 		public final static String DefaultAddress = Resources.get(strings.DefaultAddress);
 	}
@@ -349,6 +354,28 @@ public class Domains extends Table {
 
 	public void updateLastSend(String domain) {
 		updateDatetimeField(domain, lastSendAt.get());
+	}
+
+	public void updateDomains() {
+		Set<String> nonUpdated = getNonUpdated();
+
+		if (nonUpdated.isEmpty())
+			return;
+
+		long start = java.lang.System.currentTimeMillis();
+
+		Trace.logEvent("Update domains dates...");
+
+		Map<String, date> dates = MessageQueue.newInstance().getLastMessageDates(nonUpdated);
+		DatetimeField lastMessageAt = this.lastMessageAt.get();
+		StringField address = this.address.get();
+
+		for (Map.Entry<String, date> entry : dates.entrySet()) {
+			lastMessageAt.set(entry.getValue());
+			update(address.sql_string().operatorEqu(new string(entry.getKey()).sql_string()));
+		}
+
+		Trace.logEvent("Update domains dates finished in " + (java.lang.System.currentTimeMillis() - start) + "ms");
 	}
 
 	private void updateDatetimeField(String domain, DatetimeField field) {
