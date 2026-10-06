@@ -26,6 +26,7 @@ import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
@@ -211,8 +212,12 @@ public class MessageQueue extends Table {
 		Map<String, date> result = new HashMap<String, date>();
 		StringField address = this.address.get();
 		DatetimeField createdAt = this.createdAt.get();
+		RCollection<string> vector = new RCollection<string>();
 
-		group(Arrays.asList(address, createdAt), Arrays.asList(address), address.inVector(addresses));
+		for (String addr : addresses)
+			vector.add(new string(addr));
+
+		group(Arrays.asList(address, createdAt), Arrays.asList(address), address.inVector(vector));
 
 		while (next())
 			result.put(address.get().get(), createdAt.get());
