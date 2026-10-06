@@ -3,27 +3,38 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.DatespanExpression;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
+import org.zenframework.z8.server.db.sql.functions.If;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Rmi;
+import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IClass;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_datespan;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
 public class Domains extends Table {
@@ -37,6 +48,8 @@ public class Domains extends Table {
 		public final static String Address = "Id";
 		public final static String User = "User";
 		public final static String Owner = "Owner";
+		public final static String LastMessageAt = "Last message at";
+		public final static String LastSendAt = "Last send at";
 	}
 
 	static public class strings {
@@ -46,6 +59,10 @@ public class Domains extends Table {
 		public final static String User = "Domains.user";
 		public final static String UserDescription = "Domains.user.description";
 		public final static String Owner = "Domains.owner";
+		public final static String LastMessageAt = "Domains.lastMessageAt";
+		public final static String LastSendAt = "Domains.lastSendAt";
+		public final static String Expiration = "Domains.expiration";
+		public final static String IdleTimeout = "Domains.idleTimeout";
 
 		public final static String DefaultAddress = "Domains.address.default";
 	}
@@ -57,6 +74,10 @@ public class Domains extends Table {
 		public final static String User = Resources.get(strings.User);
 		public final static String UserDescription = Resources.get(strings.UserDescription);
 		public final static String Owner = Resources.get(strings.Owner);
+		public final static String LastMessageAt = Resources.get(strings.LastMessageAt);
+		public final static String LastSendAt = Resources.get(strings.LastSendAt);
+		public final static String Expiration = Resources.get(strings.Expiration);
+		public final static String IdleTimeout = Resources.get(strings.IdleTimeout);
 
 		public final static String DefaultAddress = Resources.get(strings.DefaultAddress);
 	}
@@ -79,6 +100,60 @@ public class Domains extends Table {
 		}
 	}
 
+	public static class ExpirationExpression extends DatespanExpression {
+		public static class CLASS<T extends ExpirationExpression> extends DatespanExpression.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(ExpirationExpression.class);
+				setDisplayName(displayNames.Expiration);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new ExpirationExpression(container);
+			}
+		}
+
+		public ExpirationExpression(IObject container) {
+			super(container);
+		}
+
+		public sql_datespan z8_expression() {
+			Domains container = (Domains) getContainer();
+			return new sql_datespan(new If(container.lastMessageAt.get().sql_date().operatorMore(container.lastSendAt.get().sql_date()), container.now.sql_date().operatorSub(container.lastSendAt.get(IClass.Constructor1).sql_date()), new datespan().sql_datespan()));
+		}
+	}
+
+	public static class IdleExpression extends DatespanExpression {
+		public static class CLASS<T extends IdleExpression> extends DatespanExpression.CLASS<T> {
+			public CLASS(IObject container) {
+				super(container);
+				setJavaClass(IdleExpression.class);
+				setDisplayName(displayNames.IdleTimeout);
+			}
+
+			@Override
+			public Object newObject(IObject container) {
+				return new IdleExpression(container);
+			}
+		}
+
+		public IdleExpression(IObject container) {
+			super(container);
+		}
+
+		public sql_datespan z8_expression() {
+			Domains container = (Domains) getContainer();
+			return new sql_datespan(new If(container.lastMessageAt.get().sql_date().operatorMore(container.lastSendAt.get().sql_date()), container.lastMessageAt.get().sql_date().operatorSub(container.lastSendAt.get(IClass.Constructor1).sql_date()), new datespan().sql_datespan()));
+		}
+	}
+
+	final static public int NameLength = 50;
+
+	static public Domains newInstance() {
+		return new Domains.CLASS<Domains>().get();
+	}
+
 	public final Users.CLASS<Users> users = new Users.CLASS<Users>(this);
 
 	public final StringField.CLASS<StringField> name = new StringField.CLASS<StringField>(this);
@@ -86,12 +161,13 @@ public class Domains extends Table {
 	public final StringField.CLASS<StringField> address = new StringField.CLASS<StringField>(this);
 	public final Link.CLASS<Link> userLink = new Link.CLASS<Link>(this);
 	public final BoolField.CLASS<BoolField> owner = new BoolField.CLASS<BoolField>(this);
+	public final DatetimeField.CLASS<DatetimeField> lastMessageAt = new DatetimeField.CLASS<DatetimeField>(this);
+	public final DatetimeField.CLASS<DatetimeField> lastSendAt = new DatetimeField.CLASS<DatetimeField>(this);
 
-	final static public int NameLength = 50;
+	public final DatespanExpression.CLASS<? extends DatespanExpression> expiration = new ExpirationExpression.CLASS<ExpirationExpression>(this);
+	public final DatespanExpression.CLASS<? extends DatespanExpression> idleTimeout = new IdleExpression.CLASS<IdleExpression>(this);
 
-	static public Domains newInstance() {
-		return new Domains.CLASS<Domains>().get();
-	}
+	private final date now = new date();
 
 	public Domains(IObject container) {
 		super(container);
@@ -111,6 +187,10 @@ public class Domains extends Table {
 		objects.add(address);
 		objects.add(userLink);
 		objects.add(owner);
+		objects.add(lastMessageAt);
+		objects.add(lastSendAt);
+		objects.add(expiration);
+		objects.add(idleTimeout);
 
 		objects.add(users);
 	}
@@ -146,6 +226,20 @@ public class Domains extends Table {
 		owner.setName(fieldNames.Owner);
 		owner.setDisplayName(displayNames.Owner);
 		owner.setExportable(false);
+
+		lastMessageAt.setIndex("lastMessageAt");
+		lastMessageAt.setName(fieldNames.LastMessageAt);
+		lastMessageAt.setDisplayName(displayNames.LastMessageAt);
+		lastMessageAt.setExportable(false);
+
+		lastSendAt.setIndex("lastSendAt");
+		lastSendAt.setName(fieldNames.LastSendAt);
+		lastSendAt.setDisplayName(displayNames.LastSendAt);
+		lastSendAt.setExportable(false);
+
+		expiration.setIndex("expiration");
+
+		idleTimeout.setIndex("idleTimeout");
 	}
 
 	@Override
@@ -210,4 +304,56 @@ public class Domains extends Table {
 
 		return result;
 	}
+
+	public List<String> getExpiredAddresses(int limit, Collection<String> excludes) {
+		List<String> result = new ArrayList<String>(limit);
+		StringField address = this.address.get();
+		RCollection<string> notIn = new RCollection<string>();
+
+		for (String exclude : excludes)
+			notIn.add(new string(exclude));
+
+		read(Arrays.<Field>asList(address), Arrays.<Field>asList(lastSendAt.get()), address.z8_inVector(notIn).operatorNot(), limit);
+
+		while (next())
+			result.add(address.get().get());
+
+		close();
+
+		return result;
+	}
+
+	public void updateLastMessage(String domain) {
+		updateDatetimeField(domain, lastMessageAt.get());
+	}
+
+	public void updateLastSend(String domain) {
+		updateDatetimeField(domain, lastSendAt.get());
+	}
+
+	private void updateDatetimeField(String domain, DatetimeField field) {
+		Connection connection = ConnectionManager.get();
+
+		try {
+			connection.beginTransaction();
+
+			boolean exists = readFirst(Arrays.asList(primaryKey()), new EqualsIgnoreCase(address.get(), domain));
+
+			field.set(new date());
+
+			if (exists) {
+				update(recordId());
+			} else {
+				name.get().set(domain);
+				address.get().set(domain);
+				create();
+			}
+
+			connection.commit();
+		} catch (Throwable e) {
+			connection.rollback();
+			Trace.logError("Can't update domain '" + domain + "' field '" + field.name() + "'", e);
+		}
+	}
+
 }

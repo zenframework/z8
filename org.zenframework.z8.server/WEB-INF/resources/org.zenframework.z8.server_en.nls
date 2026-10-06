@@ -54,6 +54,10 @@
 	<entry key="Domains.user">System user</entry>
 	<entry key="Domains.user.description">System user (description)</entry>
 	<entry key="Domains.owner">Owner</entry>
+	<entry key="Domains.lastMessageAt">Last message at</entry>
+	<entry key="Domains.lastSendAt">Last sent at</entry>
+	<entry key="Domains.idleTimeout">Transport timeout</entry>
+	<entry key="Domains.expiration">Transport expiration</entry>
 	<entry key="Domains.address.default">Domain</entry>
 
 	<!-- MessageQueue -->

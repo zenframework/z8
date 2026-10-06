@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.base.table.Table;
@@ -237,21 +236,6 @@ public class TransportQueue extends Table {
 	public void setInfo(guid id, String info) {
 		result.get().set(new string(info));
 		update(id);
-	}
-
-	public List<String> getAddresses() {
-		List<String> result = new ArrayList<String>();
-
-		Field address = this.address.get();
-
-		Collection<Field> fields = Arrays.<Field>asList(address);
-
-		group(fields, fields);
-
-		while(next())
-			result.add(address.string().get());
-
-		return result;
 	}
 
 	public int count(String domain) {

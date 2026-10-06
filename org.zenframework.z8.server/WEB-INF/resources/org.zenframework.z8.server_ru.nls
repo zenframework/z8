@@ -54,6 +54,10 @@
 	<entry key="Domains.user">Системный пользователь</entry>
 	<entry key="Domains.user.description">Системный пользователь (описание)</entry>
 	<entry key="Domains.owner">Владелец</entry>
+	<entry key="Domains.lastMessageAt">Последнее сообщение</entry>
+	<entry key="Domains.lastSendAt">Последняя отправка</entry>
+	<entry key="Domains.idleTimeout">Таймаут отправки</entry>
+	<entry key="Domains.expiration">Отправка просрочена</entry>
 	<entry key="Domains.address.default">Domain</entry>
 
 	<!-- MessageQueue -->

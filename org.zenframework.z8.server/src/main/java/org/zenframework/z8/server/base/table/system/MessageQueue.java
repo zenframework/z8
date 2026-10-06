@@ -160,21 +160,8 @@ public class MessageQueue extends Table {
 		classId.get().set(new string(message.classId()));
 		data.get().set(message.toBinary());
 		create();
-	}
 
-	public Collection<String> getAddresses() {
-		Collection<String> result = new ArrayList<String>();
-
-		Field address = this.address.get();
-
-		Collection<Field> fields = Arrays.<Field>asList(address);
-
-		group(fields, fields);
-
-		while(next())
-			result.add(address.string().get());
-
-		return result;
+		Domains.newInstance().updateLastMessage(message.getAddress());
 	}
 
 	public int count(String domain) {

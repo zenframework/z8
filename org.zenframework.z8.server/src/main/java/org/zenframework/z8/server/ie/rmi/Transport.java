@@ -8,10 +8,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
+import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.base.table.system.TransportQueue;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -72,14 +74,10 @@ public class Transport implements Runnable {
 	private int messagesPrepared = 0;
 	private int messagesSent = 0;
 
-	static public Transport get(String domain) {
+	static public Set<String> getActiveAddresses() {
 		synchronized(lock) {
-			return workers.get(domain);
+			return workers.keySet();
 		}
-	}
-
-	static public int getCount() {
-		return workers.size();
 	}
 
 	static public void register(Transport transport) {
@@ -114,6 +112,8 @@ public class Transport implements Runnable {
 			debug("started");
 
 			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
+
+			Domains.newInstance().updateLastSend(domain);
 
 			int count = ServerConfig.transportJobIterations();
 			boolean success = true;
@@ -175,7 +175,7 @@ public class Transport implements Runnable {
 	}
 
 	private boolean sendMessages() throws Throwable {
-		transportQueueSize = messageQueue.count(domain);
+		transportQueueSize = transportQueue.count(domain);
 
 		Collection<guid> ids = transportQueue.getMessages(domain);
 

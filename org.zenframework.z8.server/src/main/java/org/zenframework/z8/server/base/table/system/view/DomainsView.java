@@ -36,11 +36,19 @@ public class DomainsView extends Domains {
 
 		colCount = new integer(4);
 
+		description.get().colSpan = new integer(4);
+
+		names.add(name);
+		names.add(expiration);
+
 		registerControl(name);
 		registerControl(address);
 		registerControl(users.get().name);
 		registerControl(owner);
-		description.get().colSpan = new integer(4);
+		registerControl(lastMessageAt);
+		registerControl(lastSendAt);
+		registerControl(expiration);
+		registerControl(idleTimeout);
 		registerControl(description);
 	}
 }
