@@ -14,7 +14,6 @@ import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.EventsLevel;
 import org.zenframework.z8.server.engine.IDatabase;
-import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
@@ -146,7 +145,7 @@ public class SchemaGenerator extends Executable {
 
 		long start = java.lang.System.currentTimeMillis();
 
-		Trace.logEvent("Update domains dates...");
+		info("Update domains dates...");
 
 		MessageQueue messages = MessageQueue.newInstance();
 
@@ -160,7 +159,7 @@ public class SchemaGenerator extends Executable {
 			domains.update(address.sql_string().operatorEqu(new string(entry.getKey()).sql_string()));
 		}
 
-		Trace.logEvent("Update domains dates finished in " + (java.lang.System.currentTimeMillis() - start) + "ms");
+		info("Update domains dates finished in " + (java.lang.System.currentTimeMillis() - start) + "ms");
 	}
 
 }
