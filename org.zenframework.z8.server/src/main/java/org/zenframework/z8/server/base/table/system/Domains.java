@@ -34,6 +34,7 @@ import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_bool;
 import org.zenframework.z8.server.types.sql.sql_datespan;
 import org.zenframework.z8.server.utils.ProxyUtils;
 
@@ -63,6 +64,7 @@ public class Domains extends Table {
 		public final static String LastSendAt = "Domains.lastSendAt";
 		public final static String Expiration = "Domains.expiration";
 		public final static String IdleTimeout = "Domains.idleTimeout";
+		public final static String Description = "Domains.description";
 
 		public final static String DefaultAddress = "Domains.address.default";
 	}
@@ -78,6 +80,7 @@ public class Domains extends Table {
 		public final static String LastSendAt = Resources.get(strings.LastSendAt);
 		public final static String Expiration = Resources.get(strings.Expiration);
 		public final static String IdleTimeout = Resources.get(strings.IdleTimeout);
+		public final static String Description = Resources.get(strings.Description);
 
 		public final static String DefaultAddress = Resources.get(strings.DefaultAddress);
 	}
@@ -208,6 +211,7 @@ public class Domains extends Table {
 
 		description.setName(fieldNames.Description);
 		description.setIndex("description");
+		description.setDisplayName(displayNames.Description);
 
 		address.setIndex("address");
 		address.setName(fieldNames.Address);
@@ -313,7 +317,9 @@ public class Domains extends Table {
 		for (String exclude : excludes)
 			notIn.add(new string(exclude));
 
-		read(Arrays.<Field>asList(address), Arrays.<Field>asList(lastSendAt.get()), address.z8_inVector(notIn).operatorNot(), limit);
+		sql_bool where = lastMessageAt.get().sql_date().operatorMore(lastSendAt.get().sql_date()).operatorAnd(address.z8_inVector(notIn).operatorNot());
+
+		read(Arrays.<Field>asList(address), Arrays.<Field>asList(lastSendAt.get()), where, limit);
 
 		while (next())
 			result.add(address.get().get());
