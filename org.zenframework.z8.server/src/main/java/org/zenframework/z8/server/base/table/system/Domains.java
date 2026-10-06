@@ -3,7 +3,9 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BoolField;
@@ -325,6 +327,18 @@ public class Domains extends Table {
 			result.add(address.get().get());
 
 		close();
+
+		return result;
+	}
+
+	public Set<String> getNonUpdated() {
+		Set<String> result = new HashSet<String>();
+		StringField address = this.address.get();
+
+		read(Arrays.asList(address), lastMessageAt.get().sql_date().operatorEqu(date.Min.sql_date()));
+
+		while (next())
+			result.add(address.get().get());
 
 		return result;
 	}

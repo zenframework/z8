@@ -3,11 +3,15 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.base.table.Table;
 import org.zenframework.z8.server.base.table.value.BinaryField;
 import org.zenframework.z8.server.base.table.value.BoolField;
+import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.FastSequencer;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
@@ -23,6 +27,7 @@ import org.zenframework.z8.server.request.Loader;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
@@ -202,6 +207,21 @@ public class MessageQueue extends Table {
 		return result;
 	}
 
+	public Map<String, date> getLastMessageDates(Set<String> addresses) {
+		Map<String, date> result = new HashMap<String, date>();
+		StringField address = this.address.get();
+		DatetimeField createdAt = this.createdAt.get();
+
+		group(Arrays.asList(address, createdAt), Arrays.asList(address), address.inVector(addresses));
+
+		while (next())
+			result.put(address.get().get(), createdAt.get());
+
+		close();
+
+		return result;
+	}
+
 	public void beginProcessing(guid id) {
 		processing.get().set(bool.True);
 		update(id);
@@ -210,4 +230,5 @@ public class MessageQueue extends Table {
 	public void endProcessing(guid id) {
 		destroy(id);
 	}
+
 }
