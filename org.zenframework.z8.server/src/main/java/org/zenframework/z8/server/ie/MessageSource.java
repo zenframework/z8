@@ -25,6 +25,7 @@ import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.security.BuiltinUsers;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
@@ -126,6 +127,30 @@ public class MessageSource implements RmiSerializable, Serializable {
 
 	public void addRule(Table table, guid recordId, Field field, ImportPolicy policy) {
 		exportRules.add(table.name(), recordId, field.name(), policy);
+	}
+
+	public void addRule(ExportRule exportRule) {
+		if (exportRule == null)
+			return;
+
+		String ruleTableName = exportRule.getTableName();
+		RCollection<Field.CLASS<? extends Field>> ruleFields = exportRule.getFields();
+		ImportPolicy rulePolicy = exportRule.getPolicy();
+		guid ruleRecordId = exportRule.getRecordId();
+
+		if (ruleRecordId == null || ruleRecordId.isNull()) {
+			if (ruleFields == null)
+				exportRules.add(ruleTableName, rulePolicy);
+			else
+				for (Field.CLASS<? extends Field> ruleField : ruleFields)
+					exportRules.add(ruleTableName, ruleField.get().name(), rulePolicy);
+		} else {
+			if (ruleFields == null)
+				exportRules.add(ruleTableName, ruleRecordId, rulePolicy);
+			else
+				for (Field.CLASS<? extends Field> ruleField : ruleFields)
+					exportRules.add(ruleTableName, ruleRecordId, ruleField.get().name(), rulePolicy);
+		}
 	}
 
 	public Map<String, primary> getProperties() {

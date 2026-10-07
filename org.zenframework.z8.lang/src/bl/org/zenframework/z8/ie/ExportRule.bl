@@ -1,0 +1,20 @@
+import org.zenframework.z8.base.table.Table;
+import org.zenframework.z8.base.table.value.Field;
+import org.zenframework.z8.ie.ImportPolicy;
+
+[native "org.zenframework.z8.server.ie.ExportRule"]
+class ExportRule {
+	public static ExportRule create(Table table, ImportPolicy policy);
+	public static ExportRule create(guid recordId, Table table, ImportPolicy policy);
+	public static ExportRule create(Table table, Field field, ImportPolicy policy);
+	public static ExportRule create(Table table, Field[] fields, ImportPolicy policy);
+	public static ExportRule create(guid recordId, Table table, Field field);
+	public static ExportRule create(guid recordId, Table table, Field field, ImportPolicy policy);
+	public static ExportRule create(guid recordId, Table table, Field[] fields);
+	public static ExportRule create(guid recordId, Table table, Field[] fields, ImportPolicy policy);
+
+	public guid getRecordId();
+	public Table getTable();
+	public Field[] getFields();
+	public ImportPolicy getPolicy();
+}

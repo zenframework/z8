@@ -7,9 +7,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.guid;
 
 public class ExportRules implements RmiSerializable, Serializable {

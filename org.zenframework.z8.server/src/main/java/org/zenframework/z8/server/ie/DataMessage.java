@@ -243,6 +243,17 @@ public class DataMessage extends Message {
 			z8_addRule(recordId, field, policy);
 	}
 	
+	public void z8_addRule(RCollection<ExportRule.CLASS<? extends ExportRule>> rules) {
+		if(rules != null)
+			for(ExportRule.CLASS<? extends ExportRule> rule : rules)
+				z8_addRule(rule);
+	}
+
+	public void z8_addRule(ExportRule.CLASS<? extends ExportRule> rule) {
+		if(rule != null)
+			source.addRule(rule.get());
+	}
+
 	public void z8_setExportAll(bool exportAll) {
 		source.setExportAll(exportAll.get());
 	}
