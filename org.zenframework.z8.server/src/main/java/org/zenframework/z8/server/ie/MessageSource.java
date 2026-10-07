@@ -127,6 +127,10 @@ public class MessageSource implements RmiSerializable, Serializable {
 	public void addRule(Table table, guid recordId, Field field, ImportPolicy policy) {
 		exportRules.add(table.name(), recordId, field.name(), policy);
 	}
+	
+	public void addRule(ExportRule rule) {
+		exportRules.add(rule);
+	}
 
 	public Map<String, primary> getProperties() {
 		return properties;

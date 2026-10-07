@@ -32,7 +32,10 @@ public class DataMessage extends Message {
 
 	public void addRule(guid recordId, Field field, ImportPolicy policy);
 	public void addRule(guid recordId, Field[] fields, ImportPolicy policy);
-	
+
+	public void addRule(ExportRule rule);
+	public void addRule(ExportRule[] rules);
+
 	public void setExportAll(bool exportAll);
 	public void setSkipFiles(bool skipFiles);
 	public bool isExportAll();

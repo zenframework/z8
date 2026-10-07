@@ -7,9 +7,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.engine.RmiIO;
 import org.zenframework.z8.server.engine.RmiSerializable;
 import org.zenframework.z8.server.json.parser.JsonObject;
+import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.guid;
 
 public class ExportRules implements RmiSerializable, Serializable {
@@ -56,6 +58,30 @@ public class ExportRules implements RmiSerializable, Serializable {
 	public void add(String table, guid recordId, String field, ImportPolicy policy) {
 		TableRules rules = getTableRules(table);
 		rules.setPolicy(recordId, field, policy);
+	}
+	
+	public void add(ExportRule exportRule) {
+		if(exportRule == null || exportRule.shouldBeIgnored())
+			return;
+
+		String ruleTableName = exportRule.getTableName();
+		RCollection<Field.CLASS<? extends Field>> ruleFields = exportRule.getFields();
+		ImportPolicy rulePolicy = exportRule.getPolicy();
+		guid ruleRecordId = exportRule.getRecordId();
+
+		if(ruleRecordId == null || ruleRecordId.isNull()) {
+			if(ruleFields.isEmpty())
+				add(ruleTableName, rulePolicy);
+			else
+				for(Field.CLASS<? extends Field> ruleField : ruleFields)
+					add(ruleTableName, ruleField.get().name(), rulePolicy);
+		} else {
+			if(ruleFields.isEmpty())
+				add(ruleTableName, ruleRecordId, rulePolicy);
+			else
+				for(Field.CLASS<? extends Field> ruleField : ruleFields)
+					add(ruleTableName, ruleRecordId, ruleField.get().name(), rulePolicy);
+		}
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

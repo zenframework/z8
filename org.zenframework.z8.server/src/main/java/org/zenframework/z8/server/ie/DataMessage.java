@@ -244,35 +244,14 @@ public class DataMessage extends Message {
 	}
 	
 	public void z8_addRule(RCollection<ExportRule.CLASS<? extends ExportRule>> rules) {
-		for(ExportRule.CLASS<? extends ExportRule> rule : rules)
-			z8_addRule(rule);
+		if(rules != null)
+			for(ExportRule.CLASS<? extends ExportRule> rule : rules)
+				z8_addRule(rule);
 	}
 
 	public void z8_addRule(ExportRule.CLASS<? extends ExportRule> rule) {
-		if(rule == null)
-			return;
-		ExportRule exportRule = rule.get();
-		if(exportRule.shouldBeIgnored())
-			return;
-
-		Table ruleTable = exportRule.getTable();
-		RCollection<Field.CLASS<? extends Field>> ruleFields = exportRule.getFields();
-		ImportPolicy rulePolicy = exportRule.getPolicy();
-		guid ruleRecordId = exportRule.getRecordId();
-	
-		if(ruleRecordId == null || ruleRecordId.isNull()) {
-			if(ruleFields.isEmpty())
-				source.addRule(ruleTable, rulePolicy);
-			else
-				for(Field.CLASS<? extends Field> ruleField : ruleFields)
-					source.addRule(ruleTable, ruleField.get(), rulePolicy);
-		} else {
-			if(ruleFields.isEmpty())
-				source.addRule(ruleTable, ruleRecordId, rulePolicy);
-			else
-				for(Field.CLASS<? extends Field> ruleField : ruleFields)
-					source.addRule(ruleTable, ruleRecordId, ruleField.get(), rulePolicy);
-		}
+		if(rule != null)
+			source.addRule(rule.get());
 	}
 
 	public void z8_setExportAll(bool exportAll) {

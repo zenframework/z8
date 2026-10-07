@@ -5,12 +5,14 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
-import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
 
-@SuppressWarnings("all")
 public class ExportRule extends OBJECT {
 	public static class CLASS<T extends ExportRule> extends OBJECT.CLASS<T> {
+		public CLASS() {
+			this(null);
+		}
+
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(ExportRule.class);
@@ -21,57 +23,54 @@ public class ExportRule extends OBJECT {
 		}
 	}
 
-	public Table.CLASS<? extends Table> table;
-	public RCollection fields;
-	public guid recordId;
-	public ImportPolicy policy;
-	public bool ignoreThisRule;
-
-	static {
-		staticConstructor();
-	}
-
-	public static void staticConstructor() {
-	}
+	private Table.CLASS<? extends Table> table = new Table.CLASS<Table>(this);
+	private RCollection<Field.CLASS<? extends Field>> fields = new RCollection<Field.CLASS<? extends Field>>();
+	private guid recordId = guid.Null;
+	private ImportPolicy policy = ImportPolicy.OVERRIDE;
+	private boolean ignoreThisRule = false;
 
 	public ExportRule(IObject container) {
 		super(container);
-		table = new Table.CLASS<Table>(this);
-		fields = new RCollection();
-		recordId = new guid();
 	}
 
-	public void constructor1() {
+	public void setTable(Table.CLASS<? extends Table> table) {
+		this.table = table;
 	}
 
-	public void initMembers() {
-		super.initMembers();
+	public void setRecordId(guid recordId) {
+		this.recordId = recordId;
 	}
 
-	public void constructor2() {
-		super.constructor2();
-		table.setIndex("table");
-		ignoreThisRule = new bool(false);
+	public void setPolicy(ImportPolicy policy) {
+		this.policy = policy;
+	}
+
+	public void setIgnoreThisRule(boolean ignoreThisRule) {
+		this.ignoreThisRule = ignoreThisRule;
+	}
+
+	public void setFields(RCollection<Field.CLASS<? extends Field>> fields) {
+		this.fields = fields;
 	}
 
 	public boolean shouldBeIgnored() {
-		return ignoreThisRule.get();
+		return ignoreThisRule;
 	}
 
 	public guid getRecordId() {
-		return z8_getRecordId();
+		return recordId;
 	}
 
-	public Table getTable() {
-		return z8_getTable().get();
+	public String getTableName() {
+		return table.get().name();
 	}
 
 	public RCollection<Field.CLASS<? extends Field>> getFields() {
-		return z8_getFields();
+		return fields;
 	}
 
 	public ImportPolicy getPolicy() {
-		return z8_getPolicy();
+		return policy;
 	}
 
 	static public ExportRule.CLASS<? extends ExportRule> z8_create(Table.CLASS<? extends Table> table,
@@ -80,10 +79,13 @@ public class ExportRule extends OBJECT {
 	}
 
 	static public ExportRule.CLASS<? extends ExportRule> z8_create(guid recordId, Table.CLASS<? extends Table> table, ImportPolicy policy) {
-		ExportRule.CLASS<? extends ExportRule> rule = new ExportRule.CLASS<ExportRule>(null);
-		rule.get().recordId = recordId;
-		rule.get().table = table;
-		rule.get().policy = policy;
+		ExportRule.CLASS<? extends ExportRule> rule = new ExportRule.CLASS<ExportRule>();
+
+		ExportRule exportRule = rule.get();
+		exportRule.setRecordId(recordId);
+		exportRule.setTable(table);
+		exportRule.setPolicy(policy);
+
 		return rule;
 	}
 
@@ -101,7 +103,7 @@ public class ExportRule extends OBJECT {
 	}
 
 	static public ExportRule.CLASS<? extends ExportRule> z8_create(guid recordId, Table.CLASS<? extends Table> table, Field.CLASS<? extends Field> field, ImportPolicy policy) {
-		return z8_create(recordId, table, new RCollection(new Object[] { field }), policy);
+		return z8_create(recordId, table, new RCollection<Field.CLASS<? extends Field>>(new Object[] { field }), policy);
 	}
 
 	static public ExportRule.CLASS<? extends ExportRule> z8_create(guid recordId, Table.CLASS<? extends Table> table, RCollection<Field.CLASS<? extends Field>> fields) {
@@ -117,28 +119,29 @@ public class ExportRule extends OBJECT {
 						"Field \"" + field.get().name() + "\" doesn't belong to table \"" + tableName + "\"");
 		}
 
-		ExportRule.CLASS<? extends ExportRule> rule = new ExportRule.CLASS<ExportRule>(null);
-		rule.get().table = table;
-		rule.get().fields = fields;
-		rule.get().policy = policy;
-		rule.get().recordId = recordId;
-		rule.get().ignoreThisRule = ((bool) fields.z8_isEmpty());
+		ExportRule.CLASS<? extends ExportRule> rule = new ExportRule.CLASS<ExportRule>();
+		ExportRule exportRule = rule.get();
+		exportRule.setRecordId(recordId);
+		exportRule.setTable(table);
+		exportRule.setPolicy(policy);
+		exportRule.setFields(fields);
+		exportRule.setIgnoreThisRule(fields.isEmpty());
 		return rule;
 	}
 
 	public guid z8_getRecordId() {
-		return recordId;
+		return getRecordId();
 	}
 
 	public Table.CLASS<? extends Table> z8_getTable() {
 		return table;
 	}
 
-	public RCollection z8_getFields() {
-		return fields;
+	public RCollection<Field.CLASS<? extends Field>> z8_getFields() {
+		return getFields();
 	}
 
 	public ImportPolicy z8_getPolicy() {
-		return policy;
+		return getPolicy();
 	}
 }
