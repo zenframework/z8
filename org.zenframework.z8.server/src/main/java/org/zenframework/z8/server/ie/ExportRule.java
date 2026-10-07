@@ -131,8 +131,10 @@ public class ExportRule extends OBJECT {
 		if (fields == null)
 			return;
 
-		for (Field.CLASS<? extends Field> field : fields)
-			if (table.get() != (Table) field.get().getOwner())
-				throw new RuntimeException("Field \"" + field.get().name() + "\" doesn't belong to table \"" + table.get().name() + "\"");
+		Table t = table.get();
+		for (Field.CLASS<? extends Field> field : fields) {
+			if (t != (Table) field.get().getOwner())
+				throw new RuntimeException("Field " + field.id() + " (\"" + field.get().name() + "\") doesn't belong to table " + table.id() + " (\"" + t.name() + "\")");
+		}
 	}
 }
