@@ -128,7 +128,7 @@ public class StreamRemoteCall implements RemoteCall {
 			byte op = rd.readByte();
 
 			if(op != TransportConstants.Return)
-				throw new UnmarshalException("Transport return code invalid");
+				throw new UnmarshalException("Transport return code invalid: " + Integer.toHexString(op));
 
 			getInputStream();
 			returnType = in.readByte();

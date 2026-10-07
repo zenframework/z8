@@ -17,8 +17,6 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
-import org.zenframework.z8.server.db.Connection;
-import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
@@ -379,11 +377,7 @@ public class Domains extends Table {
 	}
 
 	private void updateDatetimeField(String domain, DatetimeField field) {
-		Connection connection = ConnectionManager.get();
-
 		try {
-			connection.beginTransaction();
-
 			boolean exists = readFirst(Arrays.asList(primaryKey()), new EqualsIgnoreCase(address.get(), domain));
 
 			field.set(new date());
@@ -395,10 +389,7 @@ public class Domains extends Table {
 				address.get().set(domain);
 				create();
 			}
-
-			connection.commit();
 		} catch (Throwable e) {
-			connection.rollback();
 			Trace.logError("Can't update domain '" + domain + "' field '" + field.name() + "'", e);
 		}
 	}
