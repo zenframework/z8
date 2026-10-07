@@ -24,10 +24,9 @@ public class ExportRule extends OBJECT {
 	}
 
 	private Table.CLASS<? extends Table> table = new Table.CLASS<Table>(this);
-	private RCollection<Field.CLASS<? extends Field>> fields = new RCollection<Field.CLASS<? extends Field>>();
+	private RCollection<Field.CLASS<? extends Field>> fields = null;
 	private guid recordId = guid.Null;
 	private ImportPolicy policy = ImportPolicy.OVERRIDE;
-	private boolean ignoreThisRule = false;
 
 	public ExportRule(IObject container) {
 		super(container);
@@ -45,16 +44,8 @@ public class ExportRule extends OBJECT {
 		this.policy = policy;
 	}
 
-	public void setIgnoreThisRule(boolean ignoreThisRule) {
-		this.ignoreThisRule = ignoreThisRule;
-	}
-
 	public void setFields(RCollection<Field.CLASS<? extends Field>> fields) {
 		this.fields = fields;
-	}
-
-	public boolean shouldBeIgnored() {
-		return ignoreThisRule;
 	}
 
 	public guid getRecordId() {
@@ -73,8 +64,7 @@ public class ExportRule extends OBJECT {
 		return policy;
 	}
 
-	static public ExportRule.CLASS<? extends ExportRule> z8_create(Table.CLASS<? extends Table> table,
-			ImportPolicy policy) {
+	static public ExportRule.CLASS<? extends ExportRule> z8_create(Table.CLASS<? extends Table> table, ImportPolicy policy) {
 		return z8_create(guid.Null, table, policy);
 	}
 
@@ -111,12 +101,14 @@ public class ExportRule extends OBJECT {
 	}
 
 	static public ExportRule.CLASS<? extends ExportRule> z8_create(guid recordId, Table.CLASS<? extends Table> table, RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
-		String tableName = table.get().name();
-		for (Field.CLASS<? extends Field> field : fields) {
-			Table fieldTable = (Table) field.get().getOwner();
-			if (!tableName.equals(fieldTable.name()))
-				throw new RuntimeException(
-						"Field \"" + field.get().name() + "\" doesn't belong to table \"" + tableName + "\"");
+		if(fields != null) {
+			String tableName = table.get().name();
+			for (Field.CLASS<? extends Field> field : fields) {
+				Table fieldTable = (Table) field.get().getOwner();
+				if (!tableName.equals(fieldTable.name()))
+					throw new RuntimeException(
+							"Field \"" + field.get().name() + "\" doesn't belong to table \"" + tableName + "\"");
+			}
 		}
 
 		ExportRule.CLASS<? extends ExportRule> rule = new ExportRule.CLASS<ExportRule>();
@@ -125,7 +117,6 @@ public class ExportRule extends OBJECT {
 		exportRule.setTable(table);
 		exportRule.setPolicy(policy);
 		exportRule.setFields(fields);
-		exportRule.setIgnoreThisRule(fields.isEmpty());
 		return rule;
 	}
 

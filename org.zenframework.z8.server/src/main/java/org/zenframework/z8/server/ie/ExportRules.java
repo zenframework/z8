@@ -61,7 +61,7 @@ public class ExportRules implements RmiSerializable, Serializable {
 	}
 	
 	public void add(ExportRule exportRule) {
-		if(exportRule == null || exportRule.shouldBeIgnored())
+		if(exportRule == null)
 			return;
 
 		String ruleTableName = exportRule.getTableName();
@@ -70,13 +70,13 @@ public class ExportRules implements RmiSerializable, Serializable {
 		guid ruleRecordId = exportRule.getRecordId();
 
 		if(ruleRecordId == null || ruleRecordId.isNull()) {
-			if(ruleFields.isEmpty())
+			if(ruleFields == null)
 				add(ruleTableName, rulePolicy);
 			else
 				for(Field.CLASS<? extends Field> ruleField : ruleFields)
 					add(ruleTableName, ruleField.get().name(), rulePolicy);
 		} else {
-			if(ruleFields.isEmpty())
+			if(ruleFields == null)
 				add(ruleTableName, ruleRecordId, rulePolicy);
 			else
 				for(Field.CLASS<? extends Field> ruleField : ruleFields)
