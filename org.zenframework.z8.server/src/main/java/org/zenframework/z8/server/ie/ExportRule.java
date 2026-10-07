@@ -101,22 +101,13 @@ public class ExportRule extends OBJECT {
 	}
 
 	static public ExportRule.CLASS<? extends ExportRule> z8_create(guid recordId, Table.CLASS<? extends Table> table, RCollection<Field.CLASS<? extends Field>> fields, ImportPolicy policy) {
-		if(fields != null) {
-			String tableName = table.get().name();
-			for (Field.CLASS<? extends Field> field : fields) {
-				Table fieldTable = (Table) field.get().getOwner();
-				if (!tableName.equals(fieldTable.name()))
-					throw new RuntimeException(
-							"Field \"" + field.get().name() + "\" doesn't belong to table \"" + tableName + "\"");
-			}
-		}
-
 		ExportRule.CLASS<? extends ExportRule> rule = new ExportRule.CLASS<ExportRule>();
 		ExportRule exportRule = rule.get();
 		exportRule.setRecordId(recordId);
 		exportRule.setTable(table);
 		exportRule.setPolicy(policy);
 		exportRule.setFields(fields);
+		exportRule.checkFields();
 		return rule;
 	}
 
@@ -134,5 +125,14 @@ public class ExportRule extends OBJECT {
 
 	public ImportPolicy z8_getPolicy() {
 		return getPolicy();
+	}
+
+	private void checkFields() {
+		if (fields == null)
+			return;
+
+		for (Field.CLASS<? extends Field> field : fields)
+			if (table.get() != (Table) field.get().getOwner())
+				throw new RuntimeException("Field \"" + field.get().name() + "\" doesn't belong to table \"" + table.get().name() + "\"");
 	}
 }

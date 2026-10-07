@@ -59,30 +59,6 @@ public class ExportRules implements RmiSerializable, Serializable {
 		TableRules rules = getTableRules(table);
 		rules.setPolicy(recordId, field, policy);
 	}
-	
-	public void add(ExportRule exportRule) {
-		if(exportRule == null)
-			return;
-
-		String ruleTableName = exportRule.getTableName();
-		RCollection<Field.CLASS<? extends Field>> ruleFields = exportRule.getFields();
-		ImportPolicy rulePolicy = exportRule.getPolicy();
-		guid ruleRecordId = exportRule.getRecordId();
-
-		if(ruleRecordId == null || ruleRecordId.isNull()) {
-			if(ruleFields == null)
-				add(ruleTableName, rulePolicy);
-			else
-				for(Field.CLASS<? extends Field> ruleField : ruleFields)
-					add(ruleTableName, ruleField.get().name(), rulePolicy);
-		} else {
-			if(ruleFields == null)
-				add(ruleTableName, ruleRecordId, rulePolicy);
-			else
-				for(Field.CLASS<? extends Field> ruleField : ruleFields)
-					add(ruleTableName, ruleRecordId, ruleField.get().name(), rulePolicy);
-		}
-	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		serialize(out);
