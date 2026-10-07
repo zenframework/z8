@@ -239,7 +239,7 @@ public class Transport implements Runnable {
 			return false;
 
 		try {
-			boolean success = message instanceof FileMessage ? sendFile((FileMessage)message) : sendMessage((DataMessage)message);
+			boolean success = message instanceof FileMessage ? sendFile((FileMessage) message) : sendMessage((DataMessage) message);
 
 			debug("send message {0} {1}", message, success ? "successfully" : "falls to retry");
 

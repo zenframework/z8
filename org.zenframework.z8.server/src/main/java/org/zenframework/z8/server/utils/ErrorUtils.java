@@ -33,11 +33,11 @@ public class ErrorUtils {
 	}
 
 	static public String getStackTrace(Throwable throwable) {
-		String result = "";
+		StringBuilder result = new StringBuilder(1024).append(String.valueOf(throwable.getMessage()));
 
-		for(StackTraceElement element : throwable.getStackTrace())
-			result += (result.isEmpty() ? "" : "\t") + element.toString() + file.EOL;
+		for (StackTraceElement element : throwable.getStackTrace())
+			result.append('\t').append(element.toString()).append(file.EOL);
 
-		return result;
+		return result.toString();
 	}
 }
