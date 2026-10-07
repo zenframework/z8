@@ -272,12 +272,7 @@ public class Query extends OBJECT {
 	}
 
 	public boolean hasRecord(guid recordId) {
-		try {
-			saveState();
-			return readRecord(recordId, Arrays.asList(primaryKey()));
-		} finally {
-			restoreState();
-		}
+		return readRecord(recordId, Arrays.asList(primaryKey()));
 	}
 
 	public boolean hasRecord(SqlToken where) {
