@@ -36,7 +36,7 @@ public class ErrorUtils {
 		StringBuilder result = new StringBuilder(1024).append(String.valueOf(throwable.getMessage()));
 
 		for (StackTraceElement element : throwable.getStackTrace())
-			result.append('\t').append(element.toString()).append(file.EOL);
+			result.append(file.EOL).append('\t').append(element.toString());
 
 		return result.toString();
 	}
