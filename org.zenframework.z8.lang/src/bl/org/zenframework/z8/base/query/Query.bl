@@ -117,6 +117,8 @@ public class Query extends Object {
 	public int update(guid id);
 	public int update(sql_bool where);
 
+	public bool updateOrCreate(guid recordId);
+
 	public int destroy(guid id);
 	public int destroy(sql_bool where);
 

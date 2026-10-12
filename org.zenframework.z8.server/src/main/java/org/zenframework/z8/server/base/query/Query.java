@@ -522,17 +522,25 @@ public class Query extends OBJECT {
 		return UpdateAction.run(this, id, true);
 	}
 
-	public void updateOrCreate(guid id) {
-		if(UpdateAction.run(this, id, false) == 0)
-			create(id);
-		else
-			resetChangedFields();
+	public boolean updateOrCreate(guid id) {
+		boolean inTransaction = ConnectionManager.get().inTransaction();
+
+		if (inTransaction && hasRecord(id)) {
+			update(id);
+			return false;
+		}
+
+		if (!inTransaction && update(id) != 0)
+			return false;
+
+		create(id);
+		return true;
 	}
 
 	private Query resetChangedFields() {
 		Collection<Field> changedFields = getChangedFields();
 
-		for(Field field : changedFields)
+		for (Field field : changedFields)
 			field.reset();
 
 		return this;
@@ -1432,6 +1440,10 @@ public class Query extends OBJECT {
 
 	public integer z8_update(sql_bool where) {
 		return new integer(update(where));
+	}
+
+	public bool z8_updateOrCreate(guid id) {
+		return bool.get(updateOrCreate(id));
 	}
 
 	public integer z8_destroy(guid id) {

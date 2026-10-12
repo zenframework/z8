@@ -4,15 +4,20 @@ import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.utils.ErrorUtils;
 
 public class Batch {
 	private class Data {
 		public Statement statement;
 		public int count = 0;
+		public StackTraceElement[] stackTrace;
 
 		Data(Statement statement) {
 			this.statement = statement;
+			if (ServerConfig.traceSqlBatchStack())
+				stackTrace = Thread.currentThread().getStackTrace();
 		}
 
 		@Override
@@ -54,15 +59,17 @@ public class Batch {
 	}
 
 	public void flush() throws SQLException {
-		for(Data data : this.data) {
+		for (Data data : this.data) {
 			if(data.count == 0)
 				continue;
 
 			try {
 				data.count = 0;
 				data.statement.executeBatch();
-			} catch(BatchUpdateException e) {
+			} catch (BatchUpdateException e) {
 				Trace.logError(e);
+				if (data.stackTrace != null)
+					Trace.logEvent("Batch statement origin:\n" + ErrorUtils.toString(data.stackTrace));
 				throw e.getNextException();
 			}
 		}

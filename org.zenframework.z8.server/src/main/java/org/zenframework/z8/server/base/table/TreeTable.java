@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.Link;
@@ -280,7 +279,7 @@ public class TreeTable extends Table implements Connection.Listener {
 			Field pathField = this.path.get();
 
 			if(!readRecord(id, Arrays.asList(pathField)))
-				throw new RuntimeException(Query.strings.ReadError);
+				return ""; // throw new RuntimeException(Query.strings.ReadError);
 
 			return pathField.string().get();
 		} finally {

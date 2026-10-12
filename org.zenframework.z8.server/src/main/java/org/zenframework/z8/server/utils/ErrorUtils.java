@@ -40,4 +40,19 @@ public class ErrorUtils {
 
 		return result.toString();
 	}
+
+	static public String toString(StackTraceElement[] stackTrace) {
+		if (stackTrace == null || stackTrace.length == 0)
+			return "";
+
+		StringBuilder str = new StringBuilder(stackTrace.length * 100);
+
+		for (int i = 1; i < stackTrace.length; i++) {
+			if (i > 1)
+				str.append('\n');
+			str.append("\t at ").append(stackTrace[i].toString());
+		}
+
+		return str.toString();
+	}
 }

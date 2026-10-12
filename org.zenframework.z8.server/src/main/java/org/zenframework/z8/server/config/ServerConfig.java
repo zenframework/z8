@@ -104,6 +104,7 @@ public class ServerConfig extends Config {
 
 	static final private String TraceSql = "trace.sql";
 	static final private String TraceSqlConnections = "trace.sql.connections";
+	static final private String TraceSqlBatchStack = "trace.sql.batch.stack";
 
 	static final public String TextExtensions = "file.converter.text";
 	static final public String ImageExtensions = "file.converter.image";
@@ -234,6 +235,7 @@ public class ServerConfig extends Config {
 
 	static private boolean traceSql;
 	static private boolean traceSqlConnections;
+	static private boolean traceSqlBatchStack;
 
 	static private String officeHome;
 	static private int officePort;
@@ -378,6 +380,7 @@ public class ServerConfig extends Config {
 
 		traceSql = instance.getProperty(TraceSql, false);
 		traceSqlConnections = instance.getProperty(TraceSqlConnections, false);
+		traceSqlBatchStack = instance.getProperty(TraceSqlBatchStack, false);
 
 		schedulerEnabled = instance.getProperty(SchedulerEnabled, true);
 		maintenanceJobCron = instance.getProperty(MaintenenceJobCron, "");
@@ -631,6 +634,10 @@ public class ServerConfig extends Config {
 
 	static public boolean traceSqlConnections() {
 		return traceSqlConnections;
+	}
+
+	static public boolean traceSqlBatchStack() {
+		return traceSqlBatchStack;
 	}
 
 	static public int webServerPort() {
