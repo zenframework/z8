@@ -1,6 +1,7 @@
 package org.zenframework.z8.server.json;
 
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -36,7 +37,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
-public class JsonWriter {
+public class JsonWriter  implements Closeable {
 	private Writer stream;
 	private List<Boolean> scopes;
 	private boolean quoteName = false;
@@ -79,6 +80,12 @@ public class JsonWriter {
 		}
 		scopes = new ArrayList<Boolean>();
 		return openScope();
+	}
+
+	@Override
+	public void close() throws IOException {
+		stream.flush();
+		stream.close();
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -149,7 +156,7 @@ public class JsonWriter {
 	}
 
 	public JsonWriter write(String value, boolean quote) {
-		return appendComma().appendStream(quote ? JsonObject.quote(value) : value).startSeparate();
+		return value != null ? appendComma().appendStream(quote ? JsonObject.quote(value) : value).startSeparate() : this;
 	}
 
 	public JsonWriter write(JsonWriter writer) {

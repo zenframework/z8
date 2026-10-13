@@ -1,5 +1,7 @@
 package org.zenframework.z8.server.base.json;
 
+import java.io.IOException;
+
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
@@ -131,6 +133,14 @@ public class JsonWriter extends OBJECT {
 
 	public void z8_reset(file f) {
 		set(new org.zenframework.z8.server.json.JsonWriter(f.toFile()));
+	}
+
+	public void z8_close() {
+		try {
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to safely close JsonWriter stream context", e);
+		}
 	}
 
 }
