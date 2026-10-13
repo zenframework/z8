@@ -348,12 +348,16 @@ public class Domains extends Table {
 		return result;
 	}
 
-	public void updateLastMessage(Collection<String> domains) {
-		updateDatetimeField(domains, lastMessageAt.get());
+	public void updateLastMessage(String domain, date value) {
+		updateLastMessage(Arrays.asList(domain), value);
 	}
 
-	public void updateLastSend(String domain) {
-		updateDatetimeField(Arrays.asList(domain), lastSendAt.get());
+	public void updateLastMessage(Collection<String> domains, date value) {
+		updateDatetimeField(domains, lastMessageAt.get(), value);
+	}
+
+	public void updateLastSend(Collection<String> domains, date value) {
+		updateDatetimeField(domains, lastSendAt.get(), value);
 	}
 
 	public void updateDomains() {
@@ -378,9 +382,8 @@ public class Domains extends Table {
 		Trace.logEvent("Update domains dates finished in " + (java.lang.System.currentTimeMillis() - start) + "ms");
 	}
 
-	private void updateDatetimeField(Collection<String> domains, DatetimeField field) {
+	private void updateDatetimeField(Collection<String> domains, DatetimeField field, date value) {
 		Set<string> addresses = new HashSet<string>();
-		date now = new date();
 
 		for (String domain : domains)
 			addresses.add(new string(domain.toLowerCase()));
@@ -390,14 +393,14 @@ public class Domains extends Table {
 
 			while (next()) {
 				addresses.remove(address.get().get().z8_toLowerCase());
-				field.set(now);
+				field.set(value);
 				update(recordId());
 			}
 
 			for (string addr : addresses) {
 				name.get().set(addr);
 				address.get().set(addr);
-				field.set(now);
+				field.set(value);
 				create();
 			}
 		} catch (Throwable e) {

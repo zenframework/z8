@@ -36,6 +36,7 @@ import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.security.User;
 import org.zenframework.z8.server.types.binary;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.exception;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -446,7 +447,7 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 				@Override
 				public void after(Connection connection, ConnectionEvent event) {
 					if (event == ConnectionEvent.Commit)
-						Domains.newInstance().updateLastMessage(TouchedDomains.get());
+						Domains.newInstance().updateLastMessage(TouchedDomains.get(), new date());
 				}
 			});
 		}

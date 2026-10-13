@@ -27,6 +27,7 @@ import org.zenframework.z8.server.ie.DataMessage;
 import org.zenframework.z8.server.ie.FileMessage;
 import org.zenframework.z8.server.ie.Message;
 import org.zenframework.z8.server.request.Request;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.utils.ErrorUtils;
@@ -113,8 +114,6 @@ public class Transport implements Runnable {
 
 			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 
-			Domains.newInstance().updateLastSend(domain);
-
 			int count = ServerConfig.transportJobIterations();
 			boolean success = true;
 
@@ -141,12 +140,17 @@ public class Transport implements Runnable {
 	}
 
 	private void prepareMessages() throws Throwable {
+		int limit = ServerConfig.messageQueueTransactionSize();
+
 		messageQueueSize = messageQueue.count(domain);
 
-		Collection<Message> messages = messageQueue.getMessages(domain);
+		Collection<Message> messages = messageQueue.getMessages(domain, limit);
 
 		for (Message message : messages)
 			prepare(message);
+
+		if (messages.size() < limit)
+			Domains.newInstance().updateLastMessage(domain, date.Min);
 	}
 
 	private void prepare(Message message) throws Throwable {

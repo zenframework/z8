@@ -17,7 +17,6 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Equ;
@@ -172,7 +171,7 @@ public class MessageQueue extends Table {
 		return count(new Equ(address.get(), domain));
 	}
 
-	public Collection<Message> getMessages(String domain) {
+	public Collection<Message> getMessages(String domain, int limit) {
 		Collection<Message> result = new ArrayList<Message>();
 
 		Field name = this.name.get();
@@ -187,7 +186,6 @@ public class MessageQueue extends Table {
 		Collection<Field> orderBy = Arrays.<Field>asList(ordinal);
 
 		SqlToken where = new And(new IsNot(processing), new Equ(address, domain));
-		int limit = ServerConfig.messageQueueTransactionSize();
 
 		read(fields, orderBy, where, limit);
 

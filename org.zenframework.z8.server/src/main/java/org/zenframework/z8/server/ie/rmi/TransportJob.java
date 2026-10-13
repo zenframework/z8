@@ -13,6 +13,7 @@ import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.utils.LogUtils;
 
 public class TransportJob extends Executable {
@@ -62,6 +63,8 @@ public class TransportJob extends Executable {
 
 		for (String address : addresses)
 			new Transport(address).start();
+
+		Domains.newInstance().updateLastSend(addresses, new date());
 	}
 
 	private void log(String message, Object... args) {
