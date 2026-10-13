@@ -1,6 +1,14 @@
 package org.zenframework.z8.server.json;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,348 +37,367 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class JsonWriter {
-	private StringBuilder stream;
+	private Writer stream;
 	private List<Boolean> scopes;
 	private boolean quoteName = false;
 	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> wrapper = null;
+	private String outputDescriptor;
 
 	public JsonWriter() {
-		reset();
+		init(new StringWriter(), null, false);
 	}
 
 	public JsonWriter(boolean quoteName) {
-		this();
-		this.quoteName = quoteName;
+		init(new StringWriter(), null, quoteName);
 	}
 
-	public void reset() {
-		stream = new StringBuilder();
-		scopes = new ArrayList<Boolean>();
-		openScope();
+	public JsonWriter(Writer customWriter) {
+		this(customWriter, resolveDescriptor(customWriter));
 	}
+	
+	public JsonWriter(Writer customWriter, String outputDescriptor) {
+		init(customWriter, outputDescriptor, false);
+	}
+
+	public JsonWriter(File file) {
+		this(file.toPath());
+	}
+
+	public JsonWriter(Path path) {
+		init(openWriterFromPath(path), path.toAbsolutePath().toString(), false);
+	}
+
+	private void init(Writer writer, String outputDescriptor, boolean quoteName) {
+		if (writer == null) {
+			throw new IllegalArgumentException("Target stream writer cannot be null");
+		}
+		this.stream = writer instanceof StringWriter || writer instanceof BufferedWriter ? writer : new BufferedWriter(writer);
+		this.outputDescriptor = outputDescriptor;
+		this.quoteName = quoteName;
+		reset();
+	}
+
+	public JsonWriter reset() {
+		if (stream instanceof StringWriter) {
+			stream = new StringWriter();
+		} else {
+			try { stream.flush(); } catch (IOException ignored) {}
+		}
+		scopes = new ArrayList<Boolean>();
+		return openScope();
+	}
+
+	//////////////////////////////////////////////////////////////////
 
 	private String quoteName(String name) {
 		return quoteName ? JsonObject.quote(name) : ('"' + name + '"');
 	}
 
-	private StringBuilder appendComma() {
+	private JsonWriter appendComma() {
 		int size = scopes.size();
-		return size > 0 && scopes.get(size - 1) ? stream.append(",") : stream;
+		return size > 0 && scopes.get(size - 1) ? appendStream(",") : this;
 	}
 	
-	private void openScope() {
+	private JsonWriter openScope() {
 		scopes.add(false);
+		return this;
 	}
 
-	private void closeScope() {
+	private JsonWriter closeScope() {
 		scopes.remove(scopes.size() - 1);
-		startSeparate();
+		return startSeparate();
 	}
 
 	// TODO This must be private
-	public void startSeparate() {
+	public JsonWriter startSeparate() {
 		if(scopes.size() != 0)
 			scopes.set(scopes.size() - 1, true);
+		return this;
 	}
 
-	public void startObject(string name) {
-		startObject(name != null ? name.get() : null);
+	public JsonWriter startObject(string name) {
+		return startObject(name != null ? name.get() : null);
 	}
 
-	public void startObject(String name) {
-		if(name != null) {
-			appendComma().append(quoteName(name)).append(":{");
-			openScope();
-		} else
-			startObject();
+	public JsonWriter startObject(String name) {
+		return name != null ? appendComma().appendStream(quoteName(name)).appendStream(":{").openScope() 
+							: startObject();
 	}
 
-	public void startObject() {
-		appendComma().append('{');
-		openScope();
+	public JsonWriter startObject() {
+		return appendComma().appendStream("{").openScope();
 	}
 
-	public void finishObject() {
-		stream.append('}');
-		closeScope();
+	public JsonWriter finishObject() {
+		return appendStream("}").closeScope();
 	}
 
-	public void startArray(string name) {
-		startArray(name != null ? name.get() : null);
+	public JsonWriter startArray(string name) {
+		return startArray(name != null ? name.get() : null);
 	}
 
-	public void startArray(String name) {
-		if(name != null) {
-			appendComma().append(quoteName(name)).append(":[");
-			openScope();
-		} else
-			startArray();
+	public JsonWriter startArray(String name) {
+		return name != null ? appendComma().appendStream(quoteName(name)).appendStream(":[").openScope()
+							: startArray();
 	}
 
-	public void startArray() {
-		appendComma().append('[');
-		openScope();
+	public JsonWriter startArray() {
+		return appendComma().appendStream("[").openScope();
 	}
 
-	public void finishArray() {
-		stream.append(']');
-		closeScope();
+	public JsonWriter finishArray() {
+		return appendStream("]").closeScope();
 	}
 
-	public void write(String value) {
-		write(value, true);
+	public JsonWriter write(String value) {
+		return write(value, true);
 	}
 
-	public void write(String value, boolean quote) {
-		if(value != null) {
-			appendComma().append(quote ? JsonObject.quote(value) : value);
-			startSeparate();
-		}
+	public JsonWriter write(String value, boolean quote) {
+		return appendComma().appendStream(quote ? JsonObject.quote(value) : value).startSeparate();
 	}
 
-	public void write(JsonWriter writer) {
-		appendComma().append(writer.stream);
-		startSeparate();
+	public JsonWriter write(JsonWriter writer) {
+		return appendComma().appendStream(writer.getStringContent()).startSeparate();
 	}
 
-	public void write(double value) {
-		write(Double.toString(value), false);
+	public JsonWriter write(double value) {
+		return write(Double.toString(value), false);
 	}
 
-	public void write(BigDecimal value) {
-		write(value.toString(), false);
+	public JsonWriter write(BigDecimal value) {
+		return write(value.toString(), false);
 	}
 
-	public void write(long value) {
-		write(Long.toString(value), false);
+	public JsonWriter write(long value) {
+		return write(Long.toString(value), false);
 	}
 
-	public void write(int value) {
-		write(Integer.toString(value), false);
+	public JsonWriter write(int value) {
+		return write(Integer.toString(value), false);
 	}
 
-	public void write(boolean value) {
-		write(Boolean.toString(value), false);
+	public JsonWriter write(boolean value) {
+		return write(Boolean.toString(value), false);
 	}
 
-	public void write(primary value) {
+	public JsonWriter write(primary value) {
 		if(value == null)
-			write("null", false);
-		else if(value instanceof bool)
-			write(((bool)value).get());
-		else if(value instanceof geometry) {
+			return write("null", false);
+		if(value instanceof bool)
+			return write(((bool)value).get());
+		if(value instanceof geometry) {
 			geometry geometry = (geometry)value;
 			if(!geometry.isEmpty())
-				writeProperty(GeoJsonWriter.write(geometry), true);
-		} else if(value instanceof integer)
-			write(((integer)value).get());
-		else if(value instanceof decimal)
-			write(((decimal)value).get());
-		else if(value instanceof date) {
+				return writeProperty(GeoJsonWriter.write(geometry), true);
+		}
+		if(value instanceof integer)
+			return write(((integer)value).get());
+		if(value instanceof decimal)
+			return write(((decimal)value).get());
+		if(value instanceof date) {
 			date dt = (date)value;
 			boolean minMax = dt.equals(date.Min) || dt.equals(date.Max);
-			write(minMax ? "" : value.toString());
-		} else
-			write(value.toString());
+			return write(minMax ? "" : value.toString());
+		}
+		return write(value.toString());
 	}
 
-	public void write(OBJECT value) {
+	public JsonWriter write(OBJECT value) {
 		startObject();
 		value.z8_write(getWrapper());
-		finishObject();
+		return finishObject();
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void write(RCollection value) {
+	public JsonWriter write(RCollection value) {
 		startArray();
-		for(Object v : value)
+		for (Object v : value)
 			write(v);
-		finishArray();
+		return finishArray();
 	}
 
-	public void write(JsonObject value) {
-		write(value.toString(), false);
+	public JsonWriter write(JsonObject value) {
+		return write(value.toString(), false);
 	}
 
-	public void write(JsonArray value) {
-		write(value.toString(), false);
+	public JsonWriter write(JsonArray value) {
+		return write(value.toString(), false);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void write(Object value) {
-		if (value instanceof OBJECT) {
-			write((OBJECT) value);
-		} else if (value instanceof OBJECT.CLASS) {
-			write(((OBJECT.CLASS<? extends OBJECT>) value).get());
-		} else if (value instanceof primary) {
-			write((primary) value);
-		} else if (value instanceof RCollection) {
-			write((RCollection) value);
-		} else if (value instanceof String) {
-			write((String) value);
-		} else if (value instanceof BigDecimal) {
-			write((BigDecimal) value);
-		} else if (value instanceof JsonWriter) {
-			write((JsonWriter) value);
-		} else if (value instanceof JsonObject) {
-			write((JsonObject) value);
-		} else if (value instanceof JsonArray) {
-			write((JsonArray) value);
-		} else
-			throw new IllegalArgumentException(value.getClass().getName());
+	public JsonWriter write(Object value) {
+		if (value instanceof OBJECT)
+			return write((OBJECT) value);
+		if (value instanceof OBJECT.CLASS)
+			return write(((OBJECT.CLASS<? extends OBJECT>) value).get());
+		if (value instanceof primary)
+			return write((primary) value);
+		if (value instanceof RCollection)
+			return write((RCollection) value);
+		if (value instanceof String)
+			return write((String) value);
+		if (value instanceof BigDecimal)
+			return write((BigDecimal) value);
+		if (value instanceof JsonWriter)
+			return write((JsonWriter) value);
+		if (value instanceof JsonObject)
+			return write((JsonObject) value);
+		if (value instanceof JsonArray)
+			return write((JsonArray) value);
+
+		throw new IllegalArgumentException(value.getClass().getName());
 	}
 
-	public void writeProperty(string name, String value) {
-		writeProperty(name.get(), value, true);
+	public JsonWriter writeProperty(string name, String value) {
+		return writeProperty(name.get(), value, true);
 	}
 
-	public void writeProperty(String name, String value) {
-		writeProperty(name, value, true);
+	public JsonWriter writeProperty(String name, String value) {
+		return writeProperty(name, value, true);
 	}
 
-	public void writeProperty(String name, String value, boolean quoteValue) {
-		if(value != null) {
-			appendComma().append(quoteName(name)).append(":").append(quoteValue ? JsonObject.quote(value) : value);
-			startSeparate();
-		}
+	public JsonWriter writeProperty(String name, String value, boolean quoteValue) {
+		return value != null ? appendComma().appendStream(quoteName(name)).appendStream(":").appendStream(quoteValue ? JsonObject.quote(value)
+																													 : value).startSeparate()
+							 : this;
 	}
 
-	public void writeProperty(string name, primary value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, primary value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(string name, primary value, primary defaultValue) {
-		writeProperty(name.get(), value != null ? value : defaultValue);
+	public JsonWriter writeProperty(string name, primary value, primary defaultValue) {
+		return writeProperty(name.get(), value != null ? value : defaultValue);
 	}
 
-	public void writeProperty(String name, primary value) {
+	public JsonWriter writeProperty(String name, primary value) {
 		if(value == null)
-			return;
+			return this;
 
 		if(value instanceof bool)
-			writeProperty(name, ((bool)value).get());
-		else if(value instanceof geometry) {
+			return writeProperty(name, ((bool)value).get());
+		if(value instanceof geometry) {
 			geometry geometry = (geometry)value;
 			if(!geometry.isEmpty())
-				writeProperty(name, GeoJsonWriter.write(geometry), true);
-		} else if(value instanceof integer)
-			writeProperty(name, ((integer)value).get());
-		else if(value instanceof decimal)
-			writeProperty(name, ((decimal)value).get());
-		else if(value instanceof date) {
+				return writeProperty(name, GeoJsonWriter.write(geometry), true);
+		}
+		if(value instanceof integer)
+			return writeProperty(name, ((integer)value).get());
+		if(value instanceof decimal)
+			return writeProperty(name, ((decimal)value).get());
+		if(value instanceof date) {
 			boolean minMax = value.equals(date.Min) || value.equals(date.Max);
-			writeProperty(name, '"' + (minMax ? "" : value.toString()) + '"', false);
-		} else
-			writeProperty(name, value.toString(), true);
+			return writeProperty(name, '"' + (minMax ? "" : value.toString()) + '"', false);
+		}
+		return writeProperty(name, value.toString(), true);
 	}
 
-	public void writeProperty(String name, OBJECT value) {
+	public JsonWriter writeProperty(String name, OBJECT value) {
 		startObject(name);
 		value.z8_write(getWrapper());
-		finishObject();
+		return finishObject();
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void writeProperty(String name, RCollection value) {
+	public JsonWriter writeProperty(String name, RCollection value) {
 		startArray(name);
 		for(Object v : value)
 			write(v);
-		finishArray();
+		return finishArray();
 	}
 
-	public void writeProperty(string name, double value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, double value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, double value) {
-		appendComma().append(quoteName(name)).append(":").append(Double.toString(value));
-		startSeparate();
+	public JsonWriter writeProperty(String name, double value) {
+		return appendComma().appendStream(quoteName(name)).appendStream(":").appendStream(Double.toString(value)).startSeparate();
 	}
 
-	public void writeProperty(string name, BigDecimal value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, BigDecimal value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, BigDecimal value) {
-		writeProperty(name, value.toString(), false);
+	public JsonWriter writeProperty(String name, BigDecimal value) {
+		return writeProperty(name, value.toString(), false);
 	}
 
-	public void writeProperty(string name, long value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, long value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, long value) {
-		writeProperty(name, Long.toString(value), false);
+	public JsonWriter writeProperty(String name, long value) {
+		return writeProperty(name, Long.toString(value), false);
 	}
 
-	public void writeProperty(string name, int value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, int value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, int value) {
-		writeProperty(name, Integer.toString(value), false);
+	public JsonWriter writeProperty(String name, int value) {
+		return writeProperty(name, Integer.toString(value), false);
 	}
 
-	public void writeProperty(string name, boolean value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, boolean value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, boolean value) {
-		writeProperty(name, Boolean.toString(value), false);
+	public JsonWriter writeProperty(String name, boolean value) {
+		return writeProperty(name, Boolean.toString(value), false);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void writeProperty(String name, Object value) {
-		if (value instanceof OBJECT) {
-			writeProperty(name, (OBJECT) value);
-		} else if (value instanceof OBJECT.CLASS) {
-			writeProperty(name, ((OBJECT.CLASS<? extends OBJECT>) value).get());
-		} else if (value instanceof primary) {
-			writeProperty(name, (primary) value);
-		} else if (value instanceof RCollection) {
-			writeProperty(name, (RCollection) value);
-		} else if (value instanceof String) {
-			writeProperty(name, (String) value);
-		} else if (value instanceof BigDecimal) {
-			writeProperty(name, (BigDecimal) value);
-		} else if (value instanceof JsonWriter) {
-			writeProperty(name, (JsonWriter) value);
-		} else if (value instanceof JsonObject) {
-			writeProperty(name, (JsonObject) value);
-		} else if (value instanceof JsonArray) {
-			writeProperty(name, (JsonArray) value);
-		} else
-			throw new IllegalArgumentException(value.getClass().getName());
+	public JsonWriter writeProperty(String name, Object value) {
+		if (value instanceof OBJECT)
+			return writeProperty(name, (OBJECT) value);
+		if (value instanceof OBJECT.CLASS)
+			return writeProperty(name, ((OBJECT.CLASS<? extends OBJECT>) value).get());
+		if (value instanceof primary)
+			return writeProperty(name, (primary) value);
+		if (value instanceof RCollection)
+			return writeProperty(name, (RCollection) value);
+		if (value instanceof String)
+			return writeProperty(name, (String) value);
+		if (value instanceof BigDecimal)
+			return writeProperty(name, (BigDecimal) value);
+		if (value instanceof JsonWriter)
+			return writeProperty(name, (JsonWriter) value);
+		if (value instanceof JsonObject)
+			return writeProperty(name, (JsonObject) value);
+		if (value instanceof JsonArray)
+			return writeProperty(name, (JsonArray) value);
+
+		throw new IllegalArgumentException(value.getClass().getName());
 	}
 
-	public void writeNull(String name) {
-		writeProperty(name, "null", false);
+	public JsonWriter writeNull(String name) {
+		return writeProperty(name, "null", false);
 	}
 
-	public void writeProperty(string name, JsonObject value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, JsonObject value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, JsonObject value) {
-		writeProperty(name, value.toString(), false);
+	public JsonWriter writeProperty(String name, JsonObject value) {
+		return writeProperty(name, value.toString(), false);
 	}
 
-	public void writeProperty(string name, JsonArray value) {
-		writeProperty(name.get(), value);
+	public JsonWriter writeProperty(string name, JsonArray value) {
+		return writeProperty(name.get(), value);
 	}
 
-	public void writeProperty(String name, JsonArray value) {
-		writeProperty(name, value.toString(), false);
+	public JsonWriter writeProperty(String name, JsonArray value) {
+		return writeProperty(name, value.toString(), false);
 	}
 
-	public void writeJsonProperty(String name, String json) {
-		appendComma().append(quoteName(name)).append(":").append(json);
-		startSeparate();
+	public JsonWriter writeJsonProperty(String name, String json) {
+		return appendComma().appendStream(quoteName(name)).appendStream(":").appendStream(json).startSeparate();
 	}
 
-	public void writeControls(string property, Collection<? extends Control> controls, Query query, Query context) {
+	public JsonWriter writeControls(string property, Collection<? extends Control> controls, Query query, Query context) {
 		if(controls.isEmpty())
-			return;
+			return this;
 
 		startArray(property);
 		for(Control control : controls) {
@@ -378,12 +405,12 @@ public class JsonWriter {
 			control.writeMeta(this, query, context);
 			finishObject();
 		}
-		finishArray();
+		return finishArray();
 	}
 
-	public void writeSort(Collection<Field> sortFields) {
+	public JsonWriter writeSort(Collection<Field> sortFields) {
 		if(sortFields.isEmpty())
-			return;
+			return this;
 
 		startArray(Json.sort);
 		for(Field field : sortFields) {
@@ -392,22 +419,22 @@ public class JsonWriter {
 			writeProperty(Json.direction, field.sortDirection.toString());
 			finishObject();
 		}
-		finishArray();
+		return finishArray();
 	}
 
-	public void writeGroup(Collection<Field> groupFields) {
+	public JsonWriter writeGroup(Collection<Field> groupFields) {
 		if(groupFields.isEmpty())
-			return;
+			return this;
 
 		startArray(Json.group);
 		for(Field field : groupFields)
 			write(field.id());
-		finishArray();
+		return finishArray();
 	}
 
-	public void writeActions(Collection<Action> actions, Query query, Query context) {
+	public JsonWriter writeActions(Collection<Action> actions, Query query, Query context) {
 		if(actions.isEmpty())
-			return;
+			return this;
 
 		startArray(Json.actions);
 
@@ -417,12 +444,12 @@ public class JsonWriter {
 			finishObject();
 		}
 
-		finishArray();
+		return finishArray();
 	}
 
-	public void writeReports(Collection<Report> reports) {
+	public JsonWriter writeReports(Collection<Report> reports) {
 		if(reports.isEmpty())
-			return;
+			return this;
 
 		startArray(Json.reports);
 
@@ -432,38 +459,32 @@ public class JsonWriter {
 			finishObject();
 		}
 
-		finishArray();
+		return finishArray();
 	}
 
-	public void writeAccess(IAccess access) {
-		startObject(Json.access);
-		writeProperty(Json.read, access.read());
-		writeProperty(Json.write, access.write());
-		writeProperty(Json.create, access.create());
-		writeProperty(Json.copy, access.copy());
-		writeProperty(Json.destroy, access.destroy());
-		finishObject();
+	public JsonWriter writeAccess(IAccess access) {
+		return startObject(Json.access)
+			  .writeProperty(Json.read, access.read())
+			  .writeProperty(Json.write, access.write())
+			  .writeProperty(Json.create, access.create())
+			  .writeProperty(Json.copy, access.copy())
+			  .writeProperty(Json.destroy, access.destroy())
+			  .finishObject();
 	}
 
-	public void startResponse(String requestId, boolean success) {
-		startObject();
-		writeProperty(Json.request, requestId);
-		writeProperty(Json.success, success);
+	public JsonWriter startResponse(String requestId, boolean success) {
+		return startObject().writeProperty(Json.request, requestId).writeProperty(Json.success, success);
 	}
 
-	public void startResponse(String requestId, boolean success, int status) {
-		startResponse(requestId, success);
-		writeProperty(Json.status, status);
+	public JsonWriter startResponse(String requestId, boolean success, int status) {
+		return startResponse(requestId, success).writeProperty(Json.status, status);
 	}
 
-	public void writeInfo() {
-		startObject(Json.info);
-		startArray(Json.messages);
-		finishArray();
-		finishObject();
+	public JsonWriter writeInfo() {
+		return startObject(Json.info).startArray(Json.messages).finishArray().finishObject();
 	}
 
-	public void writeInfo(Collection<Message> messages, Collection<file> files, String server) {
+	public JsonWriter writeInfo(Collection<Message> messages, Collection<file> files, String server) {
 		startObject(Json.info);
 
 		startArray(Json.messages);
@@ -485,16 +506,16 @@ public class JsonWriter {
 		if(!files.isEmpty())
 			writeProperty(new string(Json.server), server);
 
-		finishObject();
+		return finishObject();
 	}
 
-	public void finishResponse() {
-		finishObject();
+	public JsonWriter finishResponse() {
+		return finishObject();
 	}
 
 	@Override
 	public String toString() {
-		return stream.toString();
+		return getStringContent();
 	}
 
 	public org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> getWrapper() {
@@ -503,6 +524,40 @@ public class JsonWriter {
 			wrapper.get().set(this);
 		}
 		return wrapper;
+	}
+
+	private JsonWriter appendStream(String value) {
+		try {
+			if (value != null) {
+				this.stream.write(value);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to write JSON chunk to the stream", e);
+		}
+		return this;
+	}
+	
+	private String getStringContent() {
+		if (stream instanceof StringWriter) {
+			return stream.toString();
+		}
+		return outputDescriptor;
+	}
+
+	private static Writer openWriterFromPath(Path path) {
+		if (path == null) throw new IllegalArgumentException("Path reference cannot be null");
+		try {
+			return Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to open path channel for: " + path.toAbsolutePath(), e);
+		}
+	}
+
+	private static String resolveDescriptor(Writer writer) {
+		if (writer == null || writer instanceof java.io.StringWriter) {
+			return null;
+		}
+		return "[" + writer.getClass().getSimpleName() + " Custom Stream Target]";
 	}
 
 }
