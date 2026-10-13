@@ -41,22 +41,17 @@ public class JsonWriter {
 	private List<Boolean> scopes;
 	private boolean quoteName = false;
 	private org.zenframework.z8.server.base.json.JsonWriter.CLASS<? extends org.zenframework.z8.server.base.json.JsonWriter> wrapper = null;
-	private String outputDescriptor;
 
 	public JsonWriter() {
-		init(new StringWriter(), null, false);
+		init(new StringWriter(), false);
 	}
 
 	public JsonWriter(boolean quoteName) {
-		init(new StringWriter(), null, quoteName);
+		init(new StringWriter(), quoteName);
 	}
 
 	public JsonWriter(Writer customWriter) {
-		this(customWriter, resolveDescriptor(customWriter));
-	}
-	
-	public JsonWriter(Writer customWriter, String outputDescriptor) {
-		init(customWriter, outputDescriptor, false);
+		init(customWriter, false);
 	}
 
 	public JsonWriter(File file) {
@@ -64,15 +59,14 @@ public class JsonWriter {
 	}
 
 	public JsonWriter(Path path) {
-		init(openWriterFromPath(path), path.toAbsolutePath().toString(), false);
+		init(openWriterFromPath(path), false);
 	}
 
-	private void init(Writer writer, String outputDescriptor, boolean quoteName) {
+	private void init(Writer writer, boolean quoteName) {
 		if (writer == null) {
 			throw new IllegalArgumentException("Target stream writer cannot be null");
 		}
 		this.stream = writer instanceof StringWriter || writer instanceof BufferedWriter ? writer : new BufferedWriter(writer);
-		this.outputDescriptor = outputDescriptor;
 		this.quoteName = quoteName;
 		reset();
 	}
@@ -542,7 +536,7 @@ public class JsonWriter {
 		if (stream instanceof StringWriter) {
 			return stream.toString();
 		}
-		return outputDescriptor;
+		return  resolveDescriptor(stream);
 	}
 
 	private static Writer openWriterFromPath(Path path) {
