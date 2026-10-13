@@ -534,7 +534,7 @@ public class JsonWriter  implements Closeable {
 		if (stream instanceof StringWriter) {
 			return stream.toString();
 		}
-		return  resolveDescriptor(stream);
+		return  resolveDescriptor();
 	}
 
 	private static Writer openWriterFromPath(Path path) {
@@ -546,11 +546,11 @@ public class JsonWriter  implements Closeable {
 		}
 	}
 
-	private static String resolveDescriptor(Writer writer) {
-		if (writer == null || writer instanceof java.io.StringWriter) {
+	private String resolveDescriptor() {
+		if (stream == null || stream instanceof java.io.StringWriter) {
 			return null;
 		}
-		return "[" + writer.getClass().getSimpleName() + " Custom Stream Target]";
+		return "[" + stream.getClass().getSimpleName() + " Custom Stream Target]";
 	}
 
 }
