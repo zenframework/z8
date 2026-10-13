@@ -3,6 +3,7 @@ package org.zenframework.z8.server.base.table.system;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import org.zenframework.z8.server.base.table.value.Link;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
+import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
@@ -35,6 +38,7 @@ import org.zenframework.z8.server.security.Domain;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
+import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -383,29 +387,43 @@ public class Domains extends Table {
 	}
 
 	private void updateDatetimeField(Collection<String> domains, DatetimeField field, date value) {
-		Set<string> addresses = new HashSet<string>();
+		Map<string, guid> map = readDomains(domains);
 
-		for (String domain : domains)
-			addresses.add(new string(domain.toLowerCase()));
+		Connection connection = ConnectionManager.get();
 
 		try {
-			read(Arrays.asList(primaryKey(), address.get()), new InVector(new Lower(address.get()), addresses));
+			connection.beginTransaction();
 
-			while (next()) {
-				addresses.remove(address.get().get().z8_toLowerCase());
+			for (Map.Entry<string, guid> entry : map.entrySet()) {
 				field.set(value);
-				update(recordId());
+				if (entry.getValue() != null) {
+					update(recordId());
+				} else {
+					name.get().set(entry.getKey());
+					address.get().set(entry.getKey());
+					create();
+				}
 			}
 
-			for (string addr : addresses) {
-				name.get().set(addr);
-				address.get().set(addr);
-				field.set(value);
-				create();
-			}
+			connection.commit();
 		} catch (Throwable e) {
+			connection.rollback();
 			Trace.logError("Can't update domains [" + domains + "] field '" + field.name() + "'", e);
 		}
+	}
+
+	private Map<string, guid> readDomains(Collection<String> domains) {
+		Map<string, guid> result = new HashMap<string, guid>();
+
+		for (String domain : domains)
+			result.put(new string(domain.toLowerCase()), null);
+
+		read(Arrays.asList(primaryKey(), address.get()), new InVector(new Lower(address.get()), result.keySet()));
+
+		while (next())
+			result.put(address.get().get(), recordId());
+
+		return result;
 	}
 
 }
