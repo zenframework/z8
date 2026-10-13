@@ -166,8 +166,6 @@ public class MessageQueue extends Table {
 		classId.get().set(new string(message.classId()));
 		data.get().set(message.toBinary());
 		create();
-
-		Domains.newInstance().updateLastMessage(message.getAddress());
 	}
 
 	public int count(String domain) {

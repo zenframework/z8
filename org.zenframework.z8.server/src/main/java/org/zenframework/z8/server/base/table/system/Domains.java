@@ -21,7 +21,9 @@ import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.db.sql.expressions.And;
 import org.zenframework.z8.server.db.sql.expressions.Is;
 import org.zenframework.z8.server.db.sql.functions.If;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.db.sql.functions.string.EqualsIgnoreCase;
+import org.zenframework.z8.server.db.sql.functions.string.Lower;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Rmi;
 import org.zenframework.z8.server.logs.Trace;
@@ -322,7 +324,7 @@ public class Domains extends Table {
 		for (String exclude : excludes)
 			notIn.add(new string(exclude));
 
-		sql_bool where = lastMessageAt.get().sql_date().operatorMoreEqu(date.Min.sql_date()).operatorAnd(address.z8_inVector(notIn).operatorNot());
+		sql_bool where = lastMessageAt.get().sql_date().operatorMore(date.Min.sql_date()).operatorAnd(address.z8_inVector(notIn).operatorNot());
 
 		read(Arrays.<Field>asList(address), Arrays.<Field>asList(lastSendAt.get()), where, limit);
 
@@ -346,12 +348,12 @@ public class Domains extends Table {
 		return result;
 	}
 
-	public void updateLastMessage(String domain) {
-		updateDatetimeField(domain, lastMessageAt.get());
+	public void updateLastMessage(Collection<String> domains) {
+		updateDatetimeField(domains, lastMessageAt.get());
 	}
 
 	public void updateLastSend(String domain) {
-		updateDatetimeField(domain, lastSendAt.get());
+		updateDatetimeField(Arrays.asList(domain), lastSendAt.get());
 	}
 
 	public void updateDomains() {
@@ -376,21 +378,30 @@ public class Domains extends Table {
 		Trace.logEvent("Update domains dates finished in " + (java.lang.System.currentTimeMillis() - start) + "ms");
 	}
 
-	private void updateDatetimeField(String domain, DatetimeField field) {
+	private void updateDatetimeField(Collection<String> domains, DatetimeField field) {
+		Set<string> addresses = new HashSet<string>();
+		date now = new date();
+
+		for (String domain : domains)
+			addresses.add(new string(domain.toLowerCase()));
+
 		try {
-			boolean exists = readFirst(Arrays.asList(primaryKey()), new EqualsIgnoreCase(address.get(), domain));
+			read(Arrays.asList(primaryKey(), address.get()), new InVector(new Lower(address.get()), addresses));
 
-			field.set(new date());
-
-			if (exists) {
+			while (next()) {
+				addresses.remove(address.get().get().z8_toLowerCase());
+				field.set(now);
 				update(recordId());
-			} else {
-				name.get().set(domain);
-				address.get().set(domain);
+			}
+
+			for (string addr : addresses) {
+				name.get().set(addr);
+				address.get().set(addr);
+				field.set(now);
 				create();
 			}
 		} catch (Throwable e) {
-			Trace.logError("Can't update domain '" + domain + "' field '" + field.name() + "'", e);
+			Trace.logError("Can't update domains [" + domains + "] field '" + field.name() + "'", e);
 		}
 	}
 

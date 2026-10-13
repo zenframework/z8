@@ -88,6 +88,11 @@ public class Connection {
 		}
 	}
 
+	public static interface Listener {
+		void before(Connection connection, ConnectionEvent event);
+		void after(Connection connection, ConnectionEvent event);
+	}
+
 	static public int TransactionReadCommitted = java.sql.Connection.TRANSACTION_READ_COMMITTED;
 	static public int TransactionReadUncommitted = java.sql.Connection.TRANSACTION_READ_UNCOMMITTED;
 	static public int TransactionRepeatableRead = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
@@ -114,7 +119,7 @@ public class Connection {
 	private long usageTime = 0L;
 
 	private Map<String, Statement> statements = new HashMap<String, Statement>();
-	private Collection<Listener> listeners;
+	private Map<Integer, Listener> listeners;
 	private String lastStatement;
 
 	static private java.sql.Connection newConnection(IDatabase database) {
@@ -139,14 +144,10 @@ public class Connection {
 		this.connection = connection;
 	}
 
-	public interface Listener {
-		void on(Connection connection, ConnectionEvent event);
-	}
-
 	public void addListener(Listener listener) {
 		if(listeners == null)
-			listeners = new ArrayList<Listener>();
-		listeners.add(listener);
+			listeners = new HashMap<Integer, Listener>();
+		listeners.put(System.identityHashCode(listener), listener);
 	}
 
 	public int getId() {
@@ -304,51 +305,65 @@ public class Connection {
 	}
 
 	public void commit() {
+		if (!inTransaction())
+			throw new RuntimeException("Connection.commit() - not in transaction");
+
+		transactionCount--;
+
+		if (inTransaction())
+			return;
+
 		try {
-			if(!inTransaction())
-				throw new RuntimeException("Connection.commit() - not in transaction");
-
-			transactionCount--;
-			if(inTransaction())
-				return;
-
-			onCommit();
+			beforeCommit();
 			batch.commit();
 			batch = null;
 			connection.commit();
 			setAutoCommit(true);
+			afterCommit();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
+		} finally {
+			listeners = null;
 		}
 	}
 
-	private void onCommit() {
-		onEvent(ConnectionEvent.Commit);
-		listeners = null;
+	private void beforeCommit() {
+		beforeEvent(ConnectionEvent.Commit);
+	}
+
+	private void afterCommit() {
+		afterEvent(ConnectionEvent.Commit);
 	}
 
 	public void rollback() {
+		if (!inTransaction())
+			return;
+
+		transactionCount--;
+
+		if (inTransaction())
+			return;
+
 		try {
-			if(!inTransaction())
-				return;
-
-			transactionCount--;
-			if(inTransaction())
-				return;
-
-			onRollback();
+			beforeRollback();
 			batch.rollback();
 			batch = null;
 			connection.rollback();
 			setAutoCommit(true);
+			afterRollback();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
+		} finally {
+			listeners = null;
 		}
 	}
 
-	private void onRollback() {
-		onEvent(ConnectionEvent.Rollback);
-		listeners = null;
+	private void beforeRollback() {
+		beforeEvent(ConnectionEvent.Rollback);
+	}
+
+	private void afterRollback() {
+		afterEvent(ConnectionEvent.Rollback);
 	}
 
 	public void execute(String sql) {
@@ -364,32 +379,45 @@ public class Connection {
 			return;
 
 		try {
-			onFlush();
+			beforeFlush();
 			batch.flush();
+			afterFlush();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void onFlush() {
-		onEvent(ConnectionEvent.Flush);
+	private void beforeFlush() {
+		beforeEvent(ConnectionEvent.Flush);
 	}
 
-	private void onEvent(ConnectionEvent event) {
-		if(listeners == null)
+	private void afterFlush() {
+		afterEvent(ConnectionEvent.Flush);
+	}
+
+	private void beforeEvent(ConnectionEvent event) {
+		if (listeners == null)
 			return;
 
-		for(Listener listener : listeners)
-			listener.on(this, event);
+		for (Listener listener : listeners.values())
+			listener.before(this, event);
+	}
+
+	private void afterEvent(ConnectionEvent event) {
+		if (listeners == null)
+			return;
+
+		for (Listener listener : listeners.values())
+			listener.after(this, event);
 	}
 
 	public boolean isOpen() {
 		try {
 			return !connection.isClosed();
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			Trace.logError(e);
+			return false;
 		}
-		return false;
 	}
 
 	public Statement getStatement(String sql) {

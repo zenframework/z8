@@ -19,6 +19,7 @@ import org.zenframework.z8.server.base.table.system.Domains;
 import org.zenframework.z8.server.base.table.system.MessageQueue;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.db.Connection;
+import org.zenframework.z8.server.db.ConnectionEvent;
 import org.zenframework.z8.server.db.ConnectionManager;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Database;
@@ -51,6 +52,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	static private final int ImportRetries = 2;
 
 	static private final Set<String> RetriableStates = new HashSet<String>(Arrays.asList("23505" /* duplicate key */));
+
+	static private final ThreadLocal<Set<String>> TouchedDomains = new ThreadLocal<Set<String>>();
 
 	static protected final String FileUrlPrefix = "file:";
 
@@ -286,19 +289,23 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 	}
 
 	public void send() {
-		if(address == null || address.isEmpty())
+		if (address == null || address.isEmpty())
 			throw new RuntimeException("Export address is not set");
 
-		if(sender == null || sender.isEmpty())
+		if (sender == null || sender.isEmpty())
 			setSender(Domains.DefaultDomain.get());
+
 		initDescription();
 
 		ConnectionManager.get().flush();
 
-		if(Domains.newInstance().isOwner(address))
+		if (Domains.newInstance().isOwner(address)) {
 			accept(true);
-		else
-			MessageQueue.newInstance().add(this);
+			return;
+		}
+
+		MessageQueue.newInstance().add(this);
+		updateDomain(address);
 	}
 
 	public boolean prepare() {
@@ -425,6 +432,26 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 		afterImport();
 
 		return true;
+	}
+
+	private void updateDomain(String address) {
+		Set<String> touchedDomains = TouchedDomains.get();
+
+		if (touchedDomains == null) {
+			TouchedDomains.set(touchedDomains = new HashSet<String>());
+			ConnectionManager.get().addListener(new Connection.Listener() {
+				@Override
+				public void before(Connection connection, ConnectionEvent event) {}
+
+				@Override
+				public void after(Connection connection, ConnectionEvent event) {
+					if (event == ConnectionEvent.Commit)
+						Domains.newInstance().updateLastMessage(TouchedDomains.get());
+				}
+			});
+		}
+
+		touchedDomains.add(address);
 	}
 
 	public string z8_getAddress() {
