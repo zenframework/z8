@@ -110,8 +110,9 @@ public class JsonWriter {
 
 	// TODO This must be private
 	public JsonWriter startSeparate() {
-		if(scopes.size() != 0)
-			scopes.set(scopes.size() - 1, true);
+		int size = scopes.size();
+		if(size != 0)
+			scopes.set(size - 1, true);
 		return this;
 	}
 
