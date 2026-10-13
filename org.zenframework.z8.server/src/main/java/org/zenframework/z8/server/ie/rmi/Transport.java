@@ -146,11 +146,11 @@ public class Transport implements Runnable {
 
 		Collection<Message> messages = messageQueue.getMessages(domain, limit);
 
-		for (Message message : messages)
-			prepare(message);
-
 		if (messages.size() < limit)
 			Domains.newInstance().updateLastMessage(domain, date.Min);
+
+		for (Message message : messages)
+			prepare(message);
 	}
 
 	private void prepare(Message message) throws Throwable {
