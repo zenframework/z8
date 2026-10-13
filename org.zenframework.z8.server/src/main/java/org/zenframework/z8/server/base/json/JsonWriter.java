@@ -126,11 +126,11 @@ public class JsonWriter extends OBJECT {
 		return new string(writer.toString());
 	}
 
-	public void z8_reset() {
+	public void z8_init() {
 		set(new org.zenframework.z8.server.json.JsonWriter(true));
 	}
 
-	public void z8_reset(file f) {
+	public void z8_init(file f) {
 		set(new org.zenframework.z8.server.json.JsonWriter(f.toFile()));
 	}
 
