@@ -4,8 +4,10 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.utils.IOUtils;
 
 @SuppressWarnings("unchecked")
 public class JsonWriter extends OBJECT {
@@ -122,6 +124,18 @@ public class JsonWriter extends OBJECT {
 	@Override
 	public string z8_toString() {
 		return new string(writer.toString());
+	}
+
+	public void z8_init() {
+		set(new org.zenframework.z8.server.json.JsonWriter(true));
+	}
+
+	public void z8_init(file f) {
+		set(new org.zenframework.z8.server.json.JsonWriter(f.toFile()));
+	}
+
+	public void z8_close() {
+		IOUtils.closeQuietly(writer);
 	}
 
 }
