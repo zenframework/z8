@@ -69,17 +69,8 @@ public class JsonWriter  implements Closeable {
 		}
 		this.stream = writer instanceof StringWriter || writer instanceof BufferedWriter ? writer : new BufferedWriter(writer);
 		this.quoteName = quoteName;
-		reset();
-	}
-
-	public JsonWriter reset() {
-		if (stream instanceof StringWriter) {
-			stream = new StringWriter();
-		} else {
-			try { stream.flush(); } catch (IOException ignored) {}
-		}
 		scopes = new ArrayList<Boolean>();
-		return openScope();
+		openScope();
 	}
 
 	@Override
