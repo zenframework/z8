@@ -89,8 +89,7 @@ public class Connection {
 	}
 
 	public static interface Listener {
-		void before(Connection connection, ConnectionEvent event);
-		void after(Connection connection, ConnectionEvent event);
+		void on(Connection connection, ConnectionEvent event);
 	}
 
 	static public int TransactionReadCommitted = java.sql.Connection.TRANSACTION_READ_COMMITTED;
@@ -211,17 +210,23 @@ public class Connection {
 	}
 
 	public void release() {
-		if(!inTransaction())
+		onRelease();
+
+		if (!inTransaction())
 			owner = null;
 
 		Collection<Statement> statements = new ArrayList<Statement>(this.statements.values());
 
 		this.statements.clear();
 
-		for(Statement statement : statements)
+		for (Statement statement : statements)
 			statement.safeClose();
 
 		usageTime = System.currentTimeMillis() - lastUsed;
+	}
+
+	private void onRelease() {
+		onEvent(ConnectionEvent.Release);
 	}
 
 	private void initClientInfo() {
@@ -314,12 +319,11 @@ public class Connection {
 			return;
 
 		try {
-			beforeCommit();
+			onCommit();
 			batch.commit();
 			batch = null;
 			connection.commit();
 			setAutoCommit(true);
-			afterCommit();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -327,12 +331,8 @@ public class Connection {
 		}
 	}
 
-	private void beforeCommit() {
-		beforeEvent(ConnectionEvent.Commit);
-	}
-
-	private void afterCommit() {
-		afterEvent(ConnectionEvent.Commit);
+	private void onCommit() {
+		onEvent(ConnectionEvent.Commit);
 	}
 
 	public void rollback() {
@@ -345,12 +345,11 @@ public class Connection {
 			return;
 
 		try {
-			beforeRollback();
+			onRollback();
 			batch.rollback();
 			batch = null;
 			connection.rollback();
 			setAutoCommit(true);
-			afterRollback();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -358,12 +357,8 @@ public class Connection {
 		}
 	}
 
-	private void beforeRollback() {
-		beforeEvent(ConnectionEvent.Rollback);
-	}
-
-	private void afterRollback() {
-		afterEvent(ConnectionEvent.Rollback);
+	private void onRollback() {
+		onEvent(ConnectionEvent.Rollback);
 	}
 
 	public void execute(String sql) {
@@ -379,36 +374,23 @@ public class Connection {
 			return;
 
 		try {
-			beforeFlush();
+			onFlush();
 			batch.flush();
-			afterFlush();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void beforeFlush() {
-		beforeEvent(ConnectionEvent.Flush);
+	private void onFlush() {
+		onEvent(ConnectionEvent.Flush);
 	}
 
-	private void afterFlush() {
-		afterEvent(ConnectionEvent.Flush);
-	}
-
-	private void beforeEvent(ConnectionEvent event) {
+	private void onEvent(ConnectionEvent event) {
 		if (listeners == null)
 			return;
 
 		for (Listener listener : listeners.values())
-			listener.before(this, event);
-	}
-
-	private void afterEvent(ConnectionEvent event) {
-		if (listeners == null)
-			return;
-
-		for (Listener listener : listeners.values())
-			listener.after(this, event);
+			listener.on(this, event);
 	}
 
 	public boolean isOpen() {

@@ -442,11 +442,8 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			TouchedDomains.set(touchedDomains = new HashSet<String>());
 			ConnectionManager.get().addListener(new Connection.Listener() {
 				@Override
-				public void before(Connection connection, ConnectionEvent event) {}
-
-				@Override
-				public void after(Connection connection, ConnectionEvent event) {
-					if (event == ConnectionEvent.Commit)
+				public void on(Connection connection, ConnectionEvent event) {
+					if (event == ConnectionEvent.Release)
 						Domains.newInstance().updateLastMessage(TouchedDomains.get(), new date());
 				}
 			});

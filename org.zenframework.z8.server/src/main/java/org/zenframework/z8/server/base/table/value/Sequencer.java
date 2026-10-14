@@ -127,7 +127,7 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 	}
 
 	@Override
-	public void before(Connection connection, ConnectionEvent event) {
+	public void on(Connection connection, ConnectionEvent event) {
 		if(event == ConnectionEvent.Flush || event == ConnectionEvent.Commit)
 			flush();
 
@@ -138,9 +138,6 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 				sequencers.remove();
 		}
 	}
-
-	@Override
-	public void after(Connection connection, ConnectionEvent event) {}
 
 	static public long next(String key) {
 		return next(key, 1L, 1L);
