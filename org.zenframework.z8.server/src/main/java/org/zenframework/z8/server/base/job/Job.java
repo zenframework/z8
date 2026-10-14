@@ -46,7 +46,11 @@ public class Job extends RequestTarget {
 	public void writeResponse(JsonWriter writer) {
 		setParameters();
 
-		if (!scheduled()) {
+		boolean scheduled = scheduled();
+
+		executable.setScheduled(scheduled);
+
+		if (!scheduled) {
 			thread = new Thread(executable, executable.displayName());
 			thread.start();
 

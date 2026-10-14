@@ -35,6 +35,7 @@ public class Executable extends Action {
 
 	private IRequest request;
 	private ISession defaultSession;
+	private boolean scheduled;
 
 	public Executable(IObject container) {
 		super(container);
@@ -44,6 +45,10 @@ public class Executable extends Action {
 	public void reportProgress(int percentDone) {
 		JobMonitor monitor = getMonitor();
 		monitor.setWorked(percentDone);
+	}
+
+	public void setScheduled(boolean scheduled) {
+		this.scheduled = scheduled;
 	}
 
 	public void info(String message) {
@@ -130,8 +135,10 @@ public class Executable extends Action {
 			getMonitor().error(e);
 		} finally {
 			resetUser();
-			ConnectionManager.get().release();
-			ApplicationServer.setRequest(null);
+			if (!scheduled) {
+				ConnectionManager.get().release();
+				ApplicationServer.setRequest(null);
+			}
 		}
 	}
 
