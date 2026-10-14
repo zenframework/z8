@@ -128,14 +128,16 @@ public class Sequencer extends OBJECT implements Connection.Listener {
 
 	@Override
 	public void on(Connection connection, ConnectionEvent event) {
-		if(event == ConnectionEvent.Flush || event == ConnectionEvent.Commit)
+		if (event == ConnectionEvent.Flush || event == ConnectionEvent.Commit)
 			flush();
 
-		if(event == ConnectionEvent.Commit || event == ConnectionEvent.Rollback) {
+		if (event == ConnectionEvent.Commit || event == ConnectionEvent.Rollback) {
 			Map<String, Sequencer> map = sequencers.get();
 			map.remove(key);
-			if(map.isEmpty())
+			if (map.isEmpty()) {
+				connection.removeListener(this);
 				sequencers.remove();
+			}
 		}
 	}
 

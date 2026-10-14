@@ -393,7 +393,7 @@ public class Connection {
 		if (listeners == null)
 			return;
 
-		for (Listener listener : listeners.values())
+		for (Listener listener : new ArrayList<Listener>(listeners.values()))
 			listener.on(this, event);
 	}
 
