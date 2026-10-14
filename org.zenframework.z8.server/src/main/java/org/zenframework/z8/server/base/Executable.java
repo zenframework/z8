@@ -136,7 +136,7 @@ public class Executable extends Action {
 		} finally {
 			resetUser();
 			if (!scheduled) {
-				ConnectionManager.get().release();
+				ConnectionManager.release();
 				ApplicationServer.setRequest(null);
 			}
 		}
