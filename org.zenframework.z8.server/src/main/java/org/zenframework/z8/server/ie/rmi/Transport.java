@@ -133,8 +133,8 @@ public class Transport implements Runnable {
 		} finally {
 			Scheduler.unregister(ApplicationServer.getDatabase(), thread);
 			Transport.unregister(this);
-			ApplicationServer.setRequest(null);
 			ConnectionManager.release();
+			ApplicationServer.setRequest(null);
 			LogUtils.close(logger);
 		}
 	}

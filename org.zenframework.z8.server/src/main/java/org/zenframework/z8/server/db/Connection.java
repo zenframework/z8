@@ -144,9 +144,14 @@ public class Connection {
 	}
 
 	public void addListener(Listener listener) {
-		if(listeners == null)
+		if (listeners == null)
 			listeners = new HashMap<Integer, Listener>();
 		listeners.put(System.identityHashCode(listener), listener);
+	}
+
+	public void removeListener(Listener listener) {
+		if (listeners != null)
+			listeners.remove(System.identityHashCode(listener));
 	}
 
 	public int getId() {
@@ -199,18 +204,21 @@ public class Connection {
 	}
 
 	public void use() {
-		if(inTransaction() || isClosed())
+		if (inTransaction() || isClosed())
 			reconnect();
 
+		listeners = null;
 		lastUsed = System.currentTimeMillis();
 		threadName = Thread.currentThread().getName();
-
 		owner = Thread.currentThread();
+
 		initClientInfo();
 	}
 
 	public void release() {
 		onRelease();
+
+		listeners = null;
 
 		if (!inTransaction())
 			owner = null;
@@ -326,8 +334,6 @@ public class Connection {
 			setAutoCommit(true);
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
-		} finally {
-			listeners = null;
 		}
 	}
 
@@ -350,10 +356,8 @@ public class Connection {
 			batch = null;
 			connection.rollback();
 			setAutoCommit(true);
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new RuntimeException(e);
-		} finally {
-			listeners = null;
 		}
 	}
 

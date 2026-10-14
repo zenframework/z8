@@ -301,10 +301,12 @@ public class Domains extends Table {
 
 		domains.add(Domain.system());
 
-		while(next()) {
+		while (next()) {
 			Domain domain = new Domain(address.string(), user.guid(), owner.bool());
 			domains.add(domain);
 		}
+
+		close();
 
 		return domains;
 	}
@@ -348,6 +350,8 @@ public class Domains extends Table {
 
 		while (next())
 			result.add(address.get().get());
+
+		close();
 
 		return result;
 	}
@@ -397,7 +401,7 @@ public class Domains extends Table {
 			for (Map.Entry<string, guid> entry : map.entrySet()) {
 				field.set(value);
 				if (entry.getValue() != null) {
-					update(recordId());
+					update(entry.getValue());
 				} else {
 					name.get().set(entry.getKey());
 					address.get().set(entry.getKey());
@@ -422,6 +426,8 @@ public class Domains extends Table {
 
 		while (next())
 			result.put(address.get().get(), recordId());
+
+		close();
 
 		return result;
 	}

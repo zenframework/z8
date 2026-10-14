@@ -192,7 +192,7 @@ public class Scheduler implements Runnable {
 
 		Trace.logEvent("Scheduler '" + database.schema() + "' started");
 
-		while(thread != null) {
+		while (thread != null) {
 			try {
 				initializeJobs();
 
@@ -212,6 +212,7 @@ public class Scheduler implements Runnable {
 
 		Trace.logEvent("Scheduler '" + database.schema() + "' stopped");
 
+		ConnectionManager.release();
 		ApplicationServer.setRequest(null);
 	}
 
@@ -263,7 +264,7 @@ public class Scheduler implements Runnable {
 	}
 
 	private void initializeJobs() {
-		if(!resetPending)
+		if (!resetPending)
 			return;
 
 		initialzeSystemJobs();
@@ -309,8 +310,6 @@ public class Scheduler implements Runnable {
 		jobs = result;
 
 		resetPending = false;
-
-		ConnectionManager.release();
 	}
 
 	private void register(Thread thread) {

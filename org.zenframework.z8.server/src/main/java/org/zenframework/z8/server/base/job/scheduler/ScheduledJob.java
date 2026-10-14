@@ -125,7 +125,7 @@ public class ScheduledJob implements Runnable {
 	}
 
 	private void afterFinish(IMonitor monitor) {
-		if(id == null)
+		if (id == null)
 			return;
 
 		ApplicationServer.setRequest(new Request(new Session(database.schema())));
@@ -137,7 +137,7 @@ public class ScheduledJob implements Runnable {
 
 			boolean hasErrors = monitor.hasErrors();
 
-			if(!hasErrors && logErrorsOnly)
+			if (!hasErrors && logErrorsOnly)
 				return;
 
 			ScheduledJobLogs logs = ScheduledJobLogs.newInstance();
@@ -147,7 +147,8 @@ public class ScheduledJob implements Runnable {
 			logs.errors.get().set(new bool(hasErrors));
 
 			file logFile = monitor.getLog();
-			if(logFile != null) {
+
+			if (logFile != null) {
 				monitor.logInfo("Memory usage: " + RequestDispatcher.getMemoryUsage());
 
 				JsonWriter writer = new JsonWriter();
@@ -171,7 +172,7 @@ public class ScheduledJob implements Runnable {
 		try {
 			isRunning = true;
 
-			if(!beforeStart())
+			if (!beforeStart())
 				return;
 
 			Map<String, String> parameters = new HashMap<String, String>();
@@ -188,8 +189,8 @@ public class ScheduledJob implements Runnable {
 			isRunning = false;
 			thread = null;
 
-			ApplicationServer.setRequest(null);
 			ConnectionManager.release();
+			ApplicationServer.setRequest(null);
 		}
 	}
 

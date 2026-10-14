@@ -99,25 +99,26 @@ public class FileMessage extends Message {
 
 		long offset = file.offset();
 
-		if(offset == 0) {
+		if (offset == 0) {
 			target.getParentFile().mkdirs();
 			target.delete();
-		} else if(!target.exists() || offset != target.length())
+		} else if (!target.exists() || offset != target.length()) {
 			return false;
+		}
 
 		ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 
 		try {
-			if(!file.addPartTo(target))
+			if (!file.addPartTo(target))
 				return true;
-		} catch(IOException e) {
+		} catch (IOException e) {
 			ApplicationServer.setRequest(null);
 			throw new RuntimeException(e);
 		}
 
 		try {
 			guid fileId = file.id;
-			if(!fileId.isNull()) {
+			if (!fileId.isNull()) {
 				file.set(new InputOnlyFileItem(target, file.name.get()));
 				Files.newInstance().saveFile(file);
 			}

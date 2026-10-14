@@ -130,11 +130,13 @@ public class Executable extends Action {
 			getMonitor().error(e);
 		} finally {
 			resetUser();
+			ConnectionManager.get().release();
+			ApplicationServer.setRequest(null);
 		}
 	}
 
 	public JobMonitor getMonitor() {
-		return (JobMonitor)ApplicationServer.getMonitor();
+		return (JobMonitor) ApplicationServer.getMonitor();
 	}
 
 	@Override

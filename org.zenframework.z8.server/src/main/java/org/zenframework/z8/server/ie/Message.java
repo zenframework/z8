@@ -443,8 +443,10 @@ abstract public class Message extends OBJECT implements RmiSerializable, Seriali
 			ConnectionManager.get().addListener(new Connection.Listener() {
 				@Override
 				public void on(Connection connection, ConnectionEvent event) {
-					if (event == ConnectionEvent.Release)
-						Domains.newInstance().updateLastMessage(TouchedDomains.get(), new date());
+					if (event != ConnectionEvent.Release)
+						return;
+					connection.removeListener(this);
+					Domains.newInstance().updateLastMessage(TouchedDomains.get(), new date());
 				}
 			});
 		}
