@@ -75,6 +75,9 @@ public class Transport implements Runnable {
 	private int messagesPrepared = 0;
 	private int messagesSent = 0;
 
+	private boolean messagesEmpty;
+	private boolean transportEmpty;
+
 	static public Set<String> getActiveAddresses() {
 		synchronized(lock) {
 			return workers.keySet();
@@ -120,13 +123,16 @@ public class Transport implements Runnable {
 			for (int i = 0; i < count; i++) {
 				debug("cycle {0}/{1}", i + 1, count);
 				prepareMessages();
-				if (!sendMessages()) {
-					success = false;
+				if (!(success = sendMessages()))
 					break;
-				}
 			}
 
 			debug("{0}. Messages (prepared/sent): {1}/{2}", success ? "finished successfully" : "interrupted", messagesPrepared, messagesSent);
+
+			if (success && messagesEmpty && transportEmpty) {
+				Domains.newInstance().updateLastMessage(domain, date.Min);
+				debug("{0}. Queues empty. Reset lastMessageAt date");
+			}
 		} catch (Throwable e) {
 			debug("failed. Messages (prepared/sent): {0}/{1}", messagesPrepared, messagesSent);
 			error(e, "error: " + e.getMessage());
@@ -146,11 +152,10 @@ public class Transport implements Runnable {
 
 		Collection<Message> messages = messageQueue.getMessages(domain, limit);
 
-		if (messages.size() < limit)
-			Domains.newInstance().updateLastMessage(domain, date.Min);
-
 		for (Message message : messages)
 			prepare(message);
+
+		messagesEmpty = messages.size() < limit;
 	}
 
 	private void prepare(Message message) throws Throwable {
@@ -179,9 +184,11 @@ public class Transport implements Runnable {
 	}
 
 	private boolean sendMessages() throws Throwable {
+		int limit = ServerConfig.transportQueueTransactionSize();
+
 		transportQueueSize = transportQueue.count(domain);
 
-		Collection<guid> ids = transportQueue.getMessages(domain);
+		Collection<guid> ids = transportQueue.getMessages(domain, limit);
 
 		for (guid id : ids) {
 			Message message = transportQueue.getMessage(id);
@@ -189,7 +196,8 @@ public class Transport implements Runnable {
 				return false;
 		}
 
-		return !ids.isEmpty();
+		transportEmpty = ids.size() < limit;
+		return true;
 	}
 
 	private IApplicationServer connect(Message message) throws Throwable {
