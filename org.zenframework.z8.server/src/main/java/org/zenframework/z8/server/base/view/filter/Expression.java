@@ -40,7 +40,6 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
-import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.types.sql.sql_geometry;
 import org.zenframework.z8.server.types.sql.sql_string;
 

@@ -1,9 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
 import org.zenframework.z8.server.base.table.Table;
-import org.zenframework.z8.server.base.table.system.Files.displayNames;
-import org.zenframework.z8.server.base.table.system.Files.fieldNames;
-import org.zenframework.z8.server.base.table.system.Files.strings;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.resources.Resources;

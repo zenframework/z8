@@ -9,7 +9,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.zenframework.z8.server.base.table.system.Files;
-import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
