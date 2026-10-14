@@ -75,8 +75,9 @@ public class Transport implements Runnable {
 	private int messagesPrepared = 0;
 	private int messagesSent = 0;
 
-	private boolean messagesEmpty;
-	private boolean transportEmpty;
+	private boolean messagesEmpty = false;
+	private boolean transportEmpty = false;
+	private boolean success = true;
 
 	static public Set<String> getActiveAddresses() {
 		synchronized(lock) {
@@ -118,13 +119,11 @@ public class Transport implements Runnable {
 			ApplicationServer.setRequest(new Request(new Session(ApplicationServer.getSchema())));
 
 			int count = ServerConfig.transportJobIterations();
-			boolean success = true;
 
-			for (int i = 0; i < count; i++) {
+			for (int i = 0; i < count && success && !messagesEmpty && !transportEmpty; i++) {
 				debug("cycle {0}/{1}", i + 1, count);
 				prepareMessages();
-				if (!(success = sendMessages()))
-					break;
+				sendMessages();
 			}
 
 			debug("{0}. Messages (prepared/sent): {1}/{2}", success ? "finished successfully" : "interrupted", messagesPrepared, messagesSent);
@@ -183,7 +182,7 @@ public class Transport implements Runnable {
 			connection.rollback();
 	}
 
-	private boolean sendMessages() throws Throwable {
+	private void sendMessages() throws Throwable {
 		int limit = ServerConfig.transportQueueTransactionSize();
 
 		transportQueueSize = transportQueue.count(domain);
@@ -192,12 +191,11 @@ public class Transport implements Runnable {
 
 		for (guid id : ids) {
 			Message message = transportQueue.getMessage(id);
-			if (!send(message))
-				return false;
+			if (!(success = send(message)))
+				break;
 		}
 
 		transportEmpty = ids.size() < limit;
-		return true;
 	}
 
 	private IApplicationServer connect(Message message) throws Throwable {
