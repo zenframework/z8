@@ -218,8 +218,22 @@ public class JsonWriter  implements Closeable {
 		return write(value.toString(), false);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	public JsonWriter write(Object value) {
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonObject.CLASS)
+			return write(((org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject>) value).get().get());
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonArray.CLASS)
+			return write(((org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray>) value).get().get());
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
+			return write(((org.zenframework.z8.server.base.json.parser.JsonObject) value).get());
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonArray.CLASS)
+			return write(((org.zenframework.z8.server.base.json.parser.JsonArray) value).get());
+		if (value instanceof JsonWriter)
+			return write((JsonWriter) value);
+		if (value instanceof JsonObject)
+			return write((JsonObject) value);
+		if (value instanceof JsonArray)
+			return write((JsonArray) value);
 		if (value instanceof OBJECT)
 			return write((OBJECT) value);
 		if (value instanceof OBJECT.CLASS)
@@ -232,12 +246,6 @@ public class JsonWriter  implements Closeable {
 			return write((String) value);
 		if (value instanceof BigDecimal)
 			return write((BigDecimal) value);
-		if (value instanceof JsonWriter)
-			return write((JsonWriter) value);
-		if (value instanceof JsonObject)
-			return write((JsonObject) value);
-		if (value instanceof JsonArray)
-			return write((JsonArray) value);
 
 		throw new IllegalArgumentException(value.getClass().getName());
 	}
@@ -342,6 +350,20 @@ public class JsonWriter  implements Closeable {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JsonWriter writeProperty(String name, Object value) {
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonObject.CLASS)
+			return writeProperty(name, ((org.zenframework.z8.server.base.json.parser.JsonObject.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonObject>) value).get().get());
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonArray.CLASS)
+			return writeProperty(name, ((org.zenframework.z8.server.base.json.parser.JsonArray.CLASS<? extends org.zenframework.z8.server.base.json.parser.JsonArray>) value).get().get());
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonObject)
+			return writeProperty(name, ((org.zenframework.z8.server.base.json.parser.JsonObject) value).get());
+		if (value instanceof org.zenframework.z8.server.base.json.parser.JsonArray.CLASS)
+			return writeProperty(name, ((org.zenframework.z8.server.base.json.parser.JsonArray) value).get());
+		if (value instanceof JsonWriter)
+			return writeProperty(name, (JsonWriter) value);
+		if (value instanceof JsonObject)
+			return writeProperty(name, (JsonObject) value);
+		if (value instanceof JsonArray)
+			return writeProperty(name, (JsonArray) value);
 		if (value instanceof OBJECT)
 			return writeProperty(name, (OBJECT) value);
 		if (value instanceof OBJECT.CLASS)
@@ -354,12 +376,6 @@ public class JsonWriter  implements Closeable {
 			return writeProperty(name, (String) value);
 		if (value instanceof BigDecimal)
 			return writeProperty(name, (BigDecimal) value);
-		if (value instanceof JsonWriter)
-			return writeProperty(name, (JsonWriter) value);
-		if (value instanceof JsonObject)
-			return writeProperty(name, (JsonObject) value);
-		if (value instanceof JsonArray)
-			return writeProperty(name, (JsonArray) value);
 
 		throw new IllegalArgumentException(value.getClass().getName());
 	}
