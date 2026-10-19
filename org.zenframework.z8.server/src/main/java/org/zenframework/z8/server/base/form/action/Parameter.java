@@ -197,7 +197,7 @@ public class Parameter extends OBJECT implements IParameter {
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, FieldType type) {
 		return z8_create(name, type, bool.True);
 	}
-	
+
 	static public Parameter.CLASS<? extends Parameter> z8_create(string name, ParameterSource.CLASS<? extends ParameterSource> source) {
 		FieldType type = FieldType.Guid;
 		Field vf = source.get().getValueField();

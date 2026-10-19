@@ -28,7 +28,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
 
-public class Report extends OBJECT implements Runnable, IReport {
+public class Report extends OBJECT implements IReport {
 	static public class CLASS<T extends Report> extends OBJECT.CLASS<T> {
 		public CLASS() {
 			this(null);
@@ -59,6 +59,8 @@ public class Report extends OBJECT implements Runnable, IReport {
 	public string template;
 	public string name;
 	public string format;
+	@SuppressWarnings("rawtypes")
+	public RLinkedHashMap parameters;
 
 	public RCollection<Range.CLASS<Range>> ranges = new RCollection<Range.CLASS<Range>>();
 	public RLinkedHashMap<integer, RCollection<string>> hiddenColumns = new RLinkedHashMap<integer, RCollection<string>>();
@@ -83,10 +85,6 @@ public class Report extends OBJECT implements Runnable, IReport {
 		}
 
 		return datasets;
-	}
-
-	@Override
-	public void run() {
 	}
 
 	@Override

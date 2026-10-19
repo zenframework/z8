@@ -211,6 +211,17 @@ public class JsonObject extends OBJECT {
 		return new string(object.toString(indentFactor.getInt()));
 	}
 
+	public RLinkedHashMap<string, string> z8_toStringMap() {
+		RLinkedHashMap<string, string> map = new RLinkedHashMap<string, string>();
+
+		for (Map.Entry<String, Object> entry : object.entrySet()) {
+			if (entry.getValue() != null)
+				map.put(new string(entry.getKey()), new string(entry.getValue().toString()));
+		}
+
+		return map;
+	}
+
 	public static JsonObject.CLASS<JsonObject> getJsonObject(org.zenframework.z8.server.json.parser.JsonObject json) {
 		JsonObject.CLASS<JsonObject> jsonObject = new JsonObject.CLASS<JsonObject>(null);
 		jsonObject.get().set(json);

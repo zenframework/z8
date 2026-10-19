@@ -18,6 +18,7 @@ public class Report extends Object {
 	public string name;
 	public string template;
 	public string format;
+	public string[string] parameters;
 
 	/* >>> POI-only options >>> */
 
