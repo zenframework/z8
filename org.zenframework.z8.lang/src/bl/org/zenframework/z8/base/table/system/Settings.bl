@@ -25,6 +25,9 @@ public class Settings extends TreeTable {
 	static public decimal get(guid setting, decimal defaultValue);
 	static public bool get(guid setting, bool defaultValue);
 
+	static public string[guid] get(guid[] settings);
+	static public primary[guid] get(primary[guid] defaultValues);
+
 	static public string string(guid setting);
 	static public guid guid(guid setting);
 	static public date date(guid setting);

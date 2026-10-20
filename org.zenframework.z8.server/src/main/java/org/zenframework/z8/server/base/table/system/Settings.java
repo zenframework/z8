@@ -1,7 +1,10 @@
 package org.zenframework.z8.server.base.table.system;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.zenframework.z8.server.base.query.RecordLock;
 import org.zenframework.z8.server.base.table.TreeTable;
@@ -9,13 +12,17 @@ import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.runtime.IObject;
+import org.zenframework.z8.server.runtime.RCollection;
+import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
+import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
@@ -133,53 +140,97 @@ public class Settings extends TreeTable {
 		}
 	}
 
-	static private String get(guid property) {
+	static private string get(guid property) {
 		if (!ApplicationServer.getUser().database().isSystemInstalled())
 			return null;
 
 		try {
 			Settings settings = new Settings.CLASS<Settings>().get();
 			Field value = settings.value.get();
-			return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
+			return settings.readRecord(property, Arrays.asList(value)) ? value.string() : null;
 		} catch (Throwable e) {
 			Trace.logError(e);
 			return null;
 		}
 	}
 
+	static public Map<guid, string> get(guid... properties) {
+		return get(Arrays.asList(properties));
+	}
+
+	@SuppressWarnings("unchecked")
+	static public Map<guid, string> get(Collection<guid> properties) {
+		return get(properties, Collections.<guid, primary> emptyMap());
+	}
+
+	@SuppressWarnings("unchecked")
+	static public Map<guid, primary> get(Map<guid, primary> defaultValues) {
+		return get(defaultValues.keySet(), defaultValues);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static private Map get(Collection<guid> properties, Map<guid, primary> defaultValues) {
+		Map values = new RLinkedHashMap();
+
+		for (Map.Entry<guid, primary> entry : defaultValues.entrySet())
+			values.put(entry.getKey(), entry.getValue());
+
+		try {
+			Settings settings = new Settings.CLASS<Settings>().get();
+			Field value = settings.value.get();
+
+			settings.read(Arrays.asList(value), new InVector(settings.recordId.get(), properties));
+
+			while (settings.next())
+				values.put(settings.recordId(), parse(value.string(), defaultValues.get(settings.recordId())));
+		} catch(Throwable e) {
+			Trace.logError(e);
+		}
+
+		return values;
+	}
+
 	static public String get(guid setting, String defaultValue) {
-		String value = get(setting);
-		return value != null ? value : defaultValue;
+		string value = get(setting);
+		return value != null ? value.get() : defaultValue;
 	}
 
 	static public string get(guid setting, string defaultValue) {
-		String value = get(setting);
-		return value != null ? new string(value) : defaultValue;
+		string value = get(setting);
+		return value != null ? value : defaultValue;
 	}
 
 	static public guid get(guid setting, guid defaultValue) {
-		String value = get(setting);
-		return value != null ? new guid(value) : defaultValue;
+		string value = get(setting);
+		return value != null ? new guid(value.get()) : defaultValue;
 	}
 
 	static public date get(guid setting, date defaultValue) {
-		String value = get(setting);
-		return value != null ? new date(value) : defaultValue;
+		string value = get(setting);
+		return value != null ? new date(value.get()) : defaultValue;
 	}
 
 	static public integer get(guid setting, integer defaultValue) {
-		String value = get(setting);
-		return value != null ? new integer(value) : defaultValue;
+		string value = get(setting);
+		return value != null ? new integer(value.get()) : defaultValue;
 	}
 
 	static public decimal get(guid setting, decimal defaultValue) {
-		String value = get(setting);
-		return value != null ? new decimal(value) : defaultValue;
+		string value = get(setting);
+		return value != null ? new decimal(value.get()) : defaultValue;
 	}
 
 	static public bool get(guid setting, bool defaultValue) {
-		String value = get(setting);
-		return value != null ? new bool(value) : defaultValue;
+		string value = get(setting);
+		return value != null ? new bool(value.get()) : defaultValue;
+	}
+
+	static public RLinkedHashMap<guid, string> z8_get(RCollection<guid> settings) {
+		return (RLinkedHashMap<guid, string>) get(settings);
+	}
+
+	static public RLinkedHashMap<guid, primary> z8_get(RLinkedHashMap<guid, primary> defaultValues) {
+		return (RLinkedHashMap<guid, primary>) get(defaultValues);
 	}
 
 	static public string string(guid setting) {
@@ -246,7 +297,8 @@ public class Settings extends TreeTable {
 	}
 
 	static public String version() {
-		return get(Version);
+		string value = get(Version);
+		return value != null ? value.get() : null;
 	}
 
 	static public String webAppUrl() {
@@ -321,4 +373,26 @@ public class Settings extends TreeTable {
 		register(setting, parent, name.get(), description.get(), defaultValue, lock.getInt());
 	}
 
+	@SuppressWarnings("unchecked")
+	static private <T extends primary> T parse(string str, T defaultValue) {
+		if (str == null)
+			return defaultValue;
+		if (defaultValue == null)
+			return (T) str;
+		if (defaultValue instanceof string)
+			return (T) str;
+		if (defaultValue instanceof guid)
+			return (T) new guid(str.get());
+		if (defaultValue instanceof date)
+			return (T) new date(str.get());
+		if (defaultValue instanceof datespan)
+			return (T) new datespan(str.get());
+		if (defaultValue instanceof integer)
+			return (T) new integer(str.get());
+		if (defaultValue instanceof decimal)
+			return (T) new decimal(str.get());
+		if (defaultValue instanceof bool)
+			return (T) new bool(str.get());
+		throw new UnsupportedOperationException(defaultValue.getClass().getSimpleName());
+	}
 }
