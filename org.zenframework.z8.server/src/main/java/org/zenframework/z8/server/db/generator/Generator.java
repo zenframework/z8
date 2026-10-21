@@ -162,9 +162,6 @@ public class Generator {
 	private void collectForeignKeyGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
 		GeneratorAction tableAction = table.getAction();
 
-		if (tableAction == GeneratorAction.Skip)
-			return;
-
 		Map<ForeignKey, String> existingForeignKeys = ForeignKey.toNamesMap(table.dbTable().getForeignKeys());
 
 		// Drop table action is unimplemented at the moment. For future use
@@ -174,21 +171,23 @@ public class Generator {
 			return;
 		}
 
-		// Create or recreate
-
 		int index = 0;
 
 		for (IForeignKey link : table.table().getForeignKeys()) {
 			String tableName = table.table().name();
 			ForeignKey foreignKey = new ForeignKey(link.getReferencedTable().name(), link.getReferer().name(), tableName, link.getFieldDescriptor().name(), "FK" + index++ + "_" + tableName);
 			String existingName = existingForeignKeys.remove(foreignKey);
+
+			// Table skip & FK exists -> do nothing
+			if (tableAction == GeneratorAction.Skip && existingName != null)
+				continue;
+
 			GeneratorAction action = existingName != null ? GeneratorAction.Recreate : GeneratorAction.Create;
 			generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey.setOldName(existingName), action, logger));
 		}
 
 		for (ForeignKey foreignKey : existingForeignKeys.keySet())
 			generators.put(foreignKey, new ForeignKeyGenerator(database, foreignKey, GeneratorAction.Drop, logger));
-
 	}
 
 	private void collectRefererGenerators(TableGenerator table, Map<ForeignKey, ForeignKeyGenerator> generators) {
