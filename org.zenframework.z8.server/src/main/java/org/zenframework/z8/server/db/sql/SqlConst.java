@@ -35,37 +35,37 @@ public class SqlConst extends SqlToken {
 
 	@Override
 	public bool bool() {
-		return (bool)value;
+		return value == null ? null : (bool)value;
 	}
 
 	@Override
 	public geometry geometry() {
-		return (geometry)value;
+		return value == null ? null : (geometry)value;
 	}
 
 	@Override
 	public guid guid() {
-		return (guid)value;
+		return value == null ? null : (guid)value;
 	}
 
 	@Override
 	public date date() {
-		return (date)value;
+		return value == null ? null : (date)value;
 	}
 
 	@Override
 	public datespan datespan() {
-		return (datespan)value;
+		return value == null ? null : (datespan)value;
 	}
 
 	@Override
 	public decimal decimal() {
-		return (decimal)value;
+		return value == null ? null : (decimal)value;
 	}
 
 	@Override
 	public integer integer() {
-		return (integer)value;
+		return value == null ? null : (integer)value;
 	}
 
 	@Override
@@ -79,6 +79,9 @@ public class SqlConst extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
+		if(value == null)
+			return "NULL";
+
 		String result = value.toDbConstant(vendor);
 
 		if (logicalContext && value.type() == FieldType.Boolean)
@@ -92,6 +95,6 @@ public class SqlConst extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return value.type();
+		return value == null ? FieldType.Null : value.type();
 	}
 }
