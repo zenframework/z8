@@ -18,7 +18,7 @@ import org.zenframework.z8.server.types.bool;
 public class sql_bool extends sql_primary {
 	static final public sql_bool True = new sql_bool(true);
 	static final public sql_bool False = new sql_bool(false);
-	public final static sql_bool Null = new sql_bool(new SqlConst(null));
+	public final static sql_bool Null = new sql_bool(SqlConst.Null);
 
 	public sql_bool() {
 		super(new SqlConst(bool.False));

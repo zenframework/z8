@@ -25,7 +25,7 @@ public class sql_integer extends sql_primary {
 	static final public sql_integer Zero = new sql_integer(integer.Zero);
 	static final public sql_integer One = new sql_integer(integer.One);
 	static final public sql_integer MinusOne = new sql_integer(integer.MinusOne);
-	public final static sql_integer Null = new sql_integer(new SqlConst(null));
+	public final static sql_integer Null = new sql_integer(SqlConst.Null);
 
 	public sql_integer() {
 		this(integer.Zero);

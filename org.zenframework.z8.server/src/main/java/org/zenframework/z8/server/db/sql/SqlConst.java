@@ -17,6 +17,8 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class SqlConst extends SqlToken {
+	public static final SqlConst Null = new SqlConst(null);
+
 	private primary value;
 
 	public SqlConst(primary value) {

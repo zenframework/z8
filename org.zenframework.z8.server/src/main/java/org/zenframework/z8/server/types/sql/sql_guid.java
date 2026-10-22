@@ -9,7 +9,7 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.types.guid;
 
 public class sql_guid extends sql_primary {
-	public final static sql_guid Null = new sql_guid(new SqlConst(null));
+	public final static sql_guid Null = new sql_guid(SqlConst.Null);
 
 	public sql_guid() {
 		super(new SqlConst(new guid()));

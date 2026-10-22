@@ -27,7 +27,7 @@ import org.zenframework.z8.server.types.decimal;
 
 public class sql_decimal extends sql_primary {
 	static final public sql_decimal Zero = new sql_decimal(decimal.Zero);
-	public final static sql_decimal Null = new sql_decimal(new SqlConst(null));
+	public final static sql_decimal Null = new sql_decimal(SqlConst.Null);
 
 	public sql_decimal() {
 		this(decimal.Zero);

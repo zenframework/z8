@@ -37,7 +37,7 @@ import org.zenframework.z8.server.db.sql.functions.geometry.YMin;
 import org.zenframework.z8.server.types.geometry;
 
 public class sql_geometry extends sql_primary {
-	public final static sql_geometry Null = new sql_geometry(new SqlConst(null));
+	public final static sql_geometry Null = new sql_geometry(SqlConst.Null);
 
 	public sql_geometry() {
 		super(new SqlConst(new geometry(geometry.DefaultSRS.getInt())));
