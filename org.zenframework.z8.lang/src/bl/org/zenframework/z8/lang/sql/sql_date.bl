@@ -1,5 +1,7 @@
 [primary "org.zenframework.z8.server.types.sql.sql_date"]
 public final class sql_date extends sql_primary {
+	public static final sql_date Null;
+
 	public operator ();
 
 	public sql_int toInt();

@@ -17,6 +17,8 @@ import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
 public class SqlConst extends SqlToken {
+	public static final SqlConst Null = new SqlConst(null);
+
 	private primary value;
 
 	public SqlConst(primary value) {
@@ -79,6 +81,9 @@ public class SqlConst extends SqlToken {
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
+		if(value == null)
+			return "NULL";
+
 		String result = value.toDbConstant(vendor);
 
 		if (logicalContext && value.type() == FieldType.Boolean)
@@ -92,6 +97,6 @@ public class SqlConst extends SqlToken {
 
 	@Override
 	public FieldType type() {
-		return value.type();
+		return value == null ? FieldType.Null : value.type();
 	}
 }

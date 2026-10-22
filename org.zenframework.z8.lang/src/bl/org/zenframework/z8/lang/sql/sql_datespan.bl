@@ -1,5 +1,7 @@
 [primary "org.zenframework.z8.server.types.sql.sql_datespan"]
 public final class sql_datespan extends sql_primary {
+	public static final sql_datespan Null;
+
 	public operator ();
 
 	public sql_date operator + (sql_date value);
