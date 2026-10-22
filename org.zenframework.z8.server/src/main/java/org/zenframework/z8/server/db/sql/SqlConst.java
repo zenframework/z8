@@ -35,37 +35,37 @@ public class SqlConst extends SqlToken {
 
 	@Override
 	public bool bool() {
-		return value == null ? null : (bool)value;
+		return (bool)value;
 	}
 
 	@Override
 	public geometry geometry() {
-		return value == null ? null : (geometry)value;
+		return (geometry)value;
 	}
 
 	@Override
 	public guid guid() {
-		return value == null ? null : (guid)value;
+		return (guid)value;
 	}
 
 	@Override
 	public date date() {
-		return value == null ? null : (date)value;
+		return (date)value;
 	}
 
 	@Override
 	public datespan datespan() {
-		return value == null ? null : (datespan)value;
+		return (datespan)value;
 	}
 
 	@Override
 	public decimal decimal() {
-		return value == null ? null : (decimal)value;
+		return (decimal)value;
 	}
 
 	@Override
 	public integer integer() {
-		return value == null ? null : (integer)value;
+		return (integer)value;
 	}
 
 	@Override

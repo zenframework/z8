@@ -1,5 +1,3 @@
-import org.zenframework.z8.lang.sql.sql_primary;
-
 [native "org.zenframework.z8.server.db.sql.functions.Sql"]
 public class Sql {
 	static public sql_datespan IIF(sql_bool value, sql_datespan yes, sql_datespan no);
@@ -15,6 +13,4 @@ public class Sql {
 	static public sql_bool inVector(sql_guid value, guid[] vector);
 	static public sql_bool inVector(sql_int value, int[] vector);
 	static public sql_bool inVector(sql_string value, string[] vector);
-
-	static public sql_primary getNull();
 }

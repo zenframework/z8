@@ -7,6 +7,8 @@ import org.zenframework.z8.server.db.sql.functions.string.Length;
 import org.zenframework.z8.server.types.binary;
 
 public class sql_binary extends sql_primary {
+	public final static sql_binary Null = new sql_binary(new SqlConst(null));
+
 	public sql_binary() {
 		super(new SqlConst(new binary()));
 	}

@@ -1,6 +1,5 @@
 package org.zenframework.z8.server.db.sql.functions;
 
-import org.zenframework.z8.server.db.sql.SqlConst;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -14,7 +13,6 @@ import org.zenframework.z8.server.types.sql.sql_datespan;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 import org.zenframework.z8.server.types.sql.sql_guid;
 import org.zenframework.z8.server.types.sql.sql_integer;
-import org.zenframework.z8.server.types.sql.sql_primary;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public class Sql {
@@ -64,9 +62,5 @@ public class Sql {
 
 	static public sql_bool z8_inVector(sql_string value, RCollection<string> variants) {
 		return new sql_bool(new InVector(value, variants));
-	}
-
-	static public sql_primary z8_getNull() {
-		return new sql_primary(new SqlConst(null));
 	}
 }

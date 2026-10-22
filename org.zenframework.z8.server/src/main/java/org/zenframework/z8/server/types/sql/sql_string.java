@@ -39,6 +39,8 @@ import org.zenframework.z8.server.db.sql.functions.string.Upper;
 import org.zenframework.z8.server.types.string;
 
 public class sql_string extends sql_primary {
+	public final static sql_string Null = new sql_string(new SqlConst(null));
+
 	public sql_string() {
 		super(new SqlConst(new string()));
 	}

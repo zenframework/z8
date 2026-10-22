@@ -1,4 +1,6 @@
 [primary "org.zenframework.z8.server.types.sql.sql_binary"]
 public final class sql_binary extends sql_primary {
+	public static final sql_binary Null;
+
 	public sql_int length();
 }

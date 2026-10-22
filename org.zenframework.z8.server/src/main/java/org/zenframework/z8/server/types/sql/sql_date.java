@@ -27,6 +27,8 @@ import org.zenframework.z8.server.db.sql.functions.date.TruncSecond;
 import org.zenframework.z8.server.types.date;
 
 public class sql_date extends sql_primary {
+	public final static sql_date Null = new sql_date(new SqlConst(null));
+
 	public sql_date() {
 		super(new SqlConst(new date()));
 	}

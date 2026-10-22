@@ -29,6 +29,8 @@ import org.zenframework.z8.server.db.sql.functions.datespan.TruncSecond;
 import org.zenframework.z8.server.types.datespan;
 
 public class sql_datespan extends sql_primary {
+	public final static sql_datespan Null = new sql_datespan(new SqlConst(null));
+
 	public sql_datespan() {
 		super(new SqlConst(new datespan()));
 	}

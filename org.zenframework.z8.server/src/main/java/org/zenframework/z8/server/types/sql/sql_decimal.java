@@ -26,7 +26,8 @@ import org.zenframework.z8.server.db.sql.functions.numeric.Truncate;
 import org.zenframework.z8.server.types.decimal;
 
 public class sql_decimal extends sql_primary {
-	static public sql_decimal Zero = new sql_decimal(decimal.Zero);
+	static final public sql_decimal Zero = new sql_decimal(decimal.Zero);
+	public final static sql_decimal Null = new sql_decimal(new SqlConst(null));
 
 	public sql_decimal() {
 		this(decimal.Zero);

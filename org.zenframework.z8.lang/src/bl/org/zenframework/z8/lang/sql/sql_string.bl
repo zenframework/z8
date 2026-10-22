@@ -2,6 +2,8 @@ import org.zenframework.z8.base.fts.Fts;
 
 [primary "org.zenframework.z8.server.types.sql.sql_string"]
 public final class sql_string extends sql_primary {
+	public static final sql_string Null;
+
 	public operator ();
 
 	public sql_string operator + (sql_string value);

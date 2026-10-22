@@ -1,5 +1,7 @@
 [primary "org.zenframework.z8.server.types.sql.sql_decimal"]
 public final class sql_decimal extends sql_primary {
+	public static final sql_decimal Null;
+
 	public operator ();
 
 	public sql_decimal operator + ();
