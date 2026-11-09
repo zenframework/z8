@@ -530,8 +530,10 @@ public class Query extends OBJECT {
 			return false;
 		}
 
-		if (!inTransaction && update(id) != 0)
+		if (!inTransaction && UpdateAction.run(this, id, false) != 0) {
+			resetChangedFields();
 			return false;
+		}
 
 		create(id);
 		return true;
