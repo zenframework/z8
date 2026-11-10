@@ -1,11 +1,6 @@
 package org.zenframework.z8.server.expression;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.zenframework.z8.server.expression.function.Format;
-import org.zenframework.z8.server.expression.generated.ExpressionLexer;
-import org.zenframework.z8.server.expression.generated.ExpressionParser;
 import org.zenframework.z8.server.expression.generated.TextBaseVisitor;
 import org.zenframework.z8.server.expression.generated.TextParser.ExpressionTextPartContext;
 import org.zenframework.z8.server.expression.generated.TextParser.PlainTextPartContext;
@@ -19,10 +14,12 @@ public class TextTreeVisitor extends TextBaseVisitor<StringBuilder> {
 	private final StringBuilder str = new StringBuilder();
 	private final ExpressionTreeVisitor expressionVisitor;
 	private final Calculator calculator;
+	private final Expression expression;
 
-	public TextTreeVisitor(Calculator calculator) {
+	public TextTreeVisitor(Expression expression) {
+		this.expression = expression;
+		this.calculator = expression.getCalculator();
 		this.expressionVisitor = new ExpressionTreeVisitor(calculator);
-		this.calculator = calculator;
 	}
 
 	@Override
@@ -39,12 +36,7 @@ public class TextTreeVisitor extends TextBaseVisitor<StringBuilder> {
 	@Override
 	public StringBuilder visitExpressionTextPart(ExpressionTextPartContext ctx) {
 		try {
-			CharStream charStream = CharStreams.fromString(ctx.TEXT().getText());
-			ExpressionLexer lexer = new ExpressionLexer(charStream);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			ExpressionParser parser = new ExpressionParser(tokens);
-
-			Value expression = expressionVisitor.visit(parser.rootExpression());
+			Value expression = expressionVisitor.visit(this.expression.parseExpression(ctx.TEXT().getText()));
 
 			str.append(expression.isEvaluated() ? Format.format(expression.get()) : ExpStart + expression.toString() + ExpFinish);
 		} catch (Throwable e) {
