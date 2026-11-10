@@ -84,33 +84,12 @@ public class JsonObject extends HashMap<String, Object> {
 		this(new JsonTokener(source == null || source.trim().isEmpty() ? "{}" : source));
 	}
 
-	public static String doubleToString(double d) {
-		if(Double.isInfinite(d) || Double.isNaN(d))
-			return "null";
-
-		// Shave off trailing zeros and decimal point, if possible.
-		String string = Double.toString(d);
-		if(string.indexOf('.') > 0 && string.indexOf('e') < 0 && string.indexOf('E') < 0) {
-			while(string.endsWith("0"))
-				string = string.substring(0, string.length() - 1);
-
-			if(string.endsWith("."))
-				string = string.substring(0, string.length() - 1);
-		}
-		return string;
-	}
-
 	public bool getBool(string key) {
 		return getBool(key.get());
 	}
 
 	public bool getBool(String key) {
-		Object object = get(key);
-
-		if(object == null || object instanceof bool)
-			return (bool)object;
-
-		return new bool(getBoolean(object));
+		return asBool(get(key));
 	}
 
 	public boolean getBoolean(string key) {
@@ -118,11 +97,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public boolean getBoolean(String key) {
-		return getBoolean(get(key));
-	}
-
-	private boolean getBoolean(Object object) {
-		return object.equals(Boolean.TRUE);
+		return asBoolean(get(key));
 	}
 
 	public date getDate(string key) {
@@ -130,16 +105,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public date getDate(String key) {
-		Object object = get(key);
-
-		if(object == null || object instanceof date)
-			return (date)object;
-
-		try {
-			return new date(getLong(object));
-		} catch (Exception e) {
-			return date.parse(object.toString());
-		}
+		return asDate(get(key));
 	}
 
 	public guid getGuid(string key) {
@@ -147,25 +113,15 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public guid getGuid(String key) {
-		Object object = get(key);
-
-		if(object == null || object instanceof guid)
-			return (guid)object;
-
-		return new guid(object.toString());
+		return asGuid(get(key));
 	}
 
 	public decimal getDecimal(string key) {
 		return getDecimal(key.get());
 	}
-	
+
 	public decimal getDecimal(String key) {
-		Object object = get(key);
-
-		if(object == null || object instanceof integer)
-			return (decimal)object;
-
-		return new decimal(getDouble(object));
+		return asDecimal(get(key));
 	}
 
 	public double getDouble(string key) {
@@ -173,11 +129,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public double getDouble(String key) {
-		return getDouble(get(key));
-	}
-
-	private double getDouble(Object object) {
-		return object instanceof Number ? ((Number)object).doubleValue() : Double.parseDouble((String)object);
+		return asDouble(get(key));
 	}
 
 	public integer getInteger(string key) {
@@ -185,12 +137,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public integer getInteger(String key) {
-		Object object = get(key);
-
-		if(object == null || object instanceof integer)
-			return (integer)object;
-
-		return new integer(getLong(object));
+		return asInteger(get(key));
 	}
 
 	public int getInt(string key) {
@@ -198,11 +145,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public int getInt(String key) {
-		return getInt(get(key));
-	}
-
-	private int getInt(Object object) {
-		return object instanceof Number ? ((Number)object).intValue() : Integer.parseInt((String)object);
+		return asInt(get(key));
 	}
 
 	public long getLong(string key) {
@@ -210,11 +153,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public long getLong(String key) {
-		return getLong(get(key));
-	}
-
-	private long getLong(Object object) {
-		return object instanceof Number ? ((Number)object).longValue() : Long.parseLong((String)object);
+		return asLong(get(key));
 	}
 
 	public JsonArray getJsonArray(string key) {
@@ -222,7 +161,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public JsonArray getJsonArray(String key) {
-		return (JsonArray)get(key);
+		return asJsonArray(get(key));
 	}
 
 	public JsonObject getJsonObject(string key) {
@@ -230,7 +169,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public JsonObject getJsonObject(String key) {
-		return (JsonObject)get(key);
+		return asJsonObject(get(key));
 	}
 
 	public boolean isNull(String key) {
@@ -246,8 +185,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public String getString(String key) {
-		Object object = get(key);
-		return object == null ? null : object.toString();
+		return asString(get(key));
 	}
 
 	public boolean has(string key) {
@@ -256,18 +194,6 @@ public class JsonObject extends HashMap<String, Object> {
 
 	public boolean has(String key) {
 		return super.containsKey(key);
-	}
-
-	public static String numberToString(Number number) {
-		String string = number.toString();
-		if(string.indexOf('.') > 0 && string.indexOf('e') < 0 && string.indexOf('E') < 0) {
-			while(string.endsWith("0"))
-				string = string.substring(0, string.length() - 1);
-
-			if(string.endsWith("."))
-				string = string.substring(0, string.length() - 1);
-		}
-		return string;
 	}
 
 	public JsonObject set(String key, Collection<?> value) {
@@ -409,6 +335,7 @@ public class JsonObject extends HashMap<String, Object> {
 		}
 		return string;
 	}
+
 	@Override
 	public String toString() {
 		try {
@@ -432,34 +359,137 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public static String valueToString(Object value) {
-		if(value == null)
+		if (value == null)
 			return "null";
 
 		// convert primary to Java native
-		if(value instanceof bool)
-			return Boolean.toString(((bool)value).get());
-		else if(value instanceof integer)
-			return numberToString(((integer)value).get());
-		else if(value instanceof decimal)
-			return numberToString(((decimal)value).get());
-		else if(value instanceof date) {
-			date dt = (date)value;
+		if (value instanceof bool)
+			return Boolean.toString(((bool) value).get());
+		else if (value instanceof integer)
+			return numberToString(((integer) value).get());
+		else if (value instanceof decimal)
+			return numberToString(((decimal) value).get());
+		else if (value instanceof date) {
+			date dt = (date) value;
 			boolean minMax = dt.equals(date.Min) || dt.equals(date.Max);
 			return minMax ? "null" : value.toString();
-		} else if(value instanceof JsonString)
-			return ((JsonString)value).toJSONString();
-		else if(value instanceof Number)
-			return numberToString((Number)value);
-		else if(value instanceof Boolean || value instanceof JsonObject || value instanceof JsonArray)
+		} else if (value instanceof JsonString)
+			return ((JsonString) value).toJSONString();
+		else if (value instanceof Number)
+			return numberToString((Number) value);
+		else if (value instanceof Boolean || value instanceof JsonObject || value instanceof JsonArray)
 			return value.toString();
-		else if(value instanceof Map)
-			return new JsonObject((Map<?, ?>)value).toString();
-		else if(value instanceof Collection)
-			return new JsonArray((Collection<?>)value).toString();
-		else if(value.getClass().isArray())
+		else if (value instanceof Map)
+			return new JsonObject((Map<?, ?>) value).toString();
+		else if (value instanceof Collection)
+			return new JsonArray((Collection<?>) value).toString();
+		else if (value.getClass().isArray())
 			return new JsonArray(value).toString();
 		else
 			return quote(value.toString());
+	}
+
+	public static String numberToString(Number number) {
+		String string = number.toString();
+		int dotPos = string.indexOf('.');
+
+		if (dotPos > 0 && string.indexOf('e') < 0 && string.indexOf('E') < 0) {
+			int lastZeroPos = string.length();
+			while (string.charAt(lastZeroPos - 1) == '0' && lastZeroPos > dotPos)
+				lastZeroPos--;
+			string = string.substring(0, lastZeroPos - 1 == dotPos ? dotPos : lastZeroPos);
+		}
+
+		return string;
+	}
+
+	public static String asString(Object object) {
+		return object == null ? null : object.toString();
+	}
+
+	public static boolean asBoolean(Object object) {
+		return object.equals(Boolean.TRUE);
+	}
+
+	public static int asInt(Object object) {
+		return object instanceof Number ? ((Number) object).intValue() : Integer.parseInt(object.toString());
+	}
+
+	public static double asDouble(Object object) {
+		return object instanceof Number ? ((Number) object).doubleValue() : Double.parseDouble(object.toString());
+	}
+
+	public static long asLong(Object object) {
+		return object instanceof Number ? ((Number) object).longValue() : Long.parseLong(object.toString());
+	}
+
+	public static bool asBool(Object object) {
+		if (object == null || object instanceof bool)
+			return (bool) object;
+
+		return new bool(asBoolean(object));
+	}
+
+	public static date asDate(Object object) {
+		if (object == null || object instanceof date)
+			return (date) object;
+
+		try {
+			return new date(asLong(object));
+		} catch (Throwable e) {
+			return date.parse(object.toString());
+		}
+	}
+
+	public static guid asGuid(Object object) {
+		if (object == null || object instanceof guid)
+			return (guid) object;
+
+		return new guid(object.toString());
+	}
+
+	public static decimal asDecimal(Object object) {
+		if (object == null || object instanceof decimal)
+			return (decimal) object;
+
+		return new decimal(asDouble(object));
+	}
+
+	public static integer asInteger(Object object) {
+		if (object == null || object instanceof integer)
+			return (integer) object;
+
+		return new integer(asLong(object));
+	}
+
+	public static JsonObject asJsonObject(Object object) {
+		if (object instanceof JsonObject)
+			return (JsonObject) object;
+		throw new RuntimeException(asString(object) + " is not a JsonObject");
+	}
+
+	public static JsonArray asJsonArray(Object object) {
+		if (object instanceof JsonArray)
+			return (JsonArray) object;
+		throw new RuntimeException(asString(object) + " is not a JsonArray");
+	}
+
+	public static Object asType(Object o, Class<?> type) {
+		if (type == bool.class)
+			return asBool(o);
+		if (type == date.class)
+			return asDate(o);
+		//if (type == datespan.class)
+		//	return asDatespan(o);
+		if (type == decimal.class)
+			return asDecimal(o);
+		if (type == guid.class)
+			return asGuid(o);
+		if (type == integer.class)
+			return asInteger(o);
+		if (type == string.class)
+			return new string(asString(o));
+		throw new UnsupportedOperationException(type.getName());
 	}
 
 	public static Object wrap(Object object) {
@@ -482,4 +512,5 @@ public class JsonObject extends HashMap<String, Object> {
 
 		return object;
 	}
+
 }

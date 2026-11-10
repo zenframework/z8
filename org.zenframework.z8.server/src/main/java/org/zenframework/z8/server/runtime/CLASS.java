@@ -15,6 +15,8 @@ import org.zenframework.z8.server.types.guid;
 public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	private Map<String, String> attributes = new HashMap<String, String>();
 
+	private META meta = null;
+
 	private IObject container = null;
 	private IObject owner = null;
 
@@ -72,6 +74,13 @@ public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
 	@Override
 	public IObject getContainer() {
 		return container;
+	}
+
+	@Override
+	public META getMeta() {
+		if (meta == null)
+			meta = META.meta(getClass());
+		return meta;
 	}
 
 	@Override

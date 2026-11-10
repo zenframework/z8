@@ -5,6 +5,8 @@ public interface IClass<TYPE extends IObject> extends IAttributed {
 	public final static int Constructor1 = 0;
 	public final static int Constructor2 = 1;
 
+	public META getMeta();
+
 	public Class<TYPE> getJavaClass();
 	public void setJavaClass(Class<?> cls);
 

@@ -1,0 +1,15 @@
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.json.JsonEntity"]
+public class JsonEntity extends Object {
+
+	public void operator = (JsonObject source);
+
+	public void writeJson(JsonObject json);
+	public void readJson(JsonObject json);
+
+	public JsonObject toJsonObject();
+
+	public static JsonArray toJsonArray(JsonEntity[] array);
+
+}

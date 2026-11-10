@@ -19,6 +19,7 @@ public class Application extends Object {
 	static public void restoreUser();
 
 	static public int currentTimeMillis();
+	static public void sleep(int millis);
 
 	static public void logInfo(string text);
 	static public void logWarning(string text);

@@ -100,6 +100,10 @@ public class JsonArray extends OBJECT {
 		return array.getGuid(i.getInt());
 	}
 
+	public date z8_getDate(integer i) {
+		return array.getDate(i.getInt());
+	}
+
 	public JsonArray.CLASS<? extends JsonArray> z8_getJsonArray(integer i) {
 		return getJsonArray(array.getJsonArray(i.getInt()));
 	}

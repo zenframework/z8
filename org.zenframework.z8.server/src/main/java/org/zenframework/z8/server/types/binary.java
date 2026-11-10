@@ -9,12 +9,15 @@ import java.io.InputStream;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_binary;
 import org.zenframework.z8.server.utils.IOUtils;
 
 public class binary extends primary {
 	static private final long serialVersionUID = -6993940737401994151L;
+
+	static private final META Meta = META.meta(binary.class);
 
 	public string name = new string();
 
@@ -46,6 +49,11 @@ public class binary extends primary {
 
 	public binary(String s) {
 		this(new string(s));
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	private void set(byte[] bytes) {

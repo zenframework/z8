@@ -5,16 +5,33 @@ import java.util.Map;
 
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
+import org.zenframework.z8.server.types.primary;
 
 public class RLinkedHashMap<Key, Value> extends HashMap<Key, Value> {
 
 	private static final long serialVersionUID = 1195983270713776247L;
+
+	private META meta;
 
 	public RLinkedHashMap() {
 	}
 
 	public RLinkedHashMap(Key[] keys, Value[] values) {
 		addAll(keys, values);
+	}
+
+	protected RLinkedHashMap<Key, Value> setMeta(META meta) {
+		this.meta = meta;
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public RLinkedHashMap<Key, Value> setMeta(Class<?> javaClass, Class<? extends primary>... keys) {
+		return setMeta(META.meta(javaClass, keys));
+	}
+
+	public META getMeta() {
+		return meta;
 	}
 
 	@SuppressWarnings("unchecked")

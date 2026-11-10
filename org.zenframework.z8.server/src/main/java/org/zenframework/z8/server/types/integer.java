@@ -2,11 +2,14 @@ package org.zenframework.z8.server.types;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.types.sql.sql_integer;
 
 public final class integer extends primary {
 
 	private static final long serialVersionUID = 2882942660543308166L;
+
+	static private final META Meta = META.meta(integer.class);
 
 	static public integer Min = new integer(Long.MIN_VALUE + 1); // 0x8000000000000000 + 1 = -0x7fffffffffffffff
 	static public integer Max = new integer(Long.MAX_VALUE); // 0x7fffffffffffffff
@@ -38,6 +41,11 @@ public final class integer extends primary {
 
 	public integer(String x) {
 		set(parse(x));
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	@Override

@@ -2,11 +2,14 @@ package org.zenframework.z8.server.types;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.types.sql.sql_datespan;
 
 public final class datespan extends primary {
 
 	private static final long serialVersionUID = -9105266490701041179L;
+
+	static private final META Meta = META.meta(datespan.class);
 
 	private long ticks = 0;
 
@@ -68,6 +71,11 @@ public final class datespan extends primary {
 
 	public datespan(int days, int hours, int minutes, int seconds, long milliseconds) {
 		set(days, hours, minutes, seconds, milliseconds);
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public long get() {

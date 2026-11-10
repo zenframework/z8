@@ -59,6 +59,14 @@ public class Application {
 		return new integer(System.currentTimeMillis());
 	}
 
+	static public void z8_sleep(integer millis) {
+		try {
+			Thread.sleep(millis.get());
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	static public void z8_logInfo(string text) {
 		ApplicationServer.getMonitor().logInfo(text.get());
 	}

@@ -3,11 +3,14 @@ package org.zenframework.z8.server.types;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.types.sql.sql_bool;
 
 public final class bool extends primary {
 
 	static private final long serialVersionUID = 4231676741592349038L;
+
+	static private final META Meta = META.meta(bool.class);
 
 	private boolean value = false;
 
@@ -45,6 +48,11 @@ public final class bool extends primary {
 
 	public bool(boolean x) {
 		set(x);
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public String toNumber() {

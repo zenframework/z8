@@ -62,14 +62,15 @@ public class JsonArray extends ArrayList<Object> {
 	}
 
 	public JsonArray(Object array) {
-		if(array == null)
+		if (array == null)
 			return;
 
-		if(!array.getClass().isArray())
+		if (!array.getClass().isArray())
 			throw new RuntimeException("JSONArray initial value should be a string or collection or array.");
 
 		int length = Array.getLength(array);
-		for(int i = 0; i < length; i++)
+
+		for (int i = 0; i < length; i++)
 			this.add(JsonObject.wrap(Array.get(array, i)));
 	}
 
@@ -78,109 +79,57 @@ public class JsonArray extends ArrayList<Object> {
 	}
 
 	public bool getBool(int index) {
-		Object object = get(index);
-
-		if(object == null || object instanceof bool)
-			return (bool)object;
-
-		return new bool(getBoolean(object));
+		return JsonObject.asBool(get(index));
 	}
 
 	public boolean getBoolean(int index) {
-		return getBoolean(get(index));
-	}
-
-	private boolean getBoolean(Object object) {
-		return object.equals(Boolean.TRUE);
+		return JsonObject.asBoolean(get(index));
 	}
 
 	public date getDate(int index) {
-		Object object = get(index);
-
-		if(object == null || object instanceof date)
-			return (date)object;
-
-		try {
-			return new date(getLong(object));
-		} catch (Exception e) {
-			return date.parse(object.toString());
-		}
+		return JsonObject.asDate(get(index));
 	}
 
 	public decimal getDecimal(int index) {
-		Object object = get(index);
-
-		if(object == null || object instanceof integer)
-			return (decimal)object;
-
-		return new decimal(getDouble(object));
+		return JsonObject.asDecimal(get(index));
 	}
 
 	public double getDouble(int index) {
-		return getDouble(get(index));
-	}
-
-	private double getDouble(Object object) {
-		return object instanceof Number ? ((Number)object).doubleValue() : Double.parseDouble((String)object);
+		return JsonObject.asDouble(get(index));
 	}
 
 	public guid getGuid(int index) {
-		Object object = get(index);
-
-		if(object == null || object instanceof guid)
-			return (guid)object;
-
-		return new guid(object.toString());
+		return JsonObject.asGuid(get(index));
 	}
 
 	public integer getInteger(int index) {
-		Object object = get(index);
-
-		if(object == null || object instanceof integer)
-			return (integer)object;
-
-		return new integer(getLong(object));
+		return JsonObject.asInteger(get(index));
 	}
 
 	public int getInt(int index) {
-		return getInt(get(index));
-	}
-
-	private int getInt(Object object) {
-		return object instanceof Number ? ((Number)object).intValue() : Integer.parseInt((String)object);
+		return JsonObject.asInt(get(index));
 	}
 
 	public long getLong(int index) {
-		return getLong(get(index));
-	}
-
-	private long getLong(Object object) {
-		return object instanceof Number ? ((Number)object).longValue() : Long.parseLong((String)object);
+		return JsonObject.asLong(get(index));
 	}
 
 	public String getString(int index) {
-		Object object = get(index);
-		return object == null ? null : object.toString();
+		return JsonObject.asString(get(index));
 	}
 
 	public JsonArray getJsonArray(int index) {
-		Object object = get(index);
-		if(object instanceof JsonArray)
-			return (JsonArray)object;
-		throw new RuntimeException("JSONArray[" + index + "] is not a JSONArray.");
+		return JsonObject.asJsonArray(get(index));
 	}
 
 	public JsonObject getJsonObject(int index) {
-		Object object = get(index);
-		if(object instanceof JsonObject)
-			return (JsonObject)object;
-		throw new RuntimeException("JSONArray[" + index + "] is not a JSONObject.");
+		return JsonObject.asJsonObject(get(index));
 	}
 
 	public String join(String separator) {
 		StringBuilder sb = new StringBuilder(1024);
 
-		for(int i = 0; i < size(); i += 1)
+		for (int i = 0; i < size(); i += 1)
 			sb.append((i != 0 ? separator : "") + JsonObject.valueToString(super.get(i)));
 
 		return sb.toString();

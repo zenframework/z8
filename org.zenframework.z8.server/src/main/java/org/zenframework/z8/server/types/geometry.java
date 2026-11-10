@@ -13,11 +13,14 @@ import org.zenframework.z8.server.geometry.parser.BinaryReader;
 import org.zenframework.z8.server.geometry.parser.BinaryWriter;
 import org.zenframework.z8.server.geometry.parser.GeoJsonReader;
 import org.zenframework.z8.server.geometry.parser.GeoJsonWriter;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_geometry;
 
 public final class geometry extends primary {
 	private static final long serialVersionUID = 8678133849134310611L;
+
+	static private final META Meta = META.meta(geometry.class);
 
 	static public final int none = -1;
 	static public final int ring = 0;
@@ -109,6 +112,11 @@ public final class geometry extends primary {
 
 	public geometry(String bytes) {
 		this.bytes = (bytes == null || bytes.isEmpty()) ? null : bytes;
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public int shape() {

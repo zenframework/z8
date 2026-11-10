@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 
 public abstract class primary implements Comparable<primary>, Serializable {
 
@@ -28,7 +29,7 @@ public abstract class primary implements Comparable<primary>, Serializable {
 	public string string() {
 		return z8_toString();
 	}
-	
+
 	public Object getValue() {
 		if (this instanceof binary)
 			return ((binary) this).get();
@@ -52,5 +53,7 @@ public abstract class primary implements Comparable<primary>, Serializable {
 			return ((string) this).get();
 		throw new IllegalStateException();
 	}
+
+	abstract public META getMeta();
 
 }

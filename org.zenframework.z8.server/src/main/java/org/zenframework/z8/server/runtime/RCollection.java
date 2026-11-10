@@ -16,6 +16,7 @@ import org.zenframework.z8.server.types.string;
 public class RCollection<TYPE> extends ArrayList<TYPE> {
 	private static final long serialVersionUID = -6377746293839490960L;
 
+	private META meta;
 	private HashSet<Object> set;
 
 	public RCollection() {
@@ -50,6 +51,20 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 	public RCollection(Collection<TYPE> collection) {
 		this(collection.size(), false);
 		addAll(collection);
+	}
+
+	protected RCollection<TYPE> setMeta(META meta) {
+		this.meta = meta;
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public RCollection<TYPE> setMeta(Class<?> javaClass, Class<? extends primary>... keys) {
+		return setMeta(META.meta(javaClass, keys));
+	}
+
+	public META getMeta() {
+		return meta;
 	}
 
 	@Override

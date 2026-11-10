@@ -36,6 +36,7 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.utils.IOUtils;
@@ -46,6 +47,8 @@ public class file extends primary implements RmiSerializable, Serializable {
 	private static final long serialVersionUID = -5017091353995266541L;
 	private static final long serialVersionUIDOld = -2542688680678439014L;
 	static public final String EOL = "\r\n";
+
+	static private final META Meta = META.meta(file.class);
 
 	static public final String separator = "/";
 
@@ -151,6 +154,11 @@ public class file extends primary implements RmiSerializable, Serializable {
 	protected file(JsonObject json) {
 		super();
 		set(json);
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public void set(file file) {

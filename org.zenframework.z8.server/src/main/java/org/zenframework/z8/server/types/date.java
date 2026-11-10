@@ -9,12 +9,15 @@ import java.util.TimeZone;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.types.sql.sql_date;
 import org.zenframework.z8.server.utils.StringUtils;
 
 public class date extends primary {
 
 	private static final long serialVersionUID = -5362639596768531077L;
+
+	static private final META Meta = META.meta(date.class);
 
 	public static long UtcMin = -62135769600000l;
 	public static long UtcMax = 95617584000000l;
@@ -160,6 +163,11 @@ public class date extends primary {
 			} catch(Throwable e) {
 			}
 		}
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public GregorianCalendar get() {

@@ -6,10 +6,13 @@ import java.math.RoundingMode;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.types.sql.sql_decimal;
 
 public final class decimal extends primary {
 	static private final long serialVersionUID = 2752764281506888344L;
+
+	static private final META Meta = META.meta(decimal.class);
 
 	static public integer RoundUp = new integer(BigDecimal.ROUND_UP);
 	static public integer RoundDown = new integer(BigDecimal.ROUND_DOWN);
@@ -61,6 +64,11 @@ public final class decimal extends primary {
 
 	public decimal(long x) {
 		set(new BigDecimal(x));
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	@Override

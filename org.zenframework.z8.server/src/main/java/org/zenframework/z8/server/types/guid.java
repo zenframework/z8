@@ -6,11 +6,14 @@ import java.util.UUID;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_guid;
 
 public class guid extends primary {
 	private static final long serialVersionUID = -8410843852109029003L;
+
+	static private final META Meta = META.meta(guid.class);
 
 	private static final UUID nullValue = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	public static final guid Null = new guid();
@@ -43,6 +46,11 @@ public class guid extends primary {
 
 	public guid(long mostSigBits, long leastSigBits) {
 		this(new UUID(mostSigBits, leastSigBits));
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public boolean isNull() {

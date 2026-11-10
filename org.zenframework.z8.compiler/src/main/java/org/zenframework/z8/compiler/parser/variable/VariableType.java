@@ -208,10 +208,19 @@ public class VariableType extends LanguageElement implements IVariableType {
 	public String getJavaNew(boolean staticContext) {
 		String newExpression = "new " + getJavaName();
 
-		if(isArray() || type.extendsPrimary())
-			return newExpression + "()";
+		if(!isArray() && !type.extendsPrimary())
+			return newExpression + "(" + (staticContext ? "null" : "this") + ")";
 
-		return newExpression + "(" + (staticContext ? "null" : "this") + ")";
+		newExpression += "()";
+
+		if(isArray()) {
+			newExpression += ".setMeta(" + type.getJavaName() + (type.isPrimary() ? "" : ".CLASS") + ".class";
+			for (IType key : keys)
+				newExpression += ", " + (key == null ? "(Class) null" : key.getJavaName() + ".class");
+			newExpression += ')';
+		}
+
+		return newExpression;
 	}
 
 	@Override
@@ -479,4 +488,5 @@ public class VariableType extends LanguageElement implements IVariableType {
 		codeGenerator.getCompilationUnit().importType(this);
 		codeGenerator.append(getDeclaringJavaName());
 	}
+
 }

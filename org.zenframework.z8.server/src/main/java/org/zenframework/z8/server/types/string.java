@@ -13,11 +13,14 @@ import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.resources.Resources;
+import org.zenframework.z8.server.runtime.META;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.sql.sql_string;
 
 public final class string extends primary {
 	private static final long serialVersionUID = 8678133849134310611L;
+
+	static private final META Meta = META.meta(string.class);
 
 	static public string Empty = new string();
 
@@ -69,6 +72,11 @@ public final class string extends primary {
 
 	public string(char ch) {
 		set(((Character)ch).toString());
+	}
+
+	@Override
+	public META getMeta() {
+		return Meta;
 	}
 
 	public String get() {
