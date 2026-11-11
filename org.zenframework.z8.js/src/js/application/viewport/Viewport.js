@@ -58,6 +58,9 @@ Z8.define('Z8.application.viewport.Viewport', {
 	},
 
 	onLogin: function() {
+		if(!Application.NlsActual)
+			return Z8.loadNlsMessages();
+
 		if(this.isLoggedIn) {
 			this.focus();
 			return;
