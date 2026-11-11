@@ -1,17 +1,19 @@
 package org.zenframework.z8.server.db;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.engine.IDatabase;
 
 public class ConnectionManager {
-	static private Map<IDatabase, List<Connection>> databaseConnections = new HashMap<IDatabase, List<Connection>>();
+	static private Map<IDatabase, Collection<Connection>> databaseConnections = new HashMap<IDatabase, Collection<Connection>>();
 
 	public static IDatabase database() {
 		return get().database();
@@ -30,25 +32,25 @@ public class ConnectionManager {
 	}
 
 	public static Connection get(IDatabase database) {
-		List<Connection> connections =  null;
+		Collection<Connection> connections =  null;
 
 		Object lock = database.getLock();
 
-		synchronized(lock) {
+		synchronized (lock) {
 			connections = databaseConnections.get(database);
 
-			if(connections == null) {
-				connections = new ArrayList<Connection>();
+			if (connections == null) {
+				connections = new HashSet<Connection>();
 				databaseConnections.put(database, connections);
 			}
 
-			for(Connection connection : connections) {
-				if(connection.isCurrent())
+			for (Connection connection : connections) {
+				if (connection.isCurrent())
 					return connection;
 			}
 
-			for(Connection connection : connections) {
-				if(!connection.isInUse()) {
+			for (Connection connection : connections) {
+				if (!connection.isInUse()) {
 					connection.use();
 					return connection;
 				}
@@ -58,7 +60,7 @@ public class ConnectionManager {
 		Connection connection = Connection.connect(database);
 		connection.use();
 
-		synchronized(lock) {
+		synchronized (lock) {
 			connections.add(connection);
 		}
 
@@ -66,24 +68,35 @@ public class ConnectionManager {
 	}
 
 	public static void release() {
-		for(Map.Entry<IDatabase, List<Connection>> entry : databaseConnections.entrySet()) {
-			synchronized(entry.getKey().getLock()) {
-				List<Connection> connections = entry.getValue();
-				Iterator<Connection> iterator = connections.iterator();
+		for (Map.Entry<IDatabase, Collection<Connection>> entry : databaseConnections.entrySet()) {
+			Collection<Connection> connections;
 
-				while(iterator.hasNext()) {
-					Connection connection = iterator.next();
+			synchronized (entry.getKey().getLock()) {
+				connections = new HashSet<Connection>(entry.getValue());
+			}
 
-					if(connection.isCurrent())
-						connection.release();
+			Collection<Connection> remove = release(connections);
 
-					if(connection.isUnused()) {
-						connection.close();
-						iterator.remove();
-					}
-				}
+			synchronized (entry.getKey().getLock()) {
+				entry.getValue().removeAll(remove);
 			}
 		}
+	}
+
+	private static Collection<Connection> release(Collection<Connection> connections) {
+		Set<Connection> remove = new HashSet<Connection>();
+
+		for (Connection connection : connections) {
+			if (connection.isCurrent())
+				connection.release();
+
+			if (connection.isUnused()) {
+				connection.close();
+				remove.add(connection);
+			}
+		}
+
+		return remove;
 	}
 
 	public static List<IDatabase.Info> getDatabasesInfo() {
@@ -98,14 +111,14 @@ public class ConnectionManager {
 	public static List<Connection.Info> getConnectionsInfo() {
 		List<Connection.Info> connInfo = new ArrayList<Connection.Info>(100);
 
-		for(Map.Entry<IDatabase, List<Connection>> entry : databaseConnections.entrySet()) {
-			List<Connection> connections;
+		for (Map.Entry<IDatabase, Collection<Connection>> entry : databaseConnections.entrySet()) {
+			Set<Connection> connections;
 
-			synchronized(entry.getKey().getLock()) {
-				connections = new ArrayList<Connection>(entry.getValue());
+			synchronized (entry.getKey().getLock()) {
+				connections = new HashSet<Connection>(entry.getValue());
 			}
 
-			for(Connection connection : connections)
+			for (Connection connection : connections)
 				connInfo.add(connection.getInfo());
 		}
 

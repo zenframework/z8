@@ -104,7 +104,7 @@ public class Connection {
 
 	static private final AtomicInteger IdCounter = new AtomicInteger(0);
 
-	private final int id = IdCounter.incrementAndGet();
+	private final Integer id = IdCounter.incrementAndGet();
 
 	private IDatabase database = null;
 	private java.sql.Connection connection = null;
@@ -154,7 +154,7 @@ public class Connection {
 			listeners.remove(System.identityHashCode(listener));
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -485,6 +485,27 @@ public class Connection {
 
 	public void unregister(Statement statement) {
 		statements.remove(statement.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Connection))
+			return false;
+		Connection conn = (Connection) obj;
+		return id.equals(conn.getId());
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
 	}
 
 	public Info getInfo() {
