@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,35 +69,32 @@ public class ConnectionManager {
 	}
 
 	public static void release() {
+		Set<Connection> toRelease = new HashSet<Connection>();
+		Set<Connection> toClose = new HashSet<Connection>();
+
 		for (Map.Entry<IDatabase, Collection<Connection>> entry : databaseConnections.entrySet()) {
-			Collection<Connection> connections;
+			synchronized(entry.getKey().getLock()) {
+				Iterator<Connection> iterator = entry.getValue().iterator();
 
-			synchronized (entry.getKey().getLock()) {
-				connections = new HashSet<Connection>(entry.getValue());
-			}
+				while (iterator.hasNext()) {
+					Connection connection = iterator.next();
 
-			Collection<Connection> remove = release(connections);
+					if (connection.isCurrent())
+						toRelease.add(connection);
 
-			synchronized (entry.getKey().getLock()) {
-				entry.getValue().removeAll(remove);
-			}
-		}
-	}
-
-	private static Collection<Connection> release(Collection<Connection> connections) {
-		Set<Connection> remove = new HashSet<Connection>();
-
-		for (Connection connection : connections) {
-			if (connection.isCurrent())
-				connection.release();
-
-			if (connection.isUnused()) {
-				connection.close();
-				remove.add(connection);
+					if (connection.isUnused()) {
+						toClose.add(connection);
+						iterator.remove();
+					}
+				}
 			}
 		}
 
-		return remove;
+		for (Connection connection : toRelease)
+			connection.release();
+
+		for (Connection connection : toClose)
+			connection.close();
 	}
 
 	public static List<IDatabase.Info> getDatabasesInfo() {
