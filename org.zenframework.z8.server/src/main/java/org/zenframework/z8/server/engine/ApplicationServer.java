@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zenframework.z8.server.base.file.FileConverter;
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.security.SecurityLog;
 import org.zenframework.z8.server.base.table.system.Domains;
@@ -145,6 +146,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 			Scheduler.start(Database.get(ServerConfig.databaseSchema()));
 
 		Trace.logEvent("Application Server JVM startup options: " + ManagementFactory.getRuntimeMXBean().getInputArguments().toString() + "\n\t" + RequestDispatcher.getMemoryUsage());
+		FileConverter.initializePort();
 	}
 
 	@Override
