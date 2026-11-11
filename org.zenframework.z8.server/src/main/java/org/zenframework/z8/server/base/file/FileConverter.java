@@ -1,10 +1,12 @@
 package org.zenframework.z8.server.base.file;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,15 +14,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DocumentFamily;
 import org.jodconverter.core.document.DocumentFormat;
-import org.jodconverter.core.document.DocumentFormatRegistry;
-import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeManager;
-import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.office.LocalOfficeManager;
 import org.zenframework.z8.server.base.table.system.Files;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.engine.ApplicationServer;
@@ -35,11 +30,7 @@ import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.string;
-import org.zenframework.z8.server.utils.ArrayUtils;
-import org.zenframework.z8.server.utils.EmlUtils;
-import org.zenframework.z8.server.utils.IOUtils;
-import org.zenframework.z8.server.utils.PdfUtils;
-import org.zenframework.z8.server.utils.PrimaryUtils;
+import org.zenframework.z8.server.utils.*;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
@@ -67,8 +58,6 @@ public class FileConverter {
 	public static final string Stamps = new string("stamps");
 
 	private static final Map<String, Integer> PDF_VERSIONS = getPdfVersions();
-
-	private static OfficeManager officeManager;
 
 	private FileConverter() {}
 
@@ -132,7 +121,7 @@ public class FileConverter {
 				else if (toPdf && isEmailExtension(extension))
 					PdfUtils.textToPdf(EmlUtils.emailToString(in), target);
 				else
-					convertOffice(in, target, parameters);
+					convertOffice(in, extension, target, parameters);
 			} catch (IOException e) {
 				throw new RuntimeException("Can't convert file to " + target, e);
 			} finally {
@@ -337,44 +326,17 @@ public class FileConverter {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
-	public static void startOfficeManager() {
-		if(officeManager != null)
-			return;
-
-		// TODO Define setting for local/external manager
-//		officeManager = ExternalOfficeManager.builder().install().connectOnStart(true).portNumber(OFFICE_PORT).build();
-//		officeManager.start();
-
+	private static File convertOffice(InputStream input, String extension, File target, Map<String, String> parameters) {
 		try {
-			officeManager = LocalOfficeManager.builder().install().officeHome(ServerConfig.officeHome()).portNumbers(ServerConfig.officePort()).build();
-			officeManager.start();
-			Trace.logEvent("New OpenOffice '" + ServerConfig.officeHome() + "' process created, port " + ServerConfig.officePort());
-		} catch(OfficeException e1) {
-			Trace.logError("Could not start OpenOffice '" + ServerConfig.officeHome() + "'", e1);
-		}
-	}
-
-	public static void stopOfficeManager() {
-		if(officeManager == null)
-			return;
-		OfficeUtils.stopQuietly(officeManager);
-		officeManager = null;
-	}
-
-	private static File convertOffice(InputStream input, File target, Map<String, String> parameters) {
-		try {
-			startOfficeManager();
-
-			DocumentConverter converter = LocalConverter.make(officeManager);
-			DocumentFormatRegistry registry = converter.getFormatRegistry();
-			//DocumentFormat inputFormat = registry.getFormatByExtension(extension);
-			DocumentFormat targetFormat = getDocumentFormat(parameters);
-			if (targetFormat == null)
-				targetFormat = registry.getFormatByExtension(new file(target).extension());
-
-			converter.convert(input)/*.as(inputFormat)*/.to(target).as(targetFormat).execute();
+			InputStream output = ConverterUtils.convert(input, extension, new file(target).extension());
+			OutputStream targetOutput = java.nio.file.Files.newOutputStream(
+							target.toPath(),
+							StandardOpenOption.CREATE_NEW,
+							StandardOpenOption.TRUNCATE_EXISTING
+			);
+			IOUtils.copy(output, targetOutput, true);
 			return target;
-		} catch(Throwable e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
