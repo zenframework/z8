@@ -230,6 +230,12 @@
 	<!-- Reports -->
 	<entry key="Report.groupTotal">Итого по </entry>
 	<entry key="Report.groupGrandTotal">Всего</entry>
+	<entry key="Report.rangeBlockNotSet">Отчёт. У диапазона {0} не задан блок.</entry>
+	<entry key="Report.rangesIntersect">Отчёт. Диапазоны {0} и {1} пересекаются по границам.</entry>
+	<entry key="Report.rangeOutOfBoundaries">Отчёт. Диапазон {0}: адрес {1} выходит за границы {2}.</entry>
+	<entry key="Report.rangeBoundariesRequired">Отчёт. Диапазон {0}: для вложенных диапазонов должны быть заданы границы.</entry>
+	<entry key="Report.traceRanges">Отчёт ''{0}'': {1}</entry>
+	<entry key="Report.traceRangeApplied">Отчёт ''{0}'':&#10;&#9;- диапазон {1} -> {2}, {3}&#10;&#9;- границы {4} -> {5}&#10;&#9;- статистика: {6}</entry>
 
 	<!-- Exceptions -->
 	<entry key="Exception.invalidVersion">Версия схемы базы данных не соответствует версии сервера.</entry>

@@ -11,5 +11,5 @@ public class DataSource extends Object {
 
 	public int getIndex();
 
-	// TODO get metadata
+	public Metadata metadata(string id);
 }
