@@ -8,6 +8,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.zenframework.z8.server.base.job.scheduler.Scheduler;
 import org.zenframework.z8.server.base.security.SecurityLog;
@@ -47,6 +51,68 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	static public final Collection<String> BuildPropertiesKeys = Arrays.asList(BuildProperties.ApplicationName, BuildProperties.ApplicationVersion, BuildProperties.BuildTimestamp, BuildProperties.GitCommit, BuildProperties.GitBranch);
 
 	static private ApplicationServer instance;
+
+	private final ConcurrentHashMap<SettingsCacheKey, SettingsCacheEntry> settingsCache = new ConcurrentHashMap<SettingsCacheKey, SettingsCacheEntry>();
+
+	private static class SettingsCacheKey {
+		private final IDatabase database;
+		private final UUID setting;
+
+		private SettingsCacheKey(IDatabase database, guid setting) {
+			this.database = database;
+			this.setting = setting.get();
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			SettingsCacheKey other = (SettingsCacheKey)object;
+			return Objects.equals(database, other.database) && Objects.equals(setting, other.setting);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(database, setting);
+		}
+	}
+
+	private static class SettingsCacheEntry {
+		private final String value;
+		private final long loadedAt;
+
+		private SettingsCacheEntry(String value) {
+			this.value = value;
+			this.loadedAt = System.nanoTime();
+		}
+	}
+
+	static public ApplicationServer instance() {
+		return instance;
+	}
+
+	public String getCachedSetting(IDatabase database, guid setting) {
+		int ttl = ServerConfig.settingsCacheTtlSeconds();
+		if(ttl <= 0)
+			return null;
+
+		SettingsCacheKey key = new SettingsCacheKey(database, setting);
+		SettingsCacheEntry entry = settingsCache.get(key);
+		if(entry == null)
+			return null;
+		if(System.nanoTime() - entry.loadedAt >= TimeUnit.SECONDS.toNanos(ttl)) {
+			settingsCache.remove(key, entry);
+			return null;
+		}
+		return entry.value;
+	}
+
+	public void cacheSetting(IDatabase database, guid setting, String value) {
+		if(ServerConfig.settingsCacheTtlSeconds() > 0 && value != null)
+			settingsCache.put(new SettingsCacheKey(database, setting), new SettingsCacheEntry(value));
+	}
+
+	public void invalidateCachedSetting(IDatabase database, guid setting) {
+		settingsCache.remove(new SettingsCacheKey(database, setting));
+	}
 
 	static public IApplicationServer launch() throws RemoteException {
 		if(instance == null) {
@@ -150,6 +216,7 @@ public class ApplicationServer extends RmiServer implements IApplicationServer {
 	@Override
 	public void stop() throws RemoteException {
 		Scheduler.destroy();
+		settingsCache.clear();
 
 		unregister();
 

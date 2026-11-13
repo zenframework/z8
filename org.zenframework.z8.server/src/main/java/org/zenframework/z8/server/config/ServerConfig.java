@@ -58,6 +58,7 @@ public class ServerConfig extends Config {
 	static final private String ApplicationServerHost = "application.server.host";
 	static final private String ApplicationServerPort = "application.server.port";
 	static final private String ApplicationServerRequestTimeout = "application.server.request.timeout";
+	static final private String SettingsCacheTtlSeconds = "application.server.settings.cache.ttl.seconds";
 
 	static final private String AuthorityCenterHost = "authority.center.host";
 	static final private String AuthorityCenterPort = "authority.center.port";
@@ -176,6 +177,7 @@ public class ServerConfig extends Config {
 	static private String applicationServerHost;
 	static private int applicationServerPort;
 	static private int applicationServerRequestTimeout;
+	static private int settingsCacheTtlSeconds;
 
 	static private String authorityCenterHost;
 	static private int authorityCenterPort;
@@ -320,6 +322,7 @@ public class ServerConfig extends Config {
 		applicationServerHost = instance.getHost(ApplicationServerHost, Rmi.localhost);
 		applicationServerPort = instance.getProperty(ApplicationServerPort, 15000);
 		applicationServerRequestTimeout = instance.getProperty(ApplicationServerRequestTimeout, 10);
+		settingsCacheTtlSeconds = instance.getProperty(SettingsCacheTtlSeconds, 60);
 
 		authorityCenterHost = instance.getHost(AuthorityCenterHost, Rmi.localhost);
 		authorityCenterPort = instance.getProperty(AuthorityCenterPort, 10000);
@@ -652,6 +655,10 @@ public class ServerConfig extends Config {
 
 	static public int applicationServerRequestTimeout() {
 		return applicationServerRequestTimeout;
+	}
+
+	static public int settingsCacheTtlSeconds() {
+		return settingsCacheTtlSeconds;
 	}
 
 	static public String authorityCenterHost() {
