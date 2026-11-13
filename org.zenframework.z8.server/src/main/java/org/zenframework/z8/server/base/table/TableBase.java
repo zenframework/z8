@@ -10,6 +10,7 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.generator.IForeignKey;
+import org.zenframework.z8.server.db.generator.Index;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.types.guid;
@@ -57,12 +58,12 @@ public class TableBase extends Query implements ITable {
 	}
 
 	@Override
-	public Collection<IField> getIndexedFields() {
-		List<IField> result = new ArrayList<IField>();
+	public Collection<Index> getIndexes() {
+		List<Index> result = new ArrayList<Index>();
 
 		for (Field field : getDataFields()) {
 			if (field.indexed() || field.unique())
-				result.add(field);
+				result.add(new Index(name(), field, result.size()));
 		}
 
 		return result;

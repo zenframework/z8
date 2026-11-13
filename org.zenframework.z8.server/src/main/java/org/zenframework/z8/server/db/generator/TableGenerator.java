@@ -120,15 +120,13 @@ public class TableGenerator {
 
 	public void createIndexes() {
 		Table table = table();
-		int i = 0;
 
-		for (IField field : table.getIndexedFields()) {
+		for (Index index : table.getIndexes()) {
 			try {
-				Index index = new Index(table.name(), field, i++);
 				DmlStatement.execute(database.dialect().getCreateIndex(database, index));
 				debug("create index " + index);
 			} catch(SQLException e) {
-				logger.error(e, Resources.format("Generator.createIndexError", field.displayName(), table.displayName(), table.name(), ErrorUtils.getMessage(e)));
+				logger.error(e, Resources.format("Generator.createIndexError", index.getName(), table.displayName(), table.name(), ErrorUtils.getMessage(e)));
 			}
 		}
 	}

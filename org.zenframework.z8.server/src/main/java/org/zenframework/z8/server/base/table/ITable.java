@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.generator.IForeignKey;
+import org.zenframework.z8.server.db.generator.Index;
 import org.zenframework.z8.server.types.primary;
 
 public interface ITable {
@@ -18,5 +19,5 @@ public interface ITable {
 
 	public Collection<IForeignKey> getForeignKeys();
 
-	public Collection<IField> getIndexedFields();
+	public Collection<Index> getIndexes();
 }
