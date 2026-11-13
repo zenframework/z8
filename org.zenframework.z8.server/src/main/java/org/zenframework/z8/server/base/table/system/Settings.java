@@ -1,5 +1,6 @@
 package org.zenframework.z8.server.base.table.system;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.db.sql.functions.InVector;
 import org.zenframework.z8.server.engine.ApplicationServer;
+import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.engine.Runtime;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
@@ -138,14 +140,37 @@ public class Settings extends TreeTable {
 		}
 	}
 
+	@Override
+	public void afterUpdate(guid recordId) {
+		ApplicationServer server = ApplicationServer.instance();
+		if(server != null)
+			server.invalidateCachedSetting(ApplicationServer.getDatabase(), recordId);
+		super.afterUpdate(recordId);
+	}
+
 	static private String get(guid property) {
 		if (!ApplicationServer.getUser().database().isSystemInstalled())
 			return null;
 
 		try {
+			ApplicationServer server = ApplicationServer.instance();
+			IDatabase database = ApplicationServer.getUser().database();
+			String cached = server != null ? server.getCachedSetting(database, property) : null;
+			if(cached != null)
+				return cached;
+
 			Settings settings = new Settings.CLASS<Settings>().get();
-			Field value = settings.value.get();
-			return settings.readRecord(property, Arrays.asList(value)) ? value.string().get() : null;
+			try {
+				Field value = settings.value.get();
+				if(!settings.readRecord(property, Arrays.asList(value)))
+					return null;
+				String result = value.string().get();
+				if(server != null)
+					server.cacheSetting(database, property, result);
+				return result;
+			} finally {
+				settings.close();
+			}
 		} catch (Throwable e) {
 			Trace.logError(e);
 			return null;
@@ -159,11 +184,33 @@ public class Settings extends TreeTable {
 			values.put(properties.get(i), defaultValues.get(i));
 
 		try {
+			ApplicationServer server = ApplicationServer.instance();
+			IDatabase database = server != null ? ApplicationServer.getDatabase() : null;
+			List<guid> missing = new ArrayList<guid>();
+			for(guid property : values.keySet()) {
+				String cached = server != null ? server.getCachedSetting(database, property) : null;
+				if(cached != null)
+					values.put(property, parse(new string(cached), values.get(property)));
+				else
+					missing.add(property);
+			}
+			if(missing.isEmpty())
+				return values;
+
 			Settings settings = new Settings.CLASS<Settings>().get();
-			Field value = settings.value.get();
-			settings.read(Arrays.asList(value), new InVector(settings.recordId.get(), properties));
-			while (settings.next())
-				values.put(settings.recordId(), parse(value.string(), values.get(settings.recordId())));
+			try {
+				Field value = settings.value.get();
+				settings.read(Arrays.asList(value), new InVector(settings.recordId.get(), missing));
+				while(settings.next()) {
+					guid recordId = settings.recordId();
+					string raw = value.string();
+					if(server != null && raw != null)
+						server.cacheSetting(database, recordId, raw.get());
+					values.put(recordId, parse(raw, values.get(recordId)));
+				}
+			} finally {
+				settings.close();
+			}
 		} catch(Throwable e) {
 			Trace.logError(e);
 		}

@@ -17,6 +17,7 @@
 
 	<entry key="application.server.port"></entry>                       <!-- default=15000, 0 to disable -->
 	<entry key="application.server.host"></entry>                       <!-- default=localhost -->
+	<entry key="application.server.settings.cache.ttl.seconds"></entry> <!-- default=60, seconds; 0 or less disables -->
 
 	<entry key="authority.center.port"></entry>                         <!-- default=10000, 0 to disable -->
 	<entry key="authority.center.host"></entry>                         <!-- default=localhost -->
