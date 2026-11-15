@@ -158,10 +158,18 @@ public class Settings extends TreeTable {
 		for (int i = 0; i < properties.size(); i++)
 			values.put(properties.get(i), defaultValues.get(i));
 
+		return read(values);
+	}
+
+	static public Map<guid, primary> get(Map<guid, primary> defaultValues) {
+		return read(defaultValues);
+	}
+
+	static private Map<guid, primary> read(Map<guid, primary> values) {
 		try {
 			Settings settings = new Settings.CLASS<Settings>().get();
 			Field value = settings.value.get();
-			settings.read(Arrays.asList(value), new InVector(settings.recordId.get(), properties));
+			settings.read(Arrays.asList(value), new InVector(settings.recordId.get(), values.keySet()));
 			while (settings.next())
 				values.put(settings.recordId(), parse(value.string(), values.get(settings.recordId())));
 		} catch(Throwable e) {
@@ -320,6 +328,11 @@ public class Settings extends TreeTable {
 
 	static public RLinkedHashMap<guid, primary> z8_get(RCollection<guid> settings, RCollection<primary> defaultValues) {
 		return (RLinkedHashMap<guid, primary>) get(settings, defaultValues);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static public RLinkedHashMap<guid, primary> z8_get(RLinkedHashMap defaultValues) {
+		return (RLinkedHashMap<guid, primary>) get(defaultValues);
 	}
 
 	static public string z8_string(guid setting) {

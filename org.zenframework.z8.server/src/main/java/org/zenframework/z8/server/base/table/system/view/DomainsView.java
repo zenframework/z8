@@ -15,7 +15,7 @@ public class DomainsView extends Domains {
 		public CLASS(IObject container) {
 			super(container);
 			setJavaClass(DomainsView.class);
-			setAttribute(SystemTool, Integer.toString(700));
+			setAttribute(SystemTool, Integer.toString(900));
 		}
 
 		@Override

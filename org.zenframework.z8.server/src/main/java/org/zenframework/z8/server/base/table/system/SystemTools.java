@@ -78,7 +78,7 @@ public class SystemTools extends Desktop {
 	}
 
 	@Override
-	public void initMembers() {
+	public synchronized void initMembers() {
 		super.initMembers();
 
 		if (ApplicationServer.getDatabase().isLatestVersion()) {

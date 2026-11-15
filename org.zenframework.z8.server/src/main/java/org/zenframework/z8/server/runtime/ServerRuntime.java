@@ -28,6 +28,7 @@ import org.zenframework.z8.server.base.table.system.view.FilesView;
 import org.zenframework.z8.server.base.table.system.view.JobsView;
 import org.zenframework.z8.server.base.table.system.view.RoleTableAccessView;
 import org.zenframework.z8.server.base.table.system.view.SequencesView;
+import org.zenframework.z8.server.base.table.system.view.SettingsView;
 import org.zenframework.z8.server.base.table.system.view.TablesView;
 import org.zenframework.z8.server.base.table.system.view.TransportQueueView;
 import org.zenframework.z8.server.base.table.system.view.UsersView;
@@ -76,6 +77,7 @@ public class ServerRuntime extends AbstractRuntime {
 		addSystemTool(new TablesView.CLASS<TablesView>(null));
 		addSystemTool(new SequencesView.CLASS<SequencesView>(null));
 		addSystemTool(new FilesView.CLASS<FilesView>(null));
+		addSystemTool(new SettingsView.CLASS<SettingsView>(null));
 		addSystemTool(new DomainsView.CLASS<DomainsView>(null));
 		addSystemTool(new TransportQueueView.CLASS<TransportQueueView>(null));
 

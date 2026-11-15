@@ -221,12 +221,11 @@ public class ComplexRuntime extends AbstractRuntime {
 	public Class<?> loadClass(String className) throws ClassNotFoundException {
 		try {
 			return super.loadClass(className);
-		} catch(ClassNotFoundException e) {
-			for(IRuntime runtime : runtimes()) {
+		} catch (ClassNotFoundException e) {
+			for (IRuntime runtime : runtimes()) {
 				try {
 					return runtime.loadClass(className);
-				} catch(ClassNotFoundException e1) {
-				}
+				} catch (ClassNotFoundException e1) {}
 			}
 			throw new ClassNotFoundException(className);
 		}
