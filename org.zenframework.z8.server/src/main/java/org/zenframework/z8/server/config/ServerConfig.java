@@ -108,6 +108,7 @@ public class ServerConfig extends Config {
 	static final private String LogCleanupJobKeepFor = "logCleanup.job.keepFor";
 
 	static final private String TraceSql = "trace.sql";
+	static final private String TraceSqlInComment = "trace.sql.inComment";
 	static final private String TraceSqlConnections = "trace.sql.connections";
 
 	static final public String TextExtensions = "file.converter.text";
@@ -228,6 +229,7 @@ public class ServerConfig extends Config {
 	static private String logCleanupJobKeepFor;
 
 	static private boolean traceSql;
+	static private boolean traceSqlInComment;
 	static private boolean traceSqlConnections;
 
 	static private String officeHome;
@@ -357,6 +359,7 @@ public class ServerConfig extends Config {
 		webClientHashPassword = instance.getProperty(WebClientHashPassword, true);
 
 		traceSql = instance.getProperty(TraceSql, false);
+		traceSqlInComment = instance.getProperty(TraceSqlInComment, false);
 		traceSqlConnections = instance.getProperty(TraceSqlConnections, false);
 
 		schedulerEnabled = instance.getProperty(SchedulerEnabled, true);
@@ -688,6 +691,10 @@ public class ServerConfig extends Config {
 
 	static public boolean traceSql() {
 		return traceSql;
+	}
+
+	static public boolean traceSqlInComment() {
+		return traceSqlInComment;
 	}
 
 	static public boolean traceSqlConnections() {

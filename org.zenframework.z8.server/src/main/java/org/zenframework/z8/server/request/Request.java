@@ -8,6 +8,7 @@ import org.zenframework.z8.server.engine.ISession;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
+import org.zenframework.z8.server.security.IUser;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.string;
 
@@ -104,7 +105,8 @@ public class Request extends IRequest {
 
 	@Override
 	public String toString() {
-		return parametersAsString() + ", user=" + session.user().login();
+		IUser user = session != null ? session.user() : null;
+		return parametersAsString() + (user != null ? ", user=" + user.login() : "");
 	}
 
 }

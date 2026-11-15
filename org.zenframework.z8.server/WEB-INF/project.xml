@@ -28,6 +28,7 @@
 	<entry key="interconnection.center.cache"></entry>                  <!-- default=true -->
 
 	<entry key="trace.sql">false</entry>                                <!-- default=false -->
+	<entry key="trace.sql.inComment">false</entry>                      <!-- default=false -->
 	<entry key="trace.sql.connections">false</entry>                    <!-- default=false -->
 
 	<entry key="scheduler.enabled">false</entry>                        <!-- default=true -->
