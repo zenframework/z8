@@ -25,7 +25,7 @@ JAVA_OPTS="\$JAVA_OPTS -Dorg.mortbay.http.HttpRequest.maxFormContentSize=\$FORM_
 JAVA_OPTS="\$JAVA_OPTS -Dz8.application.working.path=\$WORK"
 JAVA_OPTS="\$JAVA_OPTS -Dz8.web.server.webapp=\$WEB"
 
-if [ "\$DEBUG" == "true" ] ; then
+if [ "\$DEBUG" = "true" ] ; then
  JAVA_OPTS="\$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=9999,server=y,suspend=n"
 fi
 
