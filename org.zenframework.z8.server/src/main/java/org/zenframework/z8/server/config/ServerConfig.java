@@ -234,7 +234,6 @@ public class ServerConfig extends Config {
 
 	static private String officeHome;
 	static private int officePort;
-
 	static private String spnegoDomainRealm;
 	static private File spnegoPropertiesPath;
 
@@ -386,7 +385,6 @@ public class ServerConfig extends Config {
 
 		officeHome = instance.getProperty(OfficeHome, "C:/Program Files (x86)/LibreOffice 4.0");
 		officePort = instance.getProperty(OfficePort, 8100);
-
 		spnegoDomainRealm = instance.getProperty(SpnegoDomainRealm, "");
 		spnegoPropertiesPath = instance.getFile(SpnegoPropertiesPath, "", configPath);
 
