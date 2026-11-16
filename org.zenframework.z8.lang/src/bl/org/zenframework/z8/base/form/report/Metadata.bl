@@ -1,0 +1,7 @@
+import org.zenframework.z8.base.table.value.Aggregation;
+import org.zenframework.z8.lang.Object;
+
+[native "org.zenframework.z8.server.base.form.report.Metadata"]
+public class Metadata extends Object {
+	public Aggregation aggregation = Aggregation.None;
+}
