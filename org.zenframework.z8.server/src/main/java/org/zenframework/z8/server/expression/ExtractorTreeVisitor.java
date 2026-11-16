@@ -1,11 +1,6 @@
 package org.zenframework.z8.server.expression;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.zenframework.z8.server.expression.generated.ExpressionBaseVisitor;
-import org.zenframework.z8.server.expression.generated.ExpressionLexer;
-import org.zenframework.z8.server.expression.generated.ExpressionParser;
 import org.zenframework.z8.server.expression.generated.ExpressionParser.IdentifierContext;
 import org.zenframework.z8.server.expression.generated.ExpressionParser.MemberReferenceExpressionContext;
 import org.zenframework.z8.server.expression.generated.TextBaseVisitor;
@@ -36,21 +31,18 @@ public class ExtractorTreeVisitor extends TextBaseVisitor<Object> {
 
 	private final Calculator calculator;
 	private final Expression.Extractor extractor;
+	private final Expression expression;
 
-	public ExtractorTreeVisitor(Calculator calculator, Expression.Extractor extractor) {
-		this.calculator = calculator;
+	public ExtractorTreeVisitor(Expression expression, Expression.Extractor extractor) {
+		this.expression = expression;
+		this.calculator = expression.getCalculator();
 		this.extractor = extractor;
 	}
 
 	@Override
 	public Object visitExpressionTextPart(ExpressionTextPartContext ctx) {
 		try {
-			CharStream charStream = CharStreams.fromString(ctx.TEXT().getText());
-			ExpressionLexer lexer = new ExpressionLexer(charStream);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			ExpressionParser parser = new ExpressionParser(tokens);
-
-			expressionVisitor.visit(parser.rootExpression());
+			expressionVisitor.visit(expression.parseExpression(ctx.TEXT().getText()));
 		} catch (Throwable e) {
 			calculator.addError(e.getMessage());
 		}

@@ -1,6 +1,8 @@
 package org.zenframework.z8.server.expression;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -21,6 +23,8 @@ public class Expression {
 	}
 
 	private final Calculator calculator = new Calculator();
+	private final Map<String, TextParser.TextContext> textTrees = new HashMap<String, TextParser.TextContext>();
+	private final Map<String, ExpressionParser.RootExpressionContext> expressionTrees = new HashMap<String, ExpressionParser.RootExpressionContext>();
 
 	public Calculator getCalculator() {
 		return calculator;
@@ -50,14 +54,9 @@ public class Expression {
 	}
 
 	public Value evaluateExpression(String expression, boolean silent) {
-		CharStream charStream = CharStreams.fromString(expression);
-		ExpressionLexer lexer = new ExpressionLexer(charStream);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ExpressionParser parser = new ExpressionParser(tokens);
-//		parser.setErrorHandler(new ExpressionErrorHandler());
 		ExpressionTreeVisitor visitor = new ExpressionTreeVisitor(calculator.setSilent(silent));
 
-		return visitor.visit(parser.rootExpression());
+		return visitor.visit(parseExpression(expression));
 	}
 
 	public Object evaluateText(String text) {
@@ -65,12 +64,7 @@ public class Expression {
 	}
 
 	public Object evaluateText(String text, boolean silent) {
-		CharStream charStream = CharStreams.fromString(text);
-		TextLexer lexer = new TextLexer(charStream);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		TextParser parser = new TextParser(tokens);
-//		parser.setErrorHandler(new ExpressionErrorHandler());
-		TextParser.TextContext tree = parser.text();
+		TextParser.TextContext tree = parseText(text);
 		List<TextParser.TextPartContext> parts = tree.textPart();
 
 		if (parts.size() == 1 && parts.get(0) instanceof TextParser.ExpressionTextPartContext) {
@@ -79,18 +73,43 @@ public class Expression {
 			return value.isEvaluated() ? value.get() : value.toString();
 		}
 
-		TextTreeVisitor visitor = new TextTreeVisitor(calculator.setSilent(silent));
+		calculator.setSilent(silent);
+		TextTreeVisitor visitor = new TextTreeVisitor(this);
 		return visitor.visit(tree).toString();
 	}
 
 	public void extractObjects(String text, Extractor extractor) {
+		calculator.setSilent(true);
+		ExtractorTreeVisitor visitor = new ExtractorTreeVisitor(this, extractor);
+
+		visitor.visit(parseText(text));
+	}
+
+	ExpressionParser.RootExpressionContext parseExpression(String expression) {
+		ExpressionParser.RootExpressionContext tree = expressionTrees.get(expression);
+		if (tree != null)
+			return tree;
+
+		CharStream charStream = CharStreams.fromString(expression);
+		ExpressionLexer lexer = new ExpressionLexer(charStream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		ExpressionParser parser = new ExpressionParser(tokens);
+		tree = parser.rootExpression();
+		expressionTrees.put(expression, tree);
+		return tree;
+	}
+
+	private TextParser.TextContext parseText(String text) {
+		TextParser.TextContext tree = textTrees.get(text);
+		if (tree != null)
+			return tree;
+
 		CharStream charStream = CharStreams.fromString(text);
 		TextLexer lexer = new TextLexer(charStream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TextParser parser = new TextParser(tokens);
-//		parser.setErrorHandler(new ExpressionErrorHandler());
-		ExtractorTreeVisitor visitor = new ExtractorTreeVisitor(calculator.setSilent(true), extractor);
-
-		visitor.visit(parser.text());
+		tree = parser.text();
+		textTrees.put(text, tree);
+		return tree;
 	}
 }
