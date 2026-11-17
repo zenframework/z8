@@ -1,6 +1,7 @@
 package org.zenframework.z8.compiler.parser.expressions;
 
 import org.zenframework.z8.compiler.core.CodeGenerator;
+import org.zenframework.z8.compiler.core.ILanguageElement;
 import org.zenframework.z8.compiler.core.IPosition;
 import org.zenframework.z8.compiler.core.IToken;
 import org.zenframework.z8.compiler.core.IVariableType;
@@ -37,5 +38,9 @@ public class Null extends LanguageElement {
 	@Override
 	public void getCode(CodeGenerator codeGenerator) {
 		codeGenerator.append("null");
+	}
+
+	public static boolean is(ILanguageElement element) {
+		return element != null && element.getClass() == Null.class;
 	}
 }

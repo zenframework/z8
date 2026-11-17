@@ -108,21 +108,23 @@ public abstract class Initialization extends LanguageElement {
 
 		List<ITypeCast> candidates = new ArrayList<ITypeCast>();
 
-		IMethod[] operators = type.getMatchingMethods(operatorToken.getName());
+		if (!Null.is(right)) {
+			IMethod[] operators = type.getMatchingMethods(operatorToken.getName());
 
-		for(IMethod operator : operators) {
-			IVariable[] parameters = operator.getParameters();
+			for(IMethod operator : operators) {
+				IVariable[] parameters = operator.getParameters();
 
-			if(parameters.length != 1)
-				continue;
+				if(parameters.length != 1)
+					continue;
 
-			IVariableType parameter = parameters[0].getVariableType();
+				IVariableType parameter = parameters[0].getVariableType();
 
-			ITypeCast typeCast = argument.getCastTo(parameter);
+				ITypeCast typeCast = argument.getCastTo(parameter);
 
-			if(typeCast != null) {
-				typeCast.setContext(operator);
-				candidates.add(typeCast);
+				if(typeCast != null) {
+					typeCast.setContext(operator);
+					candidates.add(typeCast);
+				}
 			}
 		}
 
