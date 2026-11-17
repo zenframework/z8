@@ -36,6 +36,22 @@ public class sql_guid extends sql_primary {
 		return new sql_guid(new Group(this));
 	}
 
+	public sql_bool operatorLess(SqlToken value) {
+		return new sql_bool(new Rel(this, Operation.LT, value));
+	}
+
+	public sql_bool operatorMore(SqlToken value) {
+		return new sql_bool(new Rel(this, Operation.GT, value));
+	}
+
+	public sql_bool operatorLessEqu(SqlToken value) {
+		return new sql_bool(new Rel(this, Operation.LE, value));
+	}
+
+	public sql_bool operatorMoreEqu(SqlToken value) {
+		return new sql_bool(new Rel(this, Operation.GE, value));
+	}
+
 	public sql_bool operatorEqu(sql_guid value) {
 		return new sql_bool(new Rel(this, Operation.Eq, value));
 	}
