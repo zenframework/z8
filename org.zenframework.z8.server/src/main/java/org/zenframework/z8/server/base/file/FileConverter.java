@@ -348,14 +348,33 @@ public class FileConverter {
 		return extension != null && ArrayUtils.contains(ServerConfig.officeExtensions(), extension.toLowerCase());
 	}
 
-	public static void checkOfficeManagerPort() {
-		int port = ServerConfig.officePort();
-		try (ServerSocket socket = new ServerSocket(port)) {
-		} catch (BindException e) {
-			Trace.logError("LibreOffice cannot start: port " + port + " is already in use", e);
-		} catch (IOException e) {
-			Trace.logError("Failed to check LibreOffice port: " + e.getMessage(), e);
+	public static void findFreeOfficePort() {
+		final int basePort = ServerConfig.baseOfficePort();
+		final int MAX_OFFSET = 3;
+
+		for (int offset = 0; offset <= MAX_OFFSET; offset++) {
+			int port = basePort + offset;
+
+			try (ServerSocket socket = new ServerSocket(port)) {
+				Trace.logEvent("LibreOffice will start on port " + port);
+				ServerConfig.setOfficePort(port);
+			} catch (BindException e) {
+				Trace.logEvent(
+						"LibreOffice port " + port + " is already in use, trying next port"
+				);
+			} catch (IOException e) {
+				Trace.logError(
+						"Failed to check LibreOffice port " + port, e
+				);
+			}
 		}
+
+		Trace.logEvent(
+				"LibreOffice cannot start: ports " +
+						basePort + "..." + (basePort + MAX_OFFSET) + " are all in use"
+		);
+
+		ServerConfig.setOfficePort(basePort);
 	}
 
 	public static void startOfficeManager() {
@@ -380,6 +399,7 @@ public class FileConverter {
 			return;
 		OfficeUtils.stopQuietly(officeManager);
 		officeManager = null;
+		ServerConfig.setOfficePort(ServerConfig.baseOfficePort());
 	}
 
 	private static File convertOffice(InputStream input, String extension, File target, Map<String, String> parameters) {
