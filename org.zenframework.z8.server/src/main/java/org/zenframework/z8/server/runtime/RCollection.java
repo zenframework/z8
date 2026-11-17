@@ -13,7 +13,7 @@ import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
-public class RCollection<TYPE> extends ArrayList<TYPE> {
+public class RCollection<TYPE> extends ArrayList<TYPE> implements Any {
 	private static final long serialVersionUID = -6377746293839490960L;
 
 	private META meta;
@@ -63,6 +63,7 @@ public class RCollection<TYPE> extends ArrayList<TYPE> {
 		return setMeta(META.meta(javaClass, keys));
 	}
 
+	@Override
 	public META getMeta() {
 		return meta;
 	}

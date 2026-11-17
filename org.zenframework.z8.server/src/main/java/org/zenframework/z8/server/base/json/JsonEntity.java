@@ -33,42 +33,23 @@ public class JsonEntity extends OBJECT {
 	}
 
 	public void operatorAssign(JsonObject.CLASS<? extends JsonObject> source) {
-		readJson(source.get().get());
+		objectFromJson(this, source.get().get());
 	}
 
-	public void writeJson(org.zenframework.z8.server.json.parser.JsonObject json) {
-		try {
-			for (Field field : getClass().getDeclaredFields()) {
-				if (!Modifier.isPublic(field.getModifiers()))
-					continue;
-
-				Object jsonValue = toJsonValue(field.get(this));
-
-				if (jsonValue != null)
-					json.set(field.getName(), jsonValue);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public org.zenframework.z8.server.json.parser.JsonObject toJson() {
+		return z8_toJson().get().get();
 	}
 
-	public void readJson(org.zenframework.z8.server.json.parser.JsonObject json) {
-		try {
-			for (Field field : getClass().getDeclaredFields()) {
-				if (!Modifier.isPublic(field.getModifiers()))
-					continue;
-				String key = field.getName();
-				field.set(this, json.containsKey(key) ? fromJsonValue(json.get(key), META.get(field.get(this))) : null);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public JsonEntity fromJson(org.zenframework.z8.server.json.parser.JsonObject json) {
+		return z8_fromJson(JsonObject.getJsonObject(json)).get();
 	}
 
-	public org.zenframework.z8.server.json.parser.JsonObject toJsonObject() {
-		org.zenframework.z8.server.json.parser.JsonObject json = new org.zenframework.z8.server.json.parser.JsonObject();
-		writeJson(json);
-		return json;
+	protected JsonEntity newObject(org.zenframework.z8.server.json.parser.JsonObject json) {
+		return z8_newObject(JsonObject.getJsonObject(json)).get();
+	}
+
+	public static org.zenframework.z8.server.json.parser.JsonObject toJsonObject(OBJECT object) {
+		return (org.zenframework.z8.server.json.parser.JsonObject) toJsonValue(object);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -76,16 +57,22 @@ public class JsonEntity extends OBJECT {
 		return (org.zenframework.z8.server.json.parser.JsonArray) toJsonValue(array);
 	}
 
-	public void z8_writeJson(JsonObject.CLASS<? extends JsonObject> json) {
-		writeJson(json.get().get());
+	/* virtual */ public JsonObject.CLASS<? extends JsonObject> z8_toJson() {
+		return JsonObject.getJsonObject(objectToJson(this));
 	}
 
-	public void z8_readJson(JsonObject.CLASS<? extends JsonObject> json) {
-		readJson(json.get().get());
+	@SuppressWarnings("unchecked")
+	/* virtual */ public JsonEntity.CLASS<? extends JsonEntity> z8_fromJson(JsonObject.CLASS<? extends JsonObject> json) {
+		return (JsonEntity.CLASS<? extends JsonEntity>) objectFromJson(newObject(json.get().get()), json.get().get()).getCLASS();
 	}
 
-	public JsonObject.CLASS<? extends JsonObject> z8_toJsonObject() {
-		return JsonObject.getJsonObject(toJsonObject());
+	/* virtual */ @SuppressWarnings("unchecked")
+	public JsonEntity.CLASS<? extends JsonEntity> z8_newObject(JsonObject.CLASS<? extends JsonObject> json) {
+		return (JsonEntity.CLASS<? extends JsonEntity>) getCLASS();
+	}
+
+	public static JsonObject.CLASS<? extends JsonObject> z8_toJsonObject(OBJECT.CLASS<? extends OBJECT> object) {
+		return JsonObject.getJsonObject(toJsonObject(object.get()));
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -93,48 +80,74 @@ public class JsonEntity extends OBJECT {
 		return JsonArray.getJsonArray(toJsonArray(array));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	private static Object toJsonValue(Object value) {
 		if (value instanceof primary)
 			return value;
 
-		if (value instanceof JsonEntity.CLASS)
-			return ((JsonEntity.CLASS<? extends JsonEntity>) value).get().toJsonObject();
+		if (value instanceof OBJECT.CLASS)
+			return objectToJson(((OBJECT.CLASS) value).get());
 
-		if (value instanceof RCollection) {
-			RCollection array = (RCollection) value;
-			Object first = array.z8_first();
+		if (value instanceof RCollection)
+			return arrayToJson((RCollection) value);
 
-			if (first == null || !(first instanceof primary || first instanceof JsonEntity.CLASS
-					|| first instanceof RCollection || first instanceof RLinkedHashMap))
-				return null;
-
-			org.zenframework.z8.server.json.parser.JsonArray json = new org.zenframework.z8.server.json.parser.JsonArray();
-
-			for (Object element : array)
-				json.add(toJsonValue(element));
-
-			return json;
-		}
-
-		if (value instanceof RLinkedHashMap) {
-			RLinkedHashMap<?, ?> map = (RLinkedHashMap) value;
-			Map.Entry first = map.entrySet().iterator().next();
-
-			if (first == null || !(first.getKey() instanceof string)
-					|| !(first.getValue() instanceof primary || first.getValue() instanceof JsonEntity.CLASS
-							|| first instanceof RCollection || first instanceof RLinkedHashMap))
-				return null;
-
-			org.zenframework.z8.server.json.parser.JsonObject json = new org.zenframework.z8.server.json.parser.JsonObject();
-
-			for (Map.Entry<?, ?> entry : map.entrySet())
-				json.set((string) entry.getKey(), toJsonValue(entry.getValue()));
-
-			return json;
-		}
+		if (value instanceof RLinkedHashMap)
+			return mapToJson((RLinkedHashMap) value);
 
 		return null;
+	}
+
+	private static org.zenframework.z8.server.json.parser.JsonObject objectToJson(IObject object) {
+		try {
+			org.zenframework.z8.server.json.parser.JsonObject json = new org.zenframework.z8.server.json.parser.JsonObject();
+
+			for (Field field : object.getClass().getFields()) {
+				if (!isJsonField(field))
+					continue;
+
+				Object jsonValue = toJsonValue(field.get(object));
+
+				if (jsonValue != null)
+					json.set(getName(field), jsonValue);
+			}
+
+			return json;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static org.zenframework.z8.server.json.parser.JsonArray arrayToJson(RCollection array) {
+		Object first = array.z8_first();
+
+		if (first == null || !(first instanceof primary || first instanceof OBJECT.CLASS || first instanceof RCollection
+				|| first instanceof RLinkedHashMap))
+			return null;
+
+		org.zenframework.z8.server.json.parser.JsonArray json = new org.zenframework.z8.server.json.parser.JsonArray();
+
+		for (Object element : array)
+			json.add(toJsonValue(element));
+
+		return json;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static org.zenframework.z8.server.json.parser.JsonObject mapToJson(RLinkedHashMap<?, ?> map) {
+		Map.Entry first = map.entrySet().iterator().next();
+
+		if (first == null || !(first.getKey() instanceof string)
+				|| !(first.getValue() instanceof primary || first.getValue() instanceof OBJECT.CLASS
+						|| first instanceof RCollection || first instanceof RLinkedHashMap))
+			return null;
+
+		org.zenframework.z8.server.json.parser.JsonObject json = new org.zenframework.z8.server.json.parser.JsonObject();
+
+		for (Map.Entry<?, ?> entry : map.entrySet())
+			json.set((string) entry.getKey(), toJsonValue(entry.getValue()));
+
+		return json;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -146,28 +159,63 @@ public class JsonEntity extends OBJECT {
 		case Primary:
 			return org.zenframework.z8.server.json.parser.JsonObject.asType(jsonValue, meta.getJavaClass());
 		case Object:
-			JsonEntity.CLASS<? extends JsonEntity> entity = ((JsonEntity.CLASS<? extends JsonEntity>) meta.newObject());
-			entity.get().readJson(org.zenframework.z8.server.json.parser.JsonObject.asJsonObject(jsonValue));
-			return entity;
+			return objectFromJson(((OBJECT.CLASS<? extends OBJECT>) meta.newObject()).get(),
+					org.zenframework.z8.server.json.parser.JsonObject.asJsonObject(jsonValue)).getCLASS();
 		case Array:
-			org.zenframework.z8.server.json.parser.JsonArray jsonArray = org.zenframework.z8.server.json.parser.JsonObject
-					.asJsonArray(jsonValue);
-			RCollection array = (RCollection) meta.newObject();
-
-			for (int i = 0; i < jsonArray.size(); i++)
-				array.add(fromJsonValue(jsonArray.get(i), meta.getValueMeta()));
-
-			return array;
+			return arrayFromJson((RCollection) meta.newObject(),
+					org.zenframework.z8.server.json.parser.JsonObject.asJsonArray(jsonValue));
 		case Map:
-			org.zenframework.z8.server.json.parser.JsonObject jsonObject = org.zenframework.z8.server.json.parser.JsonObject
-					.asJsonObject(jsonValue);
-			RLinkedHashMap map = (RLinkedHashMap) meta.newObject();
-
-			for (Map.Entry<String, Object> entry : jsonObject.entrySet())
-				map.put(new string(entry.getKey()), fromJsonValue(jsonObject.get(entry.getKey()), meta.getValueMeta()));
+			return mapFromJson((RLinkedHashMap) meta.newObject(),
+					org.zenframework.z8.server.json.parser.JsonObject.asJsonObject(jsonValue));
 		default:
 			throw new IllegalStateException(meta.getType().toString());
 		}
+	}
+
+	private static OBJECT objectFromJson(OBJECT object, org.zenframework.z8.server.json.parser.JsonObject json) {
+		try {
+			for (Field field : object.getClass().getFields()) {
+				if (!isJsonField(field))
+					continue;
+
+				String key = getName(field);
+				field.set(object, json.containsKey(key) ? fromJsonValue(json.get(key), META.get(object, field)) : null);
+			}
+
+			return object;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static RCollection arrayFromJson(RCollection array, org.zenframework.z8.server.json.parser.JsonArray json) {
+		META valueMeta = array.getMeta().getValueMeta();
+
+		for (int i = 0; i < json.size(); i++)
+			array.add(fromJsonValue(json.get(i), valueMeta));
+
+		return array;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static RLinkedHashMap mapFromJson(RLinkedHashMap map,
+			org.zenframework.z8.server.json.parser.JsonObject json) {
+		META valueMeta = map.getMeta();
+
+		for (Map.Entry<String, Object> entry : json.entrySet())
+			map.put(new string(entry.getKey()), fromJsonValue(json.get(entry.getKey()), valueMeta));
+
+		return map;
+	}
+
+	private static String getName(Field field) {
+		String name = field.getName();
+		return name.charAt(0) == '_' ? name.substring(1) : name;
+	}
+
+	private static boolean isJsonField(Field field) {
+		return !Modifier.isStatic(field.getModifiers()) && field.getDeclaringClass() != OBJECT.class;
 	}
 
 }

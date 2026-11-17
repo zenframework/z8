@@ -12,7 +12,7 @@ import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.types.guid;
 
-public class CLASS<TYPE extends IObject> implements IClass<TYPE> {
+public class CLASS<TYPE extends IObject> implements IClass<TYPE>, Any {
 	private Map<String, String> attributes = new HashMap<String, String>();
 
 	private META meta = null;

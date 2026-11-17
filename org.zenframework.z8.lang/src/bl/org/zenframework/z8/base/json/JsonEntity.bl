@@ -5,11 +5,12 @@ public class JsonEntity extends Object {
 
 	public void operator = (JsonObject source);
 
-	public void writeJson(JsonObject json);
-	public void readJson(JsonObject json);
+	virtual public JsonObject toJson();
+	virtual public JsonEntity fromJson(JsonObject json);
 
-	public JsonObject toJsonObject();
+	virtual protected JsonEntity newObject(JsonObject json);
 
-	public static JsonArray toJsonArray(JsonEntity[] array);
+	public static JsonObject toJsonObject(Object object);
+	public static JsonArray toJsonArray(Object[] array);
 
 }

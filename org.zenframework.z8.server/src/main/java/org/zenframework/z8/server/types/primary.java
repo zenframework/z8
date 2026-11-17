@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
-import org.zenframework.z8.server.runtime.META;
+import org.zenframework.z8.server.runtime.Any;
 
-public abstract class primary implements Comparable<primary>, Serializable {
+public abstract class primary implements Any, Comparable<primary>, Serializable {
 
 	private static final long serialVersionUID = -6139111122281366413L;
 
@@ -53,7 +53,5 @@ public abstract class primary implements Comparable<primary>, Serializable {
 			return ((string) this).get();
 		throw new IllegalStateException();
 	}
-
-	abstract public META getMeta();
 
 }

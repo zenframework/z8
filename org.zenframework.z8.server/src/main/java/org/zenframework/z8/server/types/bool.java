@@ -25,6 +25,10 @@ public final class bool extends primary {
 	public static final bool False = new bool(false);
 	public static final bool True = new bool(true);
 
+	public static bool get(boolean value) {
+		return value ? bool.True : bool.False;
+	}
+
 	public bool() {
 	}
 
