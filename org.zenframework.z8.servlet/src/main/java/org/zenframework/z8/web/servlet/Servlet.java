@@ -70,6 +70,7 @@ public class Servlet extends HttpServlet {
 		adapters.add(new LogoutAdapter());
 		adapters.add(new SingleSignOnAdapter());
 		adapters.add(new TokenAuthAdapter());
+		adapters.add(new NlsAdapter());
 		adapters.add(new SystemAdapter());
 		// ConverterAdapter grabs all GET requests, it should be at the end of the list
 		adapters.add(new ConverterAdapter(this));
