@@ -88,7 +88,6 @@ public class DataSchema {
 			while (cursor.next()) {
 				String indexName = cursor.getString(1).get();
 				String tableName = cursor.getString(2).get();
-				String column = cursor.getString(3).get();
 				boolean unique = cursor.getBoolean(4).get();
 
 				TableDescription table = tables.get(tableName);
@@ -96,12 +95,8 @@ public class DataSchema {
 				if (table == null)
 					continue;
 
-				Index index = table.getIndex(indexName);
-
-				if (index == null)
-					table.addIndex(new Index(tableName, column, indexName, unique));
-				else
-					index.addField(column);
+				if (table.getIndex(indexName) == null)
+					table.addIndex(new Index(tableName, indexName, unique, null));
 			}
 		} finally {
 			cursor.close();
