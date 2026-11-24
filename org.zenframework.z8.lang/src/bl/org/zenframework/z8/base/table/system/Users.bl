@@ -3,6 +3,7 @@ import org.zenframework.z8.base.table.Table;
 import org.zenframework.z8.base.table.value.BoolField;
 import org.zenframework.z8.base.table.value.DatetimeField;
 import org.zenframework.z8.base.table.value.IntField;
+import org.zenframework.z8.base.table.value.StringExpression;
 import org.zenframework.z8.base.table.value.StringField;
 import org.zenframework.z8.base.table.value.TextField;
 
@@ -13,6 +14,9 @@ public class Users extends Table {
 	[displayName "Логин"]
 	public StringField name;
 	name.length = 128;
+
+	public StringExpression lowerNameExpr = name.sql_string().toLower();
+	lowerNameExpr.unique = true;
 
 	[name "Password"]
 	[displayName "Пароль"]

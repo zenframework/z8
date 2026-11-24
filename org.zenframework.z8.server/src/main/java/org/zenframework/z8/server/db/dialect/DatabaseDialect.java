@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.GuidField;
+import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.db.Cursor;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
@@ -14,6 +15,10 @@ import org.zenframework.z8.server.db.SelectStatement;
 import org.zenframework.z8.server.db.generator.ForeignKey;
 import org.zenframework.z8.server.db.generator.Index;
 import org.zenframework.z8.server.db.generator.PrimaryKey;
+import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlField;
+import org.zenframework.z8.server.db.sql.SqlFieldList;
+import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.primary;
@@ -55,7 +60,7 @@ public abstract class DatabaseDialect {
 	}
 
 	public String getCreateIndex(IDatabase database, Index index) {
-		return "create " + (index.isUnique() ? "unique " : "") + "index " + quote(index.getName()) + " on " + formatTableName(database, index.getTableName()) + " " + formatIndexField(index);
+		return "create " + (index.isUnique() ? "unique " : "") + "index " + quote(index.getName()) + " on " + formatTableName(database, index.getTableName()) + " " + formatIndexValue(index);
 	}
 
 	public String getDropIndex(IDatabase database, String tableName, String indexName) throws SQLException {
@@ -154,17 +159,25 @@ public abstract class DatabaseDialect {
 		}
 	}
 
-	public String formatIndexField(Index index) {
-		String fieldName = quote(index.getField());
+	public String formatIndexValue(Index index) {
+		SqlToken token = index.getToken();
+		FormatOptions options = new FormatOptions();
+		options.disableAggregation();
+		for (IField field : token.getUsedFields())
+			options.setFieldAlias(field, quote(field.name()));
+
+		String indexValue = token.format(vendor(), options);
+		if (!(token instanceof SqlField) && !(token instanceof SqlFieldList))
+			indexValue = "(" + indexValue + ")";
+
 		switch(index.fieldType()) {
 		case String:
 			boolean trigram = index.trigram();
-			boolean caseInsensitive = index.caseInsensitive();
-			return (trigram ? "using gin " : "") + "(" + (caseInsensitive ? "LOWER(" : "") + fieldName + (trigram ? " gin_trgm_ops" : "") + (caseInsensitive ? ")" : "") + ")";
+			return (trigram ? "using gin " : "") + "(" + indexValue + (trigram ? " gin_trgm_ops" : "") + ")";
 		case Geometry:
-			return "using gist (" + fieldName + ")";
+			return "using gist (" + indexValue + ")";
 		default:
-			return "(" + fieldName  + ")";
+			return "(" + indexValue  + ")";
 		}
 	}
 

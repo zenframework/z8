@@ -9,6 +9,7 @@ import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DatetimeField;
 import org.zenframework.z8.server.base.table.value.IField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
+import org.zenframework.z8.server.base.table.value.StringExpression;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
 import org.zenframework.z8.server.config.ServerConfig;
@@ -125,6 +126,7 @@ public class Users extends Table {
 	}
 
 	public final StringField.CLASS<StringField> name = new StringField.CLASS<StringField>(this);
+	public final StringExpression.CLASS<StringExpression> lowerNameExpr = new StringExpression.CLASS<StringExpression>(this);
 	public TextField.CLASS<? extends StringField> description = new TextField.CLASS<TextField>(this);
 	public StringField.CLASS<StringField> password = new StringField.CLASS<StringField>(this);
 	public StringField.CLASS<StringField> firstName = new StringField.CLASS<StringField>(this);
@@ -167,6 +169,7 @@ public class Users extends Table {
 		super.initMembers();
 
 		objects.add(name);
+		objects.add(lowerNameExpr);
 		objects.add(description);
 		objects.add(password);
 		objects.add(firstName);
@@ -193,8 +196,11 @@ public class Users extends Table {
 		name.setIndex("name");
 		name.setDisplayName(displayNames.Login);
 		name.get().length = new integer(IAuthorityCenter.MaxLoginLength);
-		name.get().unique = bool.True;
-		name.get().caseInsensitive = bool.True;
+
+		lowerNameExpr.setIndex("lowerNameExpr");
+		lowerNameExpr.setSystem(true);
+		lowerNameExpr.get().unique = bool.True;
+		lowerNameExpr.get().setExpression(name.get().sql_string().z8_toLower());
 
 		password.setName(fieldNames.Password);
 		password.setExportable(false);
