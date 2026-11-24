@@ -18,6 +18,11 @@ public class H2Dialect extends PostgresDialect {
 	}
 
 	@Override
+	public String getIndixes(IDatabase database) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String getForeignKeys(IDatabase database) {
 		return "select pktable_name, pkcolumn_name, fktable_name, fkcolumn_name, fk_name from information_schema.cross_references"
 				+ " where fktable_schema = '" + database.schema() + "'";

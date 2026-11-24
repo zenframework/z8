@@ -52,13 +52,7 @@ public class OracleDialect extends DatabaseDialect {
 
 	@Override
 	public String getIndixes(IDatabase database) {
-		return "SELECT TO_NCHAR(a.INDEX_NAME) INDEX_NAME, TO_NCHAR(a.TABLE_NAME) TABLE_NAME, TO_NCHAR(a.COLUMN_NAME) COLUMN_NAME, TO_NCHAR(b.UNIQUENESS) FROM user_ind_columns a,"
-				+ " (SELECT a.INDEX_NAME, a.UNIQUENESS FROM user_indexes a"
-				// + " WHERE UNIQUENESS = '" + (unique ? "UNIQUE" : "NONUNIQUE") + "'"
-				// + " AND lower(a.table_name) LIKE lower('%')"
-				+ ") b"
-				+ " WHERE a.INDEX_NAME = b.INDEX_NAME AND NOT EXISTS (SELECT 0 FROM user_constraints pk WHERE pk.constraint_type = 'P'"
-				+ " AND pk.CONSTRAINT_NAME = a.INDEX_NAME) ORDER BY a.INDEX_NAME, a.COLUMN_POSITION";
+		throw new UnsupportedOperationException();
 	}
 
 	public String formatSqlName(String name) {

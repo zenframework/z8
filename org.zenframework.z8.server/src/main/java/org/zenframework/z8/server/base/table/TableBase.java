@@ -10,6 +10,8 @@ import org.zenframework.z8.server.base.query.Query;
 import org.zenframework.z8.server.base.table.value.Expression;
 import org.zenframework.z8.server.base.table.value.Field;
 import org.zenframework.z8.server.base.table.value.IField;
+import org.zenframework.z8.server.db.ConnectionManager;
+import org.zenframework.z8.server.db.dialect.DatabaseDialect;
 import org.zenframework.z8.server.db.generator.IForeignKey;
 import org.zenframework.z8.server.db.generator.Index;
 import org.zenframework.z8.server.db.sql.SqlConst;
@@ -65,6 +67,7 @@ public class TableBase extends Query implements ITable {
 	@Override
 	public Collection<Index> getIndexes() {
 		List<Index> result = new ArrayList<Index>();
+		DatabaseDialect dialect = ConnectionManager.dialect();
 
 		for (Field field : getDataFields()) {
 			if (!field.indexed() && !field.unique())
@@ -74,12 +77,12 @@ public class TableBase extends Query implements ITable {
 				Expression expression = (Expression) field;
 				Collection<Field> usedFields = expression.getUsedFields();
 				if (!usedFields.isEmpty())
-					result.add(new Index(name(), field, new SqlFieldList(usedFields), result.size()));
+					result.add(dialect.createModelIndex(name(), field, new SqlFieldList(usedFields), result.size()));
 				SqlToken token = expression.expression();
 				if (token != null && !(token instanceof SqlConst))
-					result.add(new Index(name(), field, token, result.size()));
+					result.add(dialect.createModelIndex(name(), field, token, result.size()));
 			} else
-				result.add(new Index(name(), field, new SqlField(field), result.size()));
+				result.add(dialect.createModelIndex(name(), field, new SqlField(field), result.size()));
 		}
 
 		return result;

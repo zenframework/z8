@@ -49,15 +49,7 @@ public class SqlServerDialect extends DatabaseDialect {
 
 	@Override
 	public String getIndixes(IDatabase database) {
-		return "SELECT CAST(idx.name as nvarchar(255)) IndexName, CAST(object_name(idx_cols.object_id) as nvarchar(255)) TableName, CAST(cols.name as nvarchar(255)) ColName, idx.is_unique UniqueIndex"
-				+ " FROM sys.indexes idx, sys.index_columns idx_cols, sys.columns cols"
-				+ " WHERE idx.index_id = idx_cols.index_id"
-				+ " and idx.object_id = idx_cols.object_id"
-				+ " and idx_cols.object_id = cols.object_id"
-				+ " and idx_cols.column_id = cols.column_id and " + "idx.is_primary_key = 0"
-				// + " and idx.is_unique = " + (unique ? 1 : 0)
-				// + " and " + "lower(object_name(idx_cols.object_id)) LIKE lower('%')"
-				+ " ORDER BY " + "TableName, IndexName, idx_cols.index_column_id";
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.zenframework.z8.server.db.dialect;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.zenframework.z8.server.base.table.value.Field;
@@ -16,8 +17,7 @@ import org.zenframework.z8.server.db.generator.ForeignKey;
 import org.zenframework.z8.server.db.generator.Index;
 import org.zenframework.z8.server.db.generator.PrimaryKey;
 import org.zenframework.z8.server.db.sql.FormatOptions;
-import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.db.sql.SqlFieldList;
+import org.zenframework.z8.server.db.sql.SqlStringToken;
 import org.zenframework.z8.server.db.sql.SqlToken;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.types.binary;
@@ -38,6 +38,18 @@ public abstract class DatabaseDialect {
 	public abstract String getForeignKeys(IDatabase database);
 	public abstract String getIndixes(IDatabase database);
 
+	public String normalizeIdentifier(String name) {
+		return name;
+	}
+
+	public String getIndexValuesQuery(IDatabase database, String tableName, Collection<String> values) {
+		throw new UnsupportedOperationException();
+	}
+
+	public List<String> parseIndexValues(String value) {
+		throw new UnsupportedOperationException();
+	}
+
 	public String getRenameTable(IDatabase database, String oldName, String newName) {
 		return "alter table " + formatTableName(database, oldName) + " rename  to " + quote(newName);
 	}
@@ -57,6 +69,20 @@ public abstract class DatabaseDialect {
 
 	public String getDropTable(IDatabase database, String name) {
 		return "drop table " + formatTableName(database, name);
+	}
+
+	public Index createModelIndex(String tableName, IField field, SqlToken token, int number) {
+		Index index = new Index(tableName, field, token, number);
+		index.getProperties().put(Index.Method, getIndexMethod(index));
+		return index;
+	}
+
+	public Index readIndex(Index.Metadata metadata) {
+		Index index = new Index(metadata.tableName, metadata.name, metadata.unique, new SqlStringToken(metadata.value, FieldType.None))
+				.setDefinition(metadata.definition);
+		index.getProperties().put(Index.Method, metadata.method);
+		index.getProperties().put(Index.Trigram, metadata.trigram);
+		return index;
 	}
 
 	public String getCreateIndex(IDatabase database, Index index) {
@@ -166,28 +192,21 @@ public abstract class DatabaseDialect {
 	}
 
 	public String formatIndexValue(Index index) {
+		throw new UnsupportedOperationException();
+	}
+
+	public String getIndexMethod(Index index) {
+		throw new UnsupportedOperationException();
+	}
+
+	public String formatIndexExpression(Index index) {
 		SqlToken token = index.getToken();
 		FormatOptions options = new FormatOptions();
 		options.disableAggregation();
 		for (IField field : token.getUsedFields())
 			options.setFieldAlias(field, quote(field.name()));
 
-		String indexValue = token.format(vendor(), options);
-		if (!(token instanceof SqlField) && !(token instanceof SqlFieldList))
-			indexValue = "(" + indexValue + ")";
-
-		switch(index.fieldType()) {
-		case String:
-			boolean trigram = index.trigram();
-			return (trigram ? "using gin " : "") + "(" + indexValue + (trigram ? " gin_trgm_ops" : "") + ")";
-		case Geometry:
-		case Vector:
-			return "using gist (" + indexValue + ")";
-		case FtsVector:
-			return "using gin (" + indexValue + ")";
-		default:
-			return "(" + indexValue  + ")";
-		}
+		return token.format(vendor(), options);
 	}
 
 	protected static boolean isView(String table) throws SQLException {
