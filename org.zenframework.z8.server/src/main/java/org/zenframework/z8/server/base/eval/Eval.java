@@ -8,6 +8,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.runtime.OBJECT;
 import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.types.bool;
+import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -39,7 +40,7 @@ public class Eval extends OBJECT {
 
 	@SuppressWarnings("unchecked")
 	public Eval.CLASS<? extends Eval> z8_setVariable(string name, JsonObject.CLASS<? extends JsonObject> value) {
-		context.setVariable(name.get(), value.get().get());
+		context.setVariable(name.get(), value != null ? value.get().get() : null);
 		return (Eval.CLASS<? extends Eval>) getCLASS();
 	}
 
@@ -65,6 +66,18 @@ public class Eval extends OBJECT {
 		for (String error : expression.getErrors())
 			errors.add(new string(error));
 		return errors;
+	}
+
+	public decimal z8_evaluateDecimal(string expression) {
+		Value result = this.expression.evaluateExpression(expression.get());
+
+		if (!result.isEvaluated())
+			throw new IllegalStateException("Evaluation error: " + result);
+
+		if (result.get() instanceof decimal)
+			return (decimal) result.get();
+
+		throw new IllegalStateException("Decimal result expected: " + result);
 	}
 
 	public bool z8_evaluateBoolean(string expression) {

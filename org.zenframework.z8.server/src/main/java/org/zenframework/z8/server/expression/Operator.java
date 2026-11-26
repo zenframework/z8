@@ -9,6 +9,7 @@ public enum Operator {
 	MINUS("-"),
 	TIMES("*"),
 	DIV("/"),
+	MOD("%"),
 	GT(">"),
 	LT("<"),
 	GE(">="),
@@ -16,9 +17,8 @@ public enum Operator {
 	EQ("=="),
 	NE("!="),
 	NOT("!"),
-	AND("&"),
-	OR("|"),
-	XOR("^");
+	AND("&&"),
+	OR("||");
 
 	private final String operator;
 

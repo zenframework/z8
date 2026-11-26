@@ -4,6 +4,10 @@ import org.zenframework.z8.lang.Object;
 public class JsonEntity extends Object {
 
 	public void operator = (JsonObject source);
+	public void operator = (string source);
+
+	public JsonEntity getRoot();
+	public Object getParent();
 
 	virtual public JsonObject toJson();
 	virtual public JsonEntity fromJson(JsonObject json);

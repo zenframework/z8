@@ -39,7 +39,7 @@ public class META {
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	public Object newObject() {
+	public Object newObject(IObject container) {
 		switch (type) {
 		case Array:
 			return new RCollection().setMeta(this);
@@ -53,7 +53,7 @@ public class META {
 			}
 		case Object:
 			try {
-				return javaClass.getConstructor(IObject.class).newInstance((OBJECT) null);
+				return javaClass.getConstructor(IObject.class).newInstance(container);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -75,7 +75,7 @@ public class META {
 
 		for (Class<?> key : keys)
 			meta = key == null ? new META(Type.Array, RCollection.class, null, meta)
-					: new META(Type.Array, RCollection.class, meta(key), meta);
+					: new META(Type.Map, RLinkedHashMap.class, meta(key), meta);
 
 		return meta;
 	}

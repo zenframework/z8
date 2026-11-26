@@ -14,6 +14,7 @@ public class Eval extends Object {
 
 	public string[] getErrors();
 
+	public bool evaluateDecimal(string expression);
 	public bool evaluateBoolean(string expression);
 	public string evaluateText(string expression);
 }

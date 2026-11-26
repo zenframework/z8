@@ -200,6 +200,11 @@ public class Registry extends OBJECT {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		return "Registry[" + Thread.currentThread().getName() + ']';
+	}
+
 	private void updateRequest() {
 		IRequest request = ApplicationServer.getRequest();
 		if (this.request != request) {

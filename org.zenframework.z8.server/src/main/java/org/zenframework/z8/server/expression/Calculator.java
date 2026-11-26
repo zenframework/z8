@@ -143,6 +143,15 @@ public class Calculator {
 			default:
 				break;
 			}
+		} else if (value instanceof decimal) {
+			switch (operator) {
+			case PLUS:
+				return getValue(((decimal) value).operatorAdd());
+			case MINUS:
+				return getValue(((decimal) value).operatorSub());
+			default:
+				break;
+			}
 		} else if (value instanceof bool) {
 			switch (operator) {
 			case NOT:
@@ -167,6 +176,8 @@ public class Calculator {
 				return getValue(right instanceof integer ? leftInt.operatorMul((integer) right) : leftInt.operatorMul((decimal) right));
 			case DIV:
 				return getValue(right instanceof integer ? leftInt.operatorDiv((integer) right) : leftInt.operatorDiv((decimal) right));
+			case MOD:
+				return getValue(right instanceof integer ? leftInt.operatorMod((integer) right) : leftInt.operatorMod((decimal) right));
 			case GT:
 				return getValue(right instanceof integer ? leftInt.operatorMore((integer) right) : leftInt.operatorMore((decimal) right));
 			case LT:
@@ -194,6 +205,8 @@ public class Calculator {
 				return getValue(right instanceof integer ? leftDec.operatorMul((integer) right) : leftDec.operatorMul((decimal) right));
 			case DIV:
 				return getValue(right instanceof integer ? leftDec.operatorDiv((integer) right) : leftDec.operatorDiv((decimal) right));
+			case MOD:
+				return getValue(right instanceof integer ? leftDec.operatorMod((integer) right) : leftDec.operatorMod((decimal) right));
 			case GT:
 				return getValue(right instanceof integer ? leftDec.operatorMore((integer) right) : leftDec.operatorMore((decimal) right));
 			case LT:
