@@ -20,6 +20,7 @@ import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.file;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 
@@ -372,7 +373,7 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 	}
 
 	protected int calculateControlSum() {
-		return Math.abs(classId().hashCode());
+		return Math.abs(z8_calculateControlSum().getInt());
 	}
 
 	static public User.CLASS<? extends User> z8_user() {
@@ -391,6 +392,14 @@ public class OBJECT extends RequestTarget implements IObject, RmiSerializable {
 
 	public void z8_setAttribute(string attribute, primary value) {
 		setAttribute(attribute.get(), value.toString());
+	}
+
+	public integer z8_controlSum() {
+		return new integer(controlSum());
+	}
+
+	protected integer z8_calculateControlSum() {
+		return new integer(classId().hashCode());
 	}
 
 	public string z8_id() {

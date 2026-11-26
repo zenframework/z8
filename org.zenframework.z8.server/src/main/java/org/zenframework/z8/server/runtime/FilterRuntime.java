@@ -72,6 +72,12 @@ public abstract class FilterRuntime implements IRuntime {
 	}
 
 	@Override
+	public Collection<OBJECT.CLASS<? extends OBJECT>> checksum() {
+		IRuntime runtime = runtime();
+		return runtime != null ? runtime.checksum() : Collections.emptyList();
+	}
+
+	@Override
 	public Collection<OBJECT.CLASS<? extends OBJECT>> systemTools() {
 		IRuntime runtime = runtime();
 		return runtime != null ? runtime.systemTools() : Collections.emptyList();

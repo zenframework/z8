@@ -23,6 +23,7 @@ public interface IRuntime {
 
 	Collection<Executable.CLASS<? extends Executable>> executables();
 	Collection<OBJECT.CLASS<? extends OBJECT>> named();
+	Collection<OBJECT.CLASS<? extends OBJECT>> checksum();
 
 	Collection<OBJECT.CLASS<? extends OBJECT>> systemTools();
 
