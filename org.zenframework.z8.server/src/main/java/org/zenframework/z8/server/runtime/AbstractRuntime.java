@@ -34,6 +34,8 @@ public abstract class AbstractRuntime implements IRuntime {
 
 	protected Map<String, OBJECT.CLASS<? extends OBJECT>> namedClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
 
+	protected Map<String, OBJECT.CLASS<? extends OBJECT>> checksumClasses = new HashMap<String, OBJECT.CLASS<? extends OBJECT>>();
+
 	protected SecurityLog.CLASS<? extends SecurityLog> securityLog = null;
 
 	protected AbstractRuntime() {
@@ -58,6 +60,11 @@ public abstract class AbstractRuntime implements IRuntime {
 	@Override
 	public Collection<OBJECT.CLASS<? extends OBJECT>> named() {
 		return namedClasses.values();
+	}
+
+	@Override
+	public Collection<OBJECT.CLASS<? extends OBJECT>> checksum() {
+		return checksumClasses.values();
 	}
 
 	@Override
@@ -175,6 +182,9 @@ public abstract class AbstractRuntime implements IRuntime {
 				map.put(cls.classId(), cls.newInstance());
 		}
 
+		for(OBJECT.CLASS<? extends OBJECT> cls : checksumClasses.values())
+			map.put(cls.classId(), cls.newInstance());
+
 		List<OBJECT> objects = new ArrayList<OBJECT>(map.values());
 
 		objects.sort(new Comparator<OBJECT>() {
@@ -272,6 +282,21 @@ public abstract class AbstractRuntime implements IRuntime {
 		namedClasses.put(cls.name(), cls);
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void addChecksum(OBJECT.CLASS<? extends OBJECT> cls) {
+		for(OBJECT.CLASS<? extends OBJECT> checksum : checksumClasses.values().toArray(new OBJECT.CLASS[checksumClasses.size()])) {
+			if(cls.getClass().isAssignableFrom(checksum.getClass()))
+				return;
+
+			if(cls.getClass().isAssignableFrom(cls.getClass()) && checksum.name().equals(cls.name())) {
+				checksumClasses.remove(checksum.name());
+				break;
+			}
+		}
+
+		checksumClasses.put(cls.name(), cls);
+	}
+
 	protected void addSystemTool(OBJECT.CLASS<? extends OBJECT> cls) {
 		if(!systemTools.containsKey(cls.classId()))
 			systemTools.put(cls.classId(), cls);
@@ -294,6 +319,9 @@ public abstract class AbstractRuntime implements IRuntime {
 
 		for(OBJECT.CLASS<? extends OBJECT> named : runtime.named())
 			addNamed(named);
+
+		for(OBJECT.CLASS<? extends OBJECT> checksum : runtime.checksum())
+			addChecksum(checksum);
 
 		for(OBJECT.CLASS<? extends OBJECT> entry : runtime.entries())
 			addEntry(entry);

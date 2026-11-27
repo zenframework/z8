@@ -10,6 +10,7 @@ public class StartupCodeLines {
 	public String addRequest = null;
 	public String addExecutable = null;
 	public String addNamed = null;
+	public String addChecksum = null;
 	public String addSecurityLog = null;
 
 	public StartupCodeLines() {
@@ -22,6 +23,7 @@ public class StartupCodeLines {
 		addRequest = null;
 		addExecutable = null;
 		addNamed = null;
+		addChecksum = null;
 		addSecurityLog = null;
 	}
 
@@ -63,6 +65,11 @@ public class StartupCodeLines {
 			if(value.isEmpty() || Boolean.parseBoolean(value))
 				addRequest = "addRequest(" + getJavaNew(type) + ");";
 		}
+
+		attribute = type.getAttribute(IAttribute.Checksum);
+
+		if(attribute != null)
+			addChecksum = "addChecksum(" + getJavaNew(type) + ");";
 
 		attribute = type.getAttribute(IAttribute.Log);
 
