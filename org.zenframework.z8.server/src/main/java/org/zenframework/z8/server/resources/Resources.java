@@ -3,20 +3,25 @@ package org.zenframework.z8.server.resources;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.zenframework.z8.server.base.file.Folders;
 import org.zenframework.z8.server.config.ServerConfig;
 import org.zenframework.z8.server.logs.Trace;
+import org.zenframework.z8.server.resources.NlsHandler.Filter;
 
 public class Resources {
 	private static Resources instance;
 
-	private Map<String, Properties> bundles = new ConcurrentHashMap<String, Properties>();
+	private Map<String, Properties> serverBundles = new ConcurrentHashMap<String, Properties>();
+	private Map<String, Properties> clientBundles = new ConcurrentHashMap<String, Properties>();
 
 	static {
 		instance = new Resources();
@@ -42,7 +47,7 @@ public class Resources {
 	}
 
 	private String getString(String key) {
-		Properties properties = bundles.get(ServerConfig.language());
+		Properties properties = serverBundles.get(ServerConfig.language());
 
 		if(properties == null)
 			return key;
@@ -55,8 +60,12 @@ public class Resources {
 		return MessageFormat.format(get(key), format);
 	}
 
+	static public Properties getCliendBundle(String language) {
+		return getResources().clientBundles.get(language);
+	}
+
 	public boolean load(final String language) {
-		if(bundles.containsKey(language))
+		if(serverBundles .containsKey(language))
 			return true;
 
 		String os_name = System.getProperty("os.name");
@@ -82,13 +91,23 @@ public class Resources {
 
 		boolean result = true;
 
-		Properties boundle = new Properties();
-		bundles.put(language, boundle);
+		Properties serverBundle = new Properties();
+		serverBundles.put(language, serverBundle);
+
+		Properties clientBundle = new Properties();
+		clientBundles.put(language, clientBundle);
+
+		Map<Filter, Properties> targets = new LinkedHashMap<>();
+		targets.put(NlsHandler.newAttributeFilter(Filter.SERVER, Filter.TRUE), serverBundle);
+		targets.put(NlsHandler.newAttributeFilter(Filter.CLIENT, Filter.TRUE), clientBundle);
+
+		SAXParserFactory factory = SAXParserFactory.newInstance();
 
 		for(File file : files) {
 			try {
-				boundle.loadFromXML(new FileInputStream(file));
-			} catch(IOException e) {
+				SAXParser parser = factory.newSAXParser();
+				parser.parse(new FileInputStream(file), new NlsHandler(targets));
+			} catch(Exception e) {
 				Trace.logError(e);
 				result = false;
 			}

@@ -1,4 +1,5 @@
 Z8.js
+i18n/Messages.js
 i18n/messages/messages_en.js
 i18n/messages/messages_ru.js
 util/Object.js
