@@ -152,11 +152,17 @@ public abstract class DatabaseDialect {
 			return result + "(" + params[0] + ", " + params[1] + ")"; // precision, scale
 
 		case String:
+		case Bitset:
+		case Vector:
 			return result + "(" + params[0] + ")"; // length
 
 		default:
 			return result;
 		}
+	}
+
+	public String formatSqlPlaceholder(FieldType type, Object... params) {
+		return "?";
 	}
 
 	public String formatIndexValue(Index index) {
@@ -175,7 +181,10 @@ public abstract class DatabaseDialect {
 			boolean trigram = index.trigram();
 			return (trigram ? "using gin " : "") + "(" + indexValue + (trigram ? " gin_trgm_ops" : "") + ")";
 		case Geometry:
+		case Vector:
 			return "using gist (" + indexValue + ")";
+		case FtsVector:
+			return "using gin (" + indexValue + ")";
 		default:
 			return "(" + indexValue  + ")";
 		}

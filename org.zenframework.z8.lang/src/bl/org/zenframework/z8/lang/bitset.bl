@@ -1,0 +1,35 @@
+[primary "org.zenframework.z8.server.types.bitset"]
+public final class bitset extends primary {
+	public operator sql_bitset();
+
+	public void operator = (string value);
+	public void operator = (int[] bits);
+
+	public bitset operator ! ();
+
+	public bitset operator & (bitset value);
+	public bitset operator | (bitset value);
+	public bitset operator ^ (bitset value);
+
+	public bool operator == (bitset value);
+	public bool operator != (bitset value);
+	public bool operator < (bitset value);
+	public bool operator > (bitset value);
+	public bool operator <= (bitset value);
+	public bool operator >= (bitset value);
+
+	public int size();
+
+	public int cardinality();
+
+	public bool get(int bit);
+
+	public void set(int bit);
+	public void set(int bit, bool value);
+
+	public void flip(int index);
+
+	public static bitset bitset(int size);
+	public static bitset parse(string value);
+	public static bitset fromArray(int[] bits);
+}

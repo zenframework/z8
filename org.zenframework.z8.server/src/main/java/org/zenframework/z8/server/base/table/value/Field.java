@@ -117,9 +117,9 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Field.CLASS<Field> operatorAssign(primary value) {
+	public Field.CLASS<? extends Field> operatorAssign(primary value) {
 		set(value);
-		return (Field.CLASS<Field>)getCLASS();
+		return (Field.CLASS<? extends Field>) getCLASS();
 	}
 
 	@Override
@@ -133,16 +133,20 @@ abstract public class Field extends Control implements IField {
 	}
 
 	@Override
-	final public primary getDefaultValue() {
+	public primary getDefaultValue() {
 		return defaultValue;
 	}
 
 	public primary getDefault() {
-		return defaultValue;
+		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : getDefaultValue();
 	}
 
 	public void setDefault(primary value) {
 		this.defaultValue = value;
+	}
+
+	public primary z8_getDefault() {
+		return getDefaultValue();
 	}
 
 	public boolean isAggregated() {
@@ -289,8 +293,8 @@ abstract public class Field extends Control implements IField {
 
 	@Override
 	public void set(primary value) {
-		if(!changed) {
-			originalValue = this.defaultValue;
+		if (!changed) {
+			originalValue = defaultValue;
 			changed = true;
 		}
 		setDefault(value);
@@ -302,7 +306,7 @@ abstract public class Field extends Control implements IField {
 	}
 
 	public void reset() {
-		if(changed) {
+		if (changed) {
 			defaultValue = originalValue;
 			changed = false;
 		}
@@ -316,6 +320,11 @@ abstract public class Field extends Control implements IField {
 	@Override
 	public String sqlType(DatabaseVendor vendor) {
 		return vendor.dialect().formatSqlType(type());
+	}
+
+	@Override
+	public String sqlPlaceholder(DatabaseVendor vendor) {
+		return vendor.dialect().formatSqlPlaceholder(type());
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.integer;
@@ -31,12 +30,7 @@ public class IntegerField extends Field {
 	}
 
 	public integer z8_getDefault() {
-		return (integer)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (integer) super.z8_getDefault();
 	}
 
 	@Override

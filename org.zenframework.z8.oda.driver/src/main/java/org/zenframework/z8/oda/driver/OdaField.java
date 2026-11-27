@@ -275,6 +275,11 @@ public class OdaField implements IField {
 	}
 
 	@Override
+	public String sqlPlaceholder(DatabaseVendor vendor) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public int size() {
 		throw new UnsupportedOperationException();
 	}

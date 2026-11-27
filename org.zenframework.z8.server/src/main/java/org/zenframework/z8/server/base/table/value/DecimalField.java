@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.value;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.format.Format;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.decimal;
@@ -36,12 +35,7 @@ public class DecimalField extends Field {
 	}
 
 	public decimal z8_getDefault() {
-		return (decimal)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (decimal) super.z8_getDefault();
 	}
 
 	@Override

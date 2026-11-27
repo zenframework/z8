@@ -5,7 +5,6 @@ import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.fts.Fts;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.JsonWriter;
 import org.zenframework.z8.server.runtime.IObject;
@@ -40,12 +39,7 @@ public class StringField extends Field {
 	public Fts.CLASS<? extends Fts> fts = new Fts.CLASS<Fts>(this);
 
 	public string z8_getDefault() {
-		return (string)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (string) super.z8_getDefault();
 	}
 
 	@Override

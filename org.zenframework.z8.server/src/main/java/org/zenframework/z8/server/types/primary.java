@@ -51,6 +51,10 @@ public abstract class primary implements Any, Comparable<primary>, Serializable 
 			return ((integer) this).get();
 		if (this instanceof string)
 			return ((string) this).get();
+		if (this instanceof bitset)
+			return ((bitset) this).get();
+		if (this instanceof vector)
+			return ((vector) this).get();
 		throw new IllegalStateException();
 	}
 

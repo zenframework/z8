@@ -55,11 +55,7 @@ public class Expression extends Field {
 	}
 
 	final public SqlToken expression() {
-		if(expression == null) {
-			expression = z8_expression();
-		}
-
-		return expression;
+		return expression == null ? expression = z8_expression() : expression;
 	}
 
 	@Override

@@ -85,15 +85,15 @@ public class JsonArray extends OBJECT {
 	}
 
 	public integer z8_getInt(integer i) {
-		return new integer(array.getInt(i.getInt()));
+		return array.getInteger(i.getInt());
 	}
 
 	public decimal z8_getDecimal(integer i) {
-		return new decimal(array.getDouble(i.getInt()));
+		return array.getDecimal(i.getInt());
 	}
 
 	public bool z8_getBool(integer i) {
-		return new bool(array.getBoolean(i.getInt()));
+		return array.getBool(i.getInt());
 	}
 
 	public guid z8_getGuid(integer i) {

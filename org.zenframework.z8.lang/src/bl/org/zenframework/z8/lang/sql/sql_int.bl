@@ -3,6 +3,7 @@ public final class sql_int extends sql_primary {
 	public operator ();
 
 	public operator sql_decimal();
+	public operator sql_bitset();
 
 	public sql_int operator - ();
 	public sql_int operator + ();

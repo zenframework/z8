@@ -5,6 +5,7 @@ public class GuidExpression extends Expression {
 
 	public void setDefault(guid defaultValue);
 
+	public GuidExpression operator = (guid value);
 	public GuidExpression operator = (sql_guid value);
 
 	public operator sql_guid();

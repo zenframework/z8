@@ -54,6 +54,7 @@ public class Entity extends Object {
 
 	public string getString(string key);
 	public int getInt(string key);
+	public decimal getDecimal(string key);
 	public guid getGuid(string key);
 	public bool getBool(string key);
 	public date getDate(string key);

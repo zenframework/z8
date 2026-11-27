@@ -3,7 +3,6 @@ package org.zenframework.z8.server.base.table.value;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
 import org.zenframework.z8.server.db.sql.functions.If;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
@@ -43,18 +42,13 @@ public class BoolField extends Field {
 	}
 
 	public bool z8_getDefault() {
-		return (bool)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (bool) super.z8_getDefault();
 	}
 
 	public sql_bool sql_bool() {
 		return new sql_bool(new SqlField(this));
 	}
-	
+
 	public void set(boolean value) {
 		set(new bool(value));
 	}

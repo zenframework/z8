@@ -1,0 +1,17 @@
+[native "org.zenframework.z8.server.base.table.value.BitsetExpression"]
+public class BitsetExpression extends Expression {
+	aggregation = Aggregation.None;
+
+	public void setDefault(bitset defaultValue);
+
+	virtual public bitset get();
+	virtual public bitset[] array();
+
+	public BitsetExpression operator = (sql_bitset value);
+
+	public operator sql_bitset();
+
+	virtual protected sql_bitset expression();
+
+	public void setExpression(sql_bitset expression);
+}

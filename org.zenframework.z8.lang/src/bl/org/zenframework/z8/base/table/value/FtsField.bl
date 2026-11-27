@@ -1,0 +1,18 @@
+import org.zenframework.z8.base.fts.Fts;
+
+[native "org.zenframework.z8.server.base.table.value.FtsField"]
+public class FtsField extends Field {
+	readOnly = true;
+	indexed = true;
+
+	aggregation = Aggregation.None;
+
+	public Fts fts;
+
+	public FtsField operator = (string value);
+
+	public operator sql_string();
+
+	public sql_bool ftsLike(sql_string query);
+	public sql_decimal ftsRank(sql_string query);
+}

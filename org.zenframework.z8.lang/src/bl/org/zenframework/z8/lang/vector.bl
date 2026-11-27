@@ -1,0 +1,57 @@
+import org.zenframework.z8.base.json.JsonArray;
+
+[primary "org.zenframework.z8.server.types.vector"]
+public final class vector extends primary {
+	public static final vector Zero;
+
+	public operator sql_vector();
+
+	public void operator = (JsonArray array);
+	public void operator = (int[] array);
+	public void operator = (decimal[] array);
+	public void operator = (string json);
+
+	public vector operator + ();
+	public vector operator - ();
+
+	public vector operator + (vector value);
+	public vector operator - (vector value);
+	public vector operator * (decimal value);
+	public vector operator / (decimal value);
+
+	public decimal operator * (vector value); // scalar product
+
+	public bool operator < (vector value);
+	public bool operator > (vector value);
+	public bool operator <= (vector value);
+	public bool operator >= (vector value);
+	public bool operator == (vector value);
+	public bool operator != (vector value);
+
+	public int size();
+
+	public int hash();
+
+	public bitset bitHash(int size);
+	public bitset bitHash();
+
+	public decimal scalar();
+
+	public vector normalize();
+	public vector normalize(decimal scalar);
+
+	public decimal cosine(vector v);
+
+	public vector projection(vector[] basis);
+
+	static public vector fill(int size, decimal value);
+	static public vector random(int size);
+
+	static public vector parse(string string);
+
+	static public vector fromArray(int[] array);
+	static public vector fromArray(decimal[] array);
+	static public vector fromArray(JsonArray array);
+
+	static public vector[] vectorArray(JsonArray json);
+}

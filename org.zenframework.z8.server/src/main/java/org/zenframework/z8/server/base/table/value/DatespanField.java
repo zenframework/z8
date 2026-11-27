@@ -2,7 +2,6 @@ package org.zenframework.z8.server.base.table.value;
 
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.datespan;
 import org.zenframework.z8.server.types.primary;
@@ -27,12 +26,7 @@ public class DatespanField extends Field {
 	}
 
 	public datespan z8_getDefault() {
-		return (datespan)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (datespan) super.z8_getDefault();
 	}
 
 	@Override

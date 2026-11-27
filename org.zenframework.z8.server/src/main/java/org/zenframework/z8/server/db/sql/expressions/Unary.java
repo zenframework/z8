@@ -28,19 +28,23 @@ public class Unary extends SqlToken {
 
 	@Override
 	public void collectFields(Collection<IField> fields) {
-		if(token != null)
-			token.collectFields(fields);
+		token.collectFields(fields);
 	}
 
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) throws UnknownDatabaseException {
 		switch(operation) {
-		case Not: {
-			SqlToken t = new UNOTToken();
-			if(!logicalContext)
-				t = new If(t, sql_integer.One, sql_integer.Zero);
-			return t.format(vendor, options, logicalContext);
-		}
+		case Not:
+			switch(token.type()) {
+			case Bitset:
+			case Integer:
+				return "(~" + token.format(vendor, options) + ")";
+			default:
+				SqlToken t = new UNOTToken();
+				if(!logicalContext)
+					t = new If(t, sql_integer.One, sql_integer.Zero);
+				return t.format(vendor, options, logicalContext);
+			}
 		case Minus:
 			return "(-" + token.format(vendor, options) + ")";
 		default:

@@ -316,7 +316,8 @@ Z8.define('Z8.application.form.Navigator', {
 			width: this.quickFilterWidth,
 			label: false,
 			placeholder: field.header,
-			tooltip: field.header
+			tooltip: field.header,
+			operator: Operator.Contains
 		};
 		return new Z8.form.field.SearchText(config);
 	},

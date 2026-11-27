@@ -12,6 +12,7 @@ public interface IField extends IObject {
 	public FieldType metaType();
 
 	public String sqlType(DatabaseVendor vendor);
+	public String sqlPlaceholder(DatabaseVendor vendor);
 
 	public int size();
 	public int scale();

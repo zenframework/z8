@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.integer;
@@ -36,12 +35,7 @@ public class GeometryField extends Field {
 	}
 
 	public geometry z8_getDefault() {
-		return (geometry)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return (ApplicationServer.userEventsEnabled() && !changed()) ? z8_getDefault() : super.getDefault();
+		return (geometry) super.z8_getDefault();
 	}
 
 	@Override

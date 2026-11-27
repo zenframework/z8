@@ -2,6 +2,10 @@ package org.zenframework.z8.server.db.dialect;
 
 import org.zenframework.z8.server.db.DatabaseVendor;
 import org.zenframework.z8.server.db.FieldType;
+import org.zenframework.z8.server.db.sql.FormatOptions;
+import org.zenframework.z8.server.db.sql.SqlStringToken;
+import org.zenframework.z8.server.db.sql.fts.Fts;
+import org.zenframework.z8.server.db.sql.fts.FtsVector;
 import org.zenframework.z8.server.engine.IDatabase;
 
 public class PostgresDialect extends DatabaseDialect {
@@ -96,6 +100,12 @@ public class PostgresDialect extends DatabaseDialect {
 			return "uuid";
 		case String:
 			return "character varying";
+		case FtsVector:
+			return "tsvector";
+		case Vector:
+			return "vector";
+		case Bitset:
+			return "bit varying";
 		default:
 			throw new RuntimeException("Unknown data type: '" + type.toString() + "'");
 		}
@@ -113,4 +123,19 @@ public class PostgresDialect extends DatabaseDialect {
 			return result;
 		}
 	}
+
+	@Override
+	public String formatSqlPlaceholder(FieldType type, Object... params) {
+		switch(type) {
+		case FtsVector:
+			return new FtsVector(new SqlStringToken("?", type), (Fts) params[0]).format(vendor(), new FormatOptions());
+		case Bitset:
+			return "?::bit(" + params[0] + ")"; // Length
+		case Vector:
+			return "?::" + formatType(type);
+		default:
+			return super.formatSqlPlaceholder(type, params);
+		}
+	}
+
 }
