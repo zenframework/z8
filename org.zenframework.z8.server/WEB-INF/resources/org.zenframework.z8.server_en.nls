@@ -230,6 +230,12 @@
 	<!-- Reports -->
 	<entry key="Report.groupTotal">Total</entry>
 	<entry key="Report.groupGrandTotal">Grand total</entry>
+	<entry key="Report.rangeBlockNotSet">Report. Range {0} block is not set.</entry>
+	<entry key="Report.rangesIntersect">Report. Ranges {0} and {1} intersect by boundaries.</entry>
+	<entry key="Report.rangeOutOfBoundaries">Report. Range {0}: address {1} is out of boundaries {2}.</entry>
+	<entry key="Report.rangeBoundariesRequired">Report. Range {0}: multiple ranges must have defined boundaries.</entry>
+	<entry key="Report.traceRanges">Report ''{0}'': {1}</entry>
+	<entry key="Report.traceRangeApplied">Report ''{0}'':&#10;&#9;- range {1} -> {2}, {3}&#10;&#9;- boundaries {4} -> {5}&#10;&#9;- stat: {6}</entry>
 
 	<!-- Exceptions -->
 	<entry key="Exception.invalidVersion">Database schema version does not match server version.</entry>
