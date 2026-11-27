@@ -14,6 +14,7 @@ import org.zenframework.z8.server.base.table.value.TimestampField;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
+import org.zenframework.z8.server.types.bitset;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -24,6 +25,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.vector;
 
 public abstract class Statement {
 	private Connection connection;
@@ -219,6 +221,14 @@ public abstract class Statement {
 		setBinary(position, new binary(value.getBytes(charset())));
 	}
 
+	protected void setVector(int position, vector value) throws SQLException {
+		preparedStatement().setString(position, value.toString());
+	}
+
+	protected void setBitset(int position, bitset value) throws SQLException {
+		preparedStatement().setString(position, value.toString());
+	}
+
 	private boolean processNull(int position, primary value) throws SQLException {
 		if(value != null)
 			return false;
@@ -282,7 +292,14 @@ public abstract class Statement {
 			setInteger(position, (integer)value);
 			break;
 		case String:
+		case FtsVector:
 			setString(position, (string)value);
+			break;
+		case Vector:
+			setVector(position, (vector)value);
+			break;
+		case Bitset:
+			setBitset(position, (bitset)value);
 			break;
 		case Null:
 			setNull(position);

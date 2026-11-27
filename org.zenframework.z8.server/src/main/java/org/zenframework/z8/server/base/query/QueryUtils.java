@@ -14,6 +14,7 @@ import org.zenframework.z8.server.json.Json;
 import org.zenframework.z8.server.json.parser.JsonArray;
 import org.zenframework.z8.server.json.parser.JsonObject;
 import org.zenframework.z8.server.types.binary;
+import org.zenframework.z8.server.types.bitset;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -23,6 +24,7 @@ import org.zenframework.z8.server.types.geometry;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.vector;
 
 public class QueryUtils {
 	static public Query findByClassId(Collection<Query> queries, String classId) {
@@ -59,6 +61,10 @@ public class QueryUtils {
 			field.set(new string(value));
 		else if(type == FieldType.Geometry)
 			field.set(value == null || value.isEmpty() ? new geometry(srs(field)) : GeoJsonReader.read(value, srs(field)));
+		else if(type == FieldType.Vector)
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new vector(value));
+		else if(type == FieldType.Bitset)
+			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new bitset(value));
 		else if(type == FieldType.Integer)
 			field.set(value == null || value.isEmpty() ? field.getDefaultValue() : new integer(value));
 		else if(type == FieldType.Decimal)

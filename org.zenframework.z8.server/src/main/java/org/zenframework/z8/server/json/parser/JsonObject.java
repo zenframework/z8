@@ -408,7 +408,7 @@ public class JsonObject extends HashMap<String, Object> {
 	}
 
 	public static boolean asBoolean(Object object) {
-		return object.equals(Boolean.TRUE);
+		return Boolean.TRUE.equals(object);
 	}
 
 	public static int asInt(Object object) {

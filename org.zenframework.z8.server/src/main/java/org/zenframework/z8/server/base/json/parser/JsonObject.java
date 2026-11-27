@@ -98,15 +98,15 @@ public class JsonObject extends OBJECT {
 	}
 
 	public integer z8_getInt(string name) {
-		return new integer(object.getLong(name));
+		return object.getInteger(name);
 	}
 
 	public decimal z8_getDecimal(string name) {
-		return new decimal(object.getDouble(name));
+		return object.getDecimal(name);
 	}
 
 	public bool z8_getBool(string name) {
-		return new bool(object.getBoolean(name));
+		return object.getBool(name);
 	}
 
 	public guid z8_getGuid(string name) {

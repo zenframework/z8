@@ -12,6 +12,10 @@ public class NotEqu extends Rel {
 		this(new SqlField(left), new SqlConst(right));
 	}
 
+	public NotEqu(Field.CLASS<? extends Field> left, primary right) {
+		this(left.get(), new SqlConst(right));
+	}
+
 	public NotEqu(SqlToken left, primary right) {
 		this(left, new SqlConst(right));
 	}

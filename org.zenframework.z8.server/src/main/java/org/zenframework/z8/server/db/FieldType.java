@@ -16,7 +16,10 @@ public enum FieldType {
 	Guid(DataTypes.Guid),
 	Integer(DataTypes.Integer),
 	String(DataTypes.String),
-	Text(DataTypes.Text);
+	Text(DataTypes.Text),
+	FtsVector(DataTypes.FtsVector),
+	Vector(DataTypes.Vector),
+	Bitset(DataTypes.Bitset);
 
 	class DataTypes {
 		static protected final String None = "none";
@@ -35,6 +38,9 @@ public enum FieldType {
 		static protected final String Integer = "int";
 		static protected final String String = "string";
 		static protected final String Text = "text";
+		static protected final String FtsVector = "ftsvector";
+		static protected final String Vector = "vector";
+		static protected final String Bitset = "bitset";
 	}
 
 	private String fName = null;
@@ -89,6 +95,12 @@ public enum FieldType {
 
 		if (name.equals("nvarchar2") || name.equals("nvarchar") || name.equals("character varying"))
 			return String;
+
+		if (name.equals("tsvector"))
+			return FtsVector;
+
+		if (name.equals("vector"))
+			return Vector;
 
 		if (!name.equals("number"))
 			throw new IllegalArgumentException("Unknown SQL type " + name);

@@ -29,7 +29,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 
 	public JoinType joinType = JoinType.Inner;
 
-	private Query.CLASS<Query> query = null;
+	private Query.CLASS<? extends Query> query = null;
 
 	public Link(IObject container) {
 		super(container);
@@ -44,7 +44,7 @@ public class Link extends GuidField implements ILink, IForeignKey {
 	}
 
 	@Override
-	public Query.CLASS<Query> query() {
+	public Query.CLASS<? extends Query> query() {
 		return query;
 	}
 

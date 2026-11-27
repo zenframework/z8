@@ -22,6 +22,7 @@ import org.zenframework.z8.server.runtime.RCollection;
 import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.guid;
+import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
 import org.zenframework.z8.server.types.sql.sql_bool;
@@ -40,6 +41,9 @@ public class EntityTable extends Table {
 
 	public static final String AttrEntity = "entity";
 	public static final String AttrEntityValue = "entityValue";
+
+	private static final String ModeRead = "r";
+	private static final String ModeWrite = "w";
 
 	private Registry registry = null;
 	private final Collection<EntityTable> dependencies = new LinkedList<EntityTable>();
@@ -109,6 +113,11 @@ public class EntityTable extends Table {
 		return this;
 	}
 
+	public EntityTable readEntities(Collection<EntityTable> dependencies, Collection<Field> sortFields, SqlToken where, int start, int limit) {
+		setDependencies(dependencies).read(collectEntityFields(dependencies), sortFields, Arrays.asList(recordId.get()), where, null, start, limit);
+		return this;
+	}
+
 	public Entity getEntity() {
 		Registry registry = getRegistry();
 		Entity entity = registry.getEntity(recordId.get().get());
@@ -174,22 +183,33 @@ public class EntityTable extends Table {
 		return hasRecord(entity.getEntityId());
 	}
 
-	public List<Field> getEntityFields() {
+	public List<Field> getEntityFields(String mode) {
 		List<Field> entityFields = new LinkedList<Field>();
-		for (Field field : getDataFields())
-			if (field.hasAttribute(AttrEntityValue))
+
+		for (Field field : getDataFields()) {
+			if (!field.hasAttribute(AttrEntityValue))
+				continue;
+
+			String attr = field.getAttribute(AttrEntityValue);
+
+			if (attr == null || attr.isEmpty() || attr.contains(mode))
 				entityFields.add(field);
+		}
+
 		return entityFields;
 	}
 
 	public List<EntityTable> getDependencies() {
 		List<EntityTable> dependencies = new LinkedList<EntityTable>();
+
 		for (Field.CLASS<Field> field : getLinks()) {
 			ILink link = (ILink) field;
 			Query query = link.getQuery();
+
 			if (query instanceof EntityTable && query.hasAttribute(AttrEntity))
 				dependencies.add((EntityTable) query);
 		}
+
 		return dependencies;
 	}
 
@@ -229,14 +249,17 @@ public class EntityTable extends Table {
 	}
 
 	public EntityTable initFields(Entity entity, boolean changedOnly) {
-		for (Field field : getEntityFields()) {
+		for (Field field : getEntityFields(ModeWrite)) {
 			if (field == recordId.get())
 				continue;
+
 			string index = new string(getRelativeId(field));
 			primary value = entity.get(index);
+
 			if (value != null && (!changedOnly || entity.isChanged(index)))
 				field.set(value);
 		}
+
 		return this;
 	}
 
@@ -259,21 +282,26 @@ public class EntityTable extends Table {
 
 	private RLinkedHashMap<string, primary> getEntityValues() {
 		RLinkedHashMap<string, primary> values = new RLinkedHashMap<string, primary>();
-		List<Field> entityFields = getEntityFields();
+		List<Field> entityFields = getEntityFields(ModeRead);
+
 		if (!entityFields.contains(recordId.get()))
 			entityFields.add(recordId.get());
+
 		for (Field field : entityFields)
 			values.put(new string(getRelativeId(field)), field.get());
+
 		return values;
 	}
 
 	public Collection<Field> collectEntityFields(Collection<EntityTable> dependencies) {
 		Collection<Field> fields = new HashSet<Field>();
-		fields.addAll(getEntityFields());
+		fields.addAll(getEntityFields(ModeRead));
+
 		for (EntityTable dependency : dependencies) {
-			fields.addAll(dependency.getEntityFields());
+			fields.addAll(dependency.getEntityFields(ModeRead));
 			fields.add(dependency.recordId.get());
 		}
+
 		return fields;
 	}
 
@@ -371,6 +399,11 @@ public class EntityTable extends Table {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public EntityTable.CLASS<? extends EntityTable> z8_readEntities(RCollection dependencies, RCollection sortFields, sql_bool where) {
 		return (EntityTable.CLASS<? extends EntityTable>) readEntities(CLASS.asList(dependencies), CLASS.asList(sortFields), where).getCLASS();
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public EntityTable.CLASS<? extends EntityTable> z8_readEntities(RCollection dependencies, RCollection sortFields, sql_bool where, integer start, integer limit) {
+		return (EntityTable.CLASS<? extends EntityTable>) readEntities(CLASS.asList(dependencies), CLASS.asList(sortFields), where, start.getInt(), limit.getInt()).getCLASS();
 	}
 
 	@SuppressWarnings("unchecked")

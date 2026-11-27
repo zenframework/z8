@@ -23,7 +23,7 @@ public class Insert extends DmlStatement {
 				continue;
 
 			insertFields += (insertFields.isEmpty() ? "" : ", ") + connection.dialect().quote(field.name());
-			insertValues += (insertValues.isEmpty() ? "" : ", ") + "?";
+			insertValues += (insertValues.isEmpty() ? "" : ", ") + field.sqlPlaceholder(database.vendor());
 		}
 
 		String sql = "insert into " + database.tableName(query.name()) + " " + "(" + insertFields + ") values (" + insertValues + ")";

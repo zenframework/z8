@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 import org.zenframework.z8.server.base.table.value.BinaryField;
+import org.zenframework.z8.server.base.table.value.BitsetField;
 import org.zenframework.z8.server.base.table.value.BoolField;
 import org.zenframework.z8.server.base.table.value.DateField;
 import org.zenframework.z8.server.base.table.value.DatespanField;
@@ -18,8 +19,10 @@ import org.zenframework.z8.server.base.table.value.GuidField;
 import org.zenframework.z8.server.base.table.value.IntegerField;
 import org.zenframework.z8.server.base.table.value.StringField;
 import org.zenframework.z8.server.base.table.value.TextField;
+import org.zenframework.z8.server.base.table.value.VectorField;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.types.binary;
+import org.zenframework.z8.server.types.bitset;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
@@ -29,6 +32,7 @@ import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.vector;
 
 public class Cursor {
 	private SelectStatement statement;
@@ -210,6 +214,22 @@ public class Cursor {
 		return !wasNull ? new date(value) : date.Min;
 	}
 
+	public vector getVector(int position) throws SQLException {
+		return getVector(position, new VectorField(null));
+	}
+
+	private vector getVector(int position, Field field) throws SQLException {
+		return new vector(getString(position, field).get());
+	}
+
+	public bitset getBitset(int position) throws SQLException {
+		return getBitset(position, new BitsetField(null));
+	}
+
+	private bitset getBitset(int position, Field field) throws SQLException {
+		return new bitset(getString(position, field).get());
+	}
+
 	public primary get(Field field) throws SQLException {
 		return get(field, field.type());
 	}
@@ -240,7 +260,12 @@ public class Cursor {
 		case Integer:
 			return getInteger(position, field);
 		case String:
+		case FtsVector:
 			return getString(position, field);
+		case Vector:
+			return getVector(position, field);
+		case Bitset:
+			return getBitset(position, field);
 		default:
 			throw new UnsupportedOperationException();
 		}

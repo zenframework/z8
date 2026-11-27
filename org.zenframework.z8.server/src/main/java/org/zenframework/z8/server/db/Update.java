@@ -33,7 +33,7 @@ public class Update extends DmlStatement {
 		for (Field field : fields) {
 			if (field.isPrimaryKey() || field.isExpression())
 				continue;
-			set += (set.isEmpty() ? "" : ", ") + dialect.quote(field.name()) + "=" + "?";
+			set += (set.isEmpty() ? "" : ", ") + dialect.quote(field.name()) + "=" + field.sqlPlaceholder(vendor);
 		}
 
 		String whereClause = "";

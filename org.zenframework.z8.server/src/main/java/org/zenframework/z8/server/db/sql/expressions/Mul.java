@@ -13,18 +13,12 @@ public class Mul extends Operator {
 	@Override
 	public String format(DatabaseVendor vendor, FormatOptions options, boolean logicalContext) {
 		switch(operation) {
-		case Mul: {
+		case Mul:
 			return left.format(vendor, options) + "*" + right.format(vendor, options);
-		}
-
-		case Div: {
+		case Div:
 			return left.format(vendor, options) + "/" + right.format(vendor, options);
-		}
-
-		case Mod: {
+		case Mod:
 			return new Mod(left, right).format(vendor, options);
-		}
-
 		default:
 			throw new UnsupportedOperationException();
 		}

@@ -8,6 +8,7 @@ import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.string;
+import org.zenframework.z8.server.types.sql.sql_string;
 
 public class TextExpression extends StringExpression {
 	public static class CLASS<T extends TextExpression> extends StringExpression.CLASS<T> {
@@ -39,5 +40,15 @@ public class TextExpression extends StringExpression {
 	public void writeMeta(JsonWriter writer, Query query, Query context) {
 		super.writeMeta(writer, query, context);
 		writer.writeProperty(Json.html, html);
+	}
+
+	@SuppressWarnings("unchecked")
+	public TextExpression.CLASS<? extends TextExpression> operatorAssign(string value) {
+		return (TextExpression.CLASS<? extends TextExpression>) super.operatorAssign(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public TextExpression.CLASS<? extends TextExpression> operatorAssign(sql_string expression) {
+		return (TextExpression.CLASS<? extends TextExpression>) super.operatorAssign(expression);
 	}
 }

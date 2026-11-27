@@ -1,0 +1,19 @@
+[primary "org.zenframework.z8.server.types.sql.sql_vector"]
+public final class sql_vector extends sql_primary {
+	public operator ();
+
+	public sql_vector operator + ();
+	public sql_vector operator - ();
+	public sql_vector operator + (sql_vector value);
+	public sql_vector operator - (sql_vector value);
+	public sql_decimal operator * (sql_vector value); // scalar product
+
+	public sql_int size();
+
+	public sql_decimal scalar();
+
+	public sql_decimal euclid(sql_vector v);
+	public sql_decimal cosine(sql_vector v);
+
+	public static sql_vector fill(sql_int size, sql_decimal value);
+}

@@ -4,7 +4,6 @@ import java.io.InputStream;
 
 import org.zenframework.z8.server.db.FieldType;
 import org.zenframework.z8.server.db.sql.SqlField;
-import org.zenframework.z8.server.engine.ApplicationServer;
 import org.zenframework.z8.server.runtime.IObject;
 import org.zenframework.z8.server.types.binary;
 import org.zenframework.z8.server.types.primary;
@@ -29,12 +28,7 @@ public class BinaryField extends Field {
 	}
 
 	public binary z8_getDefault() {
-		return (binary)super.getDefault();
-	}
-
-	@Override
-	public primary getDefault() {
-		return ApplicationServer.userEventsEnabled() ? z8_getDefault() : super.getDefault();
+		return (binary) super.z8_getDefault();
 	}
 
 	@Override

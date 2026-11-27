@@ -20,6 +20,7 @@ import org.zenframework.z8.server.runtime.RLinkedHashMap;
 import org.zenframework.z8.server.types.bool;
 import org.zenframework.z8.server.types.date;
 import org.zenframework.z8.server.types.datespan;
+import org.zenframework.z8.server.types.decimal;
 import org.zenframework.z8.server.types.guid;
 import org.zenframework.z8.server.types.integer;
 import org.zenframework.z8.server.types.primary;
@@ -287,6 +288,10 @@ public class Entity extends OBJECT {
 
 	public integer getInt(string key) {
 		return (integer) get(key);
+	}
+
+	public decimal getDecimal(string key) {
+		return (decimal) get(key);
 	}
 
 	public guid getGuid(string key) {
@@ -641,6 +646,10 @@ public class Entity extends OBJECT {
 
 	public integer z8_getInt(string key) {
 		return getInt(key);
+	}
+
+	public decimal z8_getDecimal(string key) {
+		return getDecimal(key);
 	}
 
 	public guid z8_getGuid(string key) {
