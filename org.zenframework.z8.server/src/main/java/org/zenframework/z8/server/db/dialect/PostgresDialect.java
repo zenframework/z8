@@ -37,15 +37,17 @@ public class PostgresDialect extends DatabaseDialect {
 			indexValue = "(" + indexValue + ")";
 
 		String method = getIndexMethod(index);
-		return (method.equals("btree") ? "" : "using " + method + " ") + "(" + indexValue + (index.trigram() ? " gin_trgm_ops" : "") + ")";
+		String operatorClass = index.fieldType() == FieldType.Vector ? " vector_cosine_ops" : index.trigram() ? " gin_trgm_ops" : "";
+		return (method.equals("btree") ? "" : "using " + method + " ") + "(" + indexValue + operatorClass + ")";
 	}
 
 	@Override
 	public String getIndexMethod(Index index) {
 		switch(index.fieldType()) {
 		case Geometry:
-		case Vector:
 			return "gist";
+		case Vector:
+			return "hnsw";
 		case FtsVector:
 			return "gin";
 		default:
