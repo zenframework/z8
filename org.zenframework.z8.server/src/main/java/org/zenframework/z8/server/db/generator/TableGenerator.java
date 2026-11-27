@@ -29,7 +29,6 @@ import org.zenframework.z8.server.db.sql.functions.conversion.ToBytes;
 import org.zenframework.z8.server.db.sql.functions.conversion.ToString;
 import org.zenframework.z8.server.engine.IDatabase;
 import org.zenframework.z8.server.exceptions.db.ObjectAlreadyExistException;
-import org.zenframework.z8.server.exceptions.db.ObjectNotFoundException;
 import org.zenframework.z8.server.logs.Trace;
 import org.zenframework.z8.server.resources.Resources;
 import org.zenframework.z8.server.security.BuiltinUsers;
@@ -116,34 +115,6 @@ public class TableGenerator {
 
 		for (Map<IField, primary> record : table().getStaticRecords())
 			createStaticRecord(record);
-	}
-
-	public void createIndexes() {
-		Table table = table();
-
-		for (Index index : table.getIndexes()) {
-			try {
-				DmlStatement.execute(database.dialect().getCreateIndex(database, index));
-				debug("create index " + index);
-			} catch(SQLException e) {
-				logger.error(e, Resources.format("Generator.createIndexError", index.getName(), table.displayName(), table.name(), ErrorUtils.getMessage(e)));
-			}
-		}
-	}
-
-	public void dropIndexes() {
-		if (action != GeneratorAction.Recreate)
-			return;
-
-		for (Index index : dbTable.getIndexes().values()) {
-			try {
-				DmlStatement.execute(database.dialect().getDropIndex(database, index.getTableName(), index.getName()));
-				debug("drop index " + index);
-			} catch(ObjectNotFoundException e) {
-			} catch(SQLException e) {
-				logger.error(e, Resources.format("Generator.dropIndexError", index.getTableName(), index.getName(), ErrorUtils.getMessage(e)));
-			}
-		}
 	}
 
 	public void optimizeTable() {

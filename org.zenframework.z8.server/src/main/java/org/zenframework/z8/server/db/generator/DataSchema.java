@@ -1,7 +1,9 @@
 package org.zenframework.z8.server.db.generator;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.zenframework.z8.server.db.ConnectionManager;
@@ -86,17 +88,41 @@ public class DataSchema {
 
 		try {
 			while (cursor.next()) {
-				String indexName = cursor.getString(1).get();
-				String tableName = cursor.getString(2).get();
-				boolean unique = cursor.getBoolean(4).get();
+				Index.Metadata metadata = new Index.Metadata();
+				metadata.name = cursor.getString(1).get();
+				metadata.tableName = cursor.getString(2).get();
+				metadata.value = cursor.getString(3).get();
+				metadata.unique = cursor.getBoolean(4).get();
+				metadata.method = cursor.getString(5).get();
+				metadata.trigram = cursor.getBoolean(6).get();
+				metadata.definition = cursor.getString(7).get();
 
-				TableDescription table = tables.get(tableName);
+				TableDescription table = tables.get(metadata.tableName);
 
 				if (table == null)
 					continue;
 
-				if (table.getIndex(indexName) == null)
-					table.addIndex(new Index(tableName, indexName, unique, null));
+				table.addIndex(database.dialect().readIndex(metadata));
+			}
+		} finally {
+			cursor.close();
+		}
+	}
+
+	public static void normalizeIndexValues(IDatabase database, String tableName, List<Index> indexes) throws SQLException {
+		if (indexes.isEmpty())
+			return;
+
+		List<String> values = new ArrayList<String>();
+		for (Index index : indexes)
+			values.add(database.dialect().formatIndexExpression(index));
+
+		Cursor cursor = SelectStatement.cursor(database, database.dialect().getIndexValuesQuery(database, tableName, values));
+		try {
+			if (cursor.next()) {
+				List<String> output = database.dialect().parseIndexValues(cursor.getString(1).get());
+				for (int i = 0; i < indexes.size(); i++)
+					indexes.get(i).setComparisonValue(output.get(i));
 			}
 		} finally {
 			cursor.close();

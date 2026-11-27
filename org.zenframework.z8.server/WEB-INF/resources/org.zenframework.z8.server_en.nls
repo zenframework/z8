@@ -275,4 +275,5 @@
 	<entry key="Generator.createIndexError">Error. Table ''{1}''({2}) - error creating index ''{0}''. {3}</entry>
 	<entry key="Generator.insertRecordsError">Error inserting record {0} to table ''{1}''({2}). {3}</entry>
 	<entry key="Generator.optimizeTableError">Error. Table ''{0}'' - error optimization. {1}</entry>
+	<entry key="Generator.restoreIndexWarning">Warning. Table ''{1}'' - could not restore index ''{0}''. {2}</entry>
 </properties>
